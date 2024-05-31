@@ -29,7 +29,7 @@ PlayerAfterimage::PlayerAfterimage()
     //hitEffect = new Effect("Data/Effect/sunder.efk");
     //desEffect = new Effect("Data/Effect/F.efk");
 
-   
+    timeremove = 0.5f;
 
     // 移動ステートへ遷移
     TransitionMoveState();
@@ -83,11 +83,12 @@ void PlayerAfterimage::Update(float elapsedTime)
     //if (!first)
     //model->UpdateAnimation(elapsedTime);
 
-    // モデル行列更新
-    // 何処に出してほしいここに 
+    // 時間たったら消す。
     if (timeremove <= 0)
         Destroy();
 
+    // モデル行列更新
+    // 何処に出してほしいここに 
     //model->UpdateTransform(transform);
     first = true;
 

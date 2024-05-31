@@ -35,6 +35,8 @@ private:
 		const DirectX::XMFLOAT4X4& projection
 	);
 
+	void AfterimageTime(float elapsedTime);
+
 
 private:
 	Player* player = nullptr;

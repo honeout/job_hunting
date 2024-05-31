@@ -199,6 +199,7 @@ private:
 
     int   healse  = 10;
 
+    // •à‚¢‚Ä‚¢‚é”»’è
     bool afterimagemove = false;
 
     bool blend = false;

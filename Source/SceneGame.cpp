@@ -125,42 +125,8 @@ void SceneGame::Update(float elapsedTime)
 	// プレイヤー更新処理
 	player->Update(elapsedTime);
 
-
-	if (player->GetAfterimageMove())
-	{
-		elapsedFrame -= elapsedTime;
-		if (elapsedFrame <= 0)
-		{
-
-			PlayerAfterimage* playerAfterimage = new PlayerAfterimage();
-			playerAfterimage->SetPosition({player->GetPosition() });
-			playerAfterimage->SetAngle(player->GetAngle());
-			playerAfterimage->SetTransform(player->GetTransform());
-			AfterimageManager::Instance().Register(playerAfterimage);
-
-			playerAfterimage->GetModel()->UpdateTransform(player->GetTransform(),
-				player->GetModel()->GetNodes());
-
-			playerAfterimage->GetModel()->UpdateTransform(player->GetTransform());
-
-			// 残業ステートアニメーションの時間
-			AfterimageManager::Instance().GetAfterimage(
-				AfterimageManager::Instance().GetAfterimageCount() - 1
-			)->SetCurrentAnimationSeconds(
-				player->GetCurrentANimationSeconds());
-
-			elapsedFrame = spawnafterimagetimemax;
-			
-		}
-		
-			
-		
-
-	}
-	else
-	{
-		elapsedFrame = spawnafterimagetimemax;
-	}
+	
+	AfterimageTime(elapsedTime);
 
 	
 
@@ -410,5 +376,48 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 			EnemyManager::Instance().Register(slime);
 		}
 		
+	}
+}
+
+void SceneGame::AfterimageTime(float elapsedTime)
+{
+	// 動いていたら残像を出す
+	if (player->GetAfterimageMove())
+	{
+		elapsedFrame -= elapsedTime;
+
+
+
+
+	}
+	else
+	{
+		elapsedFrame = spawnafterimagetimemax;
+	}
+
+	// 残像出す間隔
+	if (elapsedFrame <= 0)
+	{
+
+		PlayerAfterimage* playerAfterimage = new PlayerAfterimage();
+		// 配置して
+		playerAfterimage->SetPosition({ player->GetPosition() });
+		playerAfterimage->SetAngle(player->GetAngle());
+		playerAfterimage->SetTransform(player->GetTransform());
+		AfterimageManager::Instance().Register(playerAfterimage);
+		// 動かして
+		playerAfterimage->GetModel()->UpdateTransform(player->GetTransform(),
+			player->GetModel()->GetNodes());
+
+		//playerAfterimage->GetModel()->UpdateTransform(player->GetTransform());
+
+		// 残業ステートアニメーションの時間
+		AfterimageManager::Instance().GetAfterimage(
+			AfterimageManager::Instance().GetAfterimageCount() - 1
+		)->SetCurrentAnimationSeconds(
+			player->GetCurrentANimationSeconds());
+
+		elapsedFrame = spawnafterimagetimemax;
+
 	}
 }
