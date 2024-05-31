@@ -125,7 +125,7 @@ void SceneGame::Update(float elapsedTime)
 	// プレイヤー更新処理
 	player->Update(elapsedTime);
 
-	
+	// 残像経過時間
 	AfterimageTime(elapsedTime);
 
 	
