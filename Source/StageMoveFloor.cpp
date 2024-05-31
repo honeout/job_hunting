@@ -72,10 +72,8 @@ void StageMoveFloor::Render(ID3D11DeviceContext* dc, Shader* shader)
 bool StageMoveFloor::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end,
     HitResult& hit)
 {
-    //return Collision::IntersectRayVsModel(start, end, model, hit);
 
     // 前回のワールド行列と逆行列を求める
-    /*model->UpdateTransform(oldTransform);*/
     DirectX::XMMATRIX WorldTransform = DirectX::XMLoadFloat4x4(&oldTransform);
     DirectX::XMMATRIX InverseWorldTransform = DirectX::XMMatrixInverse(nullptr, WorldTransform);
 

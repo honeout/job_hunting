@@ -46,8 +46,7 @@ private:
         // エネミー全削除
         void Clear();
 
-        // 何番なのかの確認
-        // 最大数値を取り出す
+
         // エネミー数取得
         int GetEnemyCount() const { return static_cast<int>(enemies.size()); }
 

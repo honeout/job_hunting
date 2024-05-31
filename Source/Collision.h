@@ -32,7 +32,7 @@ public:
 
     // 円柱と円柱の交差判定　うその
     static bool IntersectCylinderVsCylinder(
-        const DirectX::XMFLOAT3& positionA,//ミスター
+        const DirectX::XMFLOAT3& positionA,//player
         float radiusA,
         float heightA,
         const DirectX::XMFLOAT3& positionB,//スライム

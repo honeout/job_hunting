@@ -10,7 +10,6 @@ void SceneManager::Update(float elapsedTime)
 
 
         // V‚µ‚¢ƒV[ƒ“‚ðÝ’è
-        //nextScene->Initialize();
         this->currentScene = this->nextScene;
         this->nextScene = nullptr;
 

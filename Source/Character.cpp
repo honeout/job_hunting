@@ -12,15 +12,11 @@ void Character::UpdateTransform()
 {
     // スケールだけ行列を作成
     DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x,scale.y,scale.z);
-    //// 回転行列だけを作成
-    //DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(angle.x,angle.y,angle.z);
-   
+    
+    // 回転行列作成
     DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(angle.x);
-
     DirectX::XMMATRIX Y = DirectX::XMMatrixRotationY(angle.y);
-
     DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(angle.z);
-
     DirectX::XMMATRIX R =  Y*X*Z;
 
 
@@ -29,41 +25,13 @@ void Character::UpdateTransform()
     // 3つの行列を組み合わせ、ワールド行列を作成
     DirectX::XMMATRIX W = S * R * T;// 行列は計算順番変えると結果が変わる
     // 計算したワールド行列を取り出す
-    DirectX::XMStoreFloat4x4(&transform, W);// transformにWを入れてる
+    DirectX::XMStoreFloat4x4(&transform, W);
     
 }
 
-// ダメージを与える
-//bool Character::ApplyDamage(int damage /*, float invincibleTime*/)
-//{
-//    // ダメージが変更されたらTRUEを返す。
-//    // ダメージが０の場合は健康状態を変更する必要がない
-//    if (damage == 0) return false;
-//
-//    // 死亡している場合は健康状態を変更しない
-//    if (health <= 0)return false;
-//
-//    // ダメージ処理
-//    health -= damage;
-//
-//
-//    // 死亡通知　死んでもダメージ伝えてほしい時はそう改造
-//    if (health <= 0)
-//    {
-//        // 継承先クラスに伝える。
-//        OnDead();
-//    }
-//    // ダメージ通知
-//    else
-//    {
-//        // 継承先クラスに伝える。
-//        OnDamaged();
-//    }
-//
-//    // 健康状態が変更した場合はtrueを返す
-//    return true;
-//}
 
+
+// ふっとばし
 void Character::AddImpulse(const DirectX::XMFLOAT3& impulse)
 {
     //  衝動 impulse
@@ -73,7 +41,7 @@ void Character::AddImpulse(const DirectX::XMFLOAT3& impulse)
     this->velocity.z += impulse.z;
 }
 
-//
+
 // ダメージを与える
 bool Character::ApplyDamage(int damage , float invincibleTime)
 {
@@ -95,9 +63,6 @@ bool Character::ApplyDamage(int damage , float invincibleTime)
     // 死亡通知
     if (health <= 0)
     {
-        //DirectX::XMFLOAT3 e = enemy->GetPosition();
-        //e.y += enemy->GetHeight() * 0.5f;
-        //desEffect->Play();
         OnDead();
     }
     // ダメージ通知
@@ -112,23 +77,15 @@ bool Character::ApplyDamage(int damage , float invincibleTime)
 
 
 // 移動処理
-
-
-
 void Character::Move(float vx, float vz, float speed)
 {
-    //speed *= elapsedTime;
-    //position.x += vx * speed;
-    //position.z += vz * speed;
 
     // 移動方向ベクトルを設定
-    // 移動方向
     moveVecX = vx;
     moveVecZ = vz;
 
     // 最大速度設定　速度
     maxMoveSpeed = speed;
-    // 一旦記憶
 }
 
 //旋回処理
@@ -138,84 +95,55 @@ void Character::Turn(float elapsedTime, float vx, float vz, float speed)
     speed *= elapsedTime;
 
     // 進行ベクトルが0ベクトルの場合は処理する必要なし
-    // これじゃ動かない
-    //if (vx == 0)return;
-    //if (vz == 0)return;
     if (vx == 0 && vz == 0)return;
-    // 0除算しないように割り算０無理
+    
     float length = sqrtf(vx * vx + vz * vz);
     if (length < 0.001f) return;
 
-    //float Lengthx;
-    //float Lengthz;
-
-
-
-    // 進行ベクトルを単位ベクトル化
-    //Lengthx = sqrtf(vx * vx + vz * vz);
-    //Lengthz = sqrtf(vx * vx + vz * vz);
-
-    //Lengthx = vx / Lengthx;
-    //Lengthz = vz / Lengthz;
     vx /= length;
     vz /= length;
 
-    // 自身の回転値から全方向を求める
-    // 進行方向ベクトル求める（angle.y）で求められる
-    // 二つとも同じ値でもそもそも出る値が違うから表現出来る
-    // まっすぐ前0,1.0等ある。
-    float frontX = sinf(angle.y); // ｙ軸を中心にｘ回転する。左右を見る為
-    float frontZ = cosf(angle.y); // ｘ軸を中心にｙ回転する。前後判定のため
+    // 自身の回転値から前方向を求める
+    float frontX = sinf(angle.y); // 左右を見る為
+    float frontZ = cosf(angle.y); // 前後判定のため
 
-    //回転角を求めるため、２つの単位ベクトルの内積を計算する
-    // 両方とも単位ベクトルじゃなかったらＣｏｓθ出ない
-    // 片方違ったら距離が出る
+    //回転角を求めるため、２つのベクトルの内積を計算する
     float dot = (frontX * vx) + (frontZ * vz);// 内積
 
-    // 内積値は-1.0～1.0で表現されており、２つの単位ベクトルの角度が
-    // 小さいほと1.0に近づくという性質を利用して回転速度を調整する
-    float rot = 1.0 - dot;// 補正値 角度が小さい程値が小さくなる
-    // if(回転速度が5度よりも速いと)毎フレームが５度よりも
+    // 内積地は-1~1で表現されていて２つの単位ベクトルの角度が
+    // 小さいほど１．０にちがづくという性質を利用して回転速度を調整
+    float rot = 1.0 - dot;
     if (rot > speed) rot = speed;
-
-    //// 単位ベクトル化
-    //frontX = frontX / frontX;
-    //frontZ = frontZ / frontZ;
 
 
     // 左右判定を行う為に２つの単位ベクトルの外積を計算する
-             //  (進行方向＊進行ベクトル)
-    //float cross = (frontX * Lengthz) - (frontZ * Lengthx);
     float cross = (frontZ * vx) - (frontX * vz);
+
     // 2Dの外積値が正の場合か負の場合によって左右判定が行える
     // 左右判定を行うことによって左右回転を選択する
     if (cross < 0.0f)
     {
-        // がくがく
-        // 小さくなればそれだけrot×
-        //angle.y -= speed*rot;　回転量が少ない
         angle.y -= rot;
     }
     else
     {
-        // がくがく
-        //angle.y += speed*rot;
         angle.y += rot;
     }
 
 
 }
 
+// ジャンプ
 void Character::Jump(float speed)
 {
-    velocity.y = speed /*/ 60.0f*/;
+    velocity.y += speed;
     //position.y = (std::min)(position.y, speed);
 }
 // 速力処理
 //elapsedTime÷60これが   elapsedTime経過時間
 void Character::UpdateVelocity(float elapsedTime)
-{ // 経過フレーム　フレームにはなってほしくはないが２倍３倍になってほしいから
-    // つまり辻褄合わせ　elapsedFrame
+{ 
+    // 経過フレーム
     float elapsedFrame = 60.0f * elapsedTime;
 
     // 垂直速力更新処理
@@ -229,40 +157,6 @@ void Character::UpdateVelocity(float elapsedTime)
     // 水平移動更新処理
     UpdateHorizontalMove(elapsedTime);
 
-
-
-    // 重力処理 // ちょっとずつ減るグラヴィティ　 
-    // 秒間　秒単位になる
-    //velocity.y += grabity * elapsedFrame /** elapsedTime*/;
-    //// 移動処理　　1フレーム単位にvelocityになった
-    //position.y += velocity.y*elapsedTime;
-
-    //// 地面判定　延々と落ちていく仮の
-    //if (position.y < 0.0f)
-    //{
-    //    position.y = 0.0f;
-    //    velocity.y = 0.0f;
-
-
-    //    // 着地した
-    //    if (!isGround)
-    //    {
-    //       
-    //        OnLanding();// 継承先なので着地下からエフェクト出そうとなる。
-    //    }
-    //    isGround = true;
-    //}
-    //else
-    //{
-    //
-    //    isGround = false();
-    //    
-    //}
-
-
-
-
-
 }
 
 // 無敵時間更新
@@ -274,49 +168,22 @@ void Character::UpdateInbincibleTimer(float elapsedTime)
     }
 }
 
+// 垂直速度更新処理
 void Character::UpdateVerticalVelocity(float elapsedFrame)
 {
     // 重力処理
-     //    重力処理 // ちょっとずつ減るグラヴィティ　 
-     //秒間　秒単位になる
-    this->velocity.y += this->grabity * elapsedFrame /** elapsedTime*/;
+    this->velocity.y += this->grabity * elapsedFrame;
 
 }
 
 // 垂直移動更新処理
 void Character::UpdateVerticalMove(float elapsedTime)
 {
-    //// 移動処理
-    //    // 移動処理　　1フレーム単位にvelocityになった
-    //position.y += velocity.y * elapsedTime;
-
-    //// 地面判定
-
-    //// 地面判定　延々と落ちていく仮の
-    //if (position.y < 0.0f)
-    //{
-    //    position.y = 0.0f;
-
-    //    // 着地した
-    //    if (!isGround)
-    //    {
-    //       
-    //        OnLanding();// 継承先なので着地下からエフェクト出そうとなる。
-    //    }
-    //    isGround = true;
-    //    velocity.y = 0.0f;
-    //}
-    //else
-    //{
-    //
-    //    isGround = false();
-    //    
-    //}
 
     // 垂直方向の移動量
     float my = velocity.y * elapsedTime;
 
-    slopeRate = 0.0f;
+    slopeRate = 0.0f; // 傾斜率
 
     // キャラクターのY軸方向となる法線ベクトル
     DirectX::XMFLOAT3 normal = { 0,1,0 };
@@ -338,16 +205,9 @@ void Character::UpdateVerticalMove(float elapsedTime)
 
             // 法線ベクトル取得
             normal = hit.normal;
-
-            //// レイキャストによる地面判定
-            //HitResult hit;
-
-
-
      
 
             // 地面に設置している
-            //position.y = hit.position.y;
             position = hit.position;
 
             // 回転
@@ -360,7 +220,7 @@ void Character::UpdateVerticalMove(float elapsedTime)
             // 着地
             if (!isGround)
             {
-                // 着地時に呼ぶ
+               
                 OnLanding();
             }
             isGround = true;
@@ -385,9 +245,7 @@ void Character::UpdateVerticalMove(float elapsedTime)
     // 地面の向きに沿うようにXZ軸回転
     {
         // Y軸が法線ベクトル方向に向くオイラー角回転を算出する
-
         float storageAngleX = atan2f(normal.z, normal.y);
-
         float storageAngleZ = -atan2f(normal.x, normal.y);
 
         // 線形補完で滑らかに回転する
@@ -399,29 +257,31 @@ void Character::UpdateVerticalMove(float elapsedTime)
 
 }
 
+// 水平速力更新処理
 void Character::UpdateHorizontalVelocity(float elapsedFrame)
 {
     // XZ平面の速力を減速する 速度の長さ
     float length = sqrtf(velocity.x*velocity.x+velocity.z*velocity.z);
-    // 0以上なら移動
     if (length > 0.0f)
     {
         // 摩擦力
         float friction = this->friction * elapsedFrame;
 
         // 空中にいるときは摩擦力を減らす
-        if (!isGround) friction *= airControl;// 元々の摩擦の計数を減らす為に0.3×。30パーセント
+        if (!isGround) friction *= airControl;// 元々の摩擦の計数を減らす為
+
         // 摩擦による横方向の減速処理
         if (length > friction)
         {
             // 単位ベクトル化する。
             float vx = velocity.x / length;
             float vz = velocity.z / length;
+
             // 減速抵抗力の分だけ
             velocity.x -= vx*friction;
             velocity.z -= vz * friction;
         }
-        // 横方向の速力が摩擦力以下になったので速力を無効化 １秒間に50センチ以上動かない
+        // 横方向の速力が摩擦力以下になったので速力を無効化
         else
         {
             velocity.x = 0;
@@ -433,18 +293,21 @@ void Character::UpdateHorizontalVelocity(float elapsedFrame)
     // XZ平面の速力を加速する
     if (length <= maxMoveSpeed)
     {
-        // 移動ベクトルがぜろベクトルでないなら加速する
+        // 移動ベクトルが0ベクトルでないなら加速する
         float moveVecLength = sqrtf(moveVecX * moveVecX + moveVecZ* moveVecZ);
         if (moveVecLength > 0.0f)
         {
+            // 加速力
             float accelration = this->acceleration * elapsedFrame;
+
             // 空中にいるときは摩擦力を減らす
             if (!isGround) accelration *= airControl;// 鈍くする。30パーセント
+
             // 移動ベクトルによる加速処理 また速度をいじったから
             velocity.x += moveVecX * acceleration;
             velocity.z += moveVecZ * acceleration;
-            // 最大速度制御　ここで速度を測定する。
-            //float lengt = sqrtf(velocity.x* velocity.x+ velocity.z* velocity.z);
+
+            // 最大速度制御
             float length = sqrtf(velocity.x* velocity.x+ velocity.z* velocity.z);
             if (length > maxMoveSpeed)
             {
@@ -467,11 +330,9 @@ void Character::UpdateHorizontalVelocity(float elapsedFrame)
 
 }
 
+// 水平移動更新処理
 void Character::UpdateHorizontalMove(float elapsedTime)
 {
-    //// 移動処理 1フレームでどれだけ動く
-    //position.x += velocity.x*elapsedTime;
-    //position.z += velocity.z*elapsedTime;
 
     // 水平速力量計算
     float velocityLengthXZ = sqrtf(velocity.x*velocity.x+velocity.z*velocity.z);
@@ -499,7 +360,7 @@ void Character::UpdateHorizontalMove(float elapsedTime)
             // 壁の法線
             DirectX::XMVECTOR Normal = DirectX::XMLoadFloat3(&hit.normal);
 
-            // 入射ベクトルを法線に射影長 a ここを変えると向きを変更したらとぶ
+            // 入射ベクトルを法線に射影長
             DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(DirectX::XMVectorNegate(Vec),Normal);
             Dot = DirectX::XMVectorScale(Dot, 1.1f); // 壁にめり込まないように少しだけ補正
 

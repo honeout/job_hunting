@@ -8,15 +8,12 @@ class EnemySlime : public Enemy
 {
 public:
     EnemySlime();
-    // virtualしたらoverrideが出来ないこともある
-    // エネミー継承しているoverrideをつける継承先で呼ばれない可能性あり
     ~EnemySlime() override;
 
     // 更新処理
     void Update(float elapsedTime) override;
 
     // 描画処理
-    // override継承先にあるんだろうなと分かる。
     void Render(ID3D11DeviceContext* dc, Shader* shader) override;
 
     // デバッグプリミティブ描画　デバッグ用
@@ -125,20 +122,28 @@ protected:
     void OnDamaged() override;
 
 private:
+    // モデル情報を確保
     Model* model = nullptr;
 
+    // どのステートで動くか
     State state = State::Wander;
+    // ターゲットの位置
     DirectX::XMFLOAT3 targetPosition = { 0,0,0 };
+    // 縄張り
     DirectX::XMFLOAT3 territoryOrigin = { 0,0,0 };
+    // 縄張り半径
     float territoryRange = 10.0f;
+    // 動く速度
     float moveSpeed = 3.0f;
+    // 回転速度
     float turnSpeed = DirectX::XMConvertToRadians(360);
+    // 追跡時間
     float stateTimer = 0.0f;
 
     
-
+    // 探す半径
     float searchRange = 5.0f;
-
+    // 攻撃半径
     float attackRange = 1.5f;
 
 };

@@ -3,15 +3,12 @@
 
 #include "Graphics/Graphics.h"
 #include "Input/Input.h"
-//#include "SceneGame.h"
 #include "Framework.h"
 
 #include "EffectManager.h"
 
 #include "SceneTitle.h"
 #include "SceneManager.h"
-
-//static SceneGame sceneGame;
 
 // 垂直同期間隔設定
 static const int syncInterval = 1;
@@ -33,7 +30,6 @@ Framework::Framework(HWND hWnd)
 Framework::~Framework()
 {
 	// シーン終了化
-	//sceneGame.Finalize();
 	SceneManager::Instance().Clear();
 
 	// エフェクトマネージャー終了化
@@ -47,7 +43,6 @@ void Framework::Update(float elapsedTime/*Elapsed seconds from last frame*/)
 	input.Update();
 
 	// シーン更新処理
-	//sceneGame.Update(elapsedTime);
 	SceneManager::Instance().Update(elapsedTime);
 }
 
@@ -63,7 +58,6 @@ void Framework::Render(float elapsedTime/*Elapsed seconds from last frame*/)
 	graphics.GetImGuiRenderer()->NewFrame();
 
 	// シーン描画処理
-	//sceneGame.Render();
 	SceneManager::Instance().Render();
 
 	// IMGUIデモウインドウ描画（IMGUI機能テスト用）

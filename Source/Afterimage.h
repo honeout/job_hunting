@@ -11,9 +11,6 @@ public:
     ~Afterimage() override {}
 
     // 更新処理
-    //純粋仮想関数を作ったら向こうで作らないと
-    //コンパイルエラーになる
-    //
     virtual void Update(float elapsedTime) = 0;
 
     // 描画処理　

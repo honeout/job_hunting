@@ -23,23 +23,6 @@ void Projectile::DrawDebugPrimitive()
 
 void Projectile::UpdateTransform()
 {
-    // Ç∆ÇËÇ†Ç¶Ç∏ÅAâºÇ≈âÒì]ÇÕñ≥éãÇµÇΩçsóÒÇçÏê¨Ç∑ÇÈÅB
-    //transform._11 = scale.x; // ëÂÇ´Ç≥ÇæÇØÇ‚Ç¡ÇΩìzÇOÅDÇPî{Ç»ÇÁÇªÇ§Ç»ÇÈ
-    //transform._12 = 0.0f;
-    //transform._13 = 0.0f;
-    //transform._14 = 0.0f;
-    //transform._21 = 0.0f;
-    //transform._22 = scale.y;
-    //transform._23 = 0.0f;
-    //transform._24 = 0.0f;
-    //transform._31 = 0.0f;
-    //transform._32 = 0.0f;
-    //transform._33 = scale.z;
-    //transform._34 = 0.0f;
-    //transform._41 = position.x;
-    //transform._42 = position.y;
-    //transform._43 = position.z;
-    //transform._44 = 1.0f;
 
     // âΩÇ©
     DirectX::XMVECTOR Front, Up, Right;

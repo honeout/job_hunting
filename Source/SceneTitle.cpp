@@ -37,9 +37,6 @@ void SceneTitle::Update(float elapsedTime)
 
     if (gamePad.GetButton() & anyButton)// ƒ[ƒh‚ÌŸƒQ[ƒ€‚Æ‚¢‚¤‘‚«•û
         SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
-        //SceneManager::Instance().ChangeScene(new SceneLoading);
-        //SceneManager::Instance().ChangeScene(new SceneGame);
-       /* SceneManager::ChangeScene(new SceneGame);*/
 
 }
 // •`‰æˆ—

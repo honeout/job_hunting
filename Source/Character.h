@@ -9,8 +9,7 @@ public:
     Character() = default;
     virtual ~Character() = default;
 
-    // 中身を変えられないようにconst
-    // ＆をつけた理由｛｝の中の物の本体を参照を渡す変えられないようにして
+
     // 行列更新処理
     void UpdateTransform();
 
@@ -30,7 +29,7 @@ public:
     // スケール取得
     void SetScale(const DirectX::XMFLOAT3& scale) { this->scale = scale; }
 
-    // 衝撃を与える
+    //  はじき処理
     void AddImpulse(const DirectX::XMFLOAT3& impulse);
 
     // 半径取得 05
@@ -43,12 +42,12 @@ public:
     float GetHeight() const { return height; }
 
     // ダメージを与える ダメージを受けたら他に渡す。
-    /*bool ApplyDamage(int damage);*/
     bool ApplyDamage(int damage, float invincibleTime);
 
-    // 健康状態を取得
+    // HP状態を取得
     int GetHealth() const { return health; }
-    // 最大健康状態を取得
+
+    // 最大HP状態を取得
     int GetMaxHealth() const { return maxHealth; }
 
     // アニメーションの時間
@@ -56,13 +55,14 @@ public:
     // アニメーションの時間
     void SetCurrentAnimationSeconds(const float currentANimationSeconds) { this->currentANimationSeconds = currentANimationSeconds; }
 
+    // 行列の姿勢
     DirectX::XMFLOAT4X4 GetTransform() { return this->transform; }
 
+    // 行列の姿勢をセット
     void SetTransform(DirectX::XMFLOAT4X4 transform) { this->transform = transform; }
 
 protected:
     // 移動処理
-    //void Move(float elapsedTime, float vx, float vz, float speed);
     void Move(float vx, float vz, float speed);
 
     // 旋回処理
@@ -108,34 +108,44 @@ protected:// 継承先でも使える
         0, 0, 1, 0,
         0, 0, 0, 1,
     };
-    // 05
+    // 半径05
     float radius = 0.5f;
 
+    // 重力
     float              grabity = -1.0f;
+    // 速度
     DirectX::XMFLOAT3  velocity = { 0,0,0 };
 
+    // 地面確認
     bool         isGround = false;
-    //メートル
+    // 身長メートル
     float               height = 2.0f;
 
+    // HP
     int          health = 5;
+    // 最大値HP
     int          maxHealth = 5;
-
+    // 無敵時間
     float   invincibleTimer = 1.0f;
     // 摩擦
     float   friction = 0.5f;
 
+    // 加速
     float acceleration = 1.0f;
+    // speed最大値
     float maxMoveSpeed = 5.0f;
+    // 移動方向Xと速度
     float moveVecX = 0.0f;
+    // 移動方向Yと速度
     float moveVecZ = 0.0f;
 
+    // 空中での移動速度減少
     float airControl = 0.3f;
 
 
-
+    // 腰
     float stepOffset = 1.0f;
-
+    // 傾斜率
     float slopeRate = 1.0f;
 
     // アニメーションの時間

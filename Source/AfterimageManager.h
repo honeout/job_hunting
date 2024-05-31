@@ -4,14 +4,14 @@
 #include "Afterimage.h"
 #include <set>
 
-// エネミーマネージャー
+// 残像_マネージャー
 class AfterimageManager
 {
 private:
     AfterimageManager() {}
     ~AfterimageManager() {}
 
-    //// エネミー同士の衝突処理
+    //// 残像_同士の衝突処理
     //void CollisiionEnemyVsEnemies();
 
 public:
@@ -34,24 +34,24 @@ public:
     // 描画処理
     void Render(ID3D11DeviceContext* dc, Shader* shader);
 
-    // エネミー削除
+    // 残像_削除
     void Remove(Afterimage* enemy);
 
     // 管理する為の奴
-    // エネミー登録
+    // 残像_登録
     void Register(Afterimage* enemy);
 
     void DrawDebugGUI();
 
-    // エネミー全削除
+    // 残像_全削除
     void Clear();
 
     // 何番なのかの確認
     // 最大数値を取り出す
-    // エネミー数取得
+    // 残像_数取得
     int GetAfterimageCount() const { return static_cast<int>(afterimages.size()); }
 
-    // エネミー取得
+    // 残像_取得
     // 引数の番号の場所に入っている物を出す。
     Afterimage* GetAfterimage(int index) { return afterimages.at(index); }
 

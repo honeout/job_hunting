@@ -6,8 +6,6 @@ void Camera::SetLookAt(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& fo
 {
     // 視点、　注視点、上方向からビュー行列を作成
     DirectX::XMVECTOR Eye = {eye.x,eye.y,eye.z};
-    /*DirectX::XMVECTOR Eye = DirectX::XMLoadFloat3(&eye);*/
-    // XMLoadFloat3(&eye);
     DirectX::XMVECTOR Focus = { focus.x,focus.y,focus.z};
     DirectX::XMVECTOR Up = { up.x,up.y,up.z};
     DirectX::XMMATRIX View = DirectX::XMMatrixLookAtLH(Eye, Focus, Up);
@@ -39,7 +37,7 @@ void Camera::SetLookAt(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& fo
 // ハースペクティブ設定
 void Camera::SetPerspedtiveFov(float forY, float aspect, float nearZ, float farZ)
 {
-    // 画書く、画面比率、クリップ距離からプロジェクト行列を作成
+    // 画角、画面比率、クリップ距離からプロジェクト行列を作成
     DirectX::XMMATRIX Projection = DirectX::XMMatrixPerspectiveFovLH(forY, aspect, nearZ, farZ);
     DirectX::XMStoreFloat4x4(&projection, Projection);
     //いつでもview projectionが使えるのが肝

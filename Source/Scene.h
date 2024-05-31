@@ -26,6 +26,8 @@ public:
     // €”õŠ®—¹İ’è
     void SetReady() { ready = true; }
 
+
+
 private:
     bool  ready = false;
 

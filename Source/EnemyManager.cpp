@@ -15,23 +15,16 @@ void EnemyManager::Update(float elapsedTime)
 
    
     // 破棄処理 毎フレームここで一気に消す。
-    // 注意projectilesの範囲for文中でerase()すると不具合が発生してしまうため、
-    //  更新処理が終わった後に破棄リストに積まれたオブジェクトを削除する。
-    for (Enemy* enemy : removes)// 殺しますよリストを殺す
+    for (Enemy* enemy : removes)
     {
-        // std::vectorから要素を削除する場合はイテレーターで削除しなければならない
-        //      イテレーターの為にstd::findを使う              (enemiesの最初から最後まで調べてenemyがあったら)
         std::vector<Enemy*>::iterator it = std::find(enemies.begin(), enemies.end(),
                                                                               enemy);//vectorからenemy探して出す
         if (it != enemies.end())// 見つかったら
         {
-            //erase関数でvector要素を削除、破棄リストのポインタからイテレーターを検索し、関数に渡す
-            enemies.erase(it);// 削除
-            // 管理課から消えただけ
+            enemies.erase(it);
         }
 
         // 消えた訳じゃないので
-        // 敵の破棄処理
         delete enemy;// 入れ物破棄
 
     }
@@ -63,10 +56,7 @@ void EnemyManager::Render(ID3D11DeviceContext* context, Shader* shader)
 
 void EnemyManager::Remove(Enemy* enemy)
 {
-    // vectorとは違うsetは削除これ
-    // 破棄リストに追加 直接enemies要素を消すと不具合が起こるから破棄リストに登録
-    removes.insert(enemy);// 殺すリスト殺す為のリスト
-    // 何故ここで消さないここで消したらfor中にやってしまうから
+    removes.insert(enemy);
 }
 
 
@@ -116,21 +106,7 @@ void EnemyManager::DrawDebugGUI()
         // トランスフォーム
         if (ImGui::CollapsingHeader("Enemy", ImGuiTreeNodeFlags_DefaultOpen))
         {
-            
-          //  ImGui::InputFloat3("Position", &);
-   
-
             ImGui::Button("Add");
-
-            //for (Enemy* enemy : enemies)
-            //{
-            //    enemies.emplace_back(enemy);
-            //}
-
-            
-            
-
-
         }
     }
     ImGui::End();

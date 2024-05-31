@@ -30,9 +30,6 @@ void ProjectileHoming::Update(float elapsedTime)
     {
         float moveSpeed = this->moveSpeed * elapsedTime;
         // 　だからかけ算で向きにこれだけ進だから位置に入れた
-        //position.x += moveSpeed * direction.x;
-        //position.y += moveSpeed * direction.y;
-        //position.z += moveSpeed * direction.z;
         // 伸ばした分だけ＋＝で進
         position.x += direction.x*moveSpeed;
         position.y += direction.y*moveSpeed;

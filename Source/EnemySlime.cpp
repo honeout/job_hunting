@@ -111,11 +111,6 @@ void EnemySlime::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
 
 void EnemySlime::SetRandomTargetPosition()
 {
-    //float xposition = Mathf::RandomRange(0, territoryOrigin.x);
-    //float zposition = Mathf::RandomRange(0, territoryOrigin.z);
-    //targetPosition.x = xposition;
-    //targetPosition.y = 0;
-    //targetPosition.z = zposition;
 
     float theta = Mathf::RandomRange(-DirectX::XM_PI, DirectX::XM_PI);
     float range = Mathf::RandomRange(0.0f, territoryRange);
@@ -159,8 +154,6 @@ void EnemySlime::UpdateWanderState(float elapsedTime)
     float distSq = vx * vx + vz * vz;
     if (distSq < radius * radius)
     {
-        // 次の目標地点設定
-        //SetRandomTargetPosition();
 
         //// 待機ステートへ
         TransitionIdleState();

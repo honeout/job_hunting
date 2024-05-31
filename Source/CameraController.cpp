@@ -28,9 +28,6 @@ void CameraController::Update(float elasedTime)
     // 注視点から後ろベクトル方向に一定距離れたカメラ視点を求める
     DirectX::XMFLOAT3 eye;
 
-    //eye.x = target.x- front.x;
-    //eye.y = target.y-front.y;
-    //eye.z = target.z-front.z  ;
     // 向きに長さで矢印を伸ばせる、
     // 矢印を出して　伸ばす
     eye.x = target.x - front.x * range ;
@@ -43,17 +40,6 @@ void CameraController::Update(float elasedTime)
     // カメラの視点と注視点を設定
     Camera::Instance().SetLookAt(eye, target, DirectX::XMFLOAT3(0, 1, 0));
     // X 軸のカメラ回転を制限
-    // ダメ
-    //if (angle.x < maxAngleX)
-    //{
-    //    angle.x += maxAngleX*2;
-    //}
-
-
-    //if (angle.x > minAngleX)
-    //{
-    //    angle.x -= minAngleX * 2;
-    //}
 
     if (angle.x < minAngleX)
     {
@@ -101,8 +87,6 @@ void CameraController::DrawDebugGUI()
             angle.x = DirectX::XMConvertToRadians(a.x);
             angle.y = DirectX::XMConvertToRadians(a.y);
             angle.z = DirectX::XMConvertToRadians(a.z);
-            //// スケール
-            //ImGui::InputFloat3("EYE", &eye.x);
 
         }
     }

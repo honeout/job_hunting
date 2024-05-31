@@ -9,15 +9,6 @@
 #include "ProjectileHoming.h"
 #include "Graphics/Model.h"
 
-//static PlayerAfterimage* instance = nullptr;
-//
-//// インスタンス取得
-//PlayerAfterimage& PlayerAfterimage::Instance()
-//{
-//    return *instance;
-//}
-//
-
 
 // コンストラクタ
 PlayerAfterimage::PlayerAfterimage()
@@ -153,18 +144,11 @@ bool PlayerAfterimage::InputMove(float elapsedTime)
     // 進行ベクトル取得
     DirectX::XMFLOAT3 moveVec = GetMoveVec();
     // 移動処理
-   /* Move(elapsedTime, moveVec.x, moveVec.z, moveSpeed);*/
     Move(moveVec.x, moveVec.z, moveSpeed);
     // 旋回処理
     Turn(elapsedTime, moveVec.x, moveVec.z, turnSpeed);
+
     // 進行ベクトルがゼロベクトルでない場合は入力された
-    //return moveVec.x ? true:false;
-
-    //if (moveVec.x || moveVec.z)
-    //    return true;
-
-    //return false;
-    // あってたらtrueに間違ってたらfalseになる。
     return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
 }
 
@@ -188,6 +172,7 @@ DirectX::XMFLOAT3 PlayerAfterimage::GetMoveVec() const
     float cameraRightZ = cameraRight.z;
     // y成分を取らずに　矢印の長さを取得
     float cameraRightLength = sqrtf(cameraRightX * cameraRightX + cameraRightZ * cameraRightZ);
+
     // 何故Y方向を消してるか　右方向が斜めでも真っ直ぐ進んでほしいYを０
     //　にする少し距離が変わるだから単位ベクトルにする１．０に
     if (cameraRightLength > 0.0f)
@@ -197,9 +182,6 @@ DirectX::XMFLOAT3 PlayerAfterimage::GetMoveVec() const
         cameraRightX = cameraRightX / cameraRightLength;
         cameraRightZ = cameraRightZ / cameraRightLength;
 
-        /*        if (cameraRightLength > DirectX::XM_PI)cameraRightLength -= DirectX::XM_PI * 2;
-                if (cameraRightLength < -DirectX::XM_PI)cameraRightLength += DirectX::XM_PI * 2;
-          */
     }
 
     // カメラ前方向ベクトルをXZ単位ベクトルに変換
@@ -209,31 +191,20 @@ DirectX::XMFLOAT3 PlayerAfterimage::GetMoveVec() const
     if (cameraFrontLength > 0.0f)
     {
         // 単位ベクトル化
-
         cameraFrontX = cameraFrontX / cameraFrontLength;
         cameraFrontZ = cameraFrontZ / cameraFrontLength;
 
-
-
-
-        /*        while (cameraFrontLength > DirectX::XM_PI)cameraFrontLength -= DirectX::XM_PI * 2;
-                while (cameraFrontLength < -DirectX::XM_PI)cameraFrontLength += DirectX::XM_PI * 2;
-            */
     }
 
     // スティックの水平入力値をカメラ右方向に反映し、
     // スティックの垂直入力値をカメラ前方向に反映し、
     // 進行ベクトルを計算する
     DirectX::XMFLOAT3 vec;// 移動方向進むべき方向進行ベクトル
-    // ax,ayスティックの具合　cameraRightX（カメラ）
-    // (cameraRightX* ax) + (cameraFrontX * ay)これは上の進方向を真っ直ぐにする奴
-    // 
     vec.x = (cameraRightX * ax) + (cameraFrontX * ay);// 右方向
     vec.z = (cameraRightZ * ax) + (cameraFrontZ * ay);// ますっぐ
     // Y軸方向には移動しない
     vec.y = 0.0f;
     return vec;
-
 }
 
 // 描画処理
@@ -342,18 +313,6 @@ void PlayerAfterimage::CollisionPlayerVsEnemies()
 
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
-        //if (Collision::IntersectSpherVsSphere(
-        //    position, radius,
-        //    enemy->GetPosition(),
-        //    enemy->GetRadius(),
-        //    outPositon
-        //))
-        //{
-        //// 押し出し後の位置設定
-        //enemy->SetPosition(outPositon);
-
-        //}
-
 
 
 
@@ -365,12 +324,6 @@ void PlayerAfterimage::CollisionPlayerVsEnemies()
             outPositon))
 
         {
-
-            //{
-            //    // 押し出し後の位置設定
-            //    enemy->SetPosition(outPositon);
-
-            //}
 
 
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
@@ -396,23 +349,9 @@ void PlayerAfterimage::CollisionPlayerVsEnemies()
             }
 
         }
-        // 
-        //// 衝突処理円柱
-        //if (Collision::IntersectCylinderVsCylinder((
-
-        //    ))
-        //{
-        //    enemy->SetPosition(outPositon);
-        //}
-
-
-
 
 
     }
-
-
-
 
 }
 
@@ -578,30 +517,6 @@ void PlayerAfterimage::OnDamaged()
     TransitionDamageState();
 }
 
-//DirectX::XMFLOAT3 Player::GetMoveVec() const
-//{
-//    // 入力値を取得
-//    GamePad& gamePad = Input::Instance().GetGamePad();
-//    float ax = gamePad.GetAxisLX();// 左スティック
-//    float ay = gamePad.GetAxisLY();
-//
-//    // カメラ方向とスティックの入力値によって進行方向を計算する
-//    Camera& camera = Camera::Instance();
-//    const DirectX::XMFLOAT3& cameraRight = camera.GetRight();
-//    const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
-//
-//    // 移動ベクトルはXZ平面に水平なベクトルになるようにする
-//
-//    // カメラ右方向ベクトルをXZ単位ベクトルに変換
-//    float cameraRightX = cameraRight.x;
-//    float cameraRightZ = cameraRight.z;
-//    float cameraRightLenghth = cameraRightX+ cameraRightZ;
-//    if (cameraRightLenghth > 0.0f)
-//    {
-//        //距離化　正規化
-//    }
-
-//}
 bool PlayerAfterimage::InputJump()
 {
     // ボタンで入力でジャンプ（ジャンプ回数制限つき）
@@ -637,8 +552,6 @@ bool PlayerAfterimage::InputProjectile()
         dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
         dir.y = 0;
         dir.z = cosf(angle.y);
-        //.31等デモいいこれをそれぞれ１２３入れる　こういう風
-        // ノルマらいず
         //sinf0度０　cosf0は１度
         //９０sin1,cos0返ってくる横
         //４５sin0.5,cos0.5斜め
@@ -653,8 +566,6 @@ bool PlayerAfterimage::InputProjectile()
         // 発射　ストレート弾丸を用意
         ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
         projectile->Lanch(dir, pos);
-        // 弾丸クラスで時間経過自害出来たのでいらない
-        //projectileManager.Register(projectile);
         return true;
     }
 
@@ -666,8 +577,6 @@ bool PlayerAfterimage::InputProjectile()
         dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
         dir.y = 0;
         dir.z = cosf(angle.y);
-        //.31等デモいいこれをそれぞれ１２３入れる　こういう風
-        // ノルマらいず
         //sinf0度０　cosf0は１度
         //９０sin1,cos0返ってくる横
         //４５sin0.5,cos0.5斜め
@@ -903,7 +812,7 @@ void PlayerAfterimage::UpdateAttackState(float elapsedTime)
             TransitionMoveState();
             break;
         }
-        //TransitionIdleState();
+   
 
     }
 

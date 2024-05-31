@@ -19,17 +19,12 @@ void ProjectileManager::Update(float elapsedTime)
     }
 
     // 破棄処理 毎フレームここで一気に消す。
-    // 注意projectilesの範囲for文中でerase()すると不具合が発生してしまうため、
-    //  更新処理が終わった後に破棄リストに積まれたオブジェクトを削除する。
     for (Projectile* projectile : removes)// 殺しますよリストを殺す
     {
-        // std::vectorから要素を削除する場合はイテレーターで削除しなければならない
-        //      イテレーターの為にstd::findを使う              (projectilesの最初から最後まで調べてprojectileがあったら)
         std::vector<Projectile*>::iterator it = std::find(projectiles.begin(), projectiles.end(),
                                                                                   projectile);
         if (it != projectiles.end())
         {
-            //erase関数でvector要素を削除、破棄リストのポインタからイテレーターを検索し、関数に渡す
             projectiles.erase(it);// 削除
         }
 
@@ -81,7 +76,5 @@ void ProjectileManager::Clear()
 // 弾丸削除 マネージャーのこの弾丸消して下さい
 void ProjectileManager::Remove(Projectile* projectile)
 {
-    // 破棄リストに追加 直接projectiles要素を消すと不具合が起こるから破棄リストに登録
     removes.insert(projectile);// 殺すリスト殺す為のリスト
-    // 何故ここで消さないここで消したらfor中にやってしまうから
 }

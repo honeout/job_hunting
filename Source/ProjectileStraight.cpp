@@ -2,21 +2,14 @@
 #include "Collision.h"
 #include "StageManager.h"
 // コンストラクタ
-// マネージャーのアドレスを基底に渡さないとProjectile(manager)これで行ける
-// しないとエラー
 ProjectileStraight::ProjectileStraight(ProjectileManager* manager)
                     :Projectile(manager)
 {
-    //model = new Model("Data/Model/SpikeBall/SpikeBall.mdl");
     model = new Model("Data/Model/Sword/Sword.mdl");
 
     // 表示サイズを調整
-    //scale.x = scale.y = scale.z = 0.5f;// なんとなく合うように
     scale.x = scale.y = scale.z = 3.0f;
 }
-//ProjectileStraight::ProjectileStraight(ProjectileManager* manager)
-//{
-//}
 // デストラクタ
 ProjectileStraight::~ProjectileStraight()
 {
