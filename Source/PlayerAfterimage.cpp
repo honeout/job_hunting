@@ -29,7 +29,8 @@ PlayerAfterimage::PlayerAfterimage()
     //hitEffect = new Effect("Data/Effect/sunder.efk");
     //desEffect = new Effect("Data/Effect/F.efk");
 
-    timeremove = 0.5f;
+    //timeremove = 0.5f;
+
 
     // 移動ステートへ遷移
     TransitionMoveState();
@@ -53,7 +54,9 @@ PlayerAfterimage::~PlayerAfterimage()
 // elapsedTime(経過時間)
 void PlayerAfterimage::Update(float elapsedTime)
 {
-    timeremove -= elapsedTime;
+    //timeremove -= elapsedTime;
+    survivaltime -=  elapsedTime;
+
     //// アニメーション選択
     //switch (state)
     //{
@@ -84,7 +87,7 @@ void PlayerAfterimage::Update(float elapsedTime)
     //model->UpdateAnimation(elapsedTime);
 
     // 時間たったら消す。
-    if (timeremove <= 0)
+    if (survivaltime <= 0)
         Destroy();
 
     // モデル行列更新

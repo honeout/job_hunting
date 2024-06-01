@@ -179,10 +179,20 @@ void SceneGame::Render()
 		player->Render(dc, shader);
 
 		// 残像描画
-		AfterimageManager::Instance().Render(dc, shader);
+		//AfterimageManager::Instance().Render(dc, shader);
 
 		// エネミー描画
 		EnemyManager::Instance().Render(dc, shader);
+
+		shader->End(dc);
+
+
+		shader = graphics.GetShaderAfterimage();
+		rc.alpha = afterImageAlpha;
+		shader->Begin(dc, rc);// シェーダーにカメラの情報を渡す
+		// 残像描画
+		AfterimageManager::Instance().Render(dc, shader);
+
 
 		shader->End(dc);
 	}
@@ -381,12 +391,13 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 
 void SceneGame::AfterimageTime(float elapsedTime)
 {
-	// 動いていたら残像を出す
+	afterImageAlpha -=  elapsedTime;
+	// 動いていたら残像が出る。
 	if (player->GetAfterimageMove())
 	{
 		elapsedFrame -= elapsedTime;
-
-
+		
+		
 
 
 	}
@@ -404,20 +415,38 @@ void SceneGame::AfterimageTime(float elapsedTime)
 		playerAfterimage->SetPosition({ player->GetPosition() });
 		playerAfterimage->SetAngle(player->GetAngle());
 		playerAfterimage->SetTransform(player->GetTransform());
-		AfterimageManager::Instance().Register(playerAfterimage);
 		// 動かして
 		playerAfterimage->GetModel()->UpdateTransform(player->GetTransform(),
 			player->GetModel()->GetNodes());
 
-		//playerAfterimage->GetModel()->UpdateTransform(player->GetTransform());
+		// 残像の出る間隔再設定
+		elapsedFrame = spawnafterimagetimemax;
 
-		// 残業ステートアニメーションの時間
+		// 透明度 最大値を再設定
+		afterImageAlpha = afterImageAlphaMax;
+		
+		// 生存時間セット
+		playerAfterimage->SetSurvivalTime(afterImageAlpha);
+
+		// 消えるまでの時間再設定
+		reduce = reduceMax;
+
+		// 消えるまでの時間セット
+		playerAfterimage->SetReduce(reduce);
+
+		// 登録
+		AfterimageManager::Instance().Register(playerAfterimage);
+
+		// 残業ステートアニメーションの時間 姿勢
 		AfterimageManager::Instance().GetAfterimage(
 			AfterimageManager::Instance().GetAfterimageCount() - 1
 		)->SetCurrentAnimationSeconds(
 			player->GetCurrentANimationSeconds());
+		//playerAfterimage->GetModel()->UpdateTransform(player->GetTransform());
 
-		elapsedFrame = spawnafterimagetimemax;
+
+
+		
 
 	}
 }

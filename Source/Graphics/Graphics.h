@@ -37,6 +37,7 @@ public:
 
 	// シェーダー取得
 	Shader* GetShader() const { return shader.get(); }
+	Shader* GetShaderAfterimage() const { return shaderAfterimage.get(); }
 
 	// スクリーン幅取得
 	float GetScreenWidth() const { return screenWidth; }
@@ -66,6 +67,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depthStencilView;
 
 	std::unique_ptr<Shader>							shader;
+	std::unique_ptr<Shader>							shaderAfterimage;
 	std::unique_ptr<DebugRenderer>					debugRenderer;
 	std::unique_ptr<LineRenderer>					lineRenderer;
 	std::unique_ptr<ImGuiRenderer>					imguiRenderer;

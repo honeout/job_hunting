@@ -195,6 +195,9 @@
     <ClInclude Include="Source\Afterimage.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\AfterImageShader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -341,6 +344,9 @@
     <ClCompile Include="Source\Afterimage.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\AfterImageShader.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Debug.hlsli">
@@ -356,6 +362,15 @@
       <Filter>HLSL</Filter>
     </None>
     <None Include="HLSL\Sprite.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\AfterImageShader.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\ShadowmapCaster.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\ShadowmapFunctions.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -388,6 +403,15 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\SpritePS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\AfterImageShaderPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\AfterImageShaderVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\ShadowmapCasterVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

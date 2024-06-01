@@ -61,6 +61,12 @@ public:
     // 行列の姿勢をセット
     void SetTransform(DirectX::XMFLOAT4X4 transform) { this->transform = transform; }
 
+    // 生存時間のセット
+    void SetSurvivalTime(float survivaltime) {this->survivaltime = survivaltime;}
+
+    // 減らす時間　生存時間じ
+    void SetReduce(float reduce) {this->reduce = reduce;}
+
 protected:
     // 移動処理
     void Move(float vx, float vz, float speed);
@@ -151,5 +157,9 @@ protected:// 継承先でも使える
     // アニメーションの時間
     float currentANimationSeconds = 0.0f;
 
+    // 生存時間
+    float survivaltime = 0.0f;
 
+    // 減らす秒数　生存時間時
+    float reduce = 0;
 };

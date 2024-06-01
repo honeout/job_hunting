@@ -58,6 +58,7 @@ public:
 
     // デバッグ用GUI描画
     void DrawDebugGUI();
+
 protected:
     // 着地した時に呼ばれる
     void OnLanding() override;
@@ -204,5 +205,5 @@ private:
 
     bool blend = false;
 
-    
+
 };

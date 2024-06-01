@@ -46,9 +46,19 @@ private:
 
 	AfterimageManager* afterimageManager;
 
-	float spawnafterimagetimemax = 0.3f;
+	// 残像出す間隔最大値
+	float spawnafterimagetimemax = 0.6f;
 
+	// 残像出す間隔
 	float elapsedFrame = spawnafterimagetimemax;
 
+	// 残像透明度最大値
+	float afterImageAlphaMax = 0.6f;
+	// 残像透明度
+	float afterImageAlpha = afterImageAlphaMax;
 
+	// 残像消えるまで最大値
+	float reduceMax = 0.4f;
+	// 残像消えるまで
+	float reduce = reduceMax;
 };

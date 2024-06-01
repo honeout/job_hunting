@@ -1,5 +1,6 @@
 #include "Misc.h"
 #include "Graphics/LambertShader.h"
+#include "Graphics\AfterImageShader.h"
 #include "Graphics/Graphics.h"
 
 Graphics* Graphics::instance = nullptr;
@@ -131,6 +132,7 @@ Graphics::Graphics(HWND hWnd)
 	// シェーダー
 	{
 		shader = std::make_unique<LambertShader>(device.Get());
+		shaderAfterimage = std::make_unique<AfterImageShader>(device.Get());
 	}
 
 	// レンダラ
