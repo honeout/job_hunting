@@ -4,15 +4,15 @@
 #include <wrl.h>
 #include "Graphics/Shader.h"
 
-class AfterImageShader : public Shader
+class AfterImageShader : public ModelShader
 {
 public:
 	AfterImageShader(ID3D11Device* device);
 	~AfterImageShader() override {}
 
-	void Begin(ID3D11DeviceContext* dc, const RenderContext& rc) override;
-	void Draw(ID3D11DeviceContext* dc, const Model* model) override;
-	void End(ID3D11DeviceContext* dc) override;
+	void Begin( const RenderContext& rc) override;
+	void Draw(const RenderContext& rc, const Model* model) override;
+	void End(const RenderContext& rc) override;
 
 	void SetAlpha(float alpha) { this->alpha = alpha; }
 private:

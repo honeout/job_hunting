@@ -32,7 +32,7 @@ public:
     void DrawDebugPrimitive();
 
     // •`‰æˆ—
-    void Render(ID3D11DeviceContext* dc, Shader* shader);
+    void Render(RenderContext& context, ModelShader* shade);
 
     // c‘œ_íœ
     void Remove(Afterimage* enemy);

@@ -47,7 +47,7 @@ public:
 
 
     // •`‰æˆ—
-    void Render(ID3D11DeviceContext* dc, Shader* shader) override;
+    void Render(RenderContext& rc, ModelShader* shade) override;
 
 
     // ’eŠÛ‚Æ“G‚ÌÕ“Ëˆ—

@@ -167,6 +167,8 @@ void SceneGame::Render()
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
+	// モデルそれぞれでシェーダーをするために
+	/*rc.deviceContext = dc;*/
 
 	// 3Dモデル描画
 	{
@@ -186,15 +188,17 @@ void SceneGame::Render()
 
 		shader->End(dc);
 
+		
 
-		shader = graphics.GetShaderAfterimage();
-		rc.alpha = afterImageAlpha;
-		shader->Begin(dc, rc);// シェーダーにカメラの情報を渡す
-		// 残像描画
-		AfterimageManager::Instance().Render(dc, shader);
+		//ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
+		//
+		//mdlshader->Begin(rc);// シェーダーにカメラの情報を渡す
+		//// 残像描画
+	 //   AfterimageManager::Instance().Render(rc, mdlshader);
 
+		////mdlshader->Draw(rc, );
 
-		shader->End(dc);
+		//mdlshader->End(rc);
 	}
 
 	// 3Dエフェクト描画

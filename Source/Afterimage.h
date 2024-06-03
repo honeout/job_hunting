@@ -14,7 +14,7 @@ public:
     virtual void Update(float elapsedTime) = 0;
 
     // •`‰æˆ—@
-    virtual void Render(ID3D11DeviceContext* dc, Shader* shader) = 0;
+    virtual void Render(RenderContext& context, ModelShader* shade) = 0;
 
     // ”jŠü
     void Destroy();

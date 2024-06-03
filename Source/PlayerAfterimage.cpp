@@ -29,7 +29,7 @@ PlayerAfterimage::PlayerAfterimage()
     //hitEffect = new Effect("Data/Effect/sunder.efk");
     //desEffect = new Effect("Data/Effect/F.efk");
 
-    //timeremove = 0.5f;
+    timeremove = 0.5f;
 
 
     // 移動ステートへ遷移
@@ -54,8 +54,8 @@ PlayerAfterimage::~PlayerAfterimage()
 // elapsedTime(経過時間)
 void PlayerAfterimage::Update(float elapsedTime)
 {
-    //timeremove -= elapsedTime;
-    survivaltime -=  elapsedTime;
+    timeremove -= elapsedTime;
+    //survivaltime -=  elapsedTime;
 
     //// アニメーション選択
     //switch (state)
@@ -87,7 +87,7 @@ void PlayerAfterimage::Update(float elapsedTime)
     //model->UpdateAnimation(elapsedTime);
 
     // 時間たったら消す。
-    if (survivaltime <= 0)
+    if (timeremove <= 0)
         Destroy();
 
     // モデル行列更新
@@ -212,12 +212,13 @@ DirectX::XMFLOAT3 PlayerAfterimage::GetMoveVec() const
 }
 
 // 描画処理
-void PlayerAfterimage::Render(ID3D11DeviceContext* dc, Shader* shader)
+void PlayerAfterimage::Render(RenderContext& rc, ModelShader* shader)
 {
+    rc.alpha = timeremove;
     // 描画
-    shader->Draw(dc, model);
+    shader->Draw(rc, model);
     // 弾丸描画処理
-    projectileManager.Render(dc, shader);
+    //projectileManager.Render(rc, shader);
 }
 
 

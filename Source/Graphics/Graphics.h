@@ -10,6 +10,35 @@
 
 #include <mutex>
 
+enum class ModelShaderId
+{
+	Default,
+	Phong,
+	Toon,
+	ShadowmapCaster,
+	Lanbert,
+	AfterImage,
+	Max
+};
+
+
+enum class SpriteShaderId
+{
+	Default,
+	//UNIT01
+	UVScroll,
+	GaussianBlur,
+	Mask,
+	//UNIT07
+	ColorGrading,
+	// UNIT09
+	LuminanceExtraction,
+	Finalpass,
+	Skybox,
+
+	Max
+};
+
 // グラフィックス
 class Graphics
 {
@@ -35,9 +64,22 @@ public:
 	// デプスステンシルビュー取得
 	ID3D11DepthStencilView* GetDepthStencilView() const { return depthStencilView.Get(); }
 
+
+	// モデルシェーダー取得
+	ModelShader* GetShader(ModelShaderId id) const { return modelShaders[static_cast<int>(id)].get(); }
+
+	// スプライトシェーダー取得
+	SpriteShader* GetShader(SpriteShaderId id) const { return spriteShaders[static_cast<int>(id)].get(); }
+
+
 	// シェーダー取得
 	Shader* GetShader() const { return shader.get(); }
 	Shader* GetShaderAfterimage() const { return shaderAfterimage.get(); }
+
+	//// モデルシェーダー取得
+	//ModelShader* GetShaderm(ModelShaderId id) const { return modelShaders[static_cast<int>(id)].get(); }
+
+
 
 	// スクリーン幅取得
 	float GetScreenWidth() const { return screenWidth; }
@@ -68,6 +110,9 @@ private:
 
 	std::unique_ptr<Shader>							shader;
 	std::unique_ptr<Shader>							shaderAfterimage;
+	std::unique_ptr<ModelShader>					modelShaders[static_cast<int>(ModelShaderId::Max)];
+	std::unique_ptr<SpriteShader>					spriteShaders[static_cast<int>(SpriteShaderId::Max)];
+
 	std::unique_ptr<DebugRenderer>					debugRenderer;
 	std::unique_ptr<LineRenderer>					lineRenderer;
 	std::unique_ptr<ImGuiRenderer>					imguiRenderer;

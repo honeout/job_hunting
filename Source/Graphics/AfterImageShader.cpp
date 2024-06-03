@@ -170,11 +170,11 @@ AfterImageShader::AfterImageShader(ID3D11Device* device)
 }
 
 // 描画開始
-void AfterImageShader::Begin(ID3D11DeviceContext* dc, const RenderContext& rc)
+void AfterImageShader::Begin(const RenderContext& rc)
 {
-	dc->VSSetShader(vertexShader.Get(), nullptr, 0);
-	dc->PSSetShader(pixelShader.Get(), nullptr, 0);
-	dc->IASetInputLayout(inputLayout.Get());
+	rc.deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0);
+	rc.deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0);
+	rc.deviceContext->IASetInputLayout(inputLayout.Get());
 
 	ID3D11Buffer* constantBuffers[] =
 	{
@@ -183,14 +183,14 @@ void AfterImageShader::Begin(ID3D11DeviceContext* dc, const RenderContext& rc)
 		subsetConstantBuffer.Get(),
 		alphasetConstantBuffer.Get(),
 	};
-	dc->VSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
-	dc->PSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
+	rc.deviceContext->VSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
+	rc.deviceContext->PSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
 
 	const float blend_factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	dc->OMSetBlendState(blendState.Get(), blend_factor, 0xFFFFFFFF);
-	dc->OMSetDepthStencilState(depthStencilState.Get(), 0);
-	dc->RSSetState(rasterizerState.Get());
-	dc->PSSetSamplers(0, 1, samplerState.GetAddressOf());
+	rc.deviceContext->OMSetBlendState(blendState.Get(), blend_factor, 0xFFFFFFFF);
+	rc.deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
+	rc.deviceContext->RSSetState(rasterizerState.Get());
+	rc.deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
 
 	// シーン用定数バッファ更新
 	CbScene cbScene;
@@ -200,15 +200,15 @@ void AfterImageShader::Begin(ID3D11DeviceContext* dc, const RenderContext& rc)
 	DirectX::XMStoreFloat4x4(&cbScene.viewProjection, V * P);
 
 	cbScene.lightDirection = rc.lightDirection;
-	dc->UpdateSubresource(sceneConstantBuffer.Get(), 0, 0, &cbScene, 0, 0);
+	rc.deviceContext->UpdateSubresource(sceneConstantBuffer.Get(), 0, 0, &cbScene, 0, 0);
 
 	CbAlphaset cbAlphaset;
 	cbAlphaset.changeAlpha = rc.alpha;
-	dc->UpdateSubresource(alphasetConstantBuffer.Get(), 0, 0, &cbAlphaset, 0, 0);
+	rc.deviceContext->UpdateSubresource(alphasetConstantBuffer.Get(), 0, 0, &cbAlphaset, 0, 0);
 }
 
 // 描画
-void AfterImageShader::Draw(ID3D11DeviceContext* dc, const Model* model)
+void AfterImageShader::Draw(const RenderContext& rc, const Model* model)
 {
 	const ModelResource* resource = model->GetResource();
 	const std::vector<Model::Node>& nodes = model->GetNodes();
@@ -232,35 +232,35 @@ void AfterImageShader::Draw(ID3D11DeviceContext* dc, const Model* model)
 		{
 			cbMesh.boneTransforms[0] = nodes.at(mesh.nodeIndex).worldTransform;
 		}
-		dc->UpdateSubresource(meshConstantBuffer.Get(), 0, 0, &cbMesh, 0, 0);
+		rc.deviceContext->UpdateSubresource(meshConstantBuffer.Get(), 0, 0, &cbMesh, 0, 0);
 
 		UINT stride = sizeof(ModelResource::Vertex);
 		UINT offset = 0;
-		dc->IASetVertexBuffers(0, 1, mesh.vertexBuffer.GetAddressOf(), &stride, &offset);
-		dc->IASetIndexBuffer(mesh.indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		rc.deviceContext->IASetVertexBuffers(0, 1, mesh.vertexBuffer.GetAddressOf(), &stride, &offset);
+		rc.deviceContext->IASetIndexBuffer(mesh.indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		rc.deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		for (const ModelResource::Subset& subset : mesh.subsets)
 		{
 			CbSubset cbSubset;
 			cbSubset.materialColor = subset.material->color;
-			dc->UpdateSubresource(subsetConstantBuffer.Get(), 0, 0, &cbSubset, 0, 0);
+			rc.deviceContext->UpdateSubresource(subsetConstantBuffer.Get(), 0, 0, &cbSubset, 0, 0);
 
 			//CbAlphaset cbAlphaset;
 			//cbAlphaset.changeAlpha = alpha;
 			//dc->UpdateSubresource(alphasetConstantBuffer.Get(), 0, 0, &cbAlphaset, 0, 0);
-			dc->PSSetShaderResources(0, 1, subset.material->shaderResourceView.GetAddressOf());
-			dc->PSSetSamplers(0, 1, samplerState.GetAddressOf());
-			dc->DrawIndexed(subset.indexCount, subset.startIndex, 0);
+			 rc.deviceContext->PSSetShaderResources(0, 1, subset.material->shaderResourceView.GetAddressOf());
+			 rc.deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
+			 rc.deviceContext->DrawIndexed(subset.indexCount, subset.startIndex, 0);
 		}
 	}
 
 }
 
 // 描画終了
-void AfterImageShader::End(ID3D11DeviceContext* dc)
+void AfterImageShader::End(const RenderContext& rc)
 {
-	dc->VSSetShader(nullptr, nullptr, 0);
-	dc->PSSetShader(nullptr, nullptr, 0);
-	dc->IASetInputLayout(nullptr);
+	 rc.deviceContext->VSSetShader(nullptr, nullptr, 0);
+	 rc.deviceContext->PSSetShader(nullptr, nullptr, 0);
+	 rc.deviceContext->IASetInputLayout(nullptr);
 }

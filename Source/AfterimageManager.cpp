@@ -52,7 +52,7 @@ void AfterimageManager::DrawDebugPrimitive()
 
 
 // •`‰æˆ—
-void AfterimageManager::Render(ID3D11DeviceContext* context, Shader* shader)
+void AfterimageManager::Render(RenderContext& context, ModelShader* shader)
 {
     for (Afterimage* after : afterimages)
     {
