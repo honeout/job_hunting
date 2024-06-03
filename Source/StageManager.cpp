@@ -8,11 +8,11 @@ void StageManager::Update(float elapsedTime)
     }
 }
 
-void StageManager::Render(ID3D11DeviceContext* dc, Shader* shader)
+void StageManager::Render(const RenderContext& rc, ModelShader* shader)
 {
     for (Stage* stage : stages)
     {
-        stage->Render(dc,shader);
+        stage->Render( rc,shader);
     }
 }
 

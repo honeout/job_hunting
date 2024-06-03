@@ -61,12 +61,12 @@ void StageMoveFloor::Update(float elapsedTime)
     model->UpdateTransform(transformIdentity);
 }
 
-void StageMoveFloor::Render(ID3D11DeviceContext* dc, Shader* shader)
+void StageMoveFloor::Render(const RenderContext& rc ,ModelShader* shader)
 {
     // 表示用のためワールド行列に更新する
     model->UpdateTransform(transform);
 
-    shader->Draw(dc, model);
+    shader->Draw(rc, model);
 }
 
 bool StageMoveFloor::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end,

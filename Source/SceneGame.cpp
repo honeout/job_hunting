@@ -168,37 +168,39 @@ void SceneGame::Render()
 	rc.projection = camera.GetProjection();
 
 	// モデルそれぞれでシェーダーをするために
-	/*rc.deviceContext = dc;*/
+	rc.deviceContext = dc;
 
 	// 3Dモデル描画
 	{
-		Shader* shader = graphics.GetShader();
+		ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 		// シェーダーに必要な情報を書く
-		shader->Begin(dc, rc);// シェーダーにカメラの情報を渡す
+		shader->Begin(rc);// シェーダーにカメラの情報を渡す
 		// ステージ描画
-		StageManager::instance().Render(dc, shader);
+		StageManager::instance().Render(rc, shader);
 	// プレイヤー描画
-		player->Render(dc, shader);
+		player->Render(rc, shader);
 
 		// 残像描画
 		//AfterimageManager::Instance().Render(dc, shader);
 
 		// エネミー描画
-		EnemyManager::Instance().Render(dc, shader);
+		EnemyManager::Instance().Render(rc, shader);
 
-		shader->End(dc);
+		shader->End(rc);
+
 
 		
 
-		//ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
-		//
-		//mdlshader->Begin(rc);// シェーダーにカメラの情報を渡す
-		//// 残像描画
-	 //   AfterimageManager::Instance().Render(rc, mdlshader);
+		ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
+		
+		mdlshader->Begin(rc);// シェーダーにカメラの情報を渡す
 
-		////mdlshader->Draw(rc, );
+		
+		// 残像描画
+	    AfterimageManager::Instance().Render(rc, mdlshader);
 
-		//mdlshader->End(rc);
+
+		mdlshader->End(rc);
 	}
 
 	// 3Dエフェクト描画

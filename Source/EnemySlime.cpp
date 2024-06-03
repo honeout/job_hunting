@@ -74,9 +74,9 @@ void EnemySlime::Update(float elapsedTime)
 }
 
 // 描画処理
-void EnemySlime::Render(ID3D11DeviceContext* dc, Shader* shader)
+void EnemySlime::Render(const RenderContext& rc, ModelShader* shader)
 {
-    shader->Draw(dc, model);
+    shader->Draw(rc, model);
 }
 
 // デバッグプリミティブ描画

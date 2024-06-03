@@ -227,12 +227,12 @@ DirectX::XMFLOAT3 Player::GetMoveVec() const
 }
 
 // •`‰æˆ—
-void Player::Render(ID3D11DeviceContext* dc, Shader* shader)
+void Player::Render(const RenderContext& rc, ModelShader* shader)
 {
     // •`‰æ
-    shader->Draw(dc, model);
+    shader->Draw(rc, model);
     // ’eŠÛ•`‰æˆ—
-    projectileManager.Render(dc, shader);
+    projectileManager.Render(rc, shader);
 }
 
 

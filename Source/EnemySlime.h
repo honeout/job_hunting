@@ -14,7 +14,7 @@ public:
     void Update(float elapsedTime) override;
 
     // 描画処理
-    void Render(ID3D11DeviceContext* dc, Shader* shader) override;
+    void Render(const RenderContext& rc, ModelShader* shader) override;
 
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();

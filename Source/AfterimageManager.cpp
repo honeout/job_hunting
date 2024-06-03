@@ -52,11 +52,11 @@ void AfterimageManager::DrawDebugPrimitive()
 
 
 // •`‰æˆ—
-void AfterimageManager::Render(RenderContext& context, ModelShader* shader)
+void AfterimageManager::Render(RenderContext& rc, ModelShader* shader)
 {
     for (Afterimage* after : afterimages)
     {
-        after->Render(context, shader);
+        after->Render(rc, shader);
     }
 }
 

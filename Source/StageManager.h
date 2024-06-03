@@ -22,7 +22,7 @@ public:
     void Update(float elapsedTime);
 
     // •`‰æˆ—
-    void Render(ID3D11DeviceContext* dc, Shader* shader);
+    void Render(const RenderContext& rc, ModelShader* shader);
 
     // ƒXƒe[ƒW“o˜^
     void Register(Stage* stage);

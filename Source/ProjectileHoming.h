@@ -14,7 +14,7 @@ public:
     virtual void Update(float elapsedTime) override;
 
     // 描画処理
-    virtual void Render(ID3D11DeviceContext* dc, Shader* shader) override;
+    virtual void Render(const RenderContext& rc, ModelShader* shader) override;
 
     // 発射    (  どっちからはっしゃ向き、位置何処から)　targetに向かってホーミングスピード
     void Lanch(const DirectX::XMFLOAT3& direction,

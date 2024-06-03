@@ -16,7 +16,7 @@ public:
     void Update(float elapsedTime) override;
 
     // •`‰æˆ—
-    void Render(ID3D11DeviceContext* dc, Shader* shader)override;
+    void Render(const RenderContext& rc, ModelShader* shader)override;
 
     // ”­Ë    (  ‚Ç‚Á‚¿‚©‚ç‚Í‚Á‚µ‚áŒü‚«AˆÊ’u‰½ˆ‚©‚ç)
     void Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position);

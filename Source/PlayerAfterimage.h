@@ -203,5 +203,7 @@ private:
 
     bool             first = false;
 
-    float            timeremove = 0.5f;
+    float            timeremove = 1.0f;
+
+
 };

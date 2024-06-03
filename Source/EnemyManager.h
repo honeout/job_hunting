@@ -32,7 +32,7 @@ private:
         void DrawDebugPrimitive();
 
         // 描画処理
-        void Render(ID3D11DeviceContext* dc, Shader* shader);
+        void Render(const RenderContext& rc, ModelShader* shader);
 
         // エネミー削除
         void Remove(Enemy* enemy);

@@ -162,4 +162,6 @@ protected:// Œp³æ‚Å‚àg‚¦‚é
 
     // Œ¸‚ç‚·•b”@¶‘¶ŠÔ
     float reduce = 0;
+
+    float alpha = 1;
 };

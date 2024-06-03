@@ -154,6 +154,9 @@ Graphics::Graphics(HWND hWnd)
 
 		modelShaders[static_cast<int>(ModelShaderId::AfterImage)] =
 			std::make_unique<AfterImageShader>(device.Get());
+
+		modelShaders[static_cast<int>(ModelShaderId::Lanbert)] =
+			std::make_unique<LambertShader>(device.Get());
 	}
 
 
@@ -192,7 +195,7 @@ Graphics::Graphics(HWND hWnd)
 
 	// シェーダー
 	{
-		shader = std::make_unique<LambertShader>(device.Get());
+	    //shader = std::make_unique<LambertShader>(device.Get());
 		//shaderAfterimage = std::make_unique<AfterImageShader>(device.Get());
 	}
 

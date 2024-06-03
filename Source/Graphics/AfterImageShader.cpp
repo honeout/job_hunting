@@ -202,9 +202,9 @@ void AfterImageShader::Begin(const RenderContext& rc)
 	cbScene.lightDirection = rc.lightDirection;
 	rc.deviceContext->UpdateSubresource(sceneConstantBuffer.Get(), 0, 0, &cbScene, 0, 0);
 
-	CbAlphaset cbAlphaset;
-	cbAlphaset.changeAlpha = rc.alpha;
-	rc.deviceContext->UpdateSubresource(alphasetConstantBuffer.Get(), 0, 0, &cbAlphaset, 0, 0);
+	//CbAlphaset cbAlphaset;
+	//cbAlphaset.changeAlpha = rc.alpha;
+	//rc.deviceContext->UpdateSubresource(alphasetConstantBuffer.Get(), 0, 0, &cbAlphaset, 0, 0);
 }
 
 // •`‰æ
@@ -253,7 +253,12 @@ void AfterImageShader::Draw(const RenderContext& rc, const Model* model)
 			 rc.deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
 			 rc.deviceContext->DrawIndexed(subset.indexCount, subset.startIndex, 0);
 		}
+
+		CbAlphaset cbAlphaset;
+		cbAlphaset.changeAlpha = rc.alpha;
+		rc.deviceContext->UpdateSubresource(alphasetConstantBuffer.Get(), 0, 0, &cbAlphaset, 0, 0);
 	}
+
 
 }
 

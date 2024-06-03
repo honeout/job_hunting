@@ -37,11 +37,11 @@ void ProjectileManager::Update(float elapsedTime)
 
 }
 
-void ProjectileManager::Render(ID3D11DeviceContext* dc, Shader* shader)
+void ProjectileManager::Render(const RenderContext& rc, ModelShader* shader)
 {
     for (Projectile* projectile : projectiles)
     {
-        projectile->Render(dc, shader);
+        projectile->Render(rc, shader);
     }
 }
 

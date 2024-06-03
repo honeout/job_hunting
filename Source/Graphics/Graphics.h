@@ -74,7 +74,7 @@ public:
 
 	// シェーダー取得
 	Shader* GetShader() const { return shader.get(); }
-	Shader* GetShaderAfterimage() const { return shaderAfterimage.get(); }
+	//Shader* GetShaderAfterimage() const { return shaderAfterimage.get(); }
 
 	//// モデルシェーダー取得
 	//ModelShader* GetShaderm(ModelShaderId id) const { return modelShaders[static_cast<int>(id)].get(); }
@@ -109,7 +109,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depthStencilView;
 
 	std::unique_ptr<Shader>							shader;
-	std::unique_ptr<Shader>							shaderAfterimage;
+	//std::unique_ptr<Shader>							shaderAfterimage;
 	std::unique_ptr<ModelShader>					modelShaders[static_cast<int>(ModelShaderId::Max)];
 	std::unique_ptr<SpriteShader>					spriteShaders[static_cast<int>(SpriteShaderId::Max)];
 

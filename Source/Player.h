@@ -47,7 +47,7 @@ public:
 
 
     // •`‰æˆ—
-    void Render(ID3D11DeviceContext* dc, Shader* shader);
+    void Render(const RenderContext& rc, ModelShader* shader);
 
 
     // ’eŠÛ‚Æ“G‚ÌÕ“Ëˆ—
