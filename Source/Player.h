@@ -6,7 +6,7 @@
 #include "EnemyManager.h"
 #include "Collision.h"
 #include "ProjectileManager.h"
-
+#include "Component.h"
 
 // プレイヤー
 class Player : public Character
@@ -36,8 +36,8 @@ public:
         Anim_Walking
     };
 
-     
-
+    // 開始処理
+    /*void Start() override;*/
 
     // 更新処理
     void Update(float elapsedTime);
@@ -53,11 +53,13 @@ public:
     // 弾丸と敵の衝突処理
     void CollisionProjectilesVsEnemies();
 
-    //// プレイヤーとエネミーとの衝突処理
-    //void CollisionPlayerVsEnemies();
+    // プレイヤーとエネミーとの衝突処理
+    void CollisionPlayerVsEnemies();
 
     // デバッグ用GUI描画
     void DrawDebugGUI();
+
+
 
 protected:
     // 着地した時に呼ばれる
@@ -198,7 +200,7 @@ private:
 
     bool             attackCollisionFlag = false;
 
-    int   healse  = 10;
+    //int   health = 10;
 
     // 歩いている判定
     bool afterimagemove = false;

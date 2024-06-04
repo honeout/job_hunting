@@ -55,6 +55,10 @@ Player::~Player()
 
 
 
+void Player::Start()
+{
+}
+
 // XVˆ—
 // elapsedTime(Œo‰ßŠÔ)
 void Player::Update(float elapsedTime)
