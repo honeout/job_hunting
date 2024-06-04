@@ -88,7 +88,7 @@ void PlayerAfterimage::Update(float elapsedTime)
     //model->UpdateAnimation(elapsedTime);
 
     // ŠÔ‚½‚Á‚½‚çÁ‚·B
-    if (alpha <= 0.3f)
+    if (alpha <= .2f)
         Destroy();
     
 

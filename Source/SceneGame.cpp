@@ -172,6 +172,20 @@ void SceneGame::Render()
 
 	// 3Dモデル描画
 	{
+
+		ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
+
+		mdlshader->Begin(rc);// シェーダーにカメラの情報を渡す
+
+
+		// 残像描画
+		AfterimageManager::Instance().Render(rc, mdlshader);
+
+
+		mdlshader->End(rc);
+
+
+
 		ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 		// シェーダーに必要な情報を書く
 		shader->Begin(rc);// シェーダーにカメラの情報を渡す
@@ -191,16 +205,6 @@ void SceneGame::Render()
 
 		
 
-		ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
-		
-		mdlshader->Begin(rc);// シェーダーにカメラの情報を渡す
-
-		
-		// 残像描画
-	    AfterimageManager::Instance().Render(rc, mdlshader);
-
-
-		mdlshader->End(rc);
 	}
 
 	// 3Dエフェクト描画
