@@ -68,6 +68,10 @@ public:
 	// HP書き込み
 	void   SetHealth(int health) { this->health = health; }
 
+	DirectX::XMFLOAT3 GetVelocity() { return this->velocity; }
+
+	void SetVelocity(DirectX::XMFLOAT3 velocity) { this->velocity = velocity; }
+
 
 	// コンポーネント追加
 	template<class T, class... Args>
@@ -106,7 +110,8 @@ private:
 	 //HP
      int          health = maxHealth;
      
-
+	 // 速度
+	 DirectX::XMFLOAT3  velocity = { 0,0,0 };
 
 	std::unique_ptr<Model>	model;
 

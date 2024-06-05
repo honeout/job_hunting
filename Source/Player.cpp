@@ -54,10 +54,10 @@ Player::~Player()
 
 
 
-
-void Player::Start()
-{
-}
+//
+//void Player::Start()
+//{
+//}
 
 // 更新処理
 // elapsedTime(経過時間)
@@ -506,8 +506,10 @@ void Player::OnLanding()
     // 着地したからリセット
     jumpCount = 0;
 
+
+
     //// 下方向の速力が一定以上なら着地ステートへ  十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
-    if (velocity.y < grabity * 5.0f)
+    if (velocity.y < gravity * 5.0f)
     {
         if (state != State::Damage && state != State::Death)
         {

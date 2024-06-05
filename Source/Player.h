@@ -81,7 +81,7 @@ private:
 
 
     // プレイヤーとエネミーとの衝突処理
-    void CollisionPlayerVsEnemies();
+    //void CollisionPlayerVsEnemies();
 
     // ノードとエネミーの衝突処理
     void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius);
@@ -192,9 +192,11 @@ private:
 
     State                   state = State::Idle;
     State                   stated;
+    
+    float gravity = 1;
 
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
-    int jumpfliptime =  grabity * 5;
+    int jumpfliptime = gravity * 5;
 
     float            leftHandRadius = 0.4f;
 

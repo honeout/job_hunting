@@ -67,6 +67,10 @@ public:
     // Œ¸‚ç‚·ŠÔ@¶‘¶ŠÔ‚¶
     void SetReduce(float reduce) {this->reduce = reduce;}
 
+    DirectX::XMFLOAT3 GetVelocity() { return this->velocity; }
+
+    void SetVelocity(DirectX::XMFLOAT3 velocity) { this->velocity = velocity; }
+
 protected:
     // ˆÚ“®ˆ—
     void Move(float vx, float vz, float speed);
