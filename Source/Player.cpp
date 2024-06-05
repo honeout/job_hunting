@@ -721,7 +721,7 @@ void Player::UpdateIdleState(float elapsedTime)
 
     if (InputAttack())
     {
-        stated = state;
+        //stated = state;
         TransitionAttackState();
     }
 
@@ -772,7 +772,7 @@ void Player::UpdateMoveState(float elapsedTime)
 
     if (InputAttack())
     {
-        stated = state;
+        //stated = state;
         TransitionAttackState();
     }
 
@@ -898,18 +898,19 @@ void Player::TransitionAttackState()
 void Player::UpdateAttackState(float elapsedTime)
 {
     // ‚à‚µI‚í‚Á‚½‚ç‘Ò‹@‚É•ÏX
-    if (!model->IsPlayUpeerBodyAnimation())
+    if (!model->IsPlayUpeerBodyAnimation() || !model->IsPlayAnimation())
     {
         attackCollisionFlag = false;
-        switch (stated)
-        {
-        case Player::State::Idle:
-            TransitionIdleState();
-            break;
-        case Player::State::Move:
-            TransitionMoveState();
-            break;
-        }
+        TransitionIdleState();
+        //switch (stated)
+        //{
+        //case Player::State::Idle:
+        //    TransitionIdleState();
+        //    break;
+        //case Player::State::Move:
+        //    TransitionMoveState();
+        //    break;
+        //}
         //TransitionIdleState();
        
     }
