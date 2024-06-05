@@ -8,6 +8,13 @@
 #include "ProjectileManager.h"
 #include "Component.h"
 
+enum class UpAnim
+{
+    Normal,
+    Doble,
+
+};
+
 // プレイヤー
 class Player : public Character
 {
@@ -209,5 +216,6 @@ private:
 
     bool blend = false;
 
-
+    // アップデート再生上半身下半身別
+    UpAnim  updateanim ;
 };

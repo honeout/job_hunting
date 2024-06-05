@@ -36,6 +36,7 @@ Player::Player()
     hitEffect = new Effect("Data/Effect/sunder.efk");
     desEffect = new Effect("Data/Effect/F.efk");
 
+    updateanim = UpAnim::Normal;
 
     // 待機ステートへ遷移
     TransitionIdleState();
@@ -120,7 +121,29 @@ void Player::Update(float elapsedTime)
     UpdateTransform();
 
     // モデルアニメーション更新処理
-    model->UpdateAnimation(elapsedTime,true);
+  /*  model->UpdateAnimation(elapsedTime, true);*/
+
+    switch (updateanim)
+    {
+    case UpAnim::Normal:
+    {
+        // モデルアニメーション更新処理
+        model->UpdateAnimation(elapsedTime, true);
+        break;
+    }
+    case UpAnim::Doble:
+    {
+        // モデルアニメーション更新処理
+        model->UpdateUpeerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
+        model->UpdateLowerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
+        break;
+    }
+    }
+
+        
+    
+    
+
 
     // モデル行列更新
     model->UpdateTransform(transform);
@@ -675,6 +698,7 @@ void Player::TransitionIdleState()
     // 待機アニメーション再生
     model->PlayAnimation(Anim_Idle, true);
 
+    updateanim = UpAnim::Normal;
     
 }
 
@@ -720,9 +744,12 @@ void Player::TransitionMoveState()
 
     afterimagemove = true;
 
+    updateanim = UpAnim::Doble;
 
     // 走りアニメーション再生
     model->PlayAnimation(Anim_Running, true);
+
+    model->PlayUpeerBodyAnimation(Anim_Running, true);
 
 }
 
@@ -822,6 +849,8 @@ void Player::UpdateLandState(float elapsedTime)
 
 void Player::TransitionJumpFlipState()
 {
+
+
     state = State::JumpFlip;
 
     // 走りアニメーション再生
@@ -850,16 +879,26 @@ void Player::UpdatejumpFlipState(float elapsedTime)
 
 void Player::TransitionAttackState()
 {
-    state = State::Attack;
+    if (updateanim == UpAnim::Doble)
+    {
+        state = State::Attack;
+        updateanim = UpAnim::Doble;
+        model->PlayUpeerBodyAnimation(Anim_Attack, false);
+    }
+    else
+    {
+        state = State::Attack;
 
-    // 走りアニメーション再生
-    model->PlayAnimation(Anim_Attack, false);
+        updateanim = UpAnim::Normal;
+        // 走りアニメーション再生
+        model->PlayAnimation(Anim_Attack, false);
+    }
 }
 
 void Player::UpdateAttackState(float elapsedTime)
 {
     // もし終わったら待機に変更
-    if (!model->IsPlayAnimation())
+    if (!model->IsPlayUpeerBodyAnimation())
     {
         attackCollisionFlag = false;
         switch (stated)
@@ -873,6 +912,10 @@ void Player::UpdateAttackState(float elapsedTime)
         }
         //TransitionIdleState();
        
+    }
+    if (!InputMove(elapsedTime))
+    {
+        updateanim = UpAnim::Normal;
     }
     
     // 任意のアニメーション再生区間でのみ衝突判定処理をする
