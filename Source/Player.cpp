@@ -26,7 +26,8 @@ Player::Player()
     // インスタンスポインタ設定
     instance = this;
 
-    model = new Model("Data/Model/Jammo/Jammo.mdl");
+    //model = new Model("Data/Model/Jammo/Jammo.mdl");
+    model = new Model("Data/Model/AimTest/AimTest.mdl");
 
     // モデルがおおきいのでスケーリング
     // キャラクターも1.1倍
@@ -36,6 +37,7 @@ Player::Player()
     hitEffect = new Effect("Data/Effect/sunder.efk");
     desEffect = new Effect("Data/Effect/F.efk");
 
+    // 上下別アニメーション用
     updateanim = UpAnim::Normal;
 
     // 待機ステートへ遷移
@@ -123,24 +125,24 @@ void Player::Update(float elapsedTime)
     // モデルアニメーション更新処理
   /*  model->UpdateAnimation(elapsedTime, true);*/
 
-    switch (updateanim)
-    {
-    case UpAnim::Normal:
-    {
-        // モデルアニメーション更新処理
-        model->UpdateAnimation(elapsedTime, true);
-        break;
-    }
-    case UpAnim::Doble:
-    {
-        // モデルアニメーション更新処理
-        model->UpdateUpeerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
-        model->UpdateLowerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
-        break;
-    }
-    }
-
-        
+    //switch (updateanim)
+    //{
+    //case UpAnim::Normal:
+    //{
+    //    // モデルアニメーション更新処理
+    //    model->UpdateAnimation(elapsedTime, true);
+    //    break;
+    //}
+    //case UpAnim::Doble:
+    //{
+    //    // モデルアニメーション更新処理
+    //    model->UpdateUpeerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
+    //    model->UpdateLowerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
+    //    break;
+    //}
+    //}
+    //model->Update_blend_animations(0.675f, frontVec.x,1.582f);
+    model->Update_blend_animations(elapsedTime, frontVec.x, true);
     
     
 
@@ -187,7 +189,8 @@ void Player::DrawDebugPrimitive()
 bool Player::InputMove(float elapsedTime)
 {
     // 進行ベクトル取得
-    DirectX::XMFLOAT3 moveVec = GetMoveVec();
+    //DirectX::XMFLOAT3 moveVec = GetMoveVec();
+    moveVec = GetMoveVec();
     // 移動処理
     Move(moveVec.x, moveVec.z, moveSpeed);
     // 旋回処理
@@ -503,6 +506,8 @@ void Player::DrawDebugGUI()
 
             ImGui::InputInt("hp", &health);
 
+            ImGui::SliderFloat("frontVec", &frontVec.x,-0.37f,1.0);
+            //ImGui::SliderFloat("frontVecX", &frontVec.y,0.0f,1.5);
         // 回転
         DirectX::XMFLOAT3 a;
         // XMConvertToDegrees普通の数字を何度にする
@@ -696,7 +701,7 @@ void Player::TransitionIdleState()
     afterimagemove = false;
 
     // 待機アニメーション再生
-    model->PlayAnimation(Anim_Idle, true);
+    model->PlayAnimation(1, true);
 
     updateanim = UpAnim::Normal;
     
@@ -756,12 +761,13 @@ void Player::TransitionMoveState()
 void Player::UpdateMoveState(float elapsedTime)
 {
     // 移動入力処理
-    if (!InputMove(elapsedTime))
-    {
-        
-        TransitionIdleState();
-    }
+    //if (!InputMove(elapsedTime))
+    //{
+    //    
+    //    TransitionIdleState();
+    //}
 
+ 
 
     // ジャンプ入力処理
     if (InputJump())

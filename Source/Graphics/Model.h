@@ -47,6 +47,10 @@ public:
 	// 逆再生
 	void ReverseplaybackAnimation(float elapsedTime, bool blend = false);
 
+	// 二つをブレンド
+	void Update_blend_animations(float elapsedTime, float blendrate, bool blend = false);
+
+
 	//上半身アニメーション更新処理
 	void UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool blend = false);
 
@@ -71,6 +75,7 @@ public:
 	//逆再生アニメーション
 	void PlayReverseAnimation(int index, bool loop, float blendSeconds = 0.2f);
 
+	
 
 	// アニメーション再生中か
 	bool IsPlayAnimation() const;

@@ -218,4 +218,10 @@ private:
 
     // アップデート再生上半身下半身別
     UpAnim  updateanim ;
+
+    DirectX::XMFLOAT3 moveVec;
+
+    DirectX::XMFLOAT3 frontVec = { 0 ,0,0 };
+
+    
 };
