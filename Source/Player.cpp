@@ -142,7 +142,8 @@ void Player::Update(float elapsedTime)
     //}
     //}
     //model->Update_blend_animations(0.675f, frontVec.x,1.582f);
-    model->Update_blend_animations(elapsedTime, frontVec.x, true);
+    //model->Update_blend_animations(elapsedTime, frontVec.x,36,60, true);
+    model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
     
     
 
@@ -507,6 +508,7 @@ void Player::DrawDebugGUI()
             ImGui::InputInt("hp", &health);
 
             ImGui::SliderFloat("frontVec", &frontVec.x,-0.37f,1.0);
+            ImGui::SliderFloat("frontVecY", &frontVec.y,-0.37f,1.0);
             //ImGui::SliderFloat("frontVecX", &frontVec.y,0.0f,1.5);
         // ‰ñ“]
         DirectX::XMFLOAT3 a;

@@ -48,7 +48,7 @@ public:
 	void ReverseplaybackAnimation(float elapsedTime, bool blend = false);
 
 	// 二つをブレンド
-	void Update_blend_animations(float elapsedTime, float blendrate, bool blend = false);
+	void Update_blend_animations(float elapsedTime, float blendrate,float currentAnimationSeconds, float currentAnimationSecondsblend,bool blend = false);
 
 
 	//上半身アニメーション更新処理
