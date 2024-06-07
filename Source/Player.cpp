@@ -40,6 +40,11 @@ Player::Player()
     //// 上下別アニメーション用
     //state = State::Idle;
 
+    // 上半身
+    bornStartPoint = "mixamorig:Spine";
+    // 下半身
+    bornEndPoint = "mixamorig:Spine";
+
     // 待機ステートへ遷移
     TransitionIdleState();
 
@@ -136,8 +141,8 @@ void Player::Update(float elapsedTime)
     case UpAnim::Doble:
     {
         // モデルアニメーション更新処理
-        model->UpdateUpeerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
-        model->UpdateLowerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
+        model->UpdateUpeerBodyAnimation(elapsedTime, bornStartPoint, true);
+        model->UpdateLowerBodyAnimation(elapsedTime, bornEndPoint, true);
         break;
     }
     }
@@ -700,8 +705,6 @@ void Player::TransitionIdleState()
 {
     state = State::Idle;
 
- 
-
     afterimagemove = false;
 
     // 待機アニメーション再生
@@ -754,6 +757,11 @@ void Player::TransitionMoveState()
     afterimagemove = true;
 
     updateanim = UpAnim::Doble;
+
+    // 上半身
+    bornStartPoint = "mixamorig:Spine";
+    // 下半身
+    bornEndPoint = "mixamorig:Spine";
 
     // 走りアニメーション再生
     model->PlayAnimation(Anim_Running, true);
@@ -892,8 +900,12 @@ void Player::TransitionAttackState()
     if (updateanim == UpAnim::Doble)
     {
         state = State::Attack;
-        updateanim = UpAnim::Doble;
+        //updateanim = UpAnim::Doble;
         model->PlayUpeerBodyAnimation(Anim_Attack, false);
+        //上半身
+        bornStartPoint = "mixamorig:Spine2";
+        // 下半身
+        bornEndPoint = "mixamorig:Spine";
     }
     else
     {
@@ -924,9 +936,14 @@ void Player::UpdateAttackState(float elapsedTime)
         //TransitionIdleState();
        
     }
-    if (!InputMove(elapsedTime))
+    if (updateanim == UpAnim::Doble && !InputMove(elapsedTime))
     {
-        updateanim = UpAnim::Normal;
+        updateanim = UpAnim::Doble;
+        //上半身
+        bornStartPoint = "mixamorig:Spine";
+        // 下半身
+        bornEndPoint = "mixamorig:Spine";
+        model->PlayAnimation(Anim_Attack, false);
     }
     
     // 任意のアニメーション再生区間でのみ衝突判定処理をする

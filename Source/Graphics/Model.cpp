@@ -107,12 +107,12 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 	// 再生中でないなら処理しない
 	if (!IsPlayAnimation())return;
 
-	
+	// ブレンド率の計算
 	float blendRate = 1.0f;
-	// ブレンド率計算
+	// 現在のブレンドが時間より下なら
 	if (animationBlendTime < animationBlendSeconds)
 	{
-		
+		// 足している。
 		animationBlendTime += elapsedTime;
 		if (animationBlendTime >= animationBlendSeconds)
 		{
@@ -135,7 +135,7 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 	{
 		// 現在の時間がどのキーフレームの間にいるか判定する
 		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
-		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex - 1);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex + 1);
 		if (currentAnimationSeconds >= keyframe0.seconds &&
 			currentAnimationSeconds < keyframe1.seconds)
 		{
@@ -239,6 +239,8 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 			animationEndFlag = true;
 		}
 	}
+
+
 
 
 }
