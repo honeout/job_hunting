@@ -16,12 +16,16 @@ public:
 	// GUI描画
 	void OnGUI() override;
 
+	// 無敵
+	void UpdateInbincibleTimer(float elapsedTime);
+
 
 	// ダメージを与える ダメージを受けたら他に渡す。
 	bool ApplyDamage(int damage, float invincibleTime);
 
-	//// HP状態を取得
-	//int GetHealth() const { return health; }
+	// HP状態を取得
+	int GetHealth() const { return health; }
+	int GetMaxHealth() const { return maxHealth; }
 
 	// ダメージを受けた時に呼ばれる
 	bool OnDamaged();
@@ -32,7 +36,7 @@ private:
 	int          health = 5;
 
 	// 最大値HP
-	//int          maxHealth = 5;
+	int          maxHealth = 5;
 	// 無敵時間
 	float   invincibleTimer = 1.0f;
 };

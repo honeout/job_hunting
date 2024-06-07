@@ -62,6 +62,12 @@ public:
 	// モデルの取得
 	Model* GetModel() const { return model.get(); }
 
+	// アニメーションの時間
+	float GetCurrentANimationSeconds() const { return currentANimationSeconds; }
+	// アニメーションの時間
+	void SetCurrentAnimationSeconds(const float currentANimationSeconds) { this->currentANimationSeconds = currentANimationSeconds; }
+
+
 	// HP読み取り
 	int   GetHealth() { return health; }
 
@@ -71,6 +77,24 @@ public:
 	DirectX::XMFLOAT3 GetVelocity() { return this->velocity; }
 
 	void SetVelocity(DirectX::XMFLOAT3 velocity) { this->velocity = velocity; }
+
+	// 地面に設置しているか エフェクト等も
+	bool IsGround() const { return isGround; }
+	// 高さ取得
+	float GetHeight() const { return height; }
+
+	// 水平速力更新処理
+	void UpdateHorizontalVelocity(float elapsedFrame);
+	// 水平移動更新処理
+	void UpdateHorizontalMove(float elapsedTime);
+
+	// 垂直速力更新処理
+	void UpdateVerticalVelocity(float elapsedFrame);
+
+	// 垂直移動更新処理
+	void UpdateVerticalMove(float elapsedTime);
+	// 速力処理更新
+	void UpdateVelocity(float elapsedTime);
 
 
 	// コンポーネント追加
@@ -99,11 +123,33 @@ public:
 
 
 private:
+	std::vector<std::shared_ptr<Component>>	components;
 	std::string			name;
+	//////////////////////////////////////
+	// モデル系
+	//////////////////////////////////////
+	std::unique_ptr<Model>	model;
 	DirectX::XMFLOAT3	position = DirectX::XMFLOAT3(0, 0, 0);
 	DirectX::XMFLOAT4	rotation = DirectX::XMFLOAT4(0, 0, 0, 1);
 	DirectX::XMFLOAT3	scale = DirectX::XMFLOAT3(1, 1, 1);
 	DirectX::XMFLOAT4X4	transform = DirectX::XMFLOAT4X4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	
+	//	透明度
+	float alpha = 1;
+	// 腰
+	float stepOffset = 1.0f;
+
+	// 身長メートル
+	float               height = 2.0f;
+
+	// アニメーションの時間
+	float currentANimationSeconds = 0.0f;
+	//////////////////////////////////////
+	// 現象
+	//////////////////////////////////////
+
+	// 重力
+	float              grabity = -1.0f;
 
 	//最大値HP
 	int          maxHealth = 5;
@@ -113,9 +159,13 @@ private:
 	 // 速度
 	 DirectX::XMFLOAT3  velocity = { 0,0,0 };
 
-	std::unique_ptr<Model>	model;
+	// 空中での移動速度減少
+	float airControl = 0.3f;
 
-	std::vector<std::shared_ptr<Component>>	components;
+
+	// 地面確認
+	bool         isGround = false;
+
 };
 
 // アクターマネージャー

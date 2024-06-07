@@ -216,6 +216,9 @@
     <ClInclude Include="Jump.h">
       <Filter>Source\Character</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Renderer.h">
+      <Filter>Source\Character</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -375,6 +378,9 @@
       <Filter>Source\Character</Filter>
     </ClCompile>
     <ClCompile Include="Jump.cpp">
+      <Filter>Source\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer.cpp">
       <Filter>Source\Character</Filter>
     </ClCompile>
   </ItemGroup>

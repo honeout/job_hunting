@@ -22,6 +22,14 @@ void HP::OnGUI()
 	ImGui::InputInt("Hp", &health);
 }
 
+void HP::UpdateInbincibleTimer(float elapsedTime)
+{
+    if (invincibleTimer > 0.0f)
+    {
+        invincibleTimer -= elapsedTime;
+    }
+}
+
 bool HP::ApplyDamage(int damage, float invincibleTime)
 {
     // ダメージが０の場合は健康状態を変更する必要がない

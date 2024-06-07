@@ -40,6 +40,13 @@ bool Jump::OnLanding()
 		return true;
 	}
 }
+
+void Jump::JumpVelocity(float speed)
+{
+	velocity.y += speed;
+	//position.y = (std::min)(position.y, speed);
+}
+
 //
 //// ƒ[ƒJƒ‹ˆÚ“®
 //void Jump::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)

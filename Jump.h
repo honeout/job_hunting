@@ -16,12 +16,20 @@ public:
 	// GUI描画
 	void OnGUI() override;
 
-	// 移動
+	// 着地した時に呼べれる
 	bool OnLanding();
+
+	// ジャンプ処理
+	void JumpVelocity(float speed);
+	// 着地した時に呼べれる
+	
 	//void MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime);
 
 	//// 旋回
 	//void Turn(const DirectX::XMFLOAT3& direction, float elapsedTime);
+
+
+	// 水平
 
 private:
 	int jumpCount = 0;
