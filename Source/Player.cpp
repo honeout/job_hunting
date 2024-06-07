@@ -26,8 +26,8 @@ Player::Player()
     // インスタンスポインタ設定
     instance = this;
 
-    //model = new Model("Data/Model/Jammo/Jammo.mdl");
-    model = new Model("Data/Model/AimTest/AimTest.mdl");
+    model = new Model("Data/Model/Jammo/Jammo.mdl");
+    //model = new Model("Data/Model/AimTest/AimTest.mdl");
 
     // モデルがおおきいのでスケーリング
     // キャラクターも1.1倍
@@ -37,8 +37,8 @@ Player::Player()
     hitEffect = new Effect("Data/Effect/sunder.efk");
     desEffect = new Effect("Data/Effect/F.efk");
 
-    // 上下別アニメーション用
-    updateanim = UpAnim::Normal;
+    //// 上下別アニメーション用
+    //state = State::Idle;
 
     // 待機ステートへ遷移
     TransitionIdleState();
@@ -125,25 +125,25 @@ void Player::Update(float elapsedTime)
     // モデルアニメーション更新処理
   /*  model->UpdateAnimation(elapsedTime, true);*/
 
-    //switch (updateanim)
-    //{
-    //case UpAnim::Normal:
-    //{
-    //    // モデルアニメーション更新処理
-    //    model->UpdateAnimation(elapsedTime, true);
-    //    break;
-    //}
-    //case UpAnim::Doble:
-    //{
-    //    // モデルアニメーション更新処理
-    //    model->UpdateUpeerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
-    //    model->UpdateLowerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
-    //    break;
-    //}
-    //}
+    switch (updateanim)
+    {
+    case UpAnim::Normal:
+    {
+        // モデルアニメーション更新処理
+        model->UpdateAnimation(elapsedTime, true);
+        break;
+    }
+    case UpAnim::Doble:
+    {
+        // モデルアニメーション更新処理
+        model->UpdateUpeerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
+        model->UpdateLowerBodyAnimation(elapsedTime,"mixamorig:Spine", true);
+        break;
+    }
+    }
     //model->Update_blend_animations(0.675f, frontVec.x,1.582f);
     //model->Update_blend_animations(elapsedTime, frontVec.x,36,60, true);
-    model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
+    //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
     
     
 
@@ -700,10 +700,12 @@ void Player::TransitionIdleState()
 {
     state = State::Idle;
 
+ 
+
     afterimagemove = false;
 
     // 待機アニメーション再生
-    model->PlayAnimation(1, true);
+    model->PlayAnimation(Anim_Idle, true);
 
     updateanim = UpAnim::Normal;
     
@@ -763,11 +765,11 @@ void Player::TransitionMoveState()
 void Player::UpdateMoveState(float elapsedTime)
 {
     // 移動入力処理
-    //if (!InputMove(elapsedTime))
-    //{
-    //    
-    //    TransitionIdleState();
-    //}
+    if (!InputMove(elapsedTime))
+    {
+        
+        TransitionIdleState();
+    }
 
  
 

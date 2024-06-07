@@ -134,11 +134,11 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 	for (int keyIndex = 0; keyIndex < keyCount - 1; ++keyIndex)
 	{
 		// 現在の時間がどのキーフレームの間にいるか判定する
-		const ModelResource::Keyframe& keyframe0 = keyframes.at(10);
-		const ModelResource::Keyframe& keyframe1 = keyframes.at(50);
-		//if (currentAnimationSeconds >= keyframe0.seconds &&
-		//	currentAnimationSeconds < keyframe1.seconds)
-		//{
+		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex - 1);
+		if (currentAnimationSeconds >= keyframe0.seconds &&
+			currentAnimationSeconds < keyframe1.seconds)
+		{
 			// 再生時間とキーフレームの時間から補完率を算出する
 			// 分母に現在のアニメーションとキーフレームのーことで、分子に１と０をすることで０．何パーセント貰える
 			// つまり疑似的％が貰える。
@@ -196,7 +196,7 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 			}
 
 			break;
-		
+		}
 	}
 
 	// 最終フレーム処理
@@ -401,8 +401,6 @@ void Model::Update_blend_animations(float elapsedTime, float blendrate, float cu
 
 			Node& node = nodes[nodeIndex];
 			// 通常の計算
-
-			//else
 			{
 				DirectX::XMVECTOR S0 = DirectX::XMLoadFloat3(&key0.scale);
 				DirectX::XMVECTOR S1 = DirectX::XMLoadFloat3(&key1.scale);
