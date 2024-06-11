@@ -16,3 +16,8 @@ float Mathf::RandomRange(float min, float max)
     // 0~1‚Ü‚Å‚ğmin‚Å‚»‚±‚³‚°‚·‚éB
     return min + (max - min) * value;
 }
+
+DirectX::XMFLOAT3 Mathf::Scale(DirectX::XMFLOAT3 scale, float number)
+{
+    return {scale.x* number,scale.y * number, scale.z * number, };
+}

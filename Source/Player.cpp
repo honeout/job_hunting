@@ -41,9 +41,9 @@ Player::Player()
     //state = State::Idle;
 
     // 上半身
-    bornStartPoint = "mixamorig:Spine";
+    bornUpStartPoint = "mixamorig:Spine";
     // 下半身
-    bornEndPoint = "mixamorig:Spine";
+    bornDownerEndPoint = "mixamorig:Spine";
 
     // 待機ステートへ遷移
     TransitionIdleState();
@@ -141,8 +141,8 @@ void Player::Update(float elapsedTime)
     case UpAnim::Doble:
     {
         // モデルアニメーション更新処理
-        model->UpdateUpeerBodyAnimation(elapsedTime, bornStartPoint, true);
-        model->UpdateLowerBodyAnimation(elapsedTime, bornEndPoint, true);
+        model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint,bornUpEndPoint, true);
+        model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
         break;
     }
     }
@@ -707,10 +707,11 @@ void Player::TransitionIdleState()
 
     afterimagemove = false;
 
+    updateanim = UpAnim::Normal;
+
     // 待機アニメーション再生
     model->PlayAnimation(Anim_Idle, true);
 
-    updateanim = UpAnim::Normal;
     
 }
 
@@ -752,22 +753,23 @@ void Player::UpdateIdleState(float elapsedTime)
 
 void Player::TransitionMoveState()
 {
-    state = State::Move;
 
     afterimagemove = true;
 
     updateanim = UpAnim::Doble;
 
     // 上半身
-    bornStartPoint = "mixamorig:Spine";
+    bornUpStartPoint = "mixamorig:Spine";
     // 下半身
-    bornEndPoint = "mixamorig:Spine";
+    bornDownerEndPoint = "mixamorig:Spine";
+
 
     // 走りアニメーション再生
     model->PlayAnimation(Anim_Running, true);
 
     model->PlayUpeerBodyAnimation(Anim_Running, true);
-
+    
+    state = State::Move;
 }
 
 void Player::UpdateMoveState(float elapsedTime)
@@ -813,10 +815,16 @@ void Player::UpdateMoveState(float elapsedTime)
 
 void Player::TransitionJumpState()
 {
+
     state = State::Jump;
 
+    // 上半身
+    bornUpStartPoint = "mixamorig:Spine";
+
+    model->PlayUpeerBodyAnimation(Anim_Jump, false);
     // ジャンプアニメーション再生
-    model->PlayAnimation(Anim_Jump, true);
+    model->PlayAnimation(Anim_Jump,false);
+
 }
 
 void Player::UpdateJumpState(float elapsedTime)
@@ -842,6 +850,7 @@ void Player::TransitionLandState()
 {
     state = State::Land;
 
+    updateanim = UpAnim::Normal;
     // 着地アニメーション再生
     model->PlayAnimation(Anim_Landing, false);
 }
@@ -873,15 +882,11 @@ void Player::TransitionJumpFlipState()
 
     // 走りアニメーション再生
     model->PlayAnimation(Anim_Jump_Flip, false);
+    model->PlayUpeerBodyAnimation(Anim_Jump_Flip, false);
 }
 
 void Player::UpdatejumpFlipState(float elapsedTime)
 {
-    // 移動入力処理
-    if (!InputMove(elapsedTime))
-    {
-        TransitionIdleState();
-    }
 
 
     if (InputMove(elapsedTime))
@@ -901,11 +906,14 @@ void Player::TransitionAttackState()
     {
         state = State::Attack;
         //updateanim = UpAnim::Doble;
-        model->PlayUpeerBodyAnimation(Anim_Attack, false);
         //上半身
-        bornStartPoint = "mixamorig:Spine2";
+        bornUpStartPoint = "mixamorig:Spine2";
+
+       /* bornUpEndPoint = "mixamorig:Neck";*/
         // 下半身
-        bornEndPoint = "mixamorig:Spine";
+        bornDownerEndPoint = "mixamorig:Spine";
+
+        model->PlayUpeerBodyAnimation(Anim_Attack, false);
     }
     else
     {
@@ -920,36 +928,39 @@ void Player::TransitionAttackState()
 void Player::UpdateAttackState(float elapsedTime)
 {
     // もし終わったら待機に変更
-    if (!model->IsPlayUpeerBodyAnimation() || !model->IsPlayAnimation())
+    if (updateanim == UpAnim::Doble && !model->IsPlayUpeerBodyAnimation())
     {
         attackCollisionFlag = false;
-        TransitionIdleState();
-        //switch (stated)
-        //{
-        //case Player::State::Idle:
-        //    TransitionIdleState();
-        //    break;
-        //case Player::State::Move:
-        //    TransitionMoveState();
-        //    break;
-        //}
-        //TransitionIdleState();
+        TransitionMoveState();
+
        
+    }
+    else if (updateanim == UpAnim::Normal && !model->IsPlayAnimation())
+    {
+        attackCollisionFlag = false;
+        TransitionMoveState();
     }
     if (updateanim == UpAnim::Doble && !InputMove(elapsedTime))
     {
         updateanim = UpAnim::Doble;
         //上半身
-        bornStartPoint = "mixamorig:Spine";
+        bornUpStartPoint = "mixamorig:Spine";
         // 下半身
-        bornEndPoint = "mixamorig:Spine";
+        bornDownerEndPoint = "mixamorig:Spine";
         model->PlayAnimation(Anim_Attack, false);
     }
-    
-    // 任意のアニメーション再生区間でのみ衝突判定処理をする
-    float animationTime = model->GetCurrentANimationSeconds();
-    // 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
-    attackCollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
+
+        // 任意のアニメーション再生区間でのみ衝突判定処理をする
+        float animationTime = model->GetCurrentANimationSeconds();
+        // 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
+        attackCollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
+        if (updateanim == UpAnim::Doble)
+        {
+            // 任意のアニメーション再生区間でのみ衝突判定処理をする
+            float animationTime = model->GetCurrentAnimationSecondsUpeer();
+            // 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
+            attackCollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
+        }
     if (attackCollisionFlag)
     {
         // 左手ノードとエネミーの衝突処理

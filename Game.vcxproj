@@ -114,7 +114,6 @@
     <ClInclude Include="External\imgui\imstb_rectpack.h" />
     <ClInclude Include="External\imgui\imstb_textedit.h" />
     <ClInclude Include="External\imgui\imstb_truetype.h" />
-    <ClInclude Include="Jump.h" />
     <ClInclude Include="Source\Actor.h" />
     <ClInclude Include="Source\Afterimage.h" />
     <ClInclude Include="Source\Audio\Audio.h" />
@@ -176,7 +175,6 @@
     <ClCompile Include="External\imgui\imgui_demo.cpp" />
     <ClCompile Include="External\imgui\imgui_draw.cpp" />
     <ClCompile Include="External\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="Jump.cpp" />
     <ClCompile Include="Source\Actor.cpp" />
     <ClCompile Include="Source\Afterimage.cpp" />
     <ClCompile Include="Source\Audio\Audio.cpp" />

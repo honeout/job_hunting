@@ -5,7 +5,7 @@
 #include "Renderer.h"
 
 // コンストラクタ
-Renderer::Renderer()
+Rendere::Rendere()
 {
 
 }

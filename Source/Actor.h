@@ -62,6 +62,9 @@ public:
 	// モデルの取得
 	Model* GetModel() const { return model.get(); }
 
+	void SetStepOffset(float stepOffset) {  this->stepOffset = stepOffset; }
+	float GetStepOffset() const { return this->stepOffset; }
+
 	// アニメーションの時間
 	float GetCurrentANimationSeconds() const { return currentANimationSeconds; }
 	// アニメーションの時間
@@ -74,27 +77,31 @@ public:
 	// HP書き込み
 	void   SetHealth(int health) { this->health = health; }
 
-	DirectX::XMFLOAT3 GetVelocity() { return this->velocity; }
+	//DirectX::XMFLOAT3 GetVelocity() { return this->velocity; }
 
-	void SetVelocity(DirectX::XMFLOAT3 velocity) { this->velocity = velocity; }
+	//void SetVelocity(DirectX::XMFLOAT3 velocity) { this->velocity = velocity; }
 
 	// 地面に設置しているか エフェクト等も
-	bool IsGround() const { return isGround; }
+	//bool IsGround() const { return isGround; }
+
+	//void SetAirControl(float airControl) { this->airControl = airControl; }
+	//float GetAirControl() { return this->airControl; }
+
 	// 高さ取得
 	float GetHeight() const { return height; }
 
-	// 水平速力更新処理
-	void UpdateHorizontalVelocity(float elapsedFrame);
-	// 水平移動更新処理
-	void UpdateHorizontalMove(float elapsedTime);
+	//// 水平速力更新処理
+	//void UpdateHorizontalVelocity(float elapsedFrame);
+	//// 水平移動更新処理
+	//void UpdateHorizontalMove(float elapsedTime);
 
-	// 垂直速力更新処理
-	void UpdateVerticalVelocity(float elapsedFrame);
+	//// 垂直速力更新処理
+	//void UpdateVerticalVelocity(float elapsedFrame);
 
-	// 垂直移動更新処理
-	void UpdateVerticalMove(float elapsedTime);
-	// 速力処理更新
-	void UpdateVelocity(float elapsedTime);
+	//// 垂直移動更新処理
+	//void UpdateVerticalMove(float elapsedTime);
+	//// 速力処理更新
+	//void UpdateVelocity(float elapsedTime);
 
 
 	// コンポーネント追加
@@ -149,22 +156,21 @@ private:
 	//////////////////////////////////////
 
 	// 重力
-	float              grabity = -1.0f;
+	//float              grabity = -1.0f;
 
 	//最大値HP
 	int          maxHealth = 5;
 	 //HP
      int          health = maxHealth;
      
-	 // 速度
-	 DirectX::XMFLOAT3  velocity = { 0,0,0 };
-
-	// 空中での移動速度減少
-	float airControl = 0.3f;
 
 
-	// 地面確認
-	bool         isGround = false;
+	//// 空中での移動速度減少
+	//float airControl = 0.3f;
+
+
+	//// 地面確認
+	//bool         isGround = false;
 
 };
 

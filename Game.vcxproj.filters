@@ -213,9 +213,6 @@
     <ClInclude Include="Source\HP.h">
       <Filter>Source\Character</Filter>
     </ClInclude>
-    <ClInclude Include="Jump.h">
-      <Filter>Source\Character</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Renderer.h">
       <Filter>Source\Character</Filter>
     </ClInclude>
@@ -375,9 +372,6 @@
       <Filter>Source\Character</Filter>
     </ClCompile>
     <ClCompile Include="Source\HP.cpp">
-      <Filter>Source\Character</Filter>
-    </ClCompile>
-    <ClCompile Include="Jump.cpp">
       <Filter>Source\Character</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer.cpp">

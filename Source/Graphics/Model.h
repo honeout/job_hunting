@@ -52,7 +52,7 @@ public:
 
 
 	//上半身アニメーション更新処理
-	void UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool blend = false);
+	void UpdateUpeerBodyAnimation(float elapsedTime, const char* start,const char* end, bool blend = false);
 
 	// 上半身用アニメーション更新
 	void ReverseplaybackUpeerBodyAnimation(float elapsedTime, const char* start, bool blend = false);
@@ -88,6 +88,10 @@ public:
 	// 現在のアニメーション再生時間取得
 	float GetCurrentANimationSeconds()const { return currentAnimationSeconds; }
 
+	// 現在の上半身のアニメーション再生時間取得
+	float GetCurrentAnimationSecondsUpeer()const { return currentAnimationSecondsUpeer; }
+
+	int GetNodeIndex(const char* name)const;
 
 private:
 	std::shared_ptr<ModelResource>	resource;

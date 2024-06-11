@@ -428,9 +428,14 @@ void Model::Update_blend_animations(float elapsedTime, float blendrate, float cu
 
 
 // 上半身用アニメーション
-void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool blend)
+void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, const char* end, bool blend)
 {
+	//int nodeIndexStart = GetNodeIndex(start);
+	//int nodeIndexEnd = GetNodeIndex(end);
+
 	Model::Node* node = FindNode(start);
+
+	int nodeIndexStart = node->now;
 	//再生中でないなら処理しない
 	if (!IsPlayUpeerBodyAnimation()) return;
 
@@ -467,9 +472,11 @@ void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool 
 
 			// 13
 
+
 			// 上半身アニメーション
-			int nodeCount = static_cast<int>(nodes.size());
-			for (int nodeIndex = node->now; nodeIndex < nodeCount; ++nodeIndex)
+			
+			int nodeIndexMax = static_cast<int>(nodes.size());
+			for (int nodeIndex = nodeIndexStart; nodeIndex < nodeIndexMax; ++nodeIndex)
 			{
 
 
@@ -1024,4 +1031,16 @@ Model::Node* Model::FindNode(const char* name)
 
 	// 見つからなかった
 	return nullptr;
+}
+
+int Model::GetNodeIndex(const char* name) const
+{
+	for (size_t nodeIndex = 0; nodeIndex < nodes.size(); ++nodeIndex)
+	{
+		if (nodes.at(nodeIndex).name == name)
+		{
+			return  static_cast<int>(nodeIndex);
+		}
+	}
+	return -1;
 }

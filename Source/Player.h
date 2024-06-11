@@ -224,9 +224,13 @@ private:
     DirectX::XMFLOAT3 frontVec = { 0 ,0,0 };
 
     // è„îºêg
-    char* bornStartPoint;
+    char* bornUpStartPoint;
+
+    // è„îºêg
+    char* bornUpEndPoint = "";
+
     // â∫îºêg
-    char* bornEndPoint;
+    char* bornDownerEndPoint;
 
     
 };
