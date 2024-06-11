@@ -31,14 +31,31 @@ void Actor::Update(float elapsedTime)
 // 行列の更新
 void Actor::UpdateTransform()
 {
-	// ワールド行列の更新
-	DirectX::XMVECTOR Q = DirectX::XMLoadFloat4(&rotation);
+	// スケールだけ行列を作成
 	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
-	DirectX::XMMATRIX R = DirectX::XMMatrixRotationQuaternion(Q);
-	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 
-	DirectX::XMMATRIX W = S * R * T;
+	// 回転行列作成
+	DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(rotation.x);
+	DirectX::XMMATRIX Y = DirectX::XMMatrixRotationY(rotation.y);
+	DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(rotation.z);
+	DirectX::XMMATRIX R = Y * X * Z;
+
+
+	// 位置行列だけを作成
+	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+	// 3つの行列を組み合わせ、ワールド行列を作成
+	DirectX::XMMATRIX W = S * R * T;// 行列は計算順番変えると結果が変わる
+	// 計算したワールド行列を取り出す
 	DirectX::XMStoreFloat4x4(&transform, W);
+
+	//// ワールド行列の更新
+	//DirectX::XMVECTOR Q = DirectX::XMLoadFloat4(&rotation);
+	//DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+	//DirectX::XMMATRIX R = DirectX::XMMatrixRotationQuaternion(Q);
+	//DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+
+	//DirectX::XMMATRIX W = S * R * T;
+	//DirectX::XMStoreFloat4x4(&transform, W);
 
 	// モデルの行列更新
 	if (model != nullptr)
@@ -158,12 +175,21 @@ void ActorManager::UpdateTransform()
 void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
 {
 	Graphics& graphics = Graphics::Instance();
-	Shader* shader = graphics.GetShader();
+	//Shader* shader = graphics.GetShader();
+	ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
+	// 描画処理 
+	RenderContext rc;// 描画するために必要な情報をまとめた構造体
+
+	rc.view = view;
+	rc.projection = projection;
 
 	// ライトの方向
 	DirectX::XMFLOAT3 lightDirection = DirectX::XMFLOAT3(0.2f, -0.8f, 0.0f);
-
+	
+	rc.lightDirection = { lightDirection.x,lightDirection.y,lightDirection.z ,0};
+	// モデルそれぞれでシェーダーをするために
+	rc.deviceContext = dc;
 	// 描画
 	//shader->Begin(dc, view, projection, lightDirection);
 
@@ -178,6 +204,20 @@ void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOA
 	//}
 
 	//shader->End(dc);
+
+	shader->Begin(rc);// シェーダーにカメラの情報を渡す
+
+	for (std::shared_ptr<Actor>& actor : updateActors)
+	{
+		// モデルがあれば描画
+		Model* model = actor->GetModel();
+		if (model != nullptr)
+		{
+			shader->Draw(rc, actor->GetModel());
+		}
+	}
+
+	shader->End(rc);
 
 	// リスター描画
 	DrawLister();

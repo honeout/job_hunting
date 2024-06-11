@@ -199,6 +199,7 @@ public:
 
 	// •`‰æ
 	void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+	//void Render(const RenderContext& rc);
 
 private:
 	void DrawLister();

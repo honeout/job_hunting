@@ -41,7 +41,7 @@ public:
 	// 垂直移動更新処理
 	void UpdateVerticalMove( float elapsedTime);
 	// 速力処理更新
-	void UpdateVelocity(const DirectX::XMFLOAT3& direction, float elapsedTime);
+	void UpdateVelocity( float elapsedTime);
 
 	// 腰の位置ゲット
 	float GetStepOffSet()const { return stepOffSet; }
@@ -50,7 +50,10 @@ public:
 	// 身長ゲット
 	float GetHeight() { return this->height; }
 	// 身長セット
-	void SetHegith(float hegiht) { this->height = height; }
+	void SetHegith(float height) { this->height = height; }
+
+	void SetMoveVecX(float moveVecX) { this->moveVecX = moveVecX; }
+	void SetMoveVecZ(float moveVecZ) { this->moveVecZ = moveVecZ; }
 
 private:
 	float		moveSpeed = 5.0f;

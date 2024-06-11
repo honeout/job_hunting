@@ -7,6 +7,10 @@
 #include "Collision.h"
 #include "ProjectileManager.h"
 #include "Component.h"
+#include "Movement.h"
+#include "HP.h"
+#include "Input\GamePad.h"
+#include <DirectXMath.h>
 
 enum class UpAnim
 {
@@ -16,11 +20,13 @@ enum class UpAnim
 };
 
 // プレイヤー
-class Player : public Character
+class Player : public Component
 {
 public:
     Player();
     ~Player() override;
+
+
 
     // インスタンス取得
     static Player& Instance();
@@ -43,8 +49,13 @@ public:
         Anim_Walking
     };
 
+    // 名前取得
+    const char* GetName() const override { return "Player"; }
+
+    void UpdateTransform();
+
     // 開始処理
-    /*void Start() override;*/
+    void Start() override;
 
     // 更新処理
     void Update(float elapsedTime);
@@ -69,18 +80,22 @@ public:
 
 
 protected:
-    // 着地した時に呼ばれる
-    void OnLanding() override;
+    //// 着地した時に呼ばれる
+    //void OnLanding() override;
 
-    // 死亡した時に呼ばれる
-    void OnDead() override;
+    //// 死亡した時に呼ばれる
+    //void OnDead() override;
 
-    // ダメージを受けた時に呼ばれる
-    void OnDamaged() override;
+    //// ダメージを受けた時に呼ばれる
+    //void OnDamaged() override;
 
 private:
     // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
     DirectX::XMFLOAT3 GetMoveVec() const;
+
+    // キャラクター操作
+    void CharacterControl(float elapsedTime);
+
 
     // 移動入力処理
     bool InputMove(float elapsedTime);
@@ -159,6 +174,12 @@ private:
     // 復活ステート更新処理
     void UpdateReviveState(float elapsedTime);
 
+   // void Update();
+
+    void inFloat3(DirectX::XMFLOAT3 value, DirectX::XMFLOAT3& inValue);
+
+    DirectX::XMFLOAT3 GetForwerd(DirectX::XMFLOAT3 angle);
+
 private:
     // ステート
     enum class State
@@ -176,14 +197,29 @@ private:
 
     public:
 
-        bool GetAfterimageMove() const { return this->afterimagemove; }
+    bool GetAfterimageMove() const { return this->afterimagemove; }
 
-        Model* GetModel() const { return model; }
+   // Model* GetModel() const { return model; }
 
 
 
 private:
-    Model* model = nullptr;
+    std::shared_ptr<Movement>	movement;
+    std::shared_ptr<HP>	hp;
+    
+    
+   Model* model = nullptr;
+
+    GamePad        gamePad;
+
+    DirectX::XMFLOAT3 position = {};
+    DirectX::XMFLOAT3 angle = {};
+
+    // 身長
+    float height = 1.0f;
+    
+    
+
     float          moveSpeed = 5.0f;
 
     float         turnSpeed = DirectX::XMConvertToRadians(720);
@@ -232,5 +268,17 @@ private:
     // 下半身更新終了位置
     char* bornDownerEndPoint;
 
-    
+    // 当たり判定半径
+    float radius = 0.5f;
+
+    // Hp
+    int health = 5;
+
+    // 最大HP
+    int maxHealth = 5;
+
+
+
+    // アニメーションの時間 
+    float currentANimationSeconds = 0.0f;
 };

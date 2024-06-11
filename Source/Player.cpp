@@ -10,6 +10,7 @@
 #include "Graphics/Model.h"
 #include "AfterimageManager.h"
 
+
 static Player* instance = nullptr;
 
 // インスタンス取得
@@ -24,48 +25,106 @@ Player& Player::Instance()
 Player::Player()
 {
     // インスタンスポインタ設定
-    instance = this;
+    //instance = this;
 
-    model = new Model("Data/Model/Jammo/Jammo.mdl");
+    //model = new Model("Data/Model/Jammo/Jammo.mdl");
     //model = new Model("Data/Model/AimTest/AimTest.mdl");
 
     // モデルがおおきいのでスケーリング
     // キャラクターも1.1倍
-    scale.x = scale.y = scale.z = 0.01f;
+    //scale.x = scale.y = scale.z = 0.01f;
 
-    // ヒットエフェクト読込 
-    hitEffect = new Effect("Data/Effect/sunder.efk");
-    desEffect = new Effect("Data/Effect/F.efk");
+    //// ヒットエフェクト読込 
+    //hitEffect = new Effect("Data/Effect/sunder.efk");
+    //desEffect = new Effect("Data/Effect/F.efk");
 
     //// 上下別アニメーション用
     //state = State::Idle;
 
-    // 上半身
-    bornUpStartPoint = "mixamorig:Spine";
-    // 下半身
-    bornDownerEndPoint = "mixamorig:Spine";
+    //// 上半身
+    //bornUpStartPoint = "mixamorig:Spine";
+    //// 下半身
+    //bornDownerEndPoint = "mixamorig:Spine";
 
-    // 待機ステートへ遷移
-    TransitionIdleState();
+    //// 待機ステートへ遷移
+    //TransitionIdleState();
 
 }
 
 // デストラクタ
 Player::~Player()
 {
-    delete hitEffect;
-    delete desEffect;
-    delete model;
+    //if (hitEffect == nullptr)
+    //delete hitEffect;
+    //if (desEffect == nullptr)
+    //delete desEffect;
+    //if (model == nullptr)
+    //delete model;
+    if (hitEffect != nullptr)
+    {
+        delete hitEffect;
+        hitEffect = nullptr;
+    }
 
+    if (desEffect != nullptr)
+    {
+        delete desEffect;
+        desEffect = nullptr;
+    }
 
+    //if (model != nullptr)
+    //{
+    //    delete model;
+    //    //model = nullptr;
+    //}
 }
 
 
 
-//
-//void Player::Start()
+
+//void Player::UpdateTransform()
 //{
+//
+//
+//
+//    
 //}
+
+void Player::Start()
+{
+    // インスタンス化
+    instance = this;
+
+    // ムーブメント関数を使えるように
+    movement = GetActor()->GetComponent<Movement>();
+
+    // hp関数を使えるように
+    hp = GetActor()->GetComponent<HP>();
+
+    // モデルデータを入れる。
+    model = GetActor()->GetModel();
+    
+
+    // ヒットエフェクト読込 
+    hitEffect = new Effect("Data/Effect/sunder.efk");
+    desEffect = new Effect("Data/Effect/F.efk");
+
+
+    // 上半身
+    bornUpStartPoint = "mixamorig:Spine";
+    // 下半身
+    bornDownerEndPoint = "mixamorig:Spine";
+
+
+
+    hp->SetHealth(health);
+
+    hp->SetMaxHealth(maxHealth);
+
+    // 待機ステートへ遷移
+    TransitionIdleState();
+
+}
 
 // 更新処理
 // elapsedTime(経過時間)
@@ -105,16 +164,15 @@ void Player::Update(float elapsedTime)
         UpdateReviveState(elapsedTime);
         break;
     }
-
     // 速力処理更新
-    UpdateVelocity(elapsedTime);
+    movement->UpdateVelocity(elapsedTime);
 
-    UpdateInbincibleTimer(elapsedTime);
+    hp->UpdateInbincibleTimer(elapsedTime);
 
    
     hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
 
-    
+    //UpdateTransform();
 
     // プレイヤーと敵との衝突処理
     CollisionPlayerVsEnemies();
@@ -125,24 +183,24 @@ void Player::Update(float elapsedTime)
     projectileManager.Update(elapsedTime);
 
     // オブジェクト行列を更新
-    UpdateTransform();
+    //UpdateTransform();
 
     // モデルアニメーション更新処理
-  /*  model->UpdateAnimation(elapsedTime, true);*/
+    //model->UpdateAnimation(elapsedTime, true);
 
     switch (updateanim)
     {
     case UpAnim::Normal:
     {
         // モデルアニメーション更新処理
-        model->UpdateAnimation(elapsedTime, true);
+        //model->UpdateAnimation(elapsedTime, true);
         break;
     }
     case UpAnim::Doble:
     {
         // モデルアニメーション更新処理
-        model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint,bornUpEndPoint, true);
-        model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
+        //model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint,bornUpEndPoint, true);
+        //model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
         break;
     }
     }
@@ -154,7 +212,7 @@ void Player::Update(float elapsedTime)
 
 
     // モデル行列更新
-    model->UpdateTransform(transform);
+    //model->UpdateTransform(transform);
 }
 
 
@@ -197,10 +255,15 @@ bool Player::InputMove(float elapsedTime)
     // 進行ベクトル取得
     //DirectX::XMFLOAT3 moveVec = GetMoveVec();
     moveVec = GetMoveVec();
-    // 移動処理
-    Move(moveVec.x, moveVec.z, moveSpeed);
-    // 旋回処理
-    Turn(elapsedTime, moveVec.x, moveVec.z, turnSpeed);
+   // movement->SetMoveVecX(moveVec.x);
+   // movement->SetMoveVecZ(moveVec.z);
+    if (moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f)
+    {
+        // 移動処理
+        movement->Move(GetForwerd(angle), elapsedTime);
+        // 旋回処理
+        movement->Turn(GetForwerd(angle), elapsedTime);
+    }
 
     // 進行ベクトルがゼロベクトルでない場合は入力された
     return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
@@ -261,6 +324,8 @@ DirectX::XMFLOAT3 Player::GetMoveVec() const
     return vec;
 
 }
+
+
 
 // 描画処理
 void Player::Render(const RenderContext& rc, ModelShader* shader)
@@ -384,7 +449,8 @@ void Player::CollisionPlayerVsEnemies()
                         if (enemy->ApplyDamage(1, 0.1f))
                         {
                             //小ジャンプ
-                            Jump(jumpSpeed * 0.5f);
+                            //Jump(jumpSpeed * 0.5f);
+                            movement->JumpVelocity(jumpSpeed*0.5f);
                         }
 
                     }
@@ -506,11 +572,11 @@ void Player::DrawDebugGUI()
             // 位置　// 数値をいじる
             ImGui::InputFloat3("Position", &position.x);
 
-            ImGui::SliderFloat3("Velocity", &velocity.x,5,0);
+            //ImGui::SliderFloat3("Velocity", &velocity.x,5,0);
 
             ImGui::InputInt("jamplimit", &jumpCount);
 
-            ImGui::InputInt("hp", &health);
+            //ImGui::InputInt("hp", &health);
 
             ImGui::SliderFloat("frontVec", &frontVec.x,-0.37f,1.0);
             ImGui::SliderFloat("frontVecY", &frontVec.y,-0.37f,1.0);
@@ -526,7 +592,7 @@ void Player::DrawDebugGUI()
         angle.y = DirectX::XMConvertToRadians(a.y);
         angle.z = DirectX::XMConvertToRadians(a.z);
         // スケール
-        ImGui::InputFloat3("Scale", &scale.x);
+        //ImGui::InputFloat3("Scale", &scale.x);
 
        
 
@@ -535,39 +601,39 @@ void Player::DrawDebugGUI()
     ImGui::End();
 }
 
-// 着地した時に呼ばれる
-void Player::OnLanding()
-{
-    // 着地したからリセット
-    jumpCount = 0;
-
-
-
-    //// 下方向の速力が一定以上なら着地ステートへ  十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
-    if (velocity.y < gravity * 5.0f)
-    {
-        if (state != State::Damage && state != State::Death)
-        {
-            // 着地ステートへ遷移
-            TransitionLandState();
-        }
-    }
-}
-
-void Player::OnDead()
-{
-
-
-    // 死亡ステート遷移
-    TransitionDeathState();
-}
-
-void Player::OnDamaged()
-{
-    
-        // ダメージステートへ遷移
-    TransitionDamageState();
-}
+//// 着地した時に呼ばれる
+//void Player::OnLanding()
+//{
+//    // 着地したからリセット
+//    jumpCount = 0;
+//
+//
+//
+//    //// 下方向の速力が一定以上なら着地ステートへ  十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
+//    if (velocity.y < gravity * 5.0f)
+//    {
+//        if (state != State::Damage && state != State::Death)
+//        {
+//            // 着地ステートへ遷移
+//            TransitionLandState();
+//        }
+//    }
+//}
+//
+//void Player::OnDead()
+//{
+//
+//
+//    // 死亡ステート遷移
+//    TransitionDeathState();
+//}
+//
+//void Player::OnDamaged()
+//{
+//    
+//        // ダメージステートへ遷移
+//    TransitionDamageState();
+//}
 
 bool Player::InputJump()
 {
@@ -579,7 +645,7 @@ bool Player::InputJump()
         if (jumpCount < jumpLimit) {
             // ジャンプの最大値
             ++jumpCount;
-            Jump(jumpSpeed);
+            movement->JumpVelocity(jumpSpeed);
 
             // ジャンプ入力した
            return true;
@@ -601,14 +667,14 @@ bool Player::InputProjectile()
     {
         // 前方向 sinの計算 角度の計算
         DirectX::XMFLOAT3 dir;
-        dir.x = sinf( angle.y );// 三角を斜めにして位置を変えた
-        dir.y = 0;
-        dir.z = cosf( angle.y );
+        //dir.x = sinf( angle.y );// 三角を斜めにして位置を変えた
+        //dir.y = 0;
+        //dir.z = cosf( angle.y );
         //sinf0度０　cosf0は１度
         //９０sin1,cos0返ってくる横
         //４５sin0.5,cos0.5斜め
         // 360度を上手く表現出来る。2dでも行ける。
-
+        dir = GetForwerd(angle);
         
         // 発射位置（プレイヤーの腰当たり)
         DirectX::XMFLOAT3 pos;
@@ -626,9 +692,12 @@ bool Player::InputProjectile()
     {
         // 前方向 sinの計算
         DirectX::XMFLOAT3 dir;
-        dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
-        dir.y = 0;
-        dir.z = cosf(angle.y);
+        //dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
+        //dir.y = 0;
+        //dir.z = cosf(angle.y);
+
+        dir = GetForwerd(angle);
+
         //sinf0度０　cosf0は１度
         //９０sin1,cos0返ってくる横
         //４５sin0.5,cos0.5斜め
@@ -743,7 +812,7 @@ void Player::UpdateIdleState(float elapsedTime)
     {
         TransitionAttackState();
     }
-    currentANimationSeconds = model->GetCurrentANimationSeconds();
+    //currentANimationSeconds = model->GetCurrentANimationSeconds();
 
     // 移動入力処理
     //InputMove(elapsedTime);
@@ -774,6 +843,10 @@ void Player::TransitionMoveState()
 
 void Player::UpdateMoveState(float elapsedTime)
 {
+    // 位置情報を入れる。
+    position = GetActor()->GetPosition();
+
+
     // 移動入力処理
     if (!InputMove(elapsedTime))
     {
@@ -805,9 +878,10 @@ void Player::UpdateMoveState(float elapsedTime)
     }
 
     // 残像姿勢用
-    currentANimationSeconds = model->GetCurrentANimationSeconds();
+    //currentANimationSeconds = model->GetCurrentANimationSeconds();
 
-  
+
+
 }
 
 
@@ -842,7 +916,7 @@ void Player::UpdateJumpState(float elapsedTime)
         TransitionAttackState();
     }
 
-    currentANimationSeconds = model->GetCurrentANimationSeconds();
+    //currentANimationSeconds = model->GetCurrentANimationSeconds();
 
 }
 
@@ -866,7 +940,7 @@ void Player::UpdateLandState(float elapsedTime)
         TransitionIdleState();
     }
 
-    currentANimationSeconds = model->GetCurrentANimationSeconds();
+    //currentANimationSeconds = model->GetCurrentANimationSeconds();
  
 }
 
@@ -897,7 +971,7 @@ void Player::UpdatejumpFlipState(float elapsedTime)
         TransitionJumpState();
     }
 
-    currentANimationSeconds = model->GetCurrentANimationSeconds();
+    //currentANimationSeconds = model->GetCurrentANimationSeconds();
 }
 
 void Player::TransitionAttackState()
@@ -1020,6 +1094,7 @@ void Player::TransitionReviveState()
     // 体力回復
     health = maxHealth;
 
+
     // ダメージアニメーション再生
     model->PlayAnimation(Anim_Revive, false);
 }
@@ -1031,4 +1106,40 @@ void Player::UpdateReviveState(float elapsedTime)
         TransitionIdleState();
 
     }
+}
+
+//void Player::UpdateTransform()
+//{
+//    // 位置情報
+//    position = GetActor()->GetPosition();
+//
+//    // 向き情報
+//    inFloat3({
+//        GetActor()->GetRotation().x,
+//        GetActor()->GetRotation().y,
+//        GetActor()->GetRotation().z
+//        }, angle);
+//    
+//}
+
+void Player::inFloat3(DirectX::XMFLOAT3 value, DirectX::XMFLOAT3 &inValue)
+{
+   inValue =
+    {
+         value.x,
+         value.y,
+         value.z
+    };
+
+    
+}
+
+DirectX::XMFLOAT3 Player::GetForwerd(DirectX::XMFLOAT3 angle)
+{
+    DirectX::XMFLOAT3 dir;
+    dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
+    dir.y = 0;
+    dir.z = cosf(angle.y);
+
+    return dir;
 }

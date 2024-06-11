@@ -3,7 +3,7 @@
 #include "Math.h"
 #include "Mathf.h"
 #include "Movement.h"
-#include "Collision.h"
+
 #include "StageManager.h"
 
 // コンストラクタ
@@ -390,7 +390,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
     actor->SetPosition(position);
 }
 
-void Movement::UpdateVelocity(const DirectX::XMFLOAT3& direction, float elapsedTime)
+void Movement::UpdateVelocity( float elapsedTime)
 {
 
     // 経過フレーム

@@ -17,6 +17,9 @@
 
 #include "PlayerAfterimage.h"
 
+#include "Actor.h"
+#include "Movement.h"
+#include "HP.h"
 
 
 
@@ -35,9 +38,22 @@ void SceneGame::Initialize()
 	stageMoveFloor->SetTorque(DirectX::XMFLOAT3(0, 1.0f, 0));
 	stageManager.Register(stageMoveFloor);
 
-
-	// プレイヤー初期化
-	player = new Player();
+	player = new Player;
+	{
+		// プレイヤー初期化
+		const char* filename = "Data/Model/Jammo/Jammo.mdl";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->LoadModel(filename);
+		actor->SetName("Player");
+		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
+		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
+		actor->SetScale(DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f));
+		actor->AddComponent<Movement>();
+		actor->AddComponent<HP>();
+		actor->AddComponent<Player>();
+		
+	}
+	//player = new Player();
 
 	// カメラ初期設定 見える位置追いかけるものなど
 	Graphics& graphics = Graphics::Instance();
@@ -114,16 +130,17 @@ void SceneGame::Update(float elapsedTime)
 {
 	
 	// カメラコントローラー更新処理
-	DirectX::XMFLOAT3 target = player->GetPosition();
-	target.y += 0.5f;// 足元から５０センチぐらい
-	cameraController->SetTarget(target);// プレイヤーの腰当たり
+	//DirectX::XMFLOAT3 target = player->GetPosition();
+	//target.y += 0.5f;// 足元から５０センチぐらい
+	cameraController->SetTarget(DirectX::XMFLOAT3(0,0,0));// プレイヤーの腰当たり
 	cameraController->Update(elapsedTime);
 
 	// ステージ更新処理
 	StageManager::instance().Update(elapsedTime);
 	
 	// プレイヤー更新処理
-	player->Update(elapsedTime);
+	//player->Update(elapsedTime);
+	ActorManager::Instance().Update(elapsedTime);
 
 	// 残像経過時間
 	AfterimageTime(elapsedTime);
@@ -178,7 +195,7 @@ void SceneGame::Render()
 		// ステージ描画
 		StageManager::instance().Render(rc, shader);
 	// プレイヤー描画
-		player->Render(rc, shader);
+		//player->Render(rc, shader);
 
 		// 残像描画
 		//AfterimageManager::Instance().Render(dc, shader);
@@ -188,7 +205,8 @@ void SceneGame::Render()
 
 		shader->End(rc);
 
-
+		ActorManager::Instance().UpdateTransform();
+		ActorManager::Instance().Render(rc.view, rc.projection);
 		
 
 		ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
@@ -212,7 +230,7 @@ void SceneGame::Render()
 	{
 		// 当たり判定の形をうつ
 		// プレイヤーデバッグプリミティブ描画
-		player->DrawDebugPrimitive();
+		//player->DrawDebugPrimitive();
 
 		// エネミーデバッグプリミティブ描画
 		EnemyManager::Instance().DrawDebugPrimitive();
@@ -233,7 +251,7 @@ void SceneGame::Render()
 	// 2DデバッグGUI描画
 	{
 		// プレイヤーデバッグ描画
-		player->DrawDebugGUI();
+		//player->DrawDebugGUI();
 		cameraController->DrawDebugGUI();
 
 		EnemyManager::Instance().DrawDebugGUI();
@@ -397,62 +415,62 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 
 void SceneGame::AfterimageTime(float elapsedTime)
 {
-	afterImageAlpha -=  elapsedTime;
-	// 動いていたら残像が出る。
-	if (player->GetAfterimageMove())
-	{
-		elapsedFrame -= elapsedTime;
-		
-		
+	//afterImageAlpha -=  elapsedTime;
+	//// 動いていたら残像が出る。
+	//if (player->GetAfterimageMove())
+	//{
+	//	elapsedFrame -= elapsedTime;
+	//	
+	//	
 
 
-	}
-	else
-	{
-		elapsedFrame = spawnafterimagetimemax;
-	}
+	//}
+	//else
+	//{
+	//	elapsedFrame = spawnafterimagetimemax;
+	//}
 
-	// 残像出す間隔
-	if (elapsedFrame <= 0)
-	{
+	//// 残像出す間隔
+	//if (elapsedFrame <= 0)
+	//{
 
-		PlayerAfterimage* playerAfterimage = new PlayerAfterimage();
-		// 配置して
-		playerAfterimage->SetPosition({ player->GetPosition() });
-		playerAfterimage->SetAngle(player->GetAngle());
-		playerAfterimage->SetTransform(player->GetTransform());
-		// 動かして
-		playerAfterimage->GetModel()->UpdateTransform(player->GetTransform(),
-			player->GetModel()->GetNodes());
+	//	PlayerAfterimage* playerAfterimage = new PlayerAfterimage();
+	//	// 配置して
+	//	playerAfterimage->SetPosition({ player->GetPosition() });
+	//	playerAfterimage->SetAngle(player->GetAngle());
+	//	playerAfterimage->SetTransform(player->GetTransform());
+	//	// 動かして
+	//	playerAfterimage->GetModel()->UpdateTransform(player->GetTransform(),
+	//		player->GetModel()->GetNodes());
 
-		// 残像の出る間隔再設定
-		elapsedFrame = spawnafterimagetimemax;
+	//	// 残像の出る間隔再設定
+	//	elapsedFrame = spawnafterimagetimemax;
 
-		// 透明度 最大値を再設定
-		afterImageAlpha = afterImageAlphaMax;
-		
-		// 生存時間セット
-		playerAfterimage->SetSurvivalTime(afterImageAlpha);
+	//	// 透明度 最大値を再設定
+	//	afterImageAlpha = afterImageAlphaMax;
+	//	
+	//	// 生存時間セット
+	//	playerAfterimage->SetSurvivalTime(afterImageAlpha);
 
-		// 消えるまでの時間再設定
-		reduce = reduceMax;
+	//	// 消えるまでの時間再設定
+	//	reduce = reduceMax;
 
-		// 消えるまでの時間セット
-		playerAfterimage->SetReduce(reduce);
+	//	// 消えるまでの時間セット
+	//	playerAfterimage->SetReduce(reduce);
 
-		// 登録
-		AfterimageManager::Instance().Register(playerAfterimage);
+	//	// 登録
+	//	AfterimageManager::Instance().Register(playerAfterimage);
 
-		// 残業ステートアニメーションの時間 姿勢
-		AfterimageManager::Instance().GetAfterimage(
-			AfterimageManager::Instance().GetAfterimageCount() - 1
-		)->SetCurrentAnimationSeconds(
-			player->GetCurrentANimationSeconds());
-		//playerAfterimage->GetModel()->UpdateTransform(player->GetTransform());
+	//	// 残業ステートアニメーションの時間 姿勢
+	//	AfterimageManager::Instance().GetAfterimage(
+	//		AfterimageManager::Instance().GetAfterimageCount() - 1
+	//	)->SetCurrentAnimationSeconds(
+	//		player->GetCurrentANimationSeconds());
+	//	//playerAfterimage->GetModel()->UpdateTransform(player->GetTransform());
 
 
 
-		
+	//	
 
-	}
+	//}
 }
