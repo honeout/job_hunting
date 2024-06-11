@@ -36,7 +36,7 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     if (damage == 0) return false;
 
     std::shared_ptr<Actor> actor = GetActor();
-    int health = actor->GetHealth();
+  /*  int health = actor->GetHealth();*/
 
     // €–S‚µ‚Ä‚¢‚éê‡‚ÍŒ’Nó‘Ô‚ğ•ÏX‚µ‚È‚¢
     if (health <= 0)return false;
@@ -61,19 +61,20 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
         OnDamaged();
     }
 
-    actor->SetHealth(health);
+    //actor->SetHealth(health);
 
     // Œ’Nó‘Ô‚ª•ÏX‚µ‚½ê‡‚Ítrue‚ğ•Ô‚·
-    return true;
+    return false;
 }
 
 bool HP::OnDamaged()
 {
+    --health;
     return true;
 }
 
 bool HP::OnDead()
 {
-    --health;
+    
     return true;
 }

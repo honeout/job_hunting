@@ -223,13 +223,13 @@ private:
 
     DirectX::XMFLOAT3 frontVec = { 0 ,0,0 };
 
-    // 上半身
+    // 上半身更新開始位置
     char* bornUpStartPoint;
 
-    // 上半身
+    // 上半身の何処まで更新するか
     char* bornUpEndPoint = "";
 
-    // 下半身
+    // 下半身更新終了位置
     char* bornDownerEndPoint;
 
     

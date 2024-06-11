@@ -43,7 +43,14 @@ public:
 	// 速力処理更新
 	void UpdateVelocity(const DirectX::XMFLOAT3& direction, float elapsedTime);
 
-
+	// 腰の位置ゲット
+	float GetStepOffSet()const { return stepOffSet; }
+	// 腰の位置セット
+	void SetStepOffSet(float stepOffSet) { this->stepOffSet = stepOffSet; }
+	// 身長ゲット
+	float GetHeight() { return this->height; }
+	// 身長セット
+	void SetHegith(float hegiht) { this->height = height; }
 
 private:
 	float		moveSpeed = 5.0f;
@@ -77,6 +84,12 @@ private:
 
 	// 地面確認
 	bool         isGround = false;
+
+	// 腰
+	float stepOffSet = 1.0f;
+
+	// 身長メートル
+	float               height = 2.0f;
 
 
 };

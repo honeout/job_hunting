@@ -62,8 +62,8 @@ public:
 	// モデルの取得
 	Model* GetModel() const { return model.get(); }
 
-	void SetStepOffset(float stepOffset) {  this->stepOffset = stepOffset; }
-	float GetStepOffset() const { return this->stepOffset; }
+	//void SetStepOffset(float stepOffset) {  this->stepOffset = stepOffset; }
+	//float GetStepOffset() const { return this->stepOffset; }
 
 	// アニメーションの時間
 	float GetCurrentANimationSeconds() const { return currentANimationSeconds; }
@@ -71,11 +71,11 @@ public:
 	void SetCurrentAnimationSeconds(const float currentANimationSeconds) { this->currentANimationSeconds = currentANimationSeconds; }
 
 
-	// HP読み取り
-	int   GetHealth() { return health; }
+	//// HP読み取り
+	//int   GetHealth() { return health; }
 
-	// HP書き込み
-	void   SetHealth(int health) { this->health = health; }
+	//// HP書き込み
+	//void   SetHealth(int health) { this->health = health; }
 
 	//DirectX::XMFLOAT3 GetVelocity() { return this->velocity; }
 
@@ -88,7 +88,7 @@ public:
 	//float GetAirControl() { return this->airControl; }
 
 	// 高さ取得
-	float GetHeight() const { return height; }
+	/*float GetHeight() const { return height; }*/
 
 	//// 水平速力更新処理
 	//void UpdateHorizontalVelocity(float elapsedFrame);
@@ -143,11 +143,7 @@ private:
 	
 	//	透明度
 	float alpha = 1;
-	// 腰
-	float stepOffset = 1.0f;
 
-	// 身長メートル
-	float               height = 2.0f;
 
 	// アニメーションの時間
 	float currentANimationSeconds = 0.0f;
@@ -159,9 +155,9 @@ private:
 	//float              grabity = -1.0f;
 
 	//最大値HP
-	int          maxHealth = 5;
-	 //HP
-     int          health = maxHealth;
+	//int          maxHealth = 5;
+	// HP
+ //    int          health = maxHealth;
      
 
 

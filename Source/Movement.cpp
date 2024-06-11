@@ -217,7 +217,7 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
     float speed = moveSpeed * elapsedTime;
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
     DirectX::XMFLOAT3 position = actor->GetPosition();
-    float stepOffSet = actor->GetStepOffset();
+    //float stepOffSet = actor->GetStepOffset();
 
 
 
@@ -288,7 +288,7 @@ void Movement::UpdateVerticalVelocity( float elapsedFrame)
     float speed = moveSpeed * elapsedFrame;
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
    
-    float stepOffSet = actor->GetStepOffset();
+    //float stepOffSet = actor->GetStepOffset();
 
 
 
@@ -315,7 +315,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
     slopeRate = 0.0f; // 傾斜率
 
-    float stepOffSet = actor->GetStepOffset();
+    //float stepOffSet = actor->GetStepOffset();
 
     // キャラクターのY軸方向となる法線ベクトル
     DirectX::XMFLOAT3 normal = { 0,1,0 };
