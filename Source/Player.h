@@ -1,5 +1,6 @@
 #pragma once
 
+#include <DirectXMath.h>
 #include "Graphics/Shader.h"
 #include "Graphics/Model.h"
 #include "Character.h"
@@ -10,7 +11,7 @@
 #include "Movement.h"
 #include "HP.h"
 #include "Input\GamePad.h"
-#include <DirectXMath.h>
+#include "CameraController.h"
 
 enum class UpAnim
 {
@@ -90,10 +91,14 @@ protected:
     //void OnDamaged() override;
 
 private:
-    // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
-    DirectX::XMFLOAT3 GetMoveVec() const;
 
-    // キャラクター操作
+    // カメラ操作
+    void CameraControl(float elapsedTime);
+
+    // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
+    DirectX::XMFLOAT3 GetMoveVec(float elapsedTime) const;
+
+    //// キャラクター操作
     void CharacterControl(float elapsedTime);
 
 
@@ -206,8 +211,10 @@ private:
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
+
     
-    
+    DirectX::XMFLOAT3 velocity = { 0,0,0 };
+ 
    Model* model = nullptr;
 
     GamePad        gamePad;
@@ -281,4 +288,17 @@ private:
 
     // アニメーションの時間 
     float currentANimationSeconds = 0.0f;
+
+    /////////////////// カメラ関係
+
+    CameraController* cameraControlle;
+
+    DirectX::XMFLOAT3	cameraAngle = DirectX::XMFLOAT3(0, 0, 0);
+    float				cameraRollSpeed = DirectX::XMConvertToRadians(90);
+    float				cameraMaxPitch = DirectX::XMConvertToRadians(45);
+    float				cameraMinPitch = DirectX::XMConvertToRadians(-45);
+    float				cameraRange = 100.0f;
+    float				characterHeight = 10.0f;
+
+
 };

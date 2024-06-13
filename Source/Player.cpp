@@ -8,6 +8,7 @@
 #include "ProjectileStraight.h"
 #include "ProjectileHoming.h"
 #include "Graphics/Model.h"
+
 #include "AfterimageManager.h"
 
 
@@ -72,6 +73,12 @@ Player::~Player()
         desEffect = nullptr;
     }
 
+    if (cameraControlle != nullptr)
+    {
+        delete cameraControlle;
+        cameraControlle = nullptr;
+    }
+
     //if (model != nullptr)
     //{
     //    delete model;
@@ -104,6 +111,7 @@ void Player::Start()
     // モデルデータを入れる。
     model = GetActor()->GetModel();
     
+    cameraControlle = new CameraController();
 
     // ヒットエフェクト読込 
     hitEffect = new Effect("Data/Effect/sunder.efk");
@@ -115,7 +123,7 @@ void Player::Start()
     // 下半身
     bornDownerEndPoint = "mixamorig:Spine";
 
-
+   
 
     hp->SetHealth(health);
 
@@ -165,14 +173,23 @@ void Player::Update(float elapsedTime)
         break;
     }
     // 速力処理更新
-    movement->UpdateVelocity(elapsedTime);
+
+    position = GetActor()->GetPosition();
+
+
 
     hp->UpdateInbincibleTimer(elapsedTime);
 
-   
+    cameraControlle->Update(elapsedTime);
+    cameraControlle->SetTarget(position);
+
     hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
 
+
+
     //UpdateTransform();
+    //CameraControl(elapsedTime);
+   //CharacterControl(elapsedTime);
 
     // プレイヤーと敵との衝突処理
     CollisionPlayerVsEnemies();
@@ -188,22 +205,22 @@ void Player::Update(float elapsedTime)
     // モデルアニメーション更新処理
     //model->UpdateAnimation(elapsedTime, true);
 
-    switch (updateanim)
-    {
-    case UpAnim::Normal:
-    {
-        // モデルアニメーション更新処理
-        //model->UpdateAnimation(elapsedTime, true);
-        break;
-    }
-    case UpAnim::Doble:
-    {
-        // モデルアニメーション更新処理
-        //model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint,bornUpEndPoint, true);
-        //model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
-        break;
-    }
-    }
+    //switch (updateanim)
+    //{
+    //case UpAnim::Normal:
+    //{
+    //    // モデルアニメーション更新処理
+    //    //model->UpdateAnimation(elapsedTime, true);
+    //    break;
+    //}
+    //case UpAnim::Doble:
+    //{
+    //    // モデルアニメーション更新処理
+    //    //model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint,bornUpEndPoint, true);
+    //    //model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
+    //    break;
+    //}
+    //}
     //model->Update_blend_animations(0.675f, frontVec.x,1.582f);
     //model->Update_blend_animations(elapsedTime, frontVec.x,36,60, true);
     //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
@@ -254,23 +271,63 @@ bool Player::InputMove(float elapsedTime)
 {
     // 進行ベクトル取得
     //DirectX::XMFLOAT3 moveVec = GetMoveVec();
-    moveVec = GetMoveVec();
-   // movement->SetMoveVecX(moveVec.x);
-   // movement->SetMoveVecZ(moveVec.z);
-    if (moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f)
-    {
-        // 移動処理
-        movement->Move(GetForwerd(angle), elapsedTime);
-        // 旋回処理
-        movement->Turn(GetForwerd(angle), elapsedTime);
-    }
+    moveVec = GetMoveVec(elapsedTime);
+
+    
 
     // 進行ベクトルがゼロベクトルでない場合は入力された
     return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
 }
 
 
-DirectX::XMFLOAT3 Player::GetMoveVec() const
+void Player::CameraControl(float elapsedTime)
+{
+    float ax = gamePad.GetAxisRX();
+    float ay = gamePad.GetAxisRY();
+
+    float lengthSq = ax * ax + ay * ay;
+    if (lengthSq > 0.1f)
+    {
+        float speed = cameraRollSpeed * elapsedTime;
+
+        cameraAngle.x += ay * speed;
+        cameraAngle.y += ax * speed;
+
+        if (cameraAngle.x < cameraMinPitch)
+        {
+            cameraAngle.x = cameraMinPitch;
+        }
+        if (cameraAngle.x > cameraMaxPitch)
+        {
+            cameraAngle.x = cameraMaxPitch;
+        }
+        if (cameraAngle.y < -DirectX::XM_PI)
+        {
+            cameraAngle.y += DirectX::XM_2PI;
+        }
+        if (cameraAngle.y > DirectX::XM_PI)
+        {
+            cameraAngle.y -= DirectX::XM_2PI;
+        }
+    }
+
+    DirectX::XMVECTOR Offset = DirectX::XMVectorSet(0.0f, characterHeight, 0.0f, 0.0f);
+    DirectX::XMVECTOR Target = DirectX::XMLoadFloat3(&GetActor()->GetPosition());
+    DirectX::XMVECTOR Focus = DirectX::XMVectorAdd(Target, Offset);
+    DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(cameraAngle.x, cameraAngle.y, cameraAngle.z);
+    DirectX::XMVECTOR Range = DirectX::XMVectorSet(0.0f, 0.0f, -cameraRange, 0.0f);
+    DirectX::XMVECTOR Vec = DirectX::XMVector3TransformCoord(Range, Transform);
+    DirectX::XMVECTOR Eye = DirectX::XMVectorAdd(Focus, Vec);
+
+    DirectX::XMFLOAT3 eye, focus;
+    DirectX::XMStoreFloat3(&eye, Eye);
+    DirectX::XMStoreFloat3(&focus, Focus);
+
+    Camera& camera = Camera::Instance();
+    camera.SetLookAt(eye, focus, DirectX::XMFLOAT3(0, 1, 0));
+}
+
+DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 {
     // 入力情報を取得
     GamePad& gamePad = Input::Instance().GetGamePad();
@@ -301,6 +358,8 @@ DirectX::XMFLOAT3 Player::GetMoveVec() const
         
     }
 
+
+
     // カメラ前方向ベクトルをXZ単位ベクトルに変換
     float cameraFrontX = cameraFront.x;
     float cameraFrontZ = cameraFront.z;
@@ -321,8 +380,43 @@ DirectX::XMFLOAT3 Player::GetMoveVec() const
     vec.z = (cameraRightZ *ax) + (cameraFrontZ * ay);// ますっぐ
     // Y軸方向には移動しない
     vec.y = 0.0f;
+
+    if (vec.x != 0 || vec.y != 0 || vec.z != 0)
+    {
+        movement->Turn( vec , elapsedTime);
+        movement->Move(vec,5, elapsedTime);
+    }
+
+    movement->UpdateVelocity(vec, elapsedTime);
+
     return vec;
 
+}
+
+void Player::CharacterControl(float elapsedTime)
+{
+    float ax = gamePad.GetAxisLX();
+    float ay = gamePad.GetAxisLY();
+
+    float lengthSq = ax * ax + ay * ay;
+    if (lengthSq > 0.1f)
+    {
+        Camera& camera = Camera::Instance();
+        const DirectX::XMFLOAT3& cameraRight = camera.GetRight();
+        const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
+
+        DirectX::XMFLOAT3 direction;
+        direction.x = (cameraRight.x * ax) + (cameraFront.x * ay);
+        direction.y = 0.0f;
+        direction.z = (cameraRight.z * ax) + (cameraFront.z * ay);
+
+        float length = sqrtf(direction.x * direction.x + direction.z * direction.z);
+        direction.x /= length;
+        direction.z /= length;
+
+        movement->Turn(direction, elapsedTime);
+        movement->Move(direction,5 ,elapsedTime);
+    }
 }
 
 
@@ -394,16 +488,18 @@ void Player::CollisionProjectilesVsEnemies()
                     {
                         DirectX::XMFLOAT3 e = enemy->GetPosition();
                         e.y += enemy->GetHeight() * 0.5f;
-                        
-                        
+
+
                         hitEffect->Play(e);
                     }
                     // 弾丸破棄
                     projectile->Destroy();
+
+
+
                 }
             }
         }
-
     }
 }
 
@@ -916,6 +1012,15 @@ void Player::UpdateJumpState(float elapsedTime)
         TransitionAttackState();
     }
 
+    //if (movement->GetStepOffSet())
+    //{
+    //    TransitionLandState();
+    //   
+    //}
+
+    
+
+
     //currentANimationSeconds = model->GetCurrentANimationSeconds();
 
 }
@@ -927,6 +1032,8 @@ void Player::TransitionLandState()
     updateanim = UpAnim::Normal;
     // 着地アニメーション再生
     model->PlayAnimation(Anim_Landing, false);
+
+    movement->SetStepOffSet(false);
 }
 
 void Player::UpdateLandState(float elapsedTime)

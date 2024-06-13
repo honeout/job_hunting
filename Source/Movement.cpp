@@ -27,28 +27,34 @@ void Movement::OnGUI()
 }
 
 // ワールド移動
-void Movement::Move(const DirectX::XMFLOAT3& direction, float elapsedTime)
+void Movement::Move(const DirectX::XMFLOAT3& direction,float speed ,float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-	float speed = moveSpeed * elapsedTime;
+    speed;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 	DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
 	DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&actor->GetPosition());
 
 	Position = DirectX::XMVectorAdd(Position, Velocity);
 
+    //moveVecX = direction.x;
+    //moveVecZ = direction.z;
+
 	DirectX::XMFLOAT3 position;
 	DirectX::XMStoreFloat3(&position, Position);
 	actor->SetPosition(position);
 
 	DirectX::XMStoreFloat3(&velocity, Velocity);
+
+
+
 }
 
 // ローカル移動
 void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-	float speed = moveSpeed * elapsedTime;
+	//speed = moveSpeed * elapsedTime;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 	DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
 	DirectX::XMVECTOR Rotation = DirectX::XMLoadFloat4(&actor->GetRotation());
@@ -62,14 +68,14 @@ void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 	DirectX::XMStoreFloat3(&position, Position);
 	actor->SetPosition(position);
 
-    DirectX::XMStoreFloat3(&velocity, Velocity);
+   // DirectX::XMStoreFloat3(&velocity, Velocity);
 }
-
+//
 // 旋回
 void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-	float speed = turnSpeed * elapsedTime;
+	turnSpeed = turnSpeed * elapsedTime;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 	DirectX::XMVECTOR Rotation = DirectX::XMLoadFloat4(&actor->GetRotation());
 	DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationQuaternion(Rotation);
@@ -87,9 +93,9 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 
 	float dot;
 	DirectX::XMStoreFloat(&dot, Dot);
-	speed = (std::min)(1.0f - dot, speed);
+    turnSpeed = (std::min)(1.0f - dot, turnSpeed);
 
-	DirectX::XMVECTOR Turn = DirectX::XMQuaternionRotationAxis(Axis, speed);
+	DirectX::XMVECTOR Turn = DirectX::XMQuaternionRotationAxis(Axis, turnSpeed);
 	Rotation = DirectX::XMQuaternionMultiply(Rotation, Turn);
 
 	DirectX::XMFLOAT4 rotation;
@@ -98,10 +104,65 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 
     
 }
+//
+////旋回処理
+//void Movement::Turn(float elapsedTime, float vx, float vz, float speed)
+//{
+//    // 1フレームでどれだけ移動
+//    speed *= elapsedTime;
+//
+//    std::shared_ptr<Actor> actor = GetActor();
+//
+//    DirectX::XMFLOAT3 angle = 
+//    {
+//        actor->GetRotation().x,
+//        actor->GetRotation().y,
+//        actor->GetRotation().z
+//    };
+//
+//    // 進行ベクトルが0ベクトルの場合は処理する必要なし
+//    if (vx == 0 && vz == 0)return;
+//
+//    float length = sqrtf(vx * vx + vz * vz);
+//    if (length < 0.001f) return;
+//
+//    vx /= length;
+//    vz /= length;
+//
+//    // 自身の回転値から前方向を求める
+//    float frontX = sinf(angle.y); // 左右を見る為
+//    float frontZ = cosf(angle.y); // 前後判定のため
+//
+//    //回転角を求めるため、２つのベクトルの内積を計算する
+//    float dot = (frontX * vx) + (frontZ * vz);// 内積
+//
+//    // 内積地は-1~1で表現されていて２つの単位ベクトルの角度が
+//    // 小さいほど１．０にちがづくという性質を利用して回転速度を調整
+//    float rot = 1.0 - dot;
+//    if (rot > speed) rot = speed;
+//
+//
+//    // 左右判定を行う為に２つの単位ベクトルの外積を計算する
+//    float cross = (frontZ * vx) - (frontX * vz);
+//
+//    // 2Dの外積値が正の場合か負の場合によって左右判定が行える
+//    // 左右判定を行うことによって左右回転を選択する
+//    if (cross < 0.0f)
+//    {
+//        angle.y -= rot;
+//    }
+//    else
+//    {
+//        angle.y += rot;
+//    }
+//
+//    actor->SetRotation(
+//        { angle.x,angle.y,angle.z,0 });
+//}
 
 
 // ワールド移動
-bool Movement::OnLanding()
+void Movement::OnLanding()
 {
     std::shared_ptr<Actor> actor = GetActor();
     
@@ -117,7 +178,11 @@ bool Movement::OnLanding()
         //	// 着地ステートへ遷移
         //	TransitionLandState();
         //}
-        return true;
+
+        
+        onLadius = true;
+
+        
     }
 }
 
@@ -125,19 +190,23 @@ void Movement::JumpVelocity( float speed)
 {
     std::shared_ptr<Actor> actor = GetActor();
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
-    DirectX::XMFLOAT3 position = actor->GetPosition();
+    //DirectX::XMFLOAT3 position = actor->GetPosition();
 
-    velocity.y += speed;
+    jumpSpeed = speed;
 
-   
+    //actor->SetPosition(position);
     //position.y = (std::min)(position.y, speed);
+    //actor->SetPosition(position);
 }
 
 void Movement::UpdateHorizontalVelocity( float elapsedFrame)
 {
     std::shared_ptr<Actor> actor = GetActor();
-    float speed = moveSpeed * elapsedFrame;
+    //speed = moveSpeed * elapsedFrame;
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
+
+
+
     DirectX::XMFLOAT3 position = actor->GetPosition();
 
 
@@ -149,7 +218,7 @@ void Movement::UpdateHorizontalVelocity( float elapsedFrame)
         float friction = this->friction * elapsedFrame;
 
         // 空中にいるときは摩擦力を減らす
-        if (!isGround) friction *= isGround;// 元々の摩擦の計数を減らす為
+        if (!isGround) friction *= airControl;// 元々の摩擦の計数を減らす為
 
         // 摩擦による横方向の減速処理
         if (length > friction)
@@ -214,11 +283,10 @@ void Movement::UpdateHorizontalVelocity( float elapsedFrame)
 void Movement::UpdateHorizontalMove( float elapsedTime)
 {
     std::shared_ptr<Actor> actor = GetActor();
-    float speed = moveSpeed * elapsedTime;
+    //speed = moveSpeed * elapsedTime;
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
     DirectX::XMFLOAT3 position = actor->GetPosition();
     //float stepOffSet = actor->GetStepOffset();
-
 
 
     // 水平速力量計算
@@ -285,16 +353,20 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
 void Movement::UpdateVerticalVelocity( float elapsedFrame)
 {
     std::shared_ptr<Actor> actor = GetActor();
-    float speed = moveSpeed * elapsedFrame;
+    //speed = moveSpeed * elapsedFrame;
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
-   
+    //DirectX::XMFLOAT3 position = actor->GetPosition();
     //float stepOffSet = actor->GetStepOffset();
 
+    //DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
+    //DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
 
+   // DirectX::XMStoreFloat3(&velocity, Velocity);
 
     // 重力処理
-    this->velocity.y += this->gravity * elapsedFrame;
+    velocity.y += gravity * elapsedFrame;
 
+    //actor->SetPosition(position);
 
 }
 
@@ -304,14 +376,10 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
     DirectX::XMFLOAT3 position = actor->GetPosition();
 
-    DirectX::XMFLOAT3 angle = {
-        actor->GetRotation().x ,
-        actor->GetRotation().y,
-        actor->GetRotation().z
-    };
+    DirectX::XMFLOAT4 rotation = { actor->GetRotation()};
 
     // 垂直方向の移動量
-    float my = velocity.y * elapsedTime;
+    float my = (velocity.y + jumpSpeed) * elapsedTime;
 
     slopeRate = 0.0f; // 傾斜率
 
@@ -321,7 +389,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
     DirectX::XMFLOAT3 normal = { 0,1,0 };
 
     // 落下中
-    if (my < 0.0f)
+    if (my <= 0.0f)
     {
         // レイの開始位置は足元より少し上
         DirectX::XMFLOAT3 start = { position.x, position.y + stepOffSet, position.z };
@@ -344,7 +412,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
             // 回転
             // ｙだけな理由は角度が真横になった時にクモみたいにひっつかないように
-            angle.y += hit.rotation.y;
+            rotation.y += hit.rotation.y;
 
             // 傾斜率の計算 法線とXZ平面に置けるベクトルとｙ軸のベクトルで傾きが求められる。
             float normalLengthXZ = sqrtf(hit.normal.x * hit.normal.x + hit.normal.z * hit.normal.z);
@@ -357,6 +425,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
             }
             isGround = true;
             velocity.y = 0.0f;
+            jumpSpeed = 0.0f;
 
         }
         else
@@ -382,16 +451,21 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
         // 線形補完で滑らかに回転する
         // (変化する値,最終的な値,これだけ進)
-        angle.x = Mathf::Lerp(angle.x, storageAngleX, 0.2f);
-        angle.z = Mathf::Lerp(angle.z, storageAngleZ, 0.2f);
+        rotation.x = Mathf::Lerp(rotation.x, storageAngleX, 0.2f);
+        rotation.z = Mathf::Lerp(rotation.z, storageAngleZ, 0.2f);
 
     }
 
     actor->SetPosition(position);
+    actor->SetRotation(rotation);
 }
 
-void Movement::UpdateVelocity( float elapsedTime)
+void Movement::UpdateVelocity(const DirectX::XMFLOAT3& direction, float elapsedTime)
 {
+    DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
+    DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, moveSpeed);
+
+    DirectX::XMStoreFloat3(&velocity, Velocity);
 
     // 経過フレーム
     float elapsedFrame = 60.0f * elapsedTime;
@@ -400,10 +474,11 @@ void Movement::UpdateVelocity( float elapsedTime)
     UpdateVerticalVelocity(elapsedFrame);
 
     // 水平速力更新処理
-    UpdateHorizontalVelocity(elapsedFrame);
-    // 垂直移動更新処理
-    UpdateVerticalMove(elapsedTime);
+    UpdateHorizontalVelocity( elapsedFrame);
 
     // 水平移動更新処理
     UpdateHorizontalMove(elapsedFrame);
+
+    // 垂直移動更新処理
+    UpdateVerticalMove(elapsedTime);
 }

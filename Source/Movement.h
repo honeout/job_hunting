@@ -17,14 +17,15 @@ public:
 	void OnGUI() override;
 
 	// 移動
-	void Move(const DirectX::XMFLOAT3& direction, float elapsedTime);
+	void Move(const DirectX::XMFLOAT3& direction,  float speed,  float elapsedTime);
 	void MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime);
 
 	// 旋回
+	//void Turn(float elapsedTime, float vx, float vz, float speed);
 	void Turn(const DirectX::XMFLOAT3& direction, float elapsedTime);
 
 	// 着地した時に呼べれる
-	bool OnLanding();
+	void OnLanding();
 
 	// ジャンプ処理
 	void JumpVelocity( float speed);
@@ -36,12 +37,12 @@ public:
 
 
 	// 垂直速力更新処理
-	void UpdateVerticalVelocity( float elapsedFrame);
+	void UpdateVerticalVelocity(float elapsedFrame);
 
 	// 垂直移動更新処理
-	void UpdateVerticalMove( float elapsedTime);
+	void UpdateVerticalMove(float elapsedTime);
 	// 速力処理更新
-	void UpdateVelocity( float elapsedTime);
+	void UpdateVelocity(const DirectX::XMFLOAT3& direction, float elapsedTime);
 
 	// 腰の位置ゲット
 	float GetStepOffSet()const { return stepOffSet; }
@@ -55,9 +56,13 @@ public:
 	void SetMoveVecX(float moveVecX) { this->moveVecX = moveVecX; }
 	void SetMoveVecZ(float moveVecZ) { this->moveVecZ = moveVecZ; }
 
+
+	bool GetOnLadius() {}
+
 private:
 	float		moveSpeed = 5.0f;
 	float		turnSpeed = 6.28f;
+	float       jumpSpeed = 0;
 
 	// 最大ジャンプ数
 	int jumpCount = 0;
@@ -94,5 +99,10 @@ private:
 	// 身長メートル
 	float               height = 2.0f;
 
+	float speed = 0;
 
+	// 着地処理
+	bool onLadius = false;
+
+	float airControl = 0.3f;
 };

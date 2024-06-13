@@ -43,6 +43,11 @@ public:
 
 	// ‰ñ“]‚ÌÝ’è
 	void SetRotation(const DirectX::XMFLOAT4& rotation) { this->rotation = rotation; }
+	void SetRotation3(const DirectX::XMFLOAT3& rotation) { 
+		this->rotation.x = rotation.x;
+		this->rotation.y = rotation.y;
+		this->rotation.z = rotation.z;
+	}
 
 	// ‰ñ“]‚ÌŽæ“¾
 	const DirectX::XMFLOAT4& GetRotation() const { return rotation; }

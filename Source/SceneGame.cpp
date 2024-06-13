@@ -47,12 +47,13 @@ void SceneGame::Initialize()
 		actor->SetName("Player");
 		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
 		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
-		actor->SetScale(DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f));
+		actor->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
 		actor->AddComponent<Movement>();
 		actor->AddComponent<HP>();
 		actor->AddComponent<Player>();
 		
 	}
+
 	//player = new Player();
 
 	// カメラ初期設定 見える位置追いかけるものなど
@@ -72,7 +73,7 @@ void SceneGame::Initialize()
 		1000.0f
 	);
 	// カメラコントローラー初期化
-	cameraController = new CameraController();
+	//cameraController = new CameraController();
 
 	// エネミー初期化
 	//EnemyManager& enemyManager = EnemyManager::Instance();
@@ -106,12 +107,12 @@ void SceneGame::Finalize()
 
 	AfterimageManager::Instance().Clear();
 
-	// カメラコントーラー終了化
-	if (this->cameraController)
-	{
-		delete cameraController;
-		cameraController = nullptr;
-	}
+	//// カメラコントーラー終了化
+	//if (this->cameraController)
+	//{
+	//	delete cameraController;
+	//	cameraController = nullptr;
+	//}
 
 	// プレイヤー終了化
 	if (this->player)
@@ -132,8 +133,8 @@ void SceneGame::Update(float elapsedTime)
 	// カメラコントローラー更新処理
 	//DirectX::XMFLOAT3 target = player->GetPosition();
 	//target.y += 0.5f;// 足元から５０センチぐらい
-	cameraController->SetTarget(DirectX::XMFLOAT3(0,0,0));// プレイヤーの腰当たり
-	cameraController->Update(elapsedTime);
+	//cameraController->SetTarget();// プレイヤーの腰当たり
+	//cameraController->Update(elapsedTime);
 
 	// ステージ更新処理
 	StageManager::instance().Update(elapsedTime);
@@ -252,7 +253,7 @@ void SceneGame::Render()
 	{
 		// プレイヤーデバッグ描画
 		//player->DrawDebugGUI();
-		cameraController->DrawDebugGUI();
+		//cameraController->DrawDebugGUI();
 
 		EnemyManager::Instance().DrawDebugGUI();
 
