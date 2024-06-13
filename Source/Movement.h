@@ -42,7 +42,7 @@ public:
 	// 垂直移動更新処理
 	void UpdateVerticalMove(float elapsedTime);
 	// 速力処理更新
-	void UpdateVelocity(const DirectX::XMFLOAT3& direction, float elapsedTime);
+	void UpdateVelocity( float elapsedTime);
 
 	// 腰の位置ゲット
 	float GetStepOffSet()const { return stepOffSet; }
@@ -58,6 +58,8 @@ public:
 
 
 	bool GetOnLadius() { return onLadius; }
+
+	void SetOnLadius(bool onLadius) {  this->onLadius = onLadius; }
 
 	DirectX::XMFLOAT3 GetVelocity() { return velocity; }
 
@@ -89,7 +91,7 @@ private:
 	float moveVecZ = 0.0f;
 
 	// 重力
-	float gravity;
+	float gravity = -1.0f;
 
 
 	// 地面確認

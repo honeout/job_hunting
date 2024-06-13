@@ -24,6 +24,7 @@ void Movement::OnGUI()
 	ImGui::InputFloat("Move Speed", &moveSpeed);
 	ImGui::InputFloat("Turn Speed", &turnSpeed);
     ImGui::InputInt("Jump max", &jumpCount);
+    ImGui::InputFloat("stepOffSet", &stepOffSet);
 }
 
 // ワールド移動
@@ -170,6 +171,7 @@ void Movement::OnLanding()
     {
         onLadius = true;
         
+        
     }
 }
 
@@ -185,15 +187,15 @@ void Movement::JumpVelocity( float speed)
     
 
 
-    //velocity.y = speed;
-    jumpSpeed = speed;
+    velocity.y = speed;
+    //jumpSpeed = speed;
 
     //position.y = position.y * jumpSpeed;
 
    // position.y += velocity.y;
 
     //actor->SetPosition(position);
-    position.y = (std::min)(jumpSpeedMax, jumpSpeed);
+    //position.y = (std::min)(jumpSpeedMax, jumpSpeed);
     actor->SetPosition(position);
 }
 
@@ -376,13 +378,12 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
     DirectX::XMFLOAT4 rotation = { actor->GetRotation()};
 
-    velocity.y;
     // 垂直方向の移動量
     float my = velocity.y * elapsedTime;
 
     slopeRate = 0.0f; // 傾斜率
 
-    //float stepOffSet = actor->GetStepOffset();
+    
 
     // キャラクターのY軸方向となる法線ベクトル
     DirectX::XMFLOAT3 normal = { 0,1,0 };
@@ -424,7 +425,8 @@ void Movement::UpdateVerticalMove( float elapsedTime)
             }
             isGround = true;
             velocity.y = 0.0f;
-            jumpSpeed = 0.0f;
+            
+            //jumpSpeed = 0.0f;
 
         }
         else
@@ -460,12 +462,12 @@ void Movement::UpdateVerticalMove( float elapsedTime)
     actor->SetRotation(rotation);
 }
 
-void Movement::UpdateVelocity(const DirectX::XMFLOAT3& direction, float elapsedTime)
+void Movement::UpdateVelocity( float elapsedTime)
 {
-    DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-    DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
+    //DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
+    //DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
 
-    DirectX::XMStoreFloat3(&velocity, Velocity);
+  /*  DirectX::XMStoreFloat3(&velocity, Velocity);*/
 
 
     // 経過フレーム

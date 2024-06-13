@@ -243,7 +243,7 @@ private:
     State                   state = State::Idle;
     State                   stated;
     
-    float gravity = 1;
+    float gravity =-1.0f;
 
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
     int jumpfliptime = gravity * 5;

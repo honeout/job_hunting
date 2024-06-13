@@ -176,7 +176,7 @@ void Player::Update(float elapsedTime)
 
     position = GetActor()->GetPosition();
 
-    Ground();
+    
 
     //velocity = movement->GetVelocity();
 
@@ -187,6 +187,7 @@ void Player::Update(float elapsedTime)
 
     hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
 
+    movement->UpdateVelocity(elapsedTime);
 
 
     //UpdateTransform();
@@ -389,7 +390,7 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
         movement->Move(vec,5, elapsedTime);
     }
 
-    movement->UpdateVelocity(vec, elapsedTime);
+   
 
     return vec;
 
@@ -1003,7 +1004,7 @@ void Player::UpdateJumpState(float elapsedTime)
 {
 
     // ジャンプ入力処理
-    if (InputJump()&&jumpCount == 2)
+    if (InputJump()&&jumpCount >= 1)
     {
         TransitionJumpFlipState();
     }
@@ -1013,6 +1014,8 @@ void Player::UpdateJumpState(float elapsedTime)
     {
         TransitionAttackState();
     }
+
+    Ground();
 
     //if (movement->GetStepOffSet())
     //{
@@ -1035,7 +1038,8 @@ void Player::TransitionLandState()
     // 着地アニメーション再生
     model->PlayAnimation(Anim_Landing, false);
 
-    movement->SetStepOffSet(false);
+    //movement->SetStepOffSet(false);
+    
 }
 
 void Player::UpdateLandState(float elapsedTime)
@@ -1045,7 +1049,7 @@ void Player::UpdateLandState(float elapsedTime)
     // もし終わったら待機に変更
     if (!model->IsPlayAnimation())
     {
-
+        movement->SetOnLadius(false);
         TransitionIdleState();
     }
 
@@ -1256,7 +1260,9 @@ DirectX::XMFLOAT3 Player::GetForwerd(DirectX::XMFLOAT3 angle)
 void Player::Ground()
 {
     if (movement->GetOnLadius())
+    {
+        jumpCount = 0;
         TransitionLandState();
-
+    }
     
 }
