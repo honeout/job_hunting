@@ -378,7 +378,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
     DirectX::XMFLOAT4 rotation = { actor->GetRotation()};
 
-    velocity.y;
+
     // ‚’¼•ûŒü‚ÌˆÚ“®—Ê
     float my = velocity.y * elapsedTime;
 

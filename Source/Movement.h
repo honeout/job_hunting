@@ -67,8 +67,6 @@ private:
 	float       jumpSpeed = 0;
 	float       jumpSpeedMax = 20;
 
-	//DirectX::XMFLOAT4 rotation;
-
 	// Å‘åƒWƒƒƒ“ƒv”
 	int jumpCount = 0;
 
