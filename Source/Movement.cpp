@@ -30,21 +30,15 @@ void Movement::OnGUI()
 void Movement::Move(const DirectX::XMFLOAT3& direction,float speed ,float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-    this->speed = moveSpeed * elapsedTime;
+    moveSpeed = speed * elapsedTime;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-	DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, this->speed);
-	DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&actor->GetPosition());
+	DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, moveSpeed);
 
-	Position = DirectX::XMVectorAdd(Position, Velocity);
 
-    //moveVecX = direction.x;
-    //moveVecZ = direction.z;
+    DirectX::XMStoreFloat3(&velocity, Velocity);
 
-	DirectX::XMFLOAT3 position;
-	DirectX::XMStoreFloat3(&position, Position);
-	actor->SetPosition(position);
-
-	DirectX::XMStoreFloat3(&velocity, Velocity);
+    moveVecX = velocity.x;
+    moveVecZ = velocity.z;
 
 
 
@@ -346,8 +340,8 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
         }
 
         actor->SetPosition(position);
+        
     }
-
 }
 
 void Movement::UpdateVerticalVelocity( float elapsedFrame)
