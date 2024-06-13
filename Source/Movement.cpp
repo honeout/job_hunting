@@ -69,7 +69,7 @@ void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-	speed = turnSpeed * elapsedTime;
+	turnSpeed = turnSpeed * elapsedTime;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 	DirectX::XMVECTOR Rotation = DirectX::XMLoadFloat4(&actor->GetRotation());
 	DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationQuaternion(Rotation);
@@ -87,9 +87,9 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 
 	float dot;
 	DirectX::XMStoreFloat(&dot, Dot);
-    speed = (std::min)(1.0f - dot, speed);
+    turnSpeed = (std::min)(1.0f - dot, turnSpeed);
 
-	DirectX::XMVECTOR Turn = DirectX::XMQuaternionRotationAxis(Axis, speed);
+	DirectX::XMVECTOR Turn = DirectX::XMQuaternionRotationAxis(Axis, turnSpeed);
 	Rotation = DirectX::XMQuaternionMultiply(Rotation, Turn);
 
 	DirectX::XMFLOAT4 rotation;
@@ -371,6 +371,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
     DirectX::XMFLOAT3 position = actor->GetPosition();
 
     DirectX::XMFLOAT4 rotation = { actor->GetRotation()};
+
 
     // ‚’¼•ûŒü‚ÌˆÚ“®—Ê
     float my = (velocity.y + jumpSpeed) * elapsedTime;

@@ -64,6 +64,8 @@ private:
 	float		turnSpeed = 6.28f;
 	float       jumpSpeed = 0;
 
+	//DirectX::XMFLOAT4 rotation;
+
 	// Å‘åƒWƒƒƒ“ƒv”
 	int jumpCount = 0;
 
