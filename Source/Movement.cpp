@@ -24,8 +24,6 @@ void Movement::OnGUI()
 	ImGui::InputFloat("Move Speed", &moveSpeed);
 	ImGui::InputFloat("Turn Speed", &turnSpeed);
     ImGui::InputInt("Jump max", &jumpCount);
-    //ImGui::InputFloat("Jump Speed", &jumpSpeed);
-    //ImGui::InputFloat3("velocity", &velocity.x);
 }
 
 // ƒ[ƒ‹ƒhˆÚ“®
@@ -195,7 +193,7 @@ void Movement::JumpVelocity( float speed)
    // position.y += velocity.y;
 
     //actor->SetPosition(position);
-    //position.y = (std::min)(, jumpSpeed);
+    position.y = (std::min)(jumpSpeedMax, jumpSpeed);
     actor->SetPosition(position);
 }
 
@@ -378,6 +376,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
     DirectX::XMFLOAT4 rotation = { actor->GetRotation()};
 
+    velocity.y;
     // ‚’¼•ûŒü‚ÌˆÚ“®—Ê
     float my = velocity.y * elapsedTime;
 
