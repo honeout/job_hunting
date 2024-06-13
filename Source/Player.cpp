@@ -176,7 +176,9 @@ void Player::Update(float elapsedTime)
 
     position = GetActor()->GetPosition();
 
+    Ground();
 
+    //velocity = movement->GetVelocity();
 
     hp->UpdateInbincibleTimer(elapsedTime);
 
@@ -1249,4 +1251,12 @@ DirectX::XMFLOAT3 Player::GetForwerd(DirectX::XMFLOAT3 angle)
     dir.z = cosf(angle.y);
 
     return dir;
+}
+
+void Player::Ground()
+{
+    if (movement->GetOnLadius())
+        TransitionLandState();
+
+    
 }

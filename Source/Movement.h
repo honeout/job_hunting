@@ -28,7 +28,7 @@ public:
 	void OnLanding();
 
 	// ジャンプ処理
-	void JumpVelocity( float speed);
+	void JumpVelocity  ( float speed);
 
 	// 水平速力更新処理
 	void UpdateHorizontalVelocity( float elapsedFrame);
@@ -57,12 +57,15 @@ public:
 	void SetMoveVecZ(float moveVecZ) { this->moveVecZ = moveVecZ; }
 
 
-	bool GetOnLadius() {}
+	bool GetOnLadius() { return onLadius; }
+
+	DirectX::XMFLOAT3 GetVelocity() { return velocity; }
 
 private:
 	float		moveSpeed = 5.0f;
 	float		turnSpeed = 6.28f;
 	float       jumpSpeed = 0;
+	float       jumpSpeedMax = 20;
 
 	//DirectX::XMFLOAT4 rotation;
 

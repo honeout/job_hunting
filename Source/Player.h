@@ -206,7 +206,7 @@ private:
 
    // Model* GetModel() const { return model; }
 
-
+    void Ground();
 
 private:
     std::shared_ptr<Movement>	movement;

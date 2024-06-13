@@ -24,6 +24,8 @@ void Movement::OnGUI()
 	ImGui::InputFloat("Move Speed", &moveSpeed);
 	ImGui::InputFloat("Turn Speed", &turnSpeed);
     ImGui::InputInt("Jump max", &jumpCount);
+    //ImGui::InputFloat("Jump Speed", &jumpSpeed);
+    //ImGui::InputFloat3("velocity", &velocity.x);
 }
 
 // ワールド移動
@@ -49,6 +51,7 @@ void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
 	//speed = moveSpeed * elapsedTime;
+    speed = moveSpeed * elapsedTime;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 	DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
 	DirectX::XMVECTOR Rotation = DirectX::XMLoadFloat4(&actor->GetRotation());
@@ -69,7 +72,7 @@ void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-	turnSpeed = turnSpeed * elapsedTime;
+	speed = turnSpeed * elapsedTime;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 	DirectX::XMVECTOR Rotation = DirectX::XMLoadFloat4(&actor->GetRotation());
 	DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationQuaternion(Rotation);
@@ -87,9 +90,9 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 
 	float dot;
 	DirectX::XMStoreFloat(&dot, Dot);
-    turnSpeed = (std::min)(1.0f - dot, turnSpeed);
+    speed = (std::min)(1.0f - dot, speed);
 
-	DirectX::XMVECTOR Turn = DirectX::XMQuaternionRotationAxis(Axis, turnSpeed);
+	DirectX::XMVECTOR Turn = DirectX::XMQuaternionRotationAxis(Axis, speed);
 	Rotation = DirectX::XMQuaternionMultiply(Rotation, Turn);
 
 	DirectX::XMFLOAT4 rotation;
@@ -167,15 +170,7 @@ void Movement::OnLanding()
     //// 下方向の速力が一定以上なら着地ステートへ  十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
     if (velocity.y < gravity * 5.0f)
     {
-        //if (state != State::Damage && state != State::Death)
-        //{
-        //	// 着地ステートへ遷移
-        //	TransitionLandState();
-        //}
-
-        
         onLadius = true;
-
         
     }
 }
@@ -184,13 +179,24 @@ void Movement::JumpVelocity( float speed)
 {
     std::shared_ptr<Actor> actor = GetActor();
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
-    //DirectX::XMFLOAT3 position = actor->GetPosition();
+    DirectX::XMFLOAT3 position = actor->GetPosition();
 
+
+
+
+    
+
+
+    //velocity.y = speed;
     jumpSpeed = speed;
 
+    //position.y = position.y * jumpSpeed;
+
+   // position.y += velocity.y;
+
     //actor->SetPosition(position);
-    //position.y = (std::min)(position.y, speed);
-    //actor->SetPosition(position);
+    position.y = (std::min)(jumpSpeedMax, jumpSpeed);
+    actor->SetPosition(position);
 }
 
 void Movement::UpdateHorizontalVelocity( float elapsedFrame)
@@ -372,9 +378,9 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
     DirectX::XMFLOAT4 rotation = { actor->GetRotation()};
 
-
+    velocity.y;
     // 垂直方向の移動量
-    float my = (velocity.y + jumpSpeed) * elapsedTime;
+    float my = velocity.y * elapsedTime;
 
     slopeRate = 0.0f; // 傾斜率
 
@@ -428,6 +434,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
             // 空中に浮いている
             position.y += my;
             isGround = false;
+            onLadius = false;
         }
 
     }
@@ -461,6 +468,7 @@ void Movement::UpdateVelocity(const DirectX::XMFLOAT3& direction, float elapsedT
     DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
 
     DirectX::XMStoreFloat3(&velocity, Velocity);
+
 
     // 経過フレーム
     float elapsedFrame = 60.0f * elapsedTime;
