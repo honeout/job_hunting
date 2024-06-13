@@ -65,7 +65,7 @@ private:
 	float		moveSpeed = 5.0f;
 	float		turnSpeed = 6.28f;
 	float       jumpSpeed = 0;
-	float       jumpSpeedMax = 20;
+
 
 	// Å‘åƒWƒƒƒ“ƒv”
 	int jumpCount = 0;

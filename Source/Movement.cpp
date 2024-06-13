@@ -195,7 +195,7 @@ void Movement::JumpVelocity( float speed)
    // position.y += velocity.y;
 
     //actor->SetPosition(position);
-    position.y = (std::min)(jumpSpeedMax, jumpSpeed);
+    //position.y = (std::min)(, jumpSpeed);
     actor->SetPosition(position);
 }
 
@@ -377,7 +377,6 @@ void Movement::UpdateVerticalMove( float elapsedTime)
     DirectX::XMFLOAT3 position = actor->GetPosition();
 
     DirectX::XMFLOAT4 rotation = { actor->GetRotation()};
-
 
     // ‚’¼•ûŒü‚ÌˆÚ“®—Ê
     float my = velocity.y * elapsedTime;
