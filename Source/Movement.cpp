@@ -30,9 +30,9 @@ void Movement::OnGUI()
 void Movement::Move(const DirectX::XMFLOAT3& direction,float speed ,float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-    speed;
+    this->speed = moveSpeed * elapsedTime;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-	DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
+	DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, this->speed);
 	DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&actor->GetPosition());
 
 	Position = DirectX::XMVectorAdd(Position, Velocity);
@@ -75,7 +75,7 @@ void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-	turnSpeed = turnSpeed * elapsedTime;
+	speed = turnSpeed * elapsedTime;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 	DirectX::XMVECTOR Rotation = DirectX::XMLoadFloat4(&actor->GetRotation());
 	DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationQuaternion(Rotation);
@@ -93,9 +93,9 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 
 	float dot;
 	DirectX::XMStoreFloat(&dot, Dot);
-    turnSpeed = (std::min)(1.0f - dot, turnSpeed);
+    speed = (std::min)(1.0f - dot, speed);
 
-	DirectX::XMVECTOR Turn = DirectX::XMQuaternionRotationAxis(Axis, turnSpeed);
+	DirectX::XMVECTOR Turn = DirectX::XMQuaternionRotationAxis(Axis, speed);
 	Rotation = DirectX::XMQuaternionMultiply(Rotation, Turn);
 
 	DirectX::XMFLOAT4 rotation;
@@ -463,7 +463,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 void Movement::UpdateVelocity(const DirectX::XMFLOAT3& direction, float elapsedTime)
 {
     DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-    DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, moveSpeed);
+    DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
 
     DirectX::XMStoreFloat3(&velocity, Velocity);
 
