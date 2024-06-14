@@ -176,7 +176,9 @@ void Player::Update(float elapsedTime)
 
     position = GetActor()->GetPosition();
 
-    
+    //velocity = movement->GetVelocity();
+
+    //movement->SetVelocity(velocity);
 
     //velocity = movement->GetVelocity();
 
@@ -285,7 +287,7 @@ bool Player::InputMove(float elapsedTime)
 
 void Player::CameraControl(float elapsedTime)
 {
-    float ax = gamePad.GetAxisRX();
+  /*  float ax = gamePad.GetAxisRX();
     float ay = gamePad.GetAxisRY();
 
     float lengthSq = ax * ax + ay * ay;
@@ -327,7 +329,7 @@ void Player::CameraControl(float elapsedTime)
     DirectX::XMStoreFloat3(&focus, Focus);
 
     Camera& camera = Camera::Instance();
-    camera.SetLookAt(eye, focus, DirectX::XMFLOAT3(0, 1, 0));
+    camera.SetLookAt(eye, focus, DirectX::XMFLOAT3(0, 1, 0));*/
 }
 
 DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
@@ -386,8 +388,8 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
     if (vec.x != 0 || vec.y != 0 || vec.z != 0)
     {
-        movement->Turn( vec , elapsedTime);
         movement->Move(vec,5, elapsedTime);
+        movement->Turn( vec , elapsedTime);
     }
 
    
@@ -398,7 +400,7 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
 void Player::CharacterControl(float elapsedTime)
 {
-    float ax = gamePad.GetAxisLX();
+  /*  float ax = gamePad.GetAxisLX();
     float ay = gamePad.GetAxisLY();
 
     float lengthSq = ax * ax + ay * ay;
@@ -419,7 +421,7 @@ void Player::CharacterControl(float elapsedTime)
 
         movement->Turn(direction, elapsedTime);
         movement->Move(direction,5 ,elapsedTime);
-    }
+    }*/
 }
 
 

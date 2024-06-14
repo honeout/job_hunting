@@ -24,22 +24,26 @@ void Movement::OnGUI()
 	ImGui::InputFloat("Move Speed", &moveSpeed);
 	ImGui::InputFloat("Turn Speed", &turnSpeed);
     ImGui::InputInt("Jump max", &jumpCount);
-    ImGui::InputFloat("stepOffSet", &stepOffSet);
+    //ImGui::InputFloat("stepOffSet", &stepOffSet);
+    ImGui::InputFloat3("velocity", &velocity.x);
+
+    
 }
 
 // ワールド移動
 void Movement::Move(const DirectX::XMFLOAT3& direction,float speed ,float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-    moveSpeed = speed * elapsedTime;
-	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-	DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, moveSpeed);
+   // moveSpeed = speed * elapsedTime;
+    maxMoveSpeed = speed;
+	//DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
+	//DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, moveSpeed);
 
 
-    DirectX::XMStoreFloat3(&velocity, Velocity);
+    //DirectX::XMStoreFloat3(&velocity, Velocity);
 
-    moveVecX = velocity.x;
-    moveVecZ = velocity.z;
+    moveVecX = direction.x;
+    moveVecZ = direction.z;
 
 
 
@@ -231,7 +235,7 @@ void Movement::JumpVelocity( float speed)
 {
     std::shared_ptr<Actor> actor = GetActor();
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
-    DirectX::XMFLOAT3 position = actor->GetPosition();
+    //DirectX::XMFLOAT3 position = actor->GetPosition();
 
 
 
@@ -248,7 +252,7 @@ void Movement::JumpVelocity( float speed)
 
     //actor->SetPosition(position);
     //position.y = (std::min)(jumpSpeedMax, jumpSpeed);
-    actor->SetPosition(position);
+    //actor->SetPosition(position);
 }
 
 void Movement::UpdateHorizontalVelocity( float elapsedFrame)
@@ -258,7 +262,7 @@ void Movement::UpdateHorizontalVelocity( float elapsedFrame)
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
 
 
-
+    
     DirectX::XMFLOAT3 position = actor->GetPosition();
 
 
@@ -397,28 +401,20 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
             position.z += mz;
         }
 
-        actor->SetPosition(position);
         
     }
+        actor->SetPosition(position);
 }
 
 void Movement::UpdateVerticalVelocity( float elapsedFrame)
 {
     std::shared_ptr<Actor> actor = GetActor();
-    //speed = moveSpeed * elapsedFrame;
-    //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
-    //DirectX::XMFLOAT3 position = actor->GetPosition();
-    //float stepOffSet = actor->GetStepOffset();
-
-    //DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-    //DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
-
-   // DirectX::XMStoreFloat3(&velocity, Velocity);
+  
 
     // 重力処理
     velocity.y += gravity * elapsedFrame;
 
-    //actor->SetPosition(position);
+ 
 
 }
 
@@ -532,7 +528,7 @@ void Movement::UpdateVelocity( float elapsedTime)
     UpdateHorizontalVelocity( elapsedFrame);
 
     // 水平移動更新処理
-    UpdateHorizontalMove(elapsedFrame);
+    UpdateHorizontalMove(elapsedTime);
 
     // 垂直移動更新処理
     UpdateVerticalMove(elapsedTime);

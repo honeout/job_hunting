@@ -63,6 +63,8 @@ public:
 
 	DirectX::XMFLOAT3 GetVelocity() { return velocity; }
 
+    void SetVelocity(DirectX::XMFLOAT3 velocity) {  this->velocity = velocity; }
+
 private:
 	float		moveSpeed = 5.0f;
 	float		turnSpeed = 6.28f;
@@ -109,4 +111,6 @@ private:
 	bool onLadius = false;
 
 	float airControl = 0.3f;
+
+	DirectX::XMFLOAT3 positionX = { 0,0,0 };
 };

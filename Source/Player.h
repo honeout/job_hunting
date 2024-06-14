@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 #include "Graphics/Shader.h"
 #include "Graphics/Model.h"
-#include "Character.h"
+//#include "Character.h"
 #include "EnemyManager.h"
 #include "Collision.h"
 #include "ProjectileManager.h"
