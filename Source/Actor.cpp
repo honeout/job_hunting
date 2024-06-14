@@ -31,13 +31,23 @@ void Actor::Update(float elapsedTime)
 // 行列の更新
 void Actor::UpdateTransform()
 {
-	// ワールド行列の更新
-	DirectX::XMVECTOR Q = DirectX::XMLoadFloat4(&rotation);
-	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
-	DirectX::XMMATRIX R = DirectX::XMMatrixRotationQuaternion(Q);
-	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 
-	DirectX::XMMATRIX W = S * R * T;
+
+	// スケールだけ行列を作成
+	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+
+	// 回転行列作成
+	DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(rotation.x);
+	DirectX::XMMATRIX Y = DirectX::XMMatrixRotationY(rotation.y);
+	DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(rotation.z);
+	DirectX::XMMATRIX R = Y * X * Z;
+
+
+	// 位置行列だけを作成
+	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+	// 3つの行列を組み合わせ、ワールド行列を作成
+	DirectX::XMMATRIX W = S * R * T;// 行列は計算順番変えると結果が変わる
+	// 計算したワールド行列を取り出す
 	DirectX::XMStoreFloat4x4(&transform, W);
 
 	// モデルの行列更新
@@ -45,6 +55,21 @@ void Actor::UpdateTransform()
 	{
 		model->UpdateTransform(transform);
 	}
+
+	//// ワールド行列の更新
+	//DirectX::XMVECTOR Q = DirectX::XMLoadFloat4(&rotation);
+	//DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+	//DirectX::XMMATRIX R = DirectX::XMMatrixRotationQuaternion(Q);
+	//DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+
+	//DirectX::XMMATRIX W = S * R * T;
+	//DirectX::XMStoreFloat4x4(&transform, W);
+
+	//// モデルの行列更新
+	//if (model != nullptr)
+	//{
+	//	model->UpdateTransform(transform);
+	//}
 }
 
 // GUI表示

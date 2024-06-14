@@ -49,8 +49,8 @@ void Movement::Move(const DirectX::XMFLOAT3& direction,float speed ,float elapse
 void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-	//speed = moveSpeed * elapsedTime;
-    speed = moveSpeed * elapsedTime;
+	speed = moveSpeed * elapsedTime;
+    //turnSpeed = moveSpeed * elapsedTime;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 	DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
 	DirectX::XMVECTOR Rotation = DirectX::XMLoadFloat4(&actor->GetRotation());
@@ -69,7 +69,7 @@ void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 //
 // 旋回
 void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
-{
+{/*
 	std::shared_ptr<Actor> actor = GetActor();
 	speed = turnSpeed * elapsedTime;
 	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
@@ -77,6 +77,8 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 	DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationQuaternion(Rotation);
 	DirectX::XMVECTOR OneZ = DirectX::XMVectorSet(0, 0, 1, 0);
 	DirectX::XMVECTOR Front = DirectX::XMVector3TransformNormal(OneZ, Transform);
+
+    if (direction.x == 0 && direction.z == 0)return;
 
 	Direction = DirectX::XMVector3Normalize(Direction);
 	DirectX::XMVECTOR Axis = DirectX::XMVector3Cross(Front, Direction);
@@ -96,8 +98,58 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 
 	DirectX::XMFLOAT4 rotation;
 	DirectX::XMStoreFloat4(&rotation, Rotation);
-	actor->SetRotation(rotation);
+	actor->SetRotation(rotation);*/
 
+
+
+     //1フレームでどれだけ移動
+    speed = turnSpeed * elapsedTime;
+    //speed *= elapsedTime;
+
+    std::shared_ptr<Actor> actor = GetActor();
+
+    DirectX::XMFLOAT4 rotate = actor->GetRotation();
+
+    // 進行ベクトルが0ベクトルの場合は処理する必要なし
+    if (direction.x == 0 && direction.z == 0)return;
+
+    float vx = direction.x;
+    float vz = direction.z;
+
+    float length = sqrtf(direction.x * direction.x + direction.z * direction.z);
+    if (length < 0.001f) return;
+
+    vx /= length;
+    vz /= length;
+
+    // 自身の回転値から前方向を求める
+    float frontX = sinf(rotate.y); // 左右を見る為
+    float frontZ = cosf(rotate.y); // 前後判定のため
+
+    //回転角を求めるため、２つのベクトルの内積を計算する
+    float dot = (frontX * vx) + (frontZ * vz);// 内積
+
+    // 内積地は-1~1で表現されていて２つの単位ベクトルの角度が
+    // 小さいほど１．０にちがづくという性質を利用して回転速度を調整
+    float rot = 1.0 - dot;
+    if (rot > speed) rot = speed;
+
+
+    // 左右判定を行う為に２つの単位ベクトルの外積を計算する
+    float cross = (frontZ * vx) - (frontX * vz);
+
+    // 2Dの外積値が正の場合か負の場合によって左右判定が行える
+    // 左右判定を行うことによって左右回転を選択する
+    if (cross < 0.0f)
+    {
+        rotate.y -= rot;
+    }
+    else
+    {
+        rotate.y += rot;
+    }
+
+    actor->SetRotation(rotate);
     
 }
 //

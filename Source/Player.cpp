@@ -1003,6 +1003,9 @@ void Player::TransitionJumpState()
 void Player::UpdateJumpState(float elapsedTime)
 {
 
+    //InputMove(elapsedTime);
+
+
     // ƒWƒƒƒ“ƒv“ü—Íˆ—
     if (InputJump()&&jumpCount >= 1)
     {
@@ -1014,6 +1017,8 @@ void Player::UpdateJumpState(float elapsedTime)
     {
         TransitionAttackState();
     }
+
+
 
     Ground();
 
