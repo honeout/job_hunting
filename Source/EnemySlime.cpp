@@ -194,32 +194,32 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
         if (Collision::IntersectSphereVsCylinder(
             nodePosition,
             nodeRadius,
-            player.GetPosition(),
-            player.GetRadius(),
-            player.GetHeight(),
+            DirectX::XMFLOAT3{ 0, 0, 0 },
+            1,
+            1,
             outPosition))
         {
             // ダメージを与える
-            if (player.ApplyDamage(1, 0.5f))
-            {
-                // 敵を吹っ飛ばすベクトルを算出
-                DirectX::XMFLOAT3 vec;
-                vec.x = outPosition.x - nodePosition.x;
-                vec.z = outPosition.z - nodePosition.z;
-                float length = sqrtf(vec.x * vec.x + vec.z * vec.z);
-                vec.x /= length;
-                vec.z /= length;
+            //if (player.ApplyDamage(1, 0.5f))
+            //{
+            //    // 敵を吹っ飛ばすベクトルを算出
+            //    DirectX::XMFLOAT3 vec;
+            //    vec.x = outPosition.x - nodePosition.x;
+            //    vec.z = outPosition.z - nodePosition.z;
+            //    float length = sqrtf(vec.x * vec.x + vec.z * vec.z);
+            //    vec.x /= length;
+            //    vec.z /= length;
 
-                // XZ平面に吹っ飛ばす力をかける
-                float power = 10.0f;
-                vec.x *= power;
-                vec.z *= power;
-                // Y方向にも力をかける
-                vec.y = 5.0f;
+            //    // XZ平面に吹っ飛ばす力をかける
+            //    float power = 10.0f;
+            //    vec.x *= power;
+            //    vec.z *= power;
+            //    // Y方向にも力をかける
+            //    vec.y = 5.0f;
 
-                // 吹っ飛ばす
-                player.AddImpulse(vec);
-            }
+            //    // 吹っ飛ばす
+            //    player.AddImpulse(vec);
+            //}
         }
     }
 }
@@ -227,7 +227,8 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
 bool EnemySlime::SearchPlayer()
 {
     // プレイヤーと高低差を考慮して３Dでの距離判定をする
-    const DirectX::XMFLOAT3& playerPosition = Player::Instance().GetPosition();
+    //const DirectX::XMFLOAT3& playerPosition = Player::Instance().GetPosition();
+    const DirectX::XMFLOAT3& playerPosition = DirectX::XMFLOAT3{0, 0, 0};
     float vx = playerPosition.x - position.x;
     float vy = playerPosition.y - position.y;
     float vz = playerPosition.z - position.z;
@@ -292,7 +293,7 @@ void EnemySlime::TransitionPursuitState()
 void EnemySlime::UpdatePursuitState(float elapsedTime)
 {
     // 目標地点ををプレイヤー位置に設定
-    targetPosition = Player::Instance().GetPosition();
+    targetPosition = DirectX::XMFLOAT3{ 0, 0, 0 };
 
     // 目標地点へ移動
     MoveToTarget(elapsedTime, 1.0f);
@@ -354,7 +355,7 @@ void EnemySlime::TransitionIdleBattleState()
 void EnemySlime::UpdateIdleBattleState(float elapsedTime)
 {
     // 目標地点をプレイヤー位置に設定
-    targetPosition = Player::Instance().GetPosition();
+    targetPosition = DirectX::XMFLOAT3{ 0, 0, 0 };
 
     // タイマー処理
     stateTimer -= elapsedTime;

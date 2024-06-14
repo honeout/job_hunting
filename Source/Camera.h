@@ -1,6 +1,7 @@
 #pragma once
 
 #include<DirectXMath.h>
+#include "Actor.h"
 
 // カメラ
 class Camera
@@ -57,3 +58,26 @@ private:
     DirectX::XMFLOAT3       front;
     DirectX::XMFLOAT3       right;
 };
+
+//
+//// カメラマネージャー
+//class CameraManager
+//{
+//private:
+//    CameraManager() {}
+//    ~CameraManager() {}
+//
+//public:
+//    // インスタンス取得
+//    static CameraManager& Instance()
+//    {
+//        static CameraManager instance;
+//        return instance;
+//    }
+//
+//    // メインカメラ取得
+//    Camera& GetMainCamera() { return mainCamera; }
+//
+//private:
+//    Camera		mainCamera;
+//};

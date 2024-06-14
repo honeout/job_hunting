@@ -104,6 +104,14 @@ public:
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};
+
+	struct SecondsLength
+	{
+		float						secondsLength;
+
+		template<class Archive>
+		void serialize(Archive& archive, int version);
+	};
 	struct Animation
 	{
 		std::string					name;
