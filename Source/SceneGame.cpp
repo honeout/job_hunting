@@ -10,7 +10,7 @@
 
 #include <DirectXMath.h>
 
-#include "StageManager.h"
+//#include "StageManager.h"
 #include "StageMain.h"
 
 #include "StageMoveFloor.h"

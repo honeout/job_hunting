@@ -1,6 +1,6 @@
 #include "ProjectileStraight.h"
 #include "Collision.h"
-#include "StageManager.h"
+//#include "StageManager.h"
 // コンストラクタ
 ProjectileStraight::ProjectileStraight(ProjectileManager* manager)
                     :Projectile(manager)
@@ -74,71 +74,72 @@ void ProjectileStraight::UpdateReflection(float elapsedTime)
         // 移動方向分足した奴
         DirectX::XMFLOAT3 end = { position.x + mx,position.y, position.z + mz };
 
-            
-        // レイキャストによる壁判定
-        HitResult hit;
-        if (StageManager::instance().RayCast(start, end, hit))
-        {
-               
-            // 壁までのベクトル
-            DirectX::XMVECTOR Start = DirectX::XMLoadFloat3(&hit.position);
-            DirectX::XMVECTOR End = DirectX::XMLoadFloat3(&end);
-            DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(End, Start);
+        //////////////////////////////////
 
-            // 壁の法線
-            DirectX::XMVECTOR Normal = DirectX::XMLoadFloat3(&hit.normal);
+    //    // レイキャストによる壁判定
+    //    HitResult hit;
+    //    if (StageManager::instance().RayCast(start, end, hit))
+    //    {
+    //           
+    //        // 壁までのベクトル
+    //        DirectX::XMVECTOR Start = DirectX::XMLoadFloat3(&hit.position);
+    //        DirectX::XMVECTOR End = DirectX::XMLoadFloat3(&end);
+    //        DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(End, Start);
 
-            // 入射ベクトルを法線に射影長 a
-            DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(DirectX::XMVectorNegate(Vec), Normal);
-            Dot = DirectX::XMVectorScale(DirectX::XMVectorScale(Dot, 2.0f), 1.1f); // 壁にめり込まないように少しだけ補正
+    //        // 壁の法線
+    //        DirectX::XMVECTOR Normal = DirectX::XMLoadFloat3(&hit.normal);
 
-           /* DirectX::XMVECTOR Rpositon;*/
-            //        // 壁反射
-            //Dot = DirectX::XMVectorAdd(End, Dot);
+    //        // 入射ベクトルを法線に射影長 a
+    //        DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(DirectX::XMVectorNegate(Vec), Normal);
+    //        Dot = DirectX::XMVectorScale(DirectX::XMVectorScale(Dot, 2.0f), 1.1f); // 壁にめり込まないように少しだけ補正
 
-            // 補正位置の計算
-            DirectX::XMVECTOR CollectPosition = DirectX::XMVectorMultiplyAdd(Normal, Dot, End);
-            DirectX::XMFLOAT3 collectPosition;
-            DirectX::XMStoreFloat3(&collectPosition, CollectPosition);
+    //       /* DirectX::XMVECTOR Rpositon;*/
+    //        //        // 壁反射
+    //        //Dot = DirectX::XMVectorAdd(End, Dot);
 
-            DirectX::XMVECTOR R = DirectX::XMVectorSubtract(CollectPosition, Start);
-            DirectX::XMFLOAT3 r; 
-            R = DirectX::XMVector3Normalize(R);
-            DirectX::XMStoreFloat3(&r, R);
+    //        // 補正位置の計算
+    //        DirectX::XMVECTOR CollectPosition = DirectX::XMVectorMultiplyAdd(Normal, Dot, End);
+    //        DirectX::XMFLOAT3 collectPosition;
+    //        DirectX::XMStoreFloat3(&collectPosition, CollectPosition);
 
-
-            direction.x = r.x;
-            direction.z = r.z;
-
-            // 壁ずり方向へレイキャスト
-            //HitResult hit2;
-            //if (!StageManager::instance().RayCast(hit.position, collectPosition, hit2))
-            {
-                // 壁ずり方向で壁に当たらなかったら補正位置に移動
-                position.x = collectPosition.x;
-                position.z = collectPosition.z;
+    //        DirectX::XMVECTOR R = DirectX::XMVectorSubtract(CollectPosition, Start);
+    //        DirectX::XMFLOAT3 r; 
+    //        R = DirectX::XMVector3Normalize(R);
+    //        DirectX::XMStoreFloat3(&r, R);
 
 
+    //        direction.x = r.x;
+    //        direction.z = r.z;
 
-            }
-            //else
-            //{
-            //    position.x = hit2.position.x;
-            //    position.z = hit2.position.z;
+    //        // 壁ずり方向へレイキャスト
+    //        //HitResult hit2;
+    //        //if (!StageManager::instance().RayCast(hit.position, collectPosition, hit2))
+    //        {
+    //            // 壁ずり方向で壁に当たらなかったら補正位置に移動
+    //            position.x = collectPosition.x;
+    //            position.z = collectPosition.z;
 
-            //       
-            //      
-            //}
-        }
-        else
-        {
-            // 移動
-            position.x += mx;
-            position.z += mz;
-        }
+
+
+    //        }
+    //        //else
+    //        //{
+    //        //    position.x = hit2.position.x;
+    //        //    position.z = hit2.position.z;
+
+    //        //       
+    //        //      
+    //        //}
+    //    }
+    //    else
+    //    {
+    //        // 移動
+    //        position.x += mx;
+    //        position.z += mz;
+    //    }
+    //}
+        /////////////////////////////////
     }
-
-
     //// レイキャストによる壁判定
     //HitResult hit;
     //if (StageManager::instance().RayCast(start, end, hit))
