@@ -376,7 +376,7 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
         //if (StageManager::instance().RayCast(start, end, hit))
         //if (Collision::IntersectRayVsModel->(start, end,  , hit))
         //if (GetActor()->GetComponent<StageMain>()->RayCast(start,end,hit))
-        if (collision->IntersectRayVsModel(start,end, GetActor()->GetComponent<StageMain>()->GetActor()->GetModelSabe(),hit))
+        if (collision->IntersectRayVsModel(start,end, StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetModel(),hit))
         {
 
           /*  actor2->SetName("Player");*/
@@ -406,7 +406,7 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
            // if (!StageManager::instance().RayCast(hit.position, collectPosition, hit2))
             //if (!stageMain->RayCast(hit.position, collectPosition,  hit))
             //if (!Collision::IntersectRayVsModel(hit.position, collectPosition, GetActor()->GetComponent<HP>()->GetActor()->GetModel(),  hit))
-            if (!collision->IntersectRayVsModel(hit.position, collectPosition, GetActor()->GetComponent<StageMain>()->GetActor()->GetModelSabe(), hit2))
+            if (!collision->IntersectRayVsModel(hit.position, collectPosition, StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetModel(), hit2))
             {
                 // 壁ずり方向で壁に当たらなかったら補正位置に移動
                 position.x = collectPosition.x;
@@ -482,7 +482,8 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
         // レイキャストを呼ぶための関数
         //if (StageManager::instance().RayCast(start, end, hit))
-        if (collision->IntersectRayVsModel(start, end, GetActor()->GetComponent<StageMain>()->GetActor()->GetModelSabe(), hit))
+       // if (collision->IntersectRayVsModel(start, end, GetActor()->GetComponent<StageMain>()->GetActor()->GetModelSabe(), hit))
+        if (collision->IntersectRayVsModel(start, end, StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetModel(), hit))
         {
     
 

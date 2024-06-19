@@ -48,6 +48,7 @@ void SceneGame::Initialize()
 		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
 		actor->SetScale(DirectX::XMFLOAT3(1, 1, 1));
 		actor->AddComponent<StageMain>();
+		StageManager::Instance().Register(actor.get());
 		actorPlayer->LoadModelSabe(filename);
 		//StageManager::instance().Register();
 		//StageManager::instance().Register();

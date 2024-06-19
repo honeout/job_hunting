@@ -40,3 +40,46 @@ public:
 private:
     Model*	model;
 };
+
+// ステージマネージャー
+class StageManager
+{
+private:
+    StageManager() {}
+    ~StageManager() {};
+
+public:
+    // インスタンス取得
+    static StageManager& Instance()
+    {
+        static StageManager instance;
+        return instance;
+    }
+
+
+    // 削除
+    void Remove(std::shared_ptr<Actor> actor);
+
+    // 更新
+    void Update(float elapsedTime);
+
+    // 行列更新
+    void UpdateTransform();
+
+    // 描画
+    void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+
+    // 登録
+    void Register(Actor* actor);
+
+    void Clear();
+
+    // ステージ数取得
+    int GetStageCount() const { return static_cast<int>(stages.size()); }
+
+    // エネミー取得
+    Actor* GetStage(int index) { return stages.at(index); }
+
+private:
+    std::vector<Actor*> stages;
+};

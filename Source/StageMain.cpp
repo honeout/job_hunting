@@ -45,3 +45,22 @@ bool StageMain::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3&
 {
     return Collision::IntersectRayVsModel(start, end, model, hit);
 }
+
+void StageManager::Register(Actor* actor)
+{
+    stages.emplace_back(actor);
+}
+
+
+// ステージ全削除
+void StageManager::Clear()
+{
+    for (Actor* stage : stages)// 
+    {
+        // 実体を消した管理している数はそのまま
+        delete stage;
+
+    }
+    // vectorの数を０に
+    stages.clear();
+}
