@@ -4,7 +4,7 @@
 #include "Graphics/Graphics.h"
 #include "Mathf.h"
 #include "Player.h"
-#include "Collision.h"
+//#include "Collision.h"
 
 // コンストラクタ
 EnemySlime::EnemySlime()
@@ -18,7 +18,7 @@ EnemySlime::EnemySlime()
     radius = 0.5f;
     height = 1.0f;
     
-    // 徘徊ステートへ遷移
+        // 徘徊ステートへ遷移
     TransitionWanderState();
 }
 
@@ -27,6 +27,25 @@ EnemySlime::~EnemySlime()
 {
     delete model;
 }
+//
+//void EnemySlime::Start()
+//{
+//    // ムーブメント関数を使えるように
+//    movement = GetActor()->GetComponent<Movement>();
+//
+//    // hp関数を使えるように
+//    hp = GetActor()->GetComponent<HP>();
+//
+//    // モデルデータを入れる。
+//    model = GetActor()->GetModel();
+//
+//    hp->SetHealth(health);
+//
+//    hp->SetMaxHealth(maxHealth);
+//
+//    // 徘徊ステートへ遷移
+//    TransitionWanderState();
+//}
 
 // 更新処理
 void EnemySlime::Update(float elapsedTime)
@@ -57,11 +76,16 @@ void EnemySlime::Update(float elapsedTime)
         break;
     }
 
-    
+    // 位置
+    //position = GetActor()->GetPosition();
 
-    // 速力処理更新
+    //// 速力処理更新
+    //movement->UpdateVelocity(elapsedTime);
+    //// 無敵時間更新
+    //hp->UpdateInbincibleTimer(elapsedTime);
+    
     UpdateVelocity(elapsedTime);
-    // 無敵時間更新
+
     UpdateInbincibleTimer(elapsedTime);
     // オブジェクト行列を更新
     UpdateTransform();
@@ -129,8 +153,11 @@ void EnemySlime::MoveToTarget(float elapsedTime, float speedRate)
     vz /= dist;
 
     // 移動処理
-    Move(vx, vz, moveSpeed * speedRate);
-    Turn(elapsedTime, vx, vz, turnSpeed * speedRate);
+  /*  movement->Move({ vx,0.0f ,vz }, moveSpeed * speedRate, elapsedTime);
+    movement->Turn({ vx,0.0f ,vz } ,elapsedTime);*/
+    Move( vx,vz  ,moveSpeed * speedRate);
+    Turn(elapsedTime, vx, vz ,turnSpeed * speedRate);
+    //movement->Turn({ vx,0.0f ,vz } /*turnSpeed * speedRate*/,elapsedTime);
 }
 
 // 徘徊ステートへ遷移
@@ -226,6 +253,7 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
 
 bool EnemySlime::SearchPlayer()
 {
+    
     // プレイヤーと高低差を考慮して３Dでの距離判定をする
     //const DirectX::XMFLOAT3& playerPosition = Player::Instance().GetPosition();
     const DirectX::XMFLOAT3& playerPosition = DirectX::XMFLOAT3{0, 0, 0};
@@ -415,16 +443,16 @@ void EnemySlime::UpdateDeathState(float elapsedTime)
     }
 }
 
-// 死亡した時に呼ばれる
-void EnemySlime::OnDead()
-{
-    // 死亡ステートへ遷移
-    TransitionDeathState();
-}
-
-void EnemySlime::OnDamaged()
-{
-    // ダメージステートへ遷移
-    TransitionDamageState();
-}
+//// 死亡した時に呼ばれる
+//void EnemySlime::OnDead()
+//{
+//    // 死亡ステートへ遷移
+//    TransitionDeathState();
+//}
+//
+//void EnemySlime::OnDamaged()
+//{
+//    // ダメージステートへ遷移
+//    TransitionDamageState();
+//}
 

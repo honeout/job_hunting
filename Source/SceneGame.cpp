@@ -28,29 +28,48 @@
 void SceneGame::Initialize()
 {
 	// ステージ初期化
-	StageManager& stageManager = StageManager::instance();
-	StageMain* stageMain = new StageMain();
-	stageManager.Register(stageMain);
+	//StageManager& stageManager = StageManager::instance();
+	//StageMain* stageMain = new StageMain();
+	//stageManager.Register(stageMain);
 
-	StageMoveFloor* stageMoveFloor = new StageMoveFloor();
-	stageMoveFloor->SetStartPosint(DirectX::XMFLOAT3(0, 1, 3));
-	stageMoveFloor->SetGoalPoint(DirectX::XMFLOAT3(10, 2, 3));
-	stageMoveFloor->SetTorque(DirectX::XMFLOAT3(0, 1.0f, 0));
-	stageManager.Register(stageMoveFloor);
+	//StageMoveFloor* stageMoveFloor = new StageMoveFloor();
+	//stageMoveFloor->SetStartPosint(DirectX::XMFLOAT3(0, 1, 3));
+	//stageMoveFloor->SetGoalPoint(DirectX::XMFLOAT3(10, 2, 3));
+	//stageMoveFloor->SetTorque(DirectX::XMFLOAT3(0, 1.0f, 0));
+	//stageManager.Register(stageMoveFloor);
+	std::shared_ptr<Actor> actorPlayer = ActorManager::Instance().Create();
+	// ステージ初期化
+	{
+		const char* filename = "Data/Model/ExampleStage/ExampleStage.mdl";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->LoadModel(filename);
+		actor->SetName("StageMain");
+		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
+		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
+		actor->SetScale(DirectX::XMFLOAT3(1, 1, 1));
+		actor->AddComponent<StageMain>();
+		actorPlayer->LoadModelSabe(filename);
+		//StageManager::instance().Register();
+		//StageManager::instance().Register();
+
+	}
+
 
 	player = new Player;
 	{
 		// プレイヤー初期化
 		const char* filename = "Data/Model/Jammo/Jammo.mdl";
-		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->LoadModel(filename);
-		actor->SetName("Player");
-		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
-		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
-		actor->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
-		actor->AddComponent<Movement>();
-		actor->AddComponent<HP>();
-		actor->AddComponent<Player>();
+		
+		actorPlayer->LoadModel(filename);
+		actorPlayer->SetName("Player");
+		actorPlayer->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
+		actorPlayer->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
+		actorPlayer->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+		actorPlayer->AddComponent<Movement>();
+		actorPlayer->AddComponent<HP>();
+		actorPlayer->AddComponent<Player>();
+		actorPlayer->AddComponent<Collision>();
+		actorPlayer->AddComponent<StageMain>();
 		
 	}
 
@@ -121,7 +140,7 @@ void SceneGame::Finalize()
 		player = nullptr;
 	}
 	// ステージ終了化
-	StageManager::instance().Clear();
+	//StageManager::instance().Clear();
 
 
 }
@@ -137,14 +156,14 @@ void SceneGame::Update(float elapsedTime)
 	//cameraController->Update(elapsedTime);
 
 	// ステージ更新処理
-	StageManager::instance().Update(elapsedTime);
+	//StageManager::instance().Update(elapsedTime);
 	
 	// プレイヤー更新処理
 	//player->Update(elapsedTime);
 	ActorManager::Instance().Update(elapsedTime);
 
 	// 残像経過時間
-	AfterimageTime(elapsedTime);
+	//AfterimageTime(elapsedTime);
 
 	
 
@@ -194,7 +213,7 @@ void SceneGame::Render()
 		// シェーダーに必要な情報を書く
 		shader->Begin(rc);// シェーダーにカメラの情報を渡す
 		// ステージ描画
-		StageManager::instance().Render(rc, shader);
+		//StageManager::instance().Render(rc, shader);
 	// プレイヤー描画
 		//player->Render(rc, shader);
 
@@ -403,13 +422,13 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 
 		// レイキャスト
 		HitResult hit;
-		if (StageManager::instance().RayCast(rayStart, rayEnd, hit))
-		{
-			// 敵を配置
-			EnemySlime* slime = new EnemySlime();
-			slime->SetPosition(hit.position);
-			EnemyManager::Instance().Register(slime);
-		}
+	//	if (StageManager::instance().RayCast(rayStart, rayEnd, hit))
+	//	{
+	//		// 敵を配置
+	///*		EnemySlime* slime = new EnemySlime();
+	//		slime->SetPosition(hit.position);
+	//		EnemyManager::Instance().Register(slime);*/
+	//	}
 		
 	}
 }

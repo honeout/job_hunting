@@ -10,6 +10,8 @@ public:
     EnemySlime();
     ~EnemySlime() override;
 
+    //void Start() override;
+
     // 更新処理
     void Update(float elapsedTime) override;
 
@@ -115,15 +117,25 @@ private:
 
 
 protected:
-    // 死亡した時に呼ばれる
-    void OnDead() override;
+    //// 死亡した時に呼ばれる
+    //void OnDead() override;
 
-    // ダメージを受けた時に呼ばれる
-    void OnDamaged() override;
+    //// ダメージを受けた時に呼ばれる
+    //void OnDamaged() override;
 
 private:
     // モデル情報を確保
     Model* model = nullptr;
+
+    //DirectX::XMFLOAT3 position = {};
+    //DirectX::XMFLOAT3 angle = {};
+
+    //std::shared_ptr<Movement>	movement;
+    //std::shared_ptr<HP>	hp;
+
+    // 速度
+    /*float moveSpeed = 5;*/
+
 
     // どのステートで動くか
     State state = State::Wander;
@@ -145,5 +157,15 @@ private:
     float searchRange = 5.0f;
     // 攻撃半径
     float attackRange = 1.5f;
+
+
+    //// Hp
+    //int health = 5;
+
+    //// 最大HP
+    //int maxHealth = 5;
+
+
+    //int radius = 5;
 
 };

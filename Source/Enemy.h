@@ -2,6 +2,10 @@
 
 #include "Graphics/Shader.h"
 #include "Character.h"
+#include "Movement.h"
+#include "HP.h"
+#include "Actor.h"
+#include "Component.h"
 
 // エネミー
 class Enemy : public Character
@@ -10,6 +14,8 @@ public:
     Enemy() {}
     ~Enemy() override {}
 
+
+    virtual void Start() = 0;
     // 更新処理
     //純粋仮想関数を作ったら向こうで作らないと
     //コンパイルエラーになる
@@ -25,5 +31,6 @@ public:
     // デバッグプリミティブ描画
     virtual void DrawDebugPrimitive();
 
+private:
 
 };

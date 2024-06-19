@@ -112,6 +112,11 @@ void Actor::LoadModel(const char* filename)
 	model = std::make_unique<Model>(filename);
 }
 
+void Actor::LoadModelSabe(const char* filename)
+{
+	modelsabe = std::make_unique<Model>(filename);
+}
+
 // çÏê¨
 std::shared_ptr<Actor> ActorManager::Create()
 {

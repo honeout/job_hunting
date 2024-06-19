@@ -108,6 +108,7 @@ void Player::Start()
     // hp関数を使えるように
     hp = GetActor()->GetComponent<HP>();
 
+    
     // モデルデータを入れる。
     model = GetActor()->GetModel();
     
@@ -463,6 +464,7 @@ void Player::CollisionProjectilesVsEnemies()
                 enemy->GetPosition(),
                 enemy->GetRadius(),
                 enemy->GetHeight(),
+                
                 outPositon))
 
             {

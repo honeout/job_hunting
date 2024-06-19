@@ -4,6 +4,8 @@
 
 #include "Graphics/Model.h"
 
+#include "Component.h"
+
 // ヒット結果
 struct HitResult
 {
@@ -16,9 +18,17 @@ struct HitResult
 
 
 // コリジョン
-class Collision
+class Collision : public Component
 {
 public:
+
+    // 名前取得
+    const char* GetName() const override { return "Movement"; }
+
+    // GUI描画
+    void OnGUI() override;
+
+
     // 球と球の交差判定
     static bool IntersectSpherVsSphere(
         // 動かない

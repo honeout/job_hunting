@@ -2,6 +2,7 @@
 
 #include <DirectXMath.h>
 #include "Component.h"
+#include "Collision.h"
 
 // ˆÚ“®
 class Movement : public Component
@@ -69,6 +70,8 @@ private:
 	float		moveSpeed = 5.0f;
 	float		turnSpeed = 6.28f;
 	float       jumpSpeed = 0;
+
+	std::shared_ptr<Collision>	collision;
 
 	// Å‘åƒWƒƒƒ“ƒv”
 	int jumpCount = 0;
