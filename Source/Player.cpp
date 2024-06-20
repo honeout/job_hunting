@@ -453,9 +453,9 @@ void Player::CollisionProjectilesVsEnemies()
     // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
     int projectileCount = projectileManager.GetProjectileCount();
     
-    int enemyCount = EnemyManager::Instance().GetEnemyCount();
     for (int i = 0; i < projectileCount; ++i)
     {
+    int enemyCount = EnemyManager::Instance().GetEnemyCount();
         Projectile* projectile = projectileManager.GetProjectile(i);
         for (int j = 0; j < enemyCount; ++j)
         {

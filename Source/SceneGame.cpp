@@ -77,6 +77,9 @@ void SceneGame::Initialize()
 	}
 
 	{
+		// èdÇ¢
+		//for (int i = 0; i < 10; ++i)
+		//{
 		// ìGèâä˙âª
 		const char* filename = "Data/Model/Slime/Slime.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -91,6 +94,8 @@ void SceneGame::Initialize()
 		actor->AddComponent<StageMain>();
 		actor->AddComponent<EnemySlime>();
 		EnemyManager::Instance().Register(actor.get());
+		
+		
 
 	}
 
