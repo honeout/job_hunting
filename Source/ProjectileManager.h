@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Projectile.h"
+#include "Actor.h"
 #include <set>
 
 //Projectil‚PŒÂ‚Ì’eŠÛ
@@ -9,9 +10,20 @@
 class ProjectileManager// •¡”‚Ì’e‚ª‚ñ‹…”
 {
 public:
-    ProjectileManager();
+
+    ProjectileManager() {};
     // ’N‚ª‚Â‚©•ª‚©‚ç‚È‚¢‚©‚ç•¡”‚Ì“z‚ª•ÊX‚É‚Â‚©‚à‚µ‚ê‚È‚¢
-    ~ProjectileManager();
+    ~ProjectileManager() {};
+
+    // ƒCƒ“ƒXƒ^ƒ“ƒXæ“¾
+    static ProjectileManager& Instance()
+    {
+        static ProjectileManager instance;
+        return instance;
+    }
+
+
+
 
     // XVˆ—
     void Update(float elapsedTime) ;
@@ -23,7 +35,7 @@ public:
     void DrawDebugPrimitive();
 
     // ’eŠÛ“o˜^
-    void Register(Projectile* projectile);
+    void Register(Actor* projectile);
 
     // ’eŠÛ‘Síœ
     void Clear();
@@ -33,13 +45,13 @@ public:
 
 
     // ’eŠÛæ“¾
-    Projectile* GetProjectile(int index) { return projectiles.at(index); }
+    Actor* GetProjectile(int index) { return projectiles.at(index); }
 
     // ’eŠÛíœ
     void Remove(Projectile* projectile);
 
 private:
-    std::vector<Projectile*>   projectiles;
+    std::vector<Actor*>   projectiles;
     // “Á’è‚Ì’eŠÛíœ‚¾‚êíœ‚·‚é
-    std::set<Projectile*>       removes;
+    std::set<Actor*>       removes;
 };

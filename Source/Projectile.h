@@ -12,7 +12,7 @@ public:
     // シングルトンにはしない　エネミーとは違う
     //Projectile() {}
     // 登録されるマネージャーを保持するようにする。
-    Projectile(ProjectileManager* manager);// 消すタイミングで保持しているものがほしい
+    Projectile();// 消すタイミングで保持しているものがほしい
     virtual ~Projectile() {}
 
     // 更新処理
@@ -52,7 +52,7 @@ protected:
     // 移動　回転　縮地
     DirectX::XMFLOAT4X4   transform = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 
-    ProjectileManager* manager = nullptr;
+    //ProjectileManager* manager = nullptr;
     // 半径弾だから
     float  radius = 0.5f;
 };

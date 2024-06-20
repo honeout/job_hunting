@@ -13,6 +13,8 @@
 #include "Input\GamePad.h"
 #include "CameraController.h"
 #include "Effect.h"
+
+
 enum class UpAnim
 {
     Normal,
@@ -288,6 +290,10 @@ private:
 
     // アニメーションの時間 
     float currentANimationSeconds = 0.0f;
+
+
+    // 弾丸生命時間
+    float   lifeTimer = 3.0f;
 
     /////////////////// カメラ関係
 

@@ -2,27 +2,35 @@
 
 #include "Graphics/Model.h"
 #include "Projectile.h"
+#include "Component.h"
+#include "BulletFiring.h"
 
 
 // 直進弾丸
-class ProjectileStraight : public Projectile
+class ProjectileStraight : public Component
 {
 public:
   /*  ProjectileStraight();*/
-    ProjectileStraight(ProjectileManager* manager);
+    ProjectileStraight();
     ~ProjectileStraight()override;
 
-    // 更新処理 継承したらoverrideする
+    // 名前取得
+    const char* GetName() const override { return "ProjectileStraight"; }
+
+    // 開始処理
+    void Start() override;
+
+    // 更新処理 
     void Update(float elapsedTime) override;
 
     // 描画処理
-    void Render(const RenderContext& rc, ModelShader* shader)override;
+    //void Render(const RenderContext& rc, ModelShader* shader)override;
 
-    // 発射    (  どっちからはっしゃ向き、位置何処から)
-    void Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position);
+    //// 発射    (  どっちからはっしゃ向き、位置何処から)
+    //void Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position);
 
-    // 反射弾丸更新処理
-    void UpdateReflection(float elapsedTime);
+    //// 反射弾丸更新処理
+    //void UpdateReflection(float elapsedTime);
 
 private:
     Model* model = nullptr;
@@ -33,5 +41,7 @@ private:
     float   lifeTimer = 3.0f;
 
     float stepOffset = 1.0f;
+
+    std::shared_ptr<BulletFiring> bulletFiring;
 
 };

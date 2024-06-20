@@ -1,8 +1,7 @@
 #include "ProjectileHoming.h"
 
 // コンストラクタ
-ProjectileHoming::ProjectileHoming(ProjectileManager* manager)
-    : Projectile(manager)
+ProjectileHoming::ProjectileHoming()
 {
     model = new Model("Data/Model/Sword/Sword.mdl");
 

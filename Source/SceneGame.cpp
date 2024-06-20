@@ -20,6 +20,7 @@
 #include "Actor.h"
 #include "Movement.h"
 #include "HP.h"
+#include "ProjectileStraight.h"
 
 
 
@@ -72,6 +73,7 @@ void SceneGame::Initialize()
 		actor->AddComponent<Player>();
 		actor->AddComponent<Collision>();
 		actor->AddComponent<StageMain>();
+		//actor->AddComponent<ProjectileStraight>();
 		PlayerManager::Instance().Register(actor.get());
 		
 	}

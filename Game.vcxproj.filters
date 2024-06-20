@@ -210,6 +210,7 @@
     <ClInclude Include="Source\Renderer.h">
       <Filter>Source\Character</Filter>
     </ClInclude>
+    <ClInclude Include="Source\BulletFiring.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -364,6 +365,9 @@
     </ClCompile>
     <ClCompile Include="Source\Renderer.cpp">
       <Filter>Source\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BulletFiring.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

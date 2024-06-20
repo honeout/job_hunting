@@ -183,7 +183,7 @@ private:
     int                     jumpCount = 0;
     int                     jumpLimit = 2;
 
-    ProjectileManager projectileManager;
+    //ProjectileManager projectileManager;
 
     Effect* hitEffect = nullptr;
     Effect* desEffect = nullptr;

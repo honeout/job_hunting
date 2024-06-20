@@ -1,11 +1,11 @@
 #include "Projectile.h"
 #include "ProjectileManager.h"
 #include "Graphics/Graphics.h"
-Projectile::Projectile(ProjectileManager* manager)
-    :manager(manager)
+Projectile::Projectile()
+  
 {
     // ì‚Á‚½“z‚ð“o˜^
-    manager->Register(this);
+   /* manager->Register(this);*/
 }
 
 void Projectile::DrawDebugPrimitive()
@@ -74,5 +74,5 @@ void Projectile::UpdateTransform()
 void Projectile::Destroy()
 {
     // ’eŠÛ‚©‚çŽ©•ª‚ðíœ‚Â‚Ü‚èƒ}ƒl[ƒWƒƒ[‚©‚ç@ ŠÇ—‚µ‚Ä‚¢‚é“z‚ð‚©‚ç‚àÁ‚·
-    manager->Remove(this);
+    //manager->Remove(this);
 }

@@ -7,7 +7,7 @@
 class ProjectileHoming :public Projectile
 {
 public:
-    ProjectileHoming(ProjectileManager* manager);
+    ProjectileHoming();
     ~ProjectileHoming() override;
 
     // XVˆ—

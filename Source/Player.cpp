@@ -109,6 +109,8 @@ void Player::Start()
     // hp関数を使えるように
     hp = GetActor()->GetComponent<HP>();
 
+    // projectileStraight関数を使えるように
+    //projectileStraight = GetActor()->GetComponent<>;
     
     // モデルデータを入れる。
     model = GetActor()->GetModel();
@@ -180,6 +182,12 @@ void Player::Update(float elapsedTime)
 
     position = GetActor()->GetPosition();
 
+    angle = { 
+        GetActor()->GetRotation().x,
+        GetActor()->GetRotation().y,
+        GetActor()->GetRotation().z
+    };
+
     //velocity = movement->GetVelocity();
 
     //movement->SetVelocity(velocity);
@@ -206,7 +214,7 @@ void Player::Update(float elapsedTime)
     CollisionProjectilesVsEnemies();
 
     // 弾丸更新処理
-    projectileManager.Update(elapsedTime);
+    //projectileManager.Update(elapsedTime);
 
     // オブジェクト行列を更新
     //UpdateTransform();
@@ -256,7 +264,7 @@ void Player::DrawDebugPrimitive()
     debugRenderer->DrawCylinder(position, radius, height, DirectX::XMFLOAT4(0, 0, 0, 1));
 
     // 弾丸デバッグプリミティブ描画
-    projectileManager.DrawDebugPrimitive();
+    //projectileManager.DrawDebugPrimitive();
 
     if (attackCollisionFlag)
     {
@@ -436,7 +444,7 @@ void Player::Render(const RenderContext& rc, ModelShader* shader)
     // 描画
     shader->Draw(rc, model);
     // 弾丸描画処理
-    projectileManager.Render(rc, shader);
+    //projectileManager.Render(rc, shader);
 }
 
 
@@ -450,13 +458,15 @@ void Player::CollisionProjectilesVsEnemies()
    // Actor* enemyManager = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1);
    // EnemyManager& enemyManager = EnemyManager::Instance();
    
+    projectileManager = ProjectileManager::Instance();
+
     // 全ての敵と総当たりで衝突処理
     int projectileCount = projectileManager.GetProjectileCount();
     
     for (int i = 0; i < projectileCount; ++i)
     {
     int enemyCount = EnemyManager::Instance().GetEnemyCount();
-        Projectile* projectile = projectileManager.GetProjectile(i);
+        Actor* projectile = projectileManager.GetProjectile(i);
         for (int j = 0; j < enemyCount; ++j)
         {
             Actor* enemy = enemyManager.GetEnemy(j);
@@ -506,7 +516,8 @@ void Player::CollisionProjectilesVsEnemies()
                         hitEffect->Play(e);
                     }
                     // 弾丸破棄
-                    projectile->Destroy();
+                    //projectile->;
+                    ActorManager::Instance().Remove(projectile->GetComponent<ProjectileStraight>()->GetActor());
 
 
 
@@ -776,13 +787,6 @@ bool Player::InputProjectile()
     {
         // 前方向 sinの計算 角度の計算
         DirectX::XMFLOAT3 dir;
-        //dir.x = sinf( angle.y );// 三角を斜めにして位置を変えた
-        //dir.y = 0;
-        //dir.z = cosf( angle.y );
-        //sinf0度０　cosf0は１度
-        //９０sin1,cos0返ってくる横
-        //４５sin0.5,cos0.5斜め
-        // 360度を上手く表現出来る。2dでも行ける。
         dir = GetForwerd(angle);
         
         // 発射位置（プレイヤーの腰当たり)
@@ -791,8 +795,28 @@ bool Player::InputProjectile()
         pos.y = position.y + height*0.5f;// 身長÷位置のｙ
         pos.z = position.z;
         // 発射　ストレート弾丸を用意
-        ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-        projectile->Lanch(dir, pos);
+        {
+            // 弾丸初期化
+            const char* filename = "Data/Model/Sword/Sword.mdl";
+
+            std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+            actor->LoadModel(filename);
+            actor->SetName("ProjectileStraight");
+            actor->SetPosition(position);
+            actor->SetRotation(GetActor()->GetRotation());
+            actor->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+            actor->AddComponent<BulletFiring>();
+            actor->AddComponent<ProjectileStraight>();
+            //actor->AddComponent<Collision>();
+            ProjectileManager::Instance().Register(actor.get());
+            //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
+            Actor* projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+
+            // 発射
+            projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        }
+
+        //projectile->Lanch(dir, pos);
         return true;
     }
 
@@ -853,8 +877,8 @@ bool Player::InputProjectile()
 
 
         // 発射　ストレート弾丸を用意
-        ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
-        projectile->Lanch(dir, pos,target);
+        //ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
+        //projectile->Lanch(dir, pos,target);
 
         return true;
 
