@@ -1,7 +1,7 @@
 #include "Graphics/Graphics.h"
 #include "SceneGame.h"
 #include "Camera.h"
-#include "EnemyManager.h"
+//#include "EnemyManager.h"
 #include "EnemySlime.h"
 
 #include "EffectManager.h"
@@ -37,7 +37,7 @@ void SceneGame::Initialize()
 	//stageMoveFloor->SetGoalPoint(DirectX::XMFLOAT3(10, 2, 3));
 	//stageMoveFloor->SetTorque(DirectX::XMFLOAT3(0, 1.0f, 0));
 	//stageManager.Register(stageMoveFloor);
-	std::shared_ptr<Actor> actorPlayer = ActorManager::Instance().Create();
+	
 	// ステージ初期化
 	{
 		const char* filename = "Data/Model/ExampleStage/ExampleStage.mdl";
@@ -49,7 +49,7 @@ void SceneGame::Initialize()
 		actor->SetScale(DirectX::XMFLOAT3(1, 1, 1));
 		actor->AddComponent<StageMain>();
 		StageManager::Instance().Register(actor.get());
-		actorPlayer->LoadModelSabe(filename);
+		
 		//StageManager::instance().Register();
 		//StageManager::instance().Register();
 
@@ -61,17 +61,37 @@ void SceneGame::Initialize()
 		// プレイヤー初期化
 		const char* filename = "Data/Model/Jammo/Jammo.mdl";
 		
-		actorPlayer->LoadModel(filename);
-		actorPlayer->SetName("Player");
-		actorPlayer->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
-		actorPlayer->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
-		actorPlayer->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
-		actorPlayer->AddComponent<Movement>();
-		actorPlayer->AddComponent<HP>();
-		actorPlayer->AddComponent<Player>();
-		actorPlayer->AddComponent<Collision>();
-		actorPlayer->AddComponent<StageMain>();
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->LoadModel(filename);
+		actor->SetName("Player");
+		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
+		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
+		actor->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+		actor->AddComponent<Movement>();
+		actor->AddComponent<HP>();
+		actor->AddComponent<Player>();
+		actor->AddComponent<Collision>();
+		actor->AddComponent<StageMain>();
+		PlayerManager::Instance().Register(actor.get());
 		
+	}
+
+	{
+		// 敵初期化
+		const char* filename = "Data/Model/Slime/Slime.mdl";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->LoadModel(filename);
+		actor->SetName("EnemySlime");
+		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 1));
+		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
+		actor->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+		actor->AddComponent<Movement>();
+		actor->AddComponent<HP>();
+		actor->AddComponent<Collision>();
+		actor->AddComponent<StageMain>();
+		actor->AddComponent<EnemySlime>();
+		EnemyManager::Instance().Register(actor.get());
+
 	}
 
 	//player = new Player();
@@ -123,7 +143,7 @@ void SceneGame::Finalize()
 	}
 
 	// エネミー終了化
-	EnemyManager::Instance().Clear();
+	//EnemyManager::Instance().Clear();
 
 	AfterimageManager::Instance().Clear();
 
@@ -174,7 +194,7 @@ void SceneGame::Update(float elapsedTime)
 
 
 	// エネミー更新処理
-	EnemyManager::Instance().Update(elapsedTime);
+	//EnemyManager::Instance().Update(elapsedTime);
 
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
@@ -222,7 +242,7 @@ void SceneGame::Render()
 		//AfterimageManager::Instance().Render(dc, shader);
 
 		// エネミー描画
-		EnemyManager::Instance().Render(rc, shader);
+		//EnemyManager::Instance().Render(rc, shader);
 
 		shader->End(rc);
 
@@ -254,8 +274,11 @@ void SceneGame::Render()
 		//player->DrawDebugPrimitive();
 
 		// エネミーデバッグプリミティブ描画
-		EnemyManager::Instance().DrawDebugPrimitive();
-
+		//EnemyManager::Instance().DrawDebugPrimitive();
+		for (int i = 0; i >= EnemyManager::Instance().GetEnemyCount(); i++)
+		{
+			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->DrawDebugPrimitive();
+		}
 		// ラインレンダラ描画実行
 		graphics.GetLineRenderer()->Render(dc, rc.view, rc.projection);
 
@@ -266,7 +289,7 @@ void SceneGame::Render()
 
 	// 2Dスプライト描画
 	{
-		RenderEnemyGauge(dc, rc.view, rc.projection);
+		//RenderEnemyGauge(dc, rc.view, rc.projection);
 	}
 
 	// 2DデバッグGUI描画
@@ -275,7 +298,7 @@ void SceneGame::Render()
 		//player->DrawDebugGUI();
 		//cameraController->DrawDebugGUI();
 
-		EnemyManager::Instance().DrawDebugGUI();
+		//EnemyManager::Instance().DrawDebugGUI();
 
 	}
 
@@ -290,148 +313,148 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 {
 
 
-	// ビューポート 画面のサイズ等
-	// ビューポートとは2Dの画面に描画範囲の指定(クリッピング指定も出来る)位置を指定
-	D3D11_VIEWPORT viewport;
-	UINT numViewports = 1;
-	// ラスタライザーステートにバインドされているビューポート配列を取得
-	dc->RSGetViewports(&numViewports, &viewport);
+	//// ビューポート 画面のサイズ等
+	//// ビューポートとは2Dの画面に描画範囲の指定(クリッピング指定も出来る)位置を指定
+	//D3D11_VIEWPORT viewport;
+	//UINT numViewports = 1;
+	//// ラスタライザーステートにバインドされているビューポート配列を取得
+	//dc->RSGetViewports(&numViewports, &viewport);
 
-	// 変換行列
-	DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&view);
-	DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
-	// ローカルからワールドに行くときにいる奴相手のポジションを渡す。
-	DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
-
-
-	// 全ての敵の頭上にHPゲージを表示
-	EnemyManager& enemyManager = EnemyManager::Instance();
-	int enemyCount = enemyManager.GetEnemyCount();
-
-	for (int i = 0; i < enemyCount; ++i)
-	{
-
-		Enemy* enemy = enemyManager.GetEnemy(i);
-		// エネミー頭上
-		DirectX::XMFLOAT3 worldPosition = enemy->GetPosition();
-		worldPosition.y += enemy->GetHeight();
-
-		// ワールドからスクリーン
-		DirectX::XMVECTOR WorldPosition = DirectX::XMLoadFloat3(&worldPosition);
+	//// 変換行列
+	//DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&view);
+	//DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
+	//// ローカルからワールドに行くときにいる奴相手のポジションを渡す。
+	//DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
 
 
-			// ゲージ描画 // ワールドからスクリーン
+	//// 全ての敵の頭上にHPゲージを表示
+	//EnemyManager& enemyManager = EnemyManager::Instance();
+	//int enemyCount = enemyManager.GetEnemyCount();
 
-		DirectX::XMVECTOR ScreenPosition = DirectX::XMVector3Project(
-			WorldPosition,
-			viewport.TopLeftX,
-			viewport.TopLeftY,
-			viewport.Width,
-			viewport.Height,
-			viewport.MinDepth,
-			viewport.MaxDepth,
-			Projection,
-			View,
-			World
+	//for (int i = 0; i < enemyCount; ++i)
+	//{
 
-		);
-		// スクリーン座標
-		DirectX::XMFLOAT3 scereenPosition;
-		DirectX::XMStoreFloat3(&scereenPosition, ScreenPosition);
+	//	Enemy* enemy = enemyManager.GetEnemy(i);
+	//	// エネミー頭上
+	//	DirectX::XMFLOAT3 worldPosition = enemy->GetPosition();
+	//	worldPosition.y += enemy->GetHeight();
 
-		// ゲージ長さ
-		const float gaugeWidth = 30.0f;
-		const float gaugeHeight = 5.0f;
-
-		float healthRate = enemy->GetHealth() / static_cast<float>(enemy->GetMaxHealth());
+	//	// ワールドからスクリーン
+	//	DirectX::XMVECTOR WorldPosition = DirectX::XMLoadFloat3(&worldPosition);
 
 
-		if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f)continue;
+	//		// ゲージ描画 // ワールドからスクリーン
 
-		// 2Dスプライト描画
-		{
-			// 描画
-			gauge->Render(dc,
-				scereenPosition.x - gaugeWidth * 0.5f,
-				scereenPosition.y - gaugeHeight
-				,gaugeWidth * healthRate
-				,gaugeHeight,
-				0, 0,
-				static_cast<float> (gauge->GetTextureWidth()),
-				static_cast<float> (gauge->GetTextureHeight()),
-				0.0f,
-				1, 0, 0, 1);
-			// {位置}{サイズ}{画像どこから}{画像何処まで}
-			// dc , ｛範囲｝｛｝
-		}
-	
-	
+	//	DirectX::XMVECTOR ScreenPosition = DirectX::XMVector3Project(
+	//		WorldPosition,
+	//		viewport.TopLeftX,
+	//		viewport.TopLeftY,
+	//		viewport.Width,
+	//		viewport.Height,
+	//		viewport.MinDepth,
+	//		viewport.MaxDepth,
+	//		Projection,
+	//		View,
+	//		World
 
-		}
+	//	);
+	//	// スクリーン座標
+	//	DirectX::XMFLOAT3 scereenPosition;
+	//	DirectX::XMStoreFloat3(&scereenPosition, ScreenPosition);
 
+	//	// ゲージ長さ
+	//	const float gaugeWidth = 30.0f;
+	//	const float gaugeHeight = 5.0f;
 
-	// エネミー配置処理
-	Mouse& mouse = Input::Instance().GetMouse();
-	if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
-	{
-		// マウスカーソル座標を取得
-		DirectX::XMFLOAT3 scereenPosition;
-		scereenPosition.x = static_cast<float>(mouse.GetPositionX());
-		scereenPosition.y = static_cast<float>(mouse.GetPositionY());
-		scereenPosition.z = 0.0f;
-
-		// レイの始点を算出
-		DirectX::XMVECTOR WorldPosition{};
-		WorldPosition = DirectX::XMLoadFloat3(&scereenPosition);
+	//	float healthRate = enemy->GetHealth() / static_cast<float>(enemy->GetMaxHealth());
 
 
+	//	if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f)continue;
 
-		// スクリーン情報をワールド空間に
-		WorldPosition = DirectX::XMVector3Unproject(
-			WorldPosition,
-			viewport.TopLeftX,
-			viewport.TopLeftY,
-			viewport.Width,
-			viewport.Height,
-			viewport.MinDepth,
-			viewport.MaxDepth,
-			Projection,
-			View,
-			World
-		);
-		// 始点
-		DirectX::XMFLOAT3 rayStart;
-		DirectX::XMStoreFloat3(&rayStart, WorldPosition);
-
-		// レイの終点を算出
-		scereenPosition.z = 1.0f;
-		WorldPosition = DirectX::XMLoadFloat3(&scereenPosition);
-		WorldPosition = DirectX::XMVector3Unproject(
-			WorldPosition,
-			viewport.TopLeftX,
-			viewport.TopLeftY,
-			viewport.Width,
-			viewport.Height,
-			viewport.MinDepth,
-			viewport.MaxDepth,
-			Projection,
-			View,
-			World
-		);
-		DirectX::XMFLOAT3 rayEnd;
-		DirectX::XMStoreFloat3(&rayEnd, WorldPosition);
-
-		// レイキャスト
-		HitResult hit;
-	//	if (StageManager::instance().RayCast(rayStart, rayEnd, hit))
+	//	// 2Dスプライト描画
 	//	{
-	//		// 敵を配置
-	///*		EnemySlime* slime = new EnemySlime();
-	//		slime->SetPosition(hit.position);
-	//		EnemyManager::Instance().Register(slime);*/
+	//		// 描画
+	//		gauge->Render(dc,
+	//			scereenPosition.x - gaugeWidth * 0.5f,
+	//			scereenPosition.y - gaugeHeight
+	//			,gaugeWidth * healthRate
+	//			,gaugeHeight,
+	//			0, 0,
+	//			static_cast<float> (gauge->GetTextureWidth()),
+	//			static_cast<float> (gauge->GetTextureHeight()),
+	//			0.0f,
+	//			1, 0, 0, 1);
+	//		// {位置}{サイズ}{画像どこから}{画像何処まで}
+	//		// dc , ｛範囲｝｛｝
 	//	}
-		
-	}
+	//
+	//
+
+	//	}
+
+
+	//// エネミー配置処理
+	//Mouse& mouse = Input::Instance().GetMouse();
+	//if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+	//{
+	//	// マウスカーソル座標を取得
+	//	DirectX::XMFLOAT3 scereenPosition;
+	//	scereenPosition.x = static_cast<float>(mouse.GetPositionX());
+	//	scereenPosition.y = static_cast<float>(mouse.GetPositionY());
+	//	scereenPosition.z = 0.0f;
+
+	//	// レイの始点を算出
+	//	DirectX::XMVECTOR WorldPosition{};
+	//	WorldPosition = DirectX::XMLoadFloat3(&scereenPosition);
+
+
+
+	//	// スクリーン情報をワールド空間に
+	//	WorldPosition = DirectX::XMVector3Unproject(
+	//		WorldPosition,
+	//		viewport.TopLeftX,
+	//		viewport.TopLeftY,
+	//		viewport.Width,
+	//		viewport.Height,
+	//		viewport.MinDepth,
+	//		viewport.MaxDepth,
+	//		Projection,
+	//		View,
+	//		World
+	//	);
+	//	// 始点
+	//	DirectX::XMFLOAT3 rayStart;
+	//	DirectX::XMStoreFloat3(&rayStart, WorldPosition);
+
+	//	// レイの終点を算出
+	//	scereenPosition.z = 1.0f;
+	//	WorldPosition = DirectX::XMLoadFloat3(&scereenPosition);
+	//	WorldPosition = DirectX::XMVector3Unproject(
+	//		WorldPosition,
+	//		viewport.TopLeftX,
+	//		viewport.TopLeftY,
+	//		viewport.Width,
+	//		viewport.Height,
+	//		viewport.MinDepth,
+	//		viewport.MaxDepth,
+	//		Projection,
+	//		View,
+	//		World
+	//	);
+	//	DirectX::XMFLOAT3 rayEnd;
+	//	DirectX::XMStoreFloat3(&rayEnd, WorldPosition);
+
+	//	// レイキャスト
+	//	HitResult hit;
+	////	if (StageManager::instance().RayCast(rayStart, rayEnd, hit))
+	////	{
+	////		// 敵を配置
+	/////*		EnemySlime* slime = new EnemySlime();
+	////		slime->SetPosition(hit.position);
+	////		EnemyManager::Instance().Register(slime);*/
+	////	}
+	//	
+	//}
 }
 
 void SceneGame::AfterimageTime(float elapsedTime)

@@ -81,6 +81,9 @@ public:
 	void  SetRadius(float radius) { this->radius = radius;}
 
 
+	float GetHeight() { return height; }
+	void  SetHeight(float height) { this->height = height; }
+
 	// コンポーネント追加
 	template<class T, class... Args>
 	std::shared_ptr<T> AddComponent(Args... args)
@@ -105,28 +108,6 @@ public:
 	}
 
 
-	//// 自分以外のコンポーネント取得
-	//template<class T, class... Args>
-	//std::shared_ptr<T> GetComponent(Args... args)
-	//{
-	//	std::shared_ptr<T> componentcheck = std::make_shared<T>(args...);
-	//	componentcheck->SetActor(shared_from_this());
-	//	componentcheck.emplace_back(componentcheck);
-	//	return component;
-	//	for (std::shared_ptr<Component>& component : components)
-	//	{
-
-	//		if (componentcheck == component)
-
-	//		std::shared_ptr<T> p = std::dynamic_pointer_cast<T>(component);
-	//		if (p == nullptr) continue;
-	//		return p;
-	//	}
-	//	return nullptr;
-	//}
-
-
-
 private:
 	std::vector<std::shared_ptr<Component>>	components;
 	std::string			name;
@@ -144,6 +125,8 @@ private:
 	
 	// 半径05 
 	float radius = 0.5f;
+
+	float height = 1;
 
 	//	透明度
 	float alpha = 1;

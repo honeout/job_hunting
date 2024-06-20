@@ -135,9 +135,6 @@
     <ClInclude Include="Source\Enemy.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\EnemyManager.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\EnemySlime.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -297,9 +294,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\CameraController.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\EnemyManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\EnemySlime.cpp">

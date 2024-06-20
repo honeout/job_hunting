@@ -3,11 +3,12 @@
 #include "Input/Input.h"
 #include "Camera.h"
 #include "Graphics/Graphics.h"
-#include "EnemyManager.h"
+//#include "EnemyManager.h"
 #include "Collision.h"
 #include "ProjectileStraight.h"
 #include "ProjectileHoming.h"
 #include "Graphics/Model.h"
+#include "EnemySlime.h"
 
 #include "AfterimageManager.h"
 
@@ -130,6 +131,8 @@ void Player::Start()
 
     hp->SetMaxHealth(maxHealth);
 
+    GetActor()->SetRadius(radius);
+    GetActor()->SetHeight(height);
     // 待機ステートへ遷移
     TransitionIdleState();
 
@@ -390,7 +393,7 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
     if (vec.x != 0 || vec.y != 0 || vec.z != 0)
     {
         movement->Move(vec,5, elapsedTime);
-        movement->Turn( vec , elapsedTime);
+        movement->Turn( vec ,turnSpeed, elapsedTime);
     }
 
    
@@ -444,16 +447,19 @@ void Player::Render(const RenderContext& rc, ModelShader* shader)
 void Player::CollisionProjectilesVsEnemies()
 {
     EnemyManager& enemyManager = EnemyManager::Instance();
-
+   // Actor* enemyManager = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1);
+   // EnemyManager& enemyManager = EnemyManager::Instance();
+   
     // 全ての敵と総当たりで衝突処理
     int projectileCount = projectileManager.GetProjectileCount();
-    int enemyCount = enemyManager.GetEnemyCount();
+    
+    int enemyCount = EnemyManager::Instance().GetEnemyCount();
     for (int i = 0; i < projectileCount; ++i)
     {
         Projectile* projectile = projectileManager.GetProjectile(i);
         for (int j = 0; j < enemyCount; ++j)
         {
-            Enemy* enemy = enemyManager.GetEnemy(j);
+            Actor* enemy = enemyManager.GetEnemy(j);
 
             // 衝突処理
             DirectX::XMFLOAT3 outPositon;
@@ -470,7 +476,7 @@ void Player::CollisionProjectilesVsEnemies()
             {
 
                 // ダメージを与える。
-                if (enemy->ApplyDamage(1, 0.5f))
+                if (enemy->GetComponent<HP>()->ApplyDamage(1, 0.5f))
                 {
                     // 吹き飛ばす
                     {
@@ -489,7 +495,7 @@ void Player::CollisionProjectilesVsEnemies()
                         impulse.y = power * 0.5f;
                         impulse.z = vz * power;
 
-                        enemy->AddImpulse(impulse);
+                        enemy->GetComponent<Movement>()->AddImpulse(impulse);
                     }
                     // ヒットエフェクト再生
                     {
@@ -522,7 +528,7 @@ void Player::CollisionPlayerVsEnemies()
 
         for (int i = 0; i < enemyCount; ++i)
         {
-            Enemy* enemy = enemyManager.GetEnemy(i);
+            Actor* enemy = enemyManager.GetEnemy(i);
 
 
             //// 衝突処理
@@ -549,7 +555,7 @@ void Player::CollisionPlayerVsEnemies()
 
                     if (normal.y > 0.8f)
                     {
-                        if (enemy->ApplyDamage(1, 0.1f))
+                        if (enemy->GetComponent<HP>()->ApplyDamage(1, 0.1f))
                         {
                             //小ジャンプ
                             //Jump(jumpSpeed * 0.5f);
@@ -595,7 +601,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
     // 指定のノードと全ての敵を総当たりで衝突処理
     for (int i = 0; i < enemyCount; ++i)
     {
-        Enemy* enemy = enemyManager.GetEnemy(i);
+        Actor* enemy = enemyManager.GetEnemy(i);
 
 
         //// 衝突処理
@@ -615,7 +621,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
             // ダメージを与える。
             //enemy->ApplyDamage(1);
         // ダメージが通ったら消える。TRUEになるから
-            if (enemy->ApplyDamage(1, 0.5f))
+            if (enemy->GetComponent<HP>()->ApplyDamage(1, 0.5f))
             {
 
                 // 吹き飛ばす
@@ -635,7 +641,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
                     impulse.y = power * 0.5f;
                     impulse.z = vz * power;
 
-                    enemy->AddImpulse(impulse);
+                    enemy->GetComponent<Movement>()->AddImpulse(impulse);
                 }
                 // ヒットエフェクト再生
                 {
@@ -826,7 +832,7 @@ bool Player::InputProjectile()
         for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
         {
             // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
-            Enemy* enemy = EnemyManager::Instance().GetEnemy(i);
+            Actor* enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
             // 敵の位置
             DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetPosition());
@@ -1098,27 +1104,33 @@ void Player::UpdatejumpFlipState(float elapsedTime)
 
 void Player::TransitionAttackState()
 {
-    if (updateanim == UpAnim::Doble)
-    {
-        state = State::Attack;
-        //updateanim = UpAnim::Doble;
-        //上半身
-        bornUpStartPoint = "mixamorig:Spine2";
+    //if (updateanim == UpAnim::Doble)
+    //{
+    //    state = State::Attack;
+    //    //updateanim = UpAnim::Doble;
+    //    //上半身
+    //    bornUpStartPoint = "mixamorig:Spine2";
 
-       /* bornUpEndPoint = "mixamorig:Neck";*/
-        // 下半身
-        bornDownerEndPoint = "mixamorig:Spine";
+    //   /* bornUpEndPoint = "mixamorig:Neck";*/
+    //    // 下半身
+    //    bornDownerEndPoint = "mixamorig:Spine";
 
-        model->PlayUpeerBodyAnimation(Anim_Attack, false);
-    }
-    else
-    {
-        state = State::Attack;
+    //    model->PlayUpeerBodyAnimation(Anim_Attack, false);
+    //}
+    //else
+    //{
+    //    state = State::Attack;
 
-        updateanim = UpAnim::Normal;
-        // 走りアニメーション再生
-        model->PlayAnimation(Anim_Attack, false);
-    }
+    //    updateanim = UpAnim::Normal;
+    //    // 走りアニメーション再生
+    //    model->PlayAnimation(Anim_Attack, false);
+    //}
+
+    state = State::Attack;
+
+    updateanim = UpAnim::Normal;
+    // 走りアニメーション再生
+    model->PlayAnimation(Anim_Attack, false);
 }
 
 void Player::UpdateAttackState(float elapsedTime)
@@ -1274,4 +1286,9 @@ void Player::Ground()
         TransitionLandState();
     }
     
+}
+
+void PlayerManager::Register(Actor* actor)
+{
+    players.emplace_back(actor);
 }

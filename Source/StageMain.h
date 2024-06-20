@@ -56,16 +56,6 @@ public:
         return instance;
     }
 
-
-    // 削除
-    void Remove(std::shared_ptr<Actor> actor);
-
-    // 更新
-    void Update(float elapsedTime);
-
-    // 行列更新
-    void UpdateTransform();
-
     // 描画
     void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
 

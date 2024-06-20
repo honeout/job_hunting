@@ -4,7 +4,7 @@
 #include "Graphics/Shader.h"
 #include "Graphics/Model.h"
 //#include "Character.h"
-#include "EnemyManager.h"
+//#include "EnemyManager.h"
 #include "Collision.h"
 #include "ProjectileManager.h"
 #include "Component.h"
@@ -12,7 +12,7 @@
 #include "HP.h"
 #include "Input\GamePad.h"
 #include "CameraController.h"
-
+#include "Effect.h"
 enum class UpAnim
 {
     Normal,
@@ -53,13 +53,13 @@ public:
     // 名前取得
     const char* GetName() const override { return "Player"; }
 
-    void UpdateTransform();
+    //void UpdateTransform();
 
     // 開始処理
     void Start() override;
 
     // 更新処理
-    void Update(float elapsedTime);
+    void Update(float elapsedTime) override;
 
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
@@ -301,4 +301,37 @@ private:
     float				characterHeight = 10.0f;
 
 
+};
+
+// プレイヤーマネージャー
+class PlayerManager
+{
+private:
+    PlayerManager() {}
+    ~PlayerManager() {};
+
+public:
+    // インスタンス取得
+    static PlayerManager& Instance()
+    {
+        static PlayerManager instance;
+        return instance;
+    }
+
+    // 描画
+    void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+
+    // 登録
+    void Register(Actor* actor);
+
+    void Clear();
+
+    // ステージ数取得
+    int GetPlayerCount() const { return static_cast<int>(players.size()); }
+
+    // エネミー取得
+    Actor* GetPlayer(int index) { return players.at(index); }
+
+private:
+    std::vector<Actor*> players;
 };

@@ -1,22 +1,27 @@
 #pragma once
 
 #include "Graphics/Model.h"
-#include "Enemy.h"
-
+//#include "Enemy.h"
+#include "Component.h"
+#include "Movement.h"
+#include "HP.h"
 // スライム
-class EnemySlime : public Enemy
+class EnemySlime : public Component
 {
 public:
     EnemySlime();
     ~EnemySlime() override;
 
-    //void Start() override;
+    // 名前取得
+    const char* GetName() const override { return "EnemySlime"; }
 
-    // 更新処理
-    void Update(float elapsedTime) override;
+    void Start() override;
 
-    // 描画処理
-    void Render(const RenderContext& rc, ModelShader* shader) override;
+    //// 更新処理
+    void Update(float elapsedTime) ;
+
+    //// 描画処理
+    //void Render(const RenderContext& rc, ModelShader* shader) override;
 
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
@@ -79,6 +84,9 @@ private:
     // 死亡ステート更新処理
     void UpdateDeathState(float elapsedTime);
 
+    // 破棄
+    void Destroy();
+
 private:
     // ステート
     enum class State
@@ -127,14 +135,14 @@ private:
     // モデル情報を確保
     Model* model = nullptr;
 
-    //DirectX::XMFLOAT3 position = {};
-    //DirectX::XMFLOAT3 angle = {};
+    DirectX::XMFLOAT3 position = {};
+    DirectX::XMFLOAT3 angle = {};
 
-    //std::shared_ptr<Movement>	movement;
-    //std::shared_ptr<HP>	hp;
+    std::shared_ptr<Movement>	movement;
+    std::shared_ptr<HP>	hp;
 
     // 速度
-    /*float moveSpeed = 5;*/
+    //float moveSpeed = 5;
 
 
     // どのステートで動くか
@@ -159,13 +167,51 @@ private:
     float attackRange = 1.5f;
 
 
-    //// Hp
-    //int health = 5;
+    // Hp
+    int health = 5;
 
-    //// 最大HP
-    //int maxHealth = 5;
+    // 最大HP
+    int maxHealth = 5;
 
+    // 半径
+    float radius = 0.5f;
 
-    //int radius = 5;
+    // 高さ
+    float height = 1.0f;
 
+    float territoryarea = 10.0f;
+
+};
+
+// エネミーマネージャー
+class EnemyManager
+{
+private:
+    EnemyManager() {}
+    ~EnemyManager() {};
+
+public:
+    // インスタンス取得
+    static EnemyManager& Instance()
+    {
+        static EnemyManager instance;
+        return instance;
+    }
+
+    // 描画
+    void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+
+    // 登録
+    void Register(Actor* actor);
+
+    void Clear();
+
+    // ステージ数取得
+    int GetEnemyCount() const { return static_cast<int>(enemies.size()); }
+
+    // エネミー取得
+    Actor* GetEnemy(int index) { return enemies.at(index); }
+
+private:
+    std::vector<Actor*> enemies;
 };

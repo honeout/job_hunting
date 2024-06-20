@@ -23,13 +23,16 @@ public:
 
 	// 旋回
 	//void Turn(float elapsedTime, float vx, float vz, float speed);
-	void Turn(const DirectX::XMFLOAT3& direction, float elapsedTime);
+	void Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime);
 
 	// 着地した時に呼べれる
 	void OnLanding();
 
 	// ジャンプ処理
 	void JumpVelocity  ( float speed);
+
+	// 衝撃波
+	void AddImpulse(const DirectX::XMFLOAT3& impulse);
 
 	// 水平速力更新処理
 	void UpdateHorizontalVelocity( float elapsedFrame);

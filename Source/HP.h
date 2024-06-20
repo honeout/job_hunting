@@ -23,6 +23,9 @@ public:
 	// ダメージを与える ダメージを受けたら他に渡す。
 	bool ApplyDamage(int damage, float invincibleTime);
 
+
+	
+
 	// HP状態を取得
 	int GetHealth() const { return health; }
 
@@ -50,4 +53,6 @@ private:
 
 	// 無敵時間
 	float   invincibleTimer = 1.0f;
+
+	
 };

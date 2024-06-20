@@ -75,7 +75,7 @@ void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 }
 //
 // ê˘âÒ
-void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
+void Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime)
 {/*
 	std::shared_ptr<Actor> actor = GetActor();
 	speed = turnSpeed * elapsedTime;
@@ -110,7 +110,7 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 
 
      //1ÉtÉåÅ[ÉÄÇ≈Ç«ÇÍÇæÇØà⁄ìÆ
-    speed = turnSpeed * elapsedTime;
+    speed = speed * elapsedTime;
     //speed *= elapsedTime;
 
     std::shared_ptr<Actor> actor = GetActor();
@@ -256,6 +256,13 @@ void Movement::JumpVelocity( float speed)
     //actor->SetPosition(position);
     //position.y = (std::min)(jumpSpeedMax, jumpSpeed);
     //actor->SetPosition(position);
+}
+
+void Movement::AddImpulse(const DirectX::XMFLOAT3& impulse)
+{
+    velocity.x += impulse.x;
+    velocity.y += impulse.y;
+    velocity.z += impulse.z;
 }
 
 void Movement::UpdateHorizontalVelocity( float elapsedFrame)

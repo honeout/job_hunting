@@ -1,6 +1,6 @@
 #include "Enemy.h"
 #include "Graphics/Graphics.h"
-#include "EnemyManager.h"
+//#include "EnemyManager.h"
 
 
 
@@ -27,5 +27,5 @@ void Enemy::Destroy()
     //manager.Remove(this);
 
     //EnemyManager::Instance().;
-    EnemyManager::Instance().Remove(this);
+    //EnemyManager::Instance().Remove(this);
 }
