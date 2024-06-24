@@ -61,6 +61,8 @@ public:
 	// çsóÒÇÃéÊìæ
 	const DirectX::XMFLOAT4X4& GetTransform() const { return transform; }
 
+	void SetTransform(const DirectX::XMFLOAT4X4 transform)  { this->transform = transform; }
+
 	// ÉÇÉfÉãÇÃì«Ç›çûÇ›
 	void LoadModel(const char* filename);
 
@@ -122,6 +124,7 @@ private:
 	DirectX::XMFLOAT4	rotation = DirectX::XMFLOAT4(0, 0, 0, 1);
 	DirectX::XMFLOAT3	scale = DirectX::XMFLOAT3(1, 1, 1);
 	DirectX::XMFLOAT4X4	transform = DirectX::XMFLOAT4X4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+
 	
 	// îºåa05 
 	float radius = 0.5f;

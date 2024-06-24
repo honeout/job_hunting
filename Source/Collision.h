@@ -23,7 +23,7 @@ class Collision : public Component
 public:
 
     // –¼‘OŽæ“¾
-    const char* GetName() const override { return "Movement"; }
+    const char* GetName() const override { return "Collision"; }
 
     // GUI•`‰æ
     void OnGUI() override;

@@ -21,6 +21,8 @@ void ProjectileStraight::Start()
     // モデル一様
     model = GetActor()->GetModel();
 
+    // 当たり判定を共有
+    GetActor()->SetRadius(radius);
     
     // 銃移動のコンポーネント
     bulletFiring = GetActor()->GetComponent<BulletFiring>();

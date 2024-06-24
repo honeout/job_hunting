@@ -115,6 +115,7 @@
     <ClInclude Include="External\imgui\imstb_textedit.h" />
     <ClInclude Include="External\imgui\imstb_truetype.h" />
     <ClInclude Include="Source\Actor.h" />
+    <ClInclude Include="Source\Actor2D.h" />
     <ClInclude Include="Source\Afterimage.h" />
     <ClInclude Include="Source\Audio\Audio.h" />
     <ClInclude Include="Source\Audio\AudioResource.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="External\imgui\imgui_draw.cpp" />
     <ClCompile Include="External\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source\Actor.cpp" />
+    <ClCompile Include="Source\Actor2D.cpp" />
     <ClCompile Include="Source\Afterimage.cpp" />
     <ClCompile Include="Source\Audio\Audio.cpp" />
     <ClCompile Include="Source\Audio\AudioResource.cpp" />

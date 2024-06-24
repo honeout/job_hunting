@@ -8,6 +8,9 @@ class BulletFiring : public Component
 public:
     // ˆÚ“®
     void Move(float speed, float elapsedTime);
+
+    // ’ÇÕˆÚ“®
+    void MoveHoming(float speed,float turnSpeed,DirectX::XMFLOAT3 target, float elapsedTime);
     // ”­Ë    (  ‚Ç‚Á‚¿‚©‚ç‚Í‚Á‚µ‚áŒü‚«AˆÊ’u‰½ˆ‚©‚ç)
     void Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position, float   lifeTimer);
 

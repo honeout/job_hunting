@@ -44,4 +44,6 @@ private:
 
     std::shared_ptr<BulletFiring> bulletFiring;
 
+    float radius = 0.3f;
+
 };

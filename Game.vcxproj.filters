@@ -211,6 +211,7 @@
       <Filter>Source\Character</Filter>
     </ClInclude>
     <ClInclude Include="Source\BulletFiring.h" />
+    <ClInclude Include="Source\Actor2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -367,6 +368,9 @@
       <Filter>Source\Character</Filter>
     </ClCompile>
     <ClCompile Include="Source\BulletFiring.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor2D.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

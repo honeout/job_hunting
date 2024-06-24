@@ -56,6 +56,8 @@ void Actor::UpdateTransform()
 		model->UpdateTransform(transform);
 	}
 
+	
+
 	//// ワールド行列の更新
 	//DirectX::XMVECTOR Q = DirectX::XMLoadFloat4(&rotation);
 	//DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
@@ -181,6 +183,7 @@ void ActorManager::UpdateTransform()
 	for (std::shared_ptr<Actor>& actor : updateActors)
 	{
 		actor->UpdateTransform();
+
 	}
 }
 

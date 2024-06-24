@@ -204,6 +204,7 @@ void Player::Update(float elapsedTime)
     movement->UpdateVelocity(elapsedTime);
 
 
+
     //UpdateTransform();
     //CameraControl(elapsedTime);
    //CharacterControl(elapsedTime);
@@ -517,10 +518,15 @@ void Player::CollisionProjectilesVsEnemies()
                     }
                     // 弾丸破棄
                     //projectile->;
-                    ActorManager::Instance().Remove(projectile->GetComponent<ProjectileStraight>()->GetActor());
+                    //ActorManager::Instance().Remove();
+                    //if (projectile->GetName() == "ProjectileStraight")
+                    //ActorManager::Instance().Remove(projectile->GetComponent<ProjectileStraight>()->GetActor());
+
+                    //if (projectile->GetName() == "ProjectileHoming")
+                    //    ActorManager::Instance().Remove(projectile->GetComponent<ProjectileHoming>()->GetActor());
 
 
-
+                    projectile->GetComponent<BulletFiring>()->Destroy();
                 }
             }
         }
@@ -844,8 +850,8 @@ bool Player::InputProjectile()
         pos.z = position.z;
         //ターゲット（デフォルトではプレイヤーの前方）
         DirectX::XMFLOAT3 target;
-        // 敵がいなかった時のなめに　1000先まで飛んでくれ
-        target.x = pos.x+dir.x*1000.0f;
+        // 敵がいなかった時のために　1000先まで飛んでくれ
+        target.x = pos.x+dir.x * 1000.0f;
         target.y = pos.y+dir.y * 1000.0f;
         target.z = pos.z+dir.z * 1000.0f;
 
@@ -873,12 +879,36 @@ bool Player::InputProjectile()
                 target = enemy->GetPosition();// 位置を入れる
                 target.y += enemy->GetHeight() * 0.5f;// 位置に身長分
             }
+
+
+
         }
 
 
         // 発射　ストレート弾丸を用意
         //ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
         //projectile->Lanch(dir, pos,target);
+
+        // 弾丸初期化
+        const char* filename = "Data/Model/Sword/Sword.mdl";
+
+        std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+        actor->LoadModel(filename);
+        actor->SetName("ProjectileHoming");
+        actor->SetPosition(position);
+        actor->SetRotation(GetActor()->GetRotation());
+        actor->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+        actor->AddComponent<BulletFiring>();
+        actor->AddComponent<ProjectileHoming>();
+        //actor->AddComponent<Collision>();
+        ProjectileManager::Instance().Register(actor.get());
+        //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
+        Actor* projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+
+        // 発射
+        projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+
 
         return true;
 
