@@ -50,11 +50,11 @@ void Actor::UpdateTransform()
 	// 計算したワールド行列を取り出す
 	DirectX::XMStoreFloat4x4(&transform, W);
 
-	// モデルの行列更新
-	if (model != nullptr)
-	{
-		model->UpdateTransform(transform);
-	}
+	//// モデルの行列更新
+	//if (model != nullptr)
+	//{
+	//	model->UpdateTransform(transform);
+	//}
 
 	
 

@@ -244,7 +244,7 @@ void Player::Update(float elapsedTime)
     //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
     
     
-
+    GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 
     // モデル行列更新
     //model->UpdateTransform(transform);
@@ -472,6 +472,7 @@ void Player::CollisionProjectilesVsEnemies()
         {
             Actor* enemy = enemyManager.GetEnemy(j);
 
+            
             // 衝突処理
             DirectX::XMFLOAT3 outPositon;
             // 円柱と円
@@ -879,7 +880,7 @@ bool Player::InputProjectile()
                 target = enemy->GetPosition();// 位置を入れる
                 target.y += enemy->GetHeight() * 0.5f;// 位置に身長分
             }
-
+            
 
 
         }

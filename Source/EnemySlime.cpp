@@ -89,6 +89,8 @@ void EnemySlime::Update(float elapsedTime)
     movement->UpdateVelocity(elapsedTime);
     // –³“GŽžŠÔXV
     hp->UpdateInbincibleTimer(elapsedTime);
+
+    GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
     
    // UpdateVelocity(elapsedTime);
 

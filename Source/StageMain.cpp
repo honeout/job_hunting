@@ -30,6 +30,7 @@ void StageMain::Start()
 void StageMain::Update(float elasedTime)
 {
     // ¡‚Í“Á‚É‚â‚é‚±‚Æ‚È‚µ
+    GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 }
 
 //// •`‰æˆ—

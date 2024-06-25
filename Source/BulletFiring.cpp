@@ -20,7 +20,7 @@ void BulletFiring::Move(float speed,float elapsedTime)
 
     GetActor()->SetPosition(position);
     
-
+    GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
     // ”½ŽË
     //UpdateReflection(elapsedTime);
 
@@ -63,6 +63,8 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
         float lengthSq;
         DirectX::XMStoreFloat(&lengthSq, LengthSq);
 
+        GetActor()->SetPosition(position);
+
         if (lengthSq > 0.00001f)
         {
 
@@ -73,7 +75,7 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
             DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 
             // ’PˆÊ‰»Œü‚«
-            //Direction = DirectX::XMVector3Normalize(Direction);
+            Direction = DirectX::XMVector3Normalize(Direction);
 
             // ‘O•û•ûŒüƒxƒNƒgƒ‹‚Æƒ^[ƒQƒbƒg‚Ü‚Å‚ÌƒxƒNƒgƒ‹‚Ì“àÏiŠp“xj‚ðŽZo
             DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Direction, Vec);
@@ -102,50 +104,72 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
             // ‰ñ“]Šp“x‚ª‚ ‚é‚È‚ç‰ñ“]ˆ—‚·‚é@‚±‚±‚Å‚O‚ðŽæ‚Á‚Ä‚È‚¢‚ÆŠOÏ‚ª‘S‚­“¯‚¶‚É‚È‚Á‚ÄŒvŽZo—ˆ‚È‚¢
             if (fabsf(rot) >= 0.0001)
             {
-                //// ‰ñ“]Ž²‚ðŽZo  ŠOÏ  Œü‚©‚¹‚½‚¢•û‚ðæ‚É 
-                //DirectX::XMVECTOR Axis = DirectX::XMVector3Cross(Direction, Vec);
-                //// Œë·–hŽ~‚Ìˆ×‚É’PˆÊƒxƒNƒgƒ‹‚µ‚½•û‚ªˆÀ‘S
-                //Axis = DirectX::XMVector3Normalize(Axis);
-                //// ‰ñ“]Ž²‚Æ‰ñ“]—Ê‚©‚ç‰ñ“]s—ñ‚ðŽZo ‰ñ“]—Ê‚ð‹‚ß‚Ä‚¢‚éB
-                //DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationAxis(Axis, rot);
-                //DirectX::XMFLOAT4X4 transform = GetActor()->GetTransform();
-
-                //// Œ»Ý‚Ìs—ñ‚ð‰ñ“]‚³‚¹‚é@Ž©•ªŽ©g‚ÌŽp¨
-                //DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transform);
-                //Transform = DirectX::XMMatrixMultiply(Transform, Rotation); // “¯‚¶‚¾‚©‚ç‚½‚¾~‚¾‚¯  Transform*Rotation
-                //// DirectX::XMMatrixMultrixMultiply
-                //// ‰ñ“]Œã‚Ì‘O•û•ûŒü‚ðŽæ‚èo‚µA’PˆÊƒxƒNƒgƒ‹‰»‚·‚é
-                //Direction = DirectX::XMVector3Normalize(Transform.r[2]);// row
-                //DirectX::XMStoreFloat3(&direction, Direction);
+                // ‰ñ“]Ž²‚ðŽZo  ŠOÏ  Œü‚©‚¹‚½‚¢•û‚ðæ‚É 
+                DirectX::XMVECTOR Axis = DirectX::XMVector3Cross(Direction, Vec);
+                // Œë·–hŽ~‚Ìˆ×‚É’PˆÊƒxƒNƒgƒ‹‚µ‚½•û‚ªˆÀ‘S
+                Axis = DirectX::XMVector3Normalize(Axis);
+                // ‰ñ“]Ž²‚Æ‰ñ“]—Ê‚©‚ç‰ñ“]s—ñ‚ðŽZo ‰ñ“]—Ê‚ð‹‚ß‚Ä‚¢‚éB
+                DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationAxis(Axis, rot);
 
 
-                //DirectX::XMStoreFloat4x4(&transform, Transform);
+                DirectX::XMFLOAT4X4 transform = GetActor()->GetTransform();
 
-                //GetActor()->SetTransform(transform);
+                // Œ»Ý‚Ìs—ñ‚ð‰ñ“]‚³‚¹‚é@Ž©•ªŽ©g‚ÌŽp¨
+                DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transform);
+                Transform = DirectX::XMMatrixMultiply(Transform, Rotation); // “¯‚¶‚¾‚©‚ç‚½‚¾~‚¾‚¯  Transform*Rotation
+                // DirectX::XMMatrixMultrixMultiply
+                // ‰ñ“]Œã‚Ì‘O•û•ûŒü‚ðŽæ‚èo‚µA’PˆÊƒxƒNƒgƒ‹‰»‚·‚é
+                Direction = DirectX::XMVector3Normalize(Transform.r[2]);// row
+                DirectX::XMStoreFloat3(&direction, Direction);
+                
 
-                DirectX::XMFLOAT3 vec;
+                DirectX::XMStoreFloat4x4(&transform, Transform);
 
-                DirectX::XMStoreFloat3(&vec, Vec);
 
-                float cross = (direction.z * vec.x) + (direction.x * vec.z);
+                //DirectX::XMStoreFloat3(&position, Transform.r[3]);
 
-                DirectX::XMFLOAT4 rotate;
-                rotate = GetActor()->GetRotation(); 
+                GetActor()->SetTransform(transform);
 
-                if (cross < 0.0f)
-                {
-                    rotate.y -= rot;
-                }
-                else
-                {
-                    rotate.y += rot;
-                }
+                //GetActor()->SetPosition();
+            }
 
-                direction.x = sinf(rotate.y);
-                direction.y = 0;
-                direction.z = cosf(rotate.y);
+            GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 
-                GetActor()->SetRotation(rotate);
+                //DirectX::XMFLOAT3 vec;
+
+                //DirectX::XMStoreFloat3(&vec, Vec);
+
+                ////// ’·‚³
+                ////float length = sqrtf(vec.x * vec.x * vec.z * vec.z);
+                ////// ’PˆÊ‰»ƒxƒNƒgƒ‹
+                ////vec.x /= length;
+                ////vec.z /= length;
+
+                //float cross = (direction.z * vec.x) + (direction.x * vec.z);
+
+
+                //DirectX::XMFLOAT4 rotate;
+                //rotate = GetActor()->GetRotation();
+
+                //if (cross < 0.0f)
+                //{
+                //    rotate.y -= rot;
+                //}
+                //else
+                //{
+                //    rotate.y += rot;
+                //}
+
+                //direction.x = sinf(rotate.y);
+                //direction.y = 0;
+                //direction.z = cosf(rotate.y);
+
+                ////DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
+                ////Direction = DirectX::XMVector3Normalize(Direction);
+
+                ////DirectX::XMStoreFloat3(&direction, Direction);
+
+                //GetActor()->SetRotation(rotate);
 
                 //GetActor()->GetModel()->UpdateTransform(transform);
 
@@ -193,12 +217,12 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
 
                 //GetActor()->SetRotation(rotate);
 
-               
-            }
+            //}
+            
         }
     }
 
-    GetActor()->SetPosition(position);
+    
 
 }
 
