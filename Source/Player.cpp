@@ -243,8 +243,8 @@ void Player::Update(float elapsedTime)
     //model->Update_blend_animations(elapsedTime, frontVec.x,36,60, true);
     //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
     
-    
-    GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
+    GetActor()->UpdateTransform();
+    //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 
     // モデル行列更新
     //model->UpdateTransform(transform);

@@ -20,7 +20,8 @@ void BulletFiring::Move(float speed,float elapsedTime)
 
     GetActor()->SetPosition(position);
     
-    GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
+    GetActor()->UpdateTransform();
+    //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
     // 反射
     //UpdateReflection(elapsedTime);
 
@@ -48,7 +49,7 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
     position.y += bulletspeed * direction.y;
     position.z += bulletspeed * direction.z;
 
-  
+
     // 旋回
     {
         float bulletTurnSpeed = turnSpeed * elapsedTime;
@@ -63,7 +64,7 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
         float lengthSq;
         DirectX::XMStoreFloat(&lengthSq, LengthSq);
 
-        GetActor()->SetPosition(position);
+      
 
         if (lengthSq > 0.00001f)
         {
@@ -74,8 +75,6 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
             // 向いてる方向ベクトルを算出　direction単位ベクトル前提
             DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 
-            // 単位化向き
-            Direction = DirectX::XMVector3Normalize(Direction);
 
             // 前方方向ベクトルとターゲットまでのベクトルの内積（角度）を算出
             DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Direction, Vec);
@@ -121,109 +120,27 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
                 // 回転後の前方方向を取り出し、単位ベクトル化する
                 Direction = DirectX::XMVector3Normalize(Transform.r[2]);// row
                 DirectX::XMStoreFloat3(&direction, Direction);
-                
-
-                DirectX::XMStoreFloat4x4(&transform, Transform);
 
 
-                //DirectX::XMStoreFloat3(&position, Transform.r[3]);
+                //DirectX::XMStoreFloat4x4(&transform, Transform);
 
-                GetActor()->SetTransform(transform);
 
-                //GetActor()->SetPosition();
+               
+
             }
 
-            GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 
-                //DirectX::XMFLOAT3 vec;
-
-                //DirectX::XMStoreFloat3(&vec, Vec);
-
-                ////// 長さ
-                ////float length = sqrtf(vec.x * vec.x * vec.z * vec.z);
-                ////// 単位化ベクトル
-                ////vec.x /= length;
-                ////vec.z /= length;
-
-                //float cross = (direction.z * vec.x) + (direction.x * vec.z);
-
-
-                //DirectX::XMFLOAT4 rotate;
-                //rotate = GetActor()->GetRotation();
-
-                //if (cross < 0.0f)
-                //{
-                //    rotate.y -= rot;
-                //}
-                //else
-                //{
-                //    rotate.y += rot;
-                //}
-
-                //direction.x = sinf(rotate.y);
-                //direction.y = 0;
-                //direction.z = cosf(rotate.y);
-
-                ////DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-                ////Direction = DirectX::XMVector3Normalize(Direction);
-
-                ////DirectX::XMStoreFloat3(&direction, Direction);
-
-                //GetActor()->SetRotation(rotate);
-
-                //GetActor()->GetModel()->UpdateTransform(transform);
-
-                //GetActor()->SetRotation({
-                //    transform._21,
-                //    transform._22,
-                //    transform._23,
-                //    transform._24 });
-                //
-                //DirectX::XMFLOAT3 homingdirection;
-                //homingdirection = {
-                //    transform._41 - position.x,
-                //    transform._42 - position.y,
-                //    transform._43 - position.z
-                //};
-
-                //// 移動
-                //position.x += bulletspeed * homingdirection.x;
-                //position.y += bulletspeed * homingdirection.y;
-                //position.z += bulletspeed * homingdirection.z;
-
-
-                //position = {
-                //    transform._11,
-                //    transform._12,
-                //    transform._13
-
-                //};
-
-                //float cross;
-                //DirectX::XMStoreFloat(&cross, Axis);
-
-                //DirectX::XMFLOAT4 rotate = GetActor()->GetRotation();
-
-                //
-
-                //if (cross < 0.0f)
-                //{
-                //    rotate.y -= rot;
-                //}
-                //else
-                //{
-                //    rotate.y += rot;
-                //}
-
-                //GetActor()->SetRotation(rotate);
-
-            //}
+              
             
         }
     }
 
-    
+    GetActor()->SetDirection(direction);
+    GetActor()->SetPosition(position);
 
+    GetActor()->UpdateTransformProjectile();
+            //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
+          
 }
 
 void BulletFiring::Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position, float   lifeTimer)
@@ -232,6 +149,8 @@ void BulletFiring::Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFL
     this->direction = direction;
     this->position = position;
     this->lifeTimer = lifeTimer;
+
+    GetActor()->SetDirection(direction);
 }
 
 void BulletFiring::Destroy()

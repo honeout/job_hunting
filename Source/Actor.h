@@ -25,6 +25,7 @@ public:
 
 	// 行列の更新
 	virtual void UpdateTransform();
+	virtual void UpdateTransformProjectile();
 
 	// GUI表示
 	virtual void OnGUI();
@@ -62,6 +63,9 @@ public:
 	const DirectX::XMFLOAT4X4& GetTransform() const { return transform; }
 
 	void SetTransform(const DirectX::XMFLOAT4X4 transform)  { this->transform = transform; }
+
+	// 向き
+	void SetDirection(const DirectX::XMFLOAT3 direction)  { this->direction = direction; }
 
 	// モデルの読み込み
 	void LoadModel(const char* filename);
@@ -125,6 +129,7 @@ private:
 	DirectX::XMFLOAT3	scale = DirectX::XMFLOAT3(1, 1, 1);
 	DirectX::XMFLOAT4X4	transform = DirectX::XMFLOAT4X4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 
+	DirectX::XMFLOAT3 direction;
 	
 	// 半径05 
 	float radius = 0.5f;
