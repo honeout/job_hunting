@@ -25,6 +25,7 @@ public:
 
 	// 行列の更新
 	virtual void UpdateTransform();
+	virtual void UpdateTransformProjectile();
 
 	// GUI表示
 	virtual void OnGUI();
@@ -61,53 +62,33 @@ public:
 	// 行列の取得
 	const DirectX::XMFLOAT4X4& GetTransform() const { return transform; }
 
+	void SetTransform(const DirectX::XMFLOAT4X4 transform)  { this->transform = transform; }
+
+	// 向き
+	void SetDirection(const DirectX::XMFLOAT3 direction)  { this->direction = direction; }
+
 	// モデルの読み込み
 	void LoadModel(const char* filename);
 
+	void LoadModelSabe(const char* filename);
+
 	// モデルの取得
 	Model* GetModel() const { return model.get(); }
+	Model* GetModelSabe() const { return modelsabe.get(); }
+	
 
-	//void SetStepOffset(float stepOffset) {  this->stepOffset = stepOffset; }
-	//float GetStepOffset() const { return this->stepOffset; }
 
 	// アニメーションの時間
 	float GetCurrentANimationSeconds() const { return currentANimationSeconds; }
 	// アニメーションの時間
 	void SetCurrentAnimationSeconds(const float currentANimationSeconds) { this->currentANimationSeconds = currentANimationSeconds; }
 
+	float GetRadius() {return radius;}
+	void  SetRadius(float radius) { this->radius = radius;}
 
-	//// HP読み取り
-	//int   GetHealth() { return health; }
 
-	//// HP書き込み
-	//void   SetHealth(int health) { this->health = health; }
-
-	//DirectX::XMFLOAT3 GetVelocity() { return this->velocity; }
-
-	//void SetVelocity(DirectX::XMFLOAT3 velocity) { this->velocity = velocity; }
-
-	// 地面に設置しているか エフェクト等も
-	//bool IsGround() const { return isGround; }
-
-	//void SetAirControl(float airControl) { this->airControl = airControl; }
-	//float GetAirControl() { return this->airControl; }
-
-	// 高さ取得
-	/*float GetHeight() const { return height; }*/
-
-	//// 水平速力更新処理
-	//void UpdateHorizontalVelocity(float elapsedFrame);
-	//// 水平移動更新処理
-	//void UpdateHorizontalMove(float elapsedTime);
-
-	//// 垂直速力更新処理
-	//void UpdateVerticalVelocity(float elapsedFrame);
-
-	//// 垂直移動更新処理
-	//void UpdateVerticalMove(float elapsedTime);
-	//// 速力処理更新
-	//void UpdateVelocity(float elapsedTime);
-
+	float GetHeight() { return height; }
+	void  SetHeight(float height) { this->height = height; }
 
 	// コンポーネント追加
 	template<class T, class... Args>
@@ -133,7 +114,6 @@ public:
 	}
 
 
-
 private:
 	std::vector<std::shared_ptr<Component>>	components;
 	std::string			name;
@@ -141,11 +121,21 @@ private:
 	// モデル系
 	//////////////////////////////////////
 	std::unique_ptr<Model>	model;
+
+	std::unique_ptr<Model>	modelsabe;
+
 	DirectX::XMFLOAT3	position = DirectX::XMFLOAT3(0, 0, 0);
 	DirectX::XMFLOAT4	rotation = DirectX::XMFLOAT4(0, 0, 0, 1);
 	DirectX::XMFLOAT3	scale = DirectX::XMFLOAT3(1, 1, 1);
 	DirectX::XMFLOAT4X4	transform = DirectX::XMFLOAT4X4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+
+	DirectX::XMFLOAT3 direction;
 	
+	// 半径05 
+	float radius = 0.5f;
+
+	float height = 1;
+
 	//	透明度
 	float alpha = 1;
 

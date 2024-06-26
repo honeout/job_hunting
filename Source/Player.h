@@ -3,8 +3,8 @@
 #include <DirectXMath.h>
 #include "Graphics/Shader.h"
 #include "Graphics/Model.h"
-#include "Character.h"
-#include "EnemyManager.h"
+//#include "Character.h"
+//#include "EnemyManager.h"
 #include "Collision.h"
 #include "ProjectileManager.h"
 #include "Component.h"
@@ -12,6 +12,8 @@
 #include "HP.h"
 #include "Input\GamePad.h"
 #include "CameraController.h"
+#include "Effect.h"
+
 
 enum class UpAnim
 {
@@ -53,17 +55,18 @@ public:
     // 名前取得
     const char* GetName() const override { return "Player"; }
 
-    void UpdateTransform();
+    //void UpdateTransform();
 
     // 開始処理
     void Start() override;
 
     // 更新処理
-    void Update(float elapsedTime);
+    void Update(float elapsedTime) override;
 
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
-
+    // GUI描画
+    void OnGUI() override;
 
     // 描画処理
     void Render(const RenderContext& rc, ModelShader* shader);
@@ -159,6 +162,8 @@ private:
     // 攻撃ステージ更新処理
     void UpdateAttackState(float elapsedTime);
 
+    void UpdateProjectile(float elapsedTime);
+
     // ダメージステートへ遷移
     void TransitionDamageState();
 
@@ -184,6 +189,8 @@ private:
     void inFloat3(DirectX::XMFLOAT3 value, DirectX::XMFLOAT3& inValue);
 
     DirectX::XMFLOAT3 GetForwerd(DirectX::XMFLOAT3 angle);
+
+
 
 private:
     // ステート
@@ -246,7 +253,7 @@ private:
     float gravity =-1.0f;
 
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
-    int jumpfliptime = gravity * 5;
+    float jumpfliptime = gravity * 5;
 
     float            leftHandRadius = 0.4f;
 
@@ -289,6 +296,10 @@ private:
     // アニメーションの時間 
     float currentANimationSeconds = 0.0f;
 
+
+    // 弾丸生命時間
+    float   lifeTimer = 3.0f;
+
     /////////////////// カメラ関係
 
     CameraController* cameraControlle;
@@ -301,4 +312,37 @@ private:
     float				characterHeight = 10.0f;
 
 
+};
+
+// プレイヤーマネージャー
+class PlayerManager
+{
+private:
+    PlayerManager() {}
+    ~PlayerManager() {};
+
+public:
+    // インスタンス取得
+    static PlayerManager& Instance()
+    {
+        static PlayerManager instance;
+        return instance;
+    }
+
+    // 描画
+    void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+
+    // 登録
+    void Register(Actor* actor);
+
+    void Clear();
+
+    // ステージ数取得
+    int GetPlayerCount() const { return static_cast<int>(players.size()); }
+
+    // エネミー取得
+    Actor* GetPlayer(int index) { return players.at(index); }
+
+private:
+    std::vector<Actor*> players;
 };

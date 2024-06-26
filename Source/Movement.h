@@ -2,6 +2,7 @@
 
 #include <DirectXMath.h>
 #include "Component.h"
+#include "Collision.h"
 
 // 移動
 class Movement : public Component
@@ -22,13 +23,16 @@ public:
 
 	// 旋回
 	//void Turn(float elapsedTime, float vx, float vz, float speed);
-	void Turn(const DirectX::XMFLOAT3& direction, float elapsedTime);
+	void Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime);
 
 	// 着地した時に呼べれる
 	void OnLanding();
 
 	// ジャンプ処理
 	void JumpVelocity  ( float speed);
+
+	// 衝撃波
+	void AddImpulse(const DirectX::XMFLOAT3& impulse);
 
 	// 水平速力更新処理
 	void UpdateHorizontalVelocity( float elapsedFrame);
@@ -63,10 +67,14 @@ public:
 
 	DirectX::XMFLOAT3 GetVelocity() { return velocity; }
 
+    void SetVelocity(DirectX::XMFLOAT3 velocity) {  this->velocity = velocity; }
+
 private:
 	float		moveSpeed = 5.0f;
 	float		turnSpeed = 6.28f;
 	float       jumpSpeed = 0;
+
+	std::shared_ptr<Collision>	collision;
 
 	// 最大ジャンプ数
 	int jumpCount = 0;
@@ -109,4 +117,8 @@ private:
 	bool onLadius = false;
 
 	float airControl = 0.3f;
+
+	DirectX::XMFLOAT3 positionX = { 0,0,0 };
+
+	int butten = 0;
 };

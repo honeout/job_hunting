@@ -3,11 +3,12 @@
 #include "Input/Input.h"
 #include "Camera.h"
 #include "Graphics/Graphics.h"
-#include "EnemyManager.h"
+//#include "EnemyManager.h"
 #include "Collision.h"
 #include "ProjectileStraight.h"
 #include "ProjectileHoming.h"
 #include "Graphics/Model.h"
+#include "EnemySlime.h"
 
 #include "AfterimageManager.h"
 
@@ -108,6 +109,9 @@ void Player::Start()
     // hp関数を使えるように
     hp = GetActor()->GetComponent<HP>();
 
+    // projectileStraight関数を使えるように
+    //projectileStraight = GetActor()->GetComponent<>;
+    
     // モデルデータを入れる。
     model = GetActor()->GetModel();
     
@@ -129,6 +133,8 @@ void Player::Start()
 
     hp->SetMaxHealth(maxHealth);
 
+    GetActor()->SetRadius(radius);
+    GetActor()->SetHeight(height);
     // 待機ステートへ遷移
     TransitionIdleState();
 
@@ -176,7 +182,15 @@ void Player::Update(float elapsedTime)
 
     position = GetActor()->GetPosition();
 
-    
+    angle = { 
+        GetActor()->GetRotation().x,
+        GetActor()->GetRotation().y,
+        GetActor()->GetRotation().z
+    };
+
+    //velocity = movement->GetVelocity();
+
+    //movement->SetVelocity(velocity);
 
     //velocity = movement->GetVelocity();
 
@@ -190,6 +204,7 @@ void Player::Update(float elapsedTime)
     movement->UpdateVelocity(elapsedTime);
 
 
+
     //UpdateTransform();
     //CameraControl(elapsedTime);
    //CharacterControl(elapsedTime);
@@ -199,8 +214,10 @@ void Player::Update(float elapsedTime)
 
     CollisionProjectilesVsEnemies();
 
+    UpdateProjectile(elapsedTime);
+
     // 弾丸更新処理
-    projectileManager.Update(elapsedTime);
+    //projectileManager.Update(elapsedTime);
 
     // オブジェクト行列を更新
     //UpdateTransform();
@@ -228,8 +245,8 @@ void Player::Update(float elapsedTime)
     //model->Update_blend_animations(elapsedTime, frontVec.x,36,60, true);
     //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
     
-    
-
+    GetActor()->UpdateTransform();
+    //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 
     // モデル行列更新
     //model->UpdateTransform(transform);
@@ -250,7 +267,7 @@ void Player::DrawDebugPrimitive()
     debugRenderer->DrawCylinder(position, radius, height, DirectX::XMFLOAT4(0, 0, 0, 1));
 
     // 弾丸デバッグプリミティブ描画
-    projectileManager.DrawDebugPrimitive();
+    //projectileManager.DrawDebugPrimitive();
 
     if (attackCollisionFlag)
     {
@@ -266,6 +283,12 @@ void Player::DrawDebugPrimitive()
             DirectX::XMFLOAT4(1, 0, 0, 1)
         );
     }
+}
+
+void Player::OnGUI()
+{
+    ImGui::InputFloat("Move Speed", &moveSpeed);
+    ImGui::InputInt("Jump max", &jumpCount);
 }
 
 
@@ -285,7 +308,7 @@ bool Player::InputMove(float elapsedTime)
 
 void Player::CameraControl(float elapsedTime)
 {
-    float ax = gamePad.GetAxisRX();
+  /*  float ax = gamePad.GetAxisRX();
     float ay = gamePad.GetAxisRY();
 
     float lengthSq = ax * ax + ay * ay;
@@ -327,7 +350,7 @@ void Player::CameraControl(float elapsedTime)
     DirectX::XMStoreFloat3(&focus, Focus);
 
     Camera& camera = Camera::Instance();
-    camera.SetLookAt(eye, focus, DirectX::XMFLOAT3(0, 1, 0));
+    camera.SetLookAt(eye, focus, DirectX::XMFLOAT3(0, 1, 0));*/
 }
 
 DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
@@ -386,8 +409,8 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
     if (vec.x != 0 || vec.y != 0 || vec.z != 0)
     {
-        movement->Turn( vec , elapsedTime);
-        movement->Move(vec,5, elapsedTime);
+        movement->Move(vec,moveSpeed, elapsedTime);
+        movement->Turn( vec ,turnSpeed, elapsedTime);
     }
 
    
@@ -398,7 +421,7 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
 void Player::CharacterControl(float elapsedTime)
 {
-    float ax = gamePad.GetAxisLX();
+  /*  float ax = gamePad.GetAxisLX();
     float ay = gamePad.GetAxisLY();
 
     float lengthSq = ax * ax + ay * ay;
@@ -419,7 +442,7 @@ void Player::CharacterControl(float elapsedTime)
 
         movement->Turn(direction, elapsedTime);
         movement->Move(direction,5 ,elapsedTime);
-    }
+    }*/
 }
 
 
@@ -430,7 +453,7 @@ void Player::Render(const RenderContext& rc, ModelShader* shader)
     // 描画
     shader->Draw(rc, model);
     // 弾丸描画処理
-    projectileManager.Render(rc, shader);
+    //projectileManager.Render(rc, shader);
 }
 
 
@@ -441,17 +464,23 @@ void Player::Render(const RenderContext& rc, ModelShader* shader)
 void Player::CollisionProjectilesVsEnemies()
 {
     EnemyManager& enemyManager = EnemyManager::Instance();
+   // Actor* enemyManager = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1);
+   // EnemyManager& enemyManager = EnemyManager::Instance();
+   
+    projectileManager = ProjectileManager::Instance();
 
     // 全ての敵と総当たりで衝突処理
     int projectileCount = projectileManager.GetProjectileCount();
-    int enemyCount = enemyManager.GetEnemyCount();
+    
     for (int i = 0; i < projectileCount; ++i)
     {
-        Projectile* projectile = projectileManager.GetProjectile(i);
+    int enemyCount = EnemyManager::Instance().GetEnemyCount();
+        Actor* projectile = projectileManager.GetProjectile(i);
         for (int j = 0; j < enemyCount; ++j)
         {
-            Enemy* enemy = enemyManager.GetEnemy(j);
+            Actor* enemy = enemyManager.GetEnemy(j);
 
+            
             // 衝突処理
             DirectX::XMFLOAT3 outPositon;
             // 円柱と円
@@ -466,7 +495,7 @@ void Player::CollisionProjectilesVsEnemies()
             {
 
                 // ダメージを与える。
-                if (enemy->ApplyDamage(1, 0.5f))
+                if (enemy->GetComponent<HP>()->ApplyDamage(1, 0.5f))
                 {
                     // 吹き飛ばす
                     {
@@ -485,7 +514,7 @@ void Player::CollisionProjectilesVsEnemies()
                         impulse.y = power * 0.5f;
                         impulse.z = vz * power;
 
-                        enemy->AddImpulse(impulse);
+                        enemy->GetComponent<Movement>()->AddImpulse(impulse);
                     }
                     // ヒットエフェクト再生
                     {
@@ -496,10 +525,16 @@ void Player::CollisionProjectilesVsEnemies()
                         hitEffect->Play(e);
                     }
                     // 弾丸破棄
-                    projectile->Destroy();
+                    //projectile->;
+                    //ActorManager::Instance().Remove();
+                    //if (projectile->GetName() == "ProjectileStraight")
+                    //ActorManager::Instance().Remove(projectile->GetComponent<ProjectileStraight>()->GetActor());
+
+                    //if (projectile->GetName() == "ProjectileHoming")
+                    //    ActorManager::Instance().Remove(projectile->GetComponent<ProjectileHoming>()->GetActor());
 
 
-
+                    projectile->GetComponent<BulletFiring>()->Destroy();
                 }
             }
         }
@@ -518,7 +553,7 @@ void Player::CollisionPlayerVsEnemies()
 
         for (int i = 0; i < enemyCount; ++i)
         {
-            Enemy* enemy = enemyManager.GetEnemy(i);
+            Actor* enemy = enemyManager.GetEnemy(i);
 
 
             //// 衝突処理
@@ -545,7 +580,7 @@ void Player::CollisionPlayerVsEnemies()
 
                     if (normal.y > 0.8f)
                     {
-                        if (enemy->ApplyDamage(1, 0.1f))
+                        if (enemy->GetComponent<HP>()->ApplyDamage(1, 0.1f))
                         {
                             //小ジャンプ
                             //Jump(jumpSpeed * 0.5f);
@@ -591,7 +626,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
     // 指定のノードと全ての敵を総当たりで衝突処理
     for (int i = 0; i < enemyCount; ++i)
     {
-        Enemy* enemy = enemyManager.GetEnemy(i);
+        Actor* enemy = enemyManager.GetEnemy(i);
 
 
         //// 衝突処理
@@ -611,7 +646,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
             // ダメージを与える。
             //enemy->ApplyDamage(1);
         // ダメージが通ったら消える。TRUEになるから
-            if (enemy->ApplyDamage(1, 0.5f))
+            if (enemy->GetComponent<HP>()->ApplyDamage(1, 0.5f))
             {
 
                 // 吹き飛ばす
@@ -631,7 +666,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
                     impulse.y = power * 0.5f;
                     impulse.z = vz * power;
 
-                    enemy->AddImpulse(impulse);
+                    enemy->GetComponent<Movement>()->AddImpulse(impulse);
                 }
                 // ヒットエフェクト再生
                 {
@@ -766,13 +801,6 @@ bool Player::InputProjectile()
     {
         // 前方向 sinの計算 角度の計算
         DirectX::XMFLOAT3 dir;
-        //dir.x = sinf( angle.y );// 三角を斜めにして位置を変えた
-        //dir.y = 0;
-        //dir.z = cosf( angle.y );
-        //sinf0度０　cosf0は１度
-        //９０sin1,cos0返ってくる横
-        //４５sin0.5,cos0.5斜め
-        // 360度を上手く表現出来る。2dでも行ける。
         dir = GetForwerd(angle);
         
         // 発射位置（プレイヤーの腰当たり)
@@ -781,8 +809,28 @@ bool Player::InputProjectile()
         pos.y = position.y + height*0.5f;// 身長÷位置のｙ
         pos.z = position.z;
         // 発射　ストレート弾丸を用意
-        ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-        projectile->Lanch(dir, pos);
+        {
+            // 弾丸初期化
+            const char* filename = "Data/Model/Sword/Sword.mdl";
+
+            std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+            actor->LoadModel(filename);
+            actor->SetName("ProjectileStraight");
+            actor->SetPosition(position);
+            actor->SetRotation(GetActor()->GetRotation());
+            actor->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+            actor->AddComponent<BulletFiring>();
+            actor->AddComponent<ProjectileStraight>();
+            //actor->AddComponent<Collision>();
+            ProjectileManager::Instance().Register(actor.get());
+            //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
+            Actor* projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+
+            // 発射
+            actor->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        }
+
+        //projectile->Lanch(dir, pos);
         return true;
     }
 
@@ -810,8 +858,8 @@ bool Player::InputProjectile()
         pos.z = position.z;
         //ターゲット（デフォルトではプレイヤーの前方）
         DirectX::XMFLOAT3 target;
-        // 敵がいなかった時のなめに　1000先まで飛んでくれ
-        target.x = pos.x+dir.x*1000.0f;
+        // 敵がいなかった時のために　1000先まで飛んでくれ
+        target.x = pos.x+dir.x * 1000.0f;
         target.y = pos.y+dir.y * 1000.0f;
         target.z = pos.z+dir.z * 1000.0f;
 
@@ -822,7 +870,7 @@ bool Player::InputProjectile()
         for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
         {
             // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
-            Enemy* enemy = EnemyManager::Instance().GetEnemy(i);
+            Actor* enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
             // 敵の位置
             DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetPosition());
@@ -839,12 +887,36 @@ bool Player::InputProjectile()
                 target = enemy->GetPosition();// 位置を入れる
                 target.y += enemy->GetHeight() * 0.5f;// 位置に身長分
             }
+            
+            
+
         }
 
 
         // 発射　ストレート弾丸を用意
-        ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
-        projectile->Lanch(dir, pos,target);
+        //ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
+        //projectile->Lanch(dir, pos,target);
+
+        // 弾丸初期化
+        const char* filename = "Data/Model/Sword/Sword.mdl";
+
+        std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+        actor->LoadModel(filename);
+        actor->SetName("ProjectileHoming");
+        actor->SetPosition(position);
+        actor->SetRotation(GetActor()->GetRotation());
+        actor->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+        actor->AddComponent<BulletFiring>();
+        actor->AddComponent<ProjectileHoming>();
+        //actor->AddComponent<Collision>();
+        ProjectileManager::Instance().Register(actor.get());
+        //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
+        Actor* projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+
+        // 発射
+        projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+
 
         return true;
 
@@ -1043,6 +1115,8 @@ void Player::TransitionLandState()
     // 着地アニメーション再生
     model->PlayAnimation(Anim_Landing, false);
 
+    movement->SetOnLadius(false);
+
     //movement->SetStepOffSet(false);
     
 }
@@ -1094,27 +1168,33 @@ void Player::UpdatejumpFlipState(float elapsedTime)
 
 void Player::TransitionAttackState()
 {
-    if (updateanim == UpAnim::Doble)
-    {
-        state = State::Attack;
-        //updateanim = UpAnim::Doble;
-        //上半身
-        bornUpStartPoint = "mixamorig:Spine2";
+    //if (updateanim == UpAnim::Doble)
+    //{
+    //    state = State::Attack;
+    //    //updateanim = UpAnim::Doble;
+    //    //上半身
+    //    bornUpStartPoint = "mixamorig:Spine2";
 
-       /* bornUpEndPoint = "mixamorig:Neck";*/
-        // 下半身
-        bornDownerEndPoint = "mixamorig:Spine";
+    //   /* bornUpEndPoint = "mixamorig:Neck";*/
+    //    // 下半身
+    //    bornDownerEndPoint = "mixamorig:Spine";
 
-        model->PlayUpeerBodyAnimation(Anim_Attack, false);
-    }
-    else
-    {
-        state = State::Attack;
+    //    model->PlayUpeerBodyAnimation(Anim_Attack, false);
+    //}
+    //else
+    //{
+    //    state = State::Attack;
 
-        updateanim = UpAnim::Normal;
-        // 走りアニメーション再生
-        model->PlayAnimation(Anim_Attack, false);
-    }
+    //    updateanim = UpAnim::Normal;
+    //    // 走りアニメーション再生
+    //    model->PlayAnimation(Anim_Attack, false);
+    //}
+
+    state = State::Attack;
+
+    updateanim = UpAnim::Normal;
+    // 走りアニメーション再生
+    model->PlayAnimation(Anim_Attack, false);
 }
 
 void Player::UpdateAttackState(float elapsedTime)
@@ -1158,6 +1238,50 @@ void Player::UpdateAttackState(float elapsedTime)
         // 左手ノードとエネミーの衝突処理
         CollisionNodeVsEnemies("mixamorig:LeftHand", leftHandRadius);
     }
+}
+
+void Player::UpdateProjectile(float elapsedTime)
+{
+    DirectX::XMFLOAT3 target;
+    projectileManager = ProjectileManager::Instance();
+
+    // 全ての敵と総当たりで衝突処理
+    int projectileCount = projectileManager.GetProjectileCount();
+
+    for (int i = 0; i < projectileCount; ++i)
+    {
+  
+        Actor* projectile = projectileManager.GetProjectile(i);
+        float dist = FLT_MAX;// float の最大値float全体
+        EnemyManager& enemyManager = EnemyManager::Instance();
+        int enemyCount = enemyManager.GetEnemyCount();
+        for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+        {
+            // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
+            Actor* enemy = EnemyManager::Instance().GetEnemy(i);
+            DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
+            // 敵の位置
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetPosition());
+            // 自分から敵までの位置を計測
+            DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
+            // ベクトルのながさを２乗する。√つけていない奴
+            DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
+            float d;
+            DirectX::XMStoreFloat(&d, D);
+            if (d < dist)
+            {
+                // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
+                dist = d;
+                target = enemy->GetPosition();// 位置を入れる
+                target.y += enemy->GetHeight() * 0.5f;// 位置に身長分
+                //if (projectile->GetModel())
+                //    projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+            }
+
+
+        }
+    }
+
 }
 
 void Player::TransitionDamageState()
@@ -1262,6 +1386,7 @@ DirectX::XMFLOAT3 Player::GetForwerd(DirectX::XMFLOAT3 angle)
     return dir;
 }
 
+
 void Player::Ground()
 {
     if (movement->GetOnLadius())
@@ -1270,4 +1395,9 @@ void Player::Ground()
         TransitionLandState();
     }
     
+}
+
+void PlayerManager::Register(Actor* actor)
+{
+    players.emplace_back(actor);
 }

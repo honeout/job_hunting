@@ -54,11 +54,13 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     if (health <= 0)
     {
         OnDead();
+        return true;
     }
     // ダメージ通知
     else
     {
         OnDamaged();
+        return true;
     }
 
     //actor->SetHealth(health);
@@ -66,6 +68,8 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     // 健康状態が変更した場合はtrueを返す
     return false;
 }
+
+
 
 bool HP::OnDamaged()
 {
@@ -75,6 +79,6 @@ bool HP::OnDamaged()
 
 bool HP::OnDead()
 {
-    
+    ActorManager::Instance().Remove(GetActor());
     return true;
 }

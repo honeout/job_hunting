@@ -1,5 +1,9 @@
 #include "Collision.h"
 
+void Collision::OnGUI()
+{
+}
+
 // ‹…‚Æ‹…‚ÌŒğ·”»’è
     bool Collision::IntersectSpherVsSphere(
     const DirectX::XMFLOAT3& positionA,

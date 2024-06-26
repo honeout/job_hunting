@@ -3,8 +3,10 @@
 #include "Math.h"
 #include "Mathf.h"
 #include "Movement.h"
+#include "Collision.h"
+#include "StageMain.h"
 
-#include "StageManager.h"
+//#include "StageManager.h"
 
 // コンストラクタ
 Movement::Movement()
@@ -24,22 +26,31 @@ void Movement::OnGUI()
 	ImGui::InputFloat("Move Speed", &moveSpeed);
 	ImGui::InputFloat("Turn Speed", &turnSpeed);
     ImGui::InputInt("Jump max", &jumpCount);
-    ImGui::InputFloat("stepOffSet", &stepOffSet);
+    //ImGui::InputFloat("stepOffSet", &stepOffSet);
+    ImGui::InputFloat3("velocity", &velocity.x);
+
+    if (onLadius)
+        ++butten;
+    ImGui::InputInt("butten", &butten);
+
+    
 }
 
 // ワールド移動
 void Movement::Move(const DirectX::XMFLOAT3& direction,float speed ,float elapsedTime)
 {
 	std::shared_ptr<Actor> actor = GetActor();
-    moveSpeed = speed * elapsedTime;
-	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-	DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, moveSpeed);
+   // moveSpeed = speed * elapsedTime;
+    maxMoveSpeed = speed;
+	//DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
+	//DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, moveSpeed);
 
+    collision = GetActor()->GetComponent<Collision>();
 
-    DirectX::XMStoreFloat3(&velocity, Velocity);
+    //DirectX::XMStoreFloat3(&velocity, Velocity);
 
-    moveVecX = velocity.x;
-    moveVecZ = velocity.z;
+    moveVecX = direction.x;
+    moveVecZ = direction.z;
 
 
 
@@ -68,7 +79,7 @@ void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 }
 //
 // 旋回
-void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
+void Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime)
 {/*
 	std::shared_ptr<Actor> actor = GetActor();
 	speed = turnSpeed * elapsedTime;
@@ -103,7 +114,7 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 
 
      //1フレームでどれだけ移動
-    speed = turnSpeed * elapsedTime;
+    speed = speed * elapsedTime;
     //speed *= elapsedTime;
 
     std::shared_ptr<Actor> actor = GetActor();
@@ -131,7 +142,7 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction, float elapsedTime)
 
     // 内積地は-1~1で表現されていて２つの単位ベクトルの角度が
     // 小さいほど１．０にちがづくという性質を利用して回転速度を調整
-    float rot = 1.0 - dot;
+    float rot = 1.0f - dot;
     if (rot > speed) rot = speed;
 
 
@@ -231,7 +242,7 @@ void Movement::JumpVelocity( float speed)
 {
     std::shared_ptr<Actor> actor = GetActor();
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
-    DirectX::XMFLOAT3 position = actor->GetPosition();
+    //DirectX::XMFLOAT3 position = actor->GetPosition();
 
 
 
@@ -248,7 +259,14 @@ void Movement::JumpVelocity( float speed)
 
     //actor->SetPosition(position);
     //position.y = (std::min)(jumpSpeedMax, jumpSpeed);
-    actor->SetPosition(position);
+    //actor->SetPosition(position);
+}
+
+void Movement::AddImpulse(const DirectX::XMFLOAT3& impulse)
+{
+    velocity.x += impulse.x;
+    velocity.y += impulse.y;
+    velocity.z += impulse.z;
 }
 
 void Movement::UpdateHorizontalVelocity( float elapsedFrame)
@@ -258,7 +276,7 @@ void Movement::UpdateHorizontalVelocity( float elapsedFrame)
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
 
 
-
+    
     DirectX::XMFLOAT3 position = actor->GetPosition();
 
 
@@ -357,8 +375,23 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
 
         // レイキャストによる壁判定
         HitResult hit;
-        if (StageManager::instance().RayCast(start, end, hit))
+
+        // モデルデータを入れる。
+        //Model* model = GetActor()->GetModel();
+        //std::shared_ptr<Actor> actor2 = GetActor();
+        //actor2->SetName("StageMain");
+        //Model* model = actor2->GetModel();
+
+        // モデルデータ
+        Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetModel();
+        
+        //if (StageManager::instance().RayCast(start, end, hit))
+        //if (Collision::IntersectRayVsModel->(start, end,  , hit))
+        //if (GetActor()->GetComponent<StageMain>()->RayCast(start,end,hit))
+        if (collision->IntersectRayVsModel(start,end, stagemodel,hit))
         {
+
+          /*  actor2->SetName("Player");*/
             // 壁までのベクトル
             DirectX::XMVECTOR Start = DirectX::XMLoadFloat3(&hit.position);
             DirectX::XMVECTOR End = DirectX::XMLoadFloat3(&end);
@@ -378,7 +411,18 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
 
             // 壁ずり方向へレイキャスト
             HitResult hit2;
-            if (!StageManager::instance().RayCast(hit.position, collectPosition, hit2))
+
+
+            // モデルデータ
+            Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetModel();
+
+            //// モデルデータを入れる。
+            //Model* model2 = GetActor()->GetModel();
+                   
+           // if (!StageManager::instance().RayCast(hit.position, collectPosition, hit2))
+            //if (!stageMain->RayCast(hit.position, collectPosition,  hit))
+            //if (!Collision::IntersectRayVsModel(hit.position, collectPosition, GetActor()->GetComponent<HP>()->GetActor()->GetModel(),  hit))
+            if (!collision->IntersectRayVsModel(hit.position, collectPosition, stagemodel, hit2))
             {
                 // 壁ずり方向で壁に当たらなかったら補正位置に移動
                 position.x = collectPosition.x;
@@ -397,28 +441,20 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
             position.z += mz;
         }
 
-        actor->SetPosition(position);
         
     }
+        actor->SetPosition(position);
 }
 
 void Movement::UpdateVerticalVelocity( float elapsedFrame)
 {
     std::shared_ptr<Actor> actor = GetActor();
-    //speed = moveSpeed * elapsedFrame;
-    //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
-    //DirectX::XMFLOAT3 position = actor->GetPosition();
-    //float stepOffSet = actor->GetStepOffset();
-
-    //DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-    //DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
-
-   // DirectX::XMStoreFloat3(&velocity, Velocity);
+  
 
     // 重力処理
     velocity.y += gravity * elapsedFrame;
 
-    //actor->SetPosition(position);
+ 
 
 }
 
@@ -450,10 +486,25 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
         // レイキャストによる地面判定
         HitResult hit;
+
+        // モデルデータを入れる。
+        //Model* model = GetActor()->GetModel();
+
+        //std::shared_ptr<Actor> actor2 = GetActor();
+        //actor2->SetName("StageMain");
+        //// モデルデータを入れる。
+        //Model* model = actor2->GetModel();
+        //Model* model = stageMain->GetModel();
+
+        // モデルデータ
+        Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetModel();
+
         // レイキャストを呼ぶための関数
         //if (StageManager::instance().RayCast(start, end, hit))
-        if (StageManager::instance().RayCast(start, end, hit))
+       // if (collision->IntersectRayVsModel(start, end, GetActor()->GetComponent<StageMain>()->GetActor()->GetModelSabe(), hit))
+        if (collision->IntersectRayVsModel(start, end, stagemodel, hit))
         {
+    
 
             // 法線ベクトル取得
             normal = hit.normal;
@@ -530,9 +581,9 @@ void Movement::UpdateVelocity( float elapsedTime)
 
     // 水平速力更新処理
     UpdateHorizontalVelocity( elapsedFrame);
-
+     
     // 水平移動更新処理
-    UpdateHorizontalMove(elapsedFrame);
+    UpdateHorizontalMove(elapsedTime);
 
     // 垂直移動更新処理
     UpdateVerticalMove(elapsedTime);

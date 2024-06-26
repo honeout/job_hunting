@@ -135,9 +135,6 @@
     <ClInclude Include="Source\Enemy.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\EnemyManager.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\EnemySlime.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -180,9 +177,6 @@
     <ClInclude Include="Source\Stage.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\StageManager.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\StageMoveFloor.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -216,6 +210,8 @@
     <ClInclude Include="Source\Renderer.h">
       <Filter>Source\Character</Filter>
     </ClInclude>
+    <ClInclude Include="Source\BulletFiring.h" />
+    <ClInclude Include="Source\Actor2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -302,9 +298,6 @@
     <ClCompile Include="Source\CameraController.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\EnemyManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\EnemySlime.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -344,9 +337,6 @@
     <ClCompile Include="Source\Mathf.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\StageManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\StageMoveFloor.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -376,6 +366,12 @@
     </ClCompile>
     <ClCompile Include="Source\Renderer.cpp">
       <Filter>Source\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BulletFiring.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor2D.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

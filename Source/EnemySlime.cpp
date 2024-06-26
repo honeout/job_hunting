@@ -1,31 +1,56 @@
 #include <imgui.h>
 #include "EnemySlime.h"
-#include "EnemyManager.h"
+//#include "EnemyManager.h"
 #include "Graphics/Graphics.h"
 #include "Mathf.h"
 #include "Player.h"
-#include "Collision.h"
+//#include "Collision.h"
 
-// コンストラクタ
+//// コンストラクタ
 EnemySlime::EnemySlime()
 {
-    model = new Model("Data/Model/Slime/Slime.mdl");
-
-    // モデルがおおきいのでスケーリング
-    scale.x = scale.y = scale.z = 0.01f;
-
-    // 幅、高さ設定(円柱)
-    radius = 0.5f;
-    height = 1.0f;
-    
-    // 徘徊ステートへ遷移
-    TransitionWanderState();
+//    model = new Model("Data/Model/Slime/Slime.mdl");
+//
+//    // モデルがおおきいのでスケーリング
+//    scale.x = scale.y = scale.z = 0.01f;
+//
+//    // 幅、高さ設定(円柱)
+//    radius = 0.5f;
+//    height = 1.0f;
+//    
+//        // 徘徊ステートへ遷移
+//    TransitionWanderState();
 }
 
 // デストラクタ
 EnemySlime::~EnemySlime()
 {
-    delete model;
+   // delete model;
+}
+
+void EnemySlime::Start()
+{
+    // ムーブメント関数を使えるように
+    movement = GetActor()->GetComponent<Movement>();
+
+    // hp関数を使えるように
+    hp = GetActor()->GetComponent<HP>();
+
+    // モデルデータを入れる。
+    model = GetActor()->GetModel();
+
+    hp->SetHealth(health);
+
+    hp->SetMaxHealth(maxHealth);
+
+    GetActor()->SetRadius(radius);
+
+    GetActor()->SetHeight(height);
+
+    // 徘徊ステートへ遷移
+    TransitionWanderState();
+
+    SetTerritory(position, territoryarea);
 }
 
 // 更新処理
@@ -57,33 +82,41 @@ void EnemySlime::Update(float elapsedTime)
         break;
     }
 
-    
+    // 位置
+    position = GetActor()->GetPosition();
 
     // 速力処理更新
-    UpdateVelocity(elapsedTime);
+    movement->UpdateVelocity(elapsedTime);
     // 無敵時間更新
-    UpdateInbincibleTimer(elapsedTime);
+    hp->UpdateInbincibleTimer(elapsedTime);
+
+    GetActor()->UpdateTransform();
+    //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
+    
+   // UpdateVelocity(elapsedTime);
+
+    //UpdateInbincibleTimer(elapsedTime);
     // オブジェクト行列を更新
-    UpdateTransform();
+    //UpdateTransform();
 
-    // モデルアニメーション更新
-    model->UpdateAnimation(elapsedTime);
+    //// モデルアニメーション更新
+    //model->UpdateAnimation(elapsedTime);
 
-    // モデル行列更新
-    model->UpdateTransform(transform);
+    //// モデル行列更新
+    //model->UpdateTransform(transform);
 }
 
 // 描画処理
-void EnemySlime::Render(const RenderContext& rc, ModelShader* shader)
-{
-    shader->Draw(rc, model);
-}
+//void EnemySlime::Render(const RenderContext& rc, ModelShader* shader)
+//{
+//    shader->Draw(rc, model);
+//}
 
 // デバッグプリミティブ描画
 void EnemySlime::DrawDebugPrimitive()
 {
     // 基底クラスのデバッグプリミティブ描画
-    Enemy::DrawDebugPrimitive();
+    //Enemy::DrawDebugPrimitive();
 
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
 
@@ -129,8 +162,11 @@ void EnemySlime::MoveToTarget(float elapsedTime, float speedRate)
     vz /= dist;
 
     // 移動処理
-    Move(vx, vz, moveSpeed * speedRate);
-    Turn(elapsedTime, vx, vz, turnSpeed * speedRate);
+    movement->Move({ vx,0.0f ,vz }, moveSpeed * speedRate, elapsedTime);
+    movement->Turn({ vx,0.0f ,vz } ,turnSpeed,elapsedTime);
+   // Move( vx,vz  ,moveSpeed * speedRate);
+    //Turn(elapsedTime, vx, vz ,turnSpeed * speedRate);
+    //movement->Turn({ vx,0.0f ,vz } ,turnSpeed * speedRate,elapsedTime);
 }
 
 // 徘徊ステートへ遷移
@@ -189,51 +225,65 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
         );
 
         // プレイヤーと当たり判定
-        Player& player = Player::Instance();
-        DirectX::XMFLOAT3 outPosition;
-        if (Collision::IntersectSphereVsCylinder(
-            nodePosition,
-            nodeRadius,
-            DirectX::XMFLOAT3{ 0, 0, 0 },
-            1,
-            1,
-            outPosition))
+        //Player& player = Player::Instance();
+
+        int playercount = PlayerManager::Instance().GetPlayerCount();
+        
+        for (int i = 0; i < playercount; ++i)
         {
-            // ダメージを与える
-            //if (player.ApplyDamage(1, 0.5f))
-            //{
-            //    // 敵を吹っ飛ばすベクトルを算出
-            //    DirectX::XMFLOAT3 vec;
-            //    vec.x = outPosition.x - nodePosition.x;
-            //    vec.z = outPosition.z - nodePosition.z;
-            //    float length = sqrtf(vec.x * vec.x + vec.z * vec.z);
-            //    vec.x /= length;
-            //    vec.z /= length;
+            // プレイヤー取得
+            Actor* playerid = PlayerManager::Instance().GetPlayer(i);
 
-            //    // XZ平面に吹っ飛ばす力をかける
-            //    float power = 10.0f;
-            //    vec.x *= power;
-            //    vec.z *= power;
-            //    // Y方向にも力をかける
-            //    vec.y = 5.0f;
+            DirectX::XMFLOAT3 outPosition;
+            if (Collision::IntersectSphereVsCylinder(
+                nodePosition,
+                nodeRadius,
+                playerid->GetPosition(),
+                playerid->GetRadius(),
+                playerid->GetHeight(),
+                outPosition))
+            {
+                // ダメージを与える
+                if (playerid->GetComponent<HP>()->ApplyDamage(1, 0.5f))
+                {
 
-            //    // 吹っ飛ばす
-            //    player.AddImpulse(vec);
-            //}
+                    // 衝動
+                    DirectX::XMFLOAT3 impulse;
+                    const float power = 10.0f;
+                    const DirectX::XMFLOAT3& p = playerid->GetPosition();
+                    const DirectX::XMFLOAT3& e = nodePosition;
+                    float vx = p.x - e.x;
+                    float vz = p.z - e.z;
+                    float lengthXZ = sqrtf(vx * vx + vz * vz);
+                    vx /= lengthXZ;
+                    vz /= lengthXZ;
+
+                    impulse.x = vx * power;
+                    impulse.y = power * 0.5f;
+                    impulse.z = vz * power;
+
+
+
+                    // 吹っ飛ばす
+                    playerid->GetComponent<Movement>()->AddImpulse(impulse);
+                }
+            }
         }
     }
 }
 
 bool EnemySlime::SearchPlayer()
 {
+    // プレイヤー取得
+    Actor* playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
     // プレイヤーと高低差を考慮して３Dでの距離判定をする
-    //const DirectX::XMFLOAT3& playerPosition = Player::Instance().GetPosition();
-    const DirectX::XMFLOAT3& playerPosition = DirectX::XMFLOAT3{0, 0, 0};
+    const DirectX::XMFLOAT3& playerPosition = playerid->GetPosition();
+    //const DirectX::XMFLOAT3& playerPosition = DirectX::XMFLOAT3{0, 0, 0};
     float vx = playerPosition.x - position.x;
     float vy = playerPosition.y - position.y;
     float vz = playerPosition.z - position.z;
     // ルート
-    float dist = sqrtf(vx * vx + vy * vy + vz * vz);
+    float dist = sqrtf(vx * vx + vz * vz);
     if (dist < searchRange)
     {
         float distXZ = sqrtf(vx * vx + vz * vz);
@@ -292,8 +342,10 @@ void EnemySlime::TransitionPursuitState()
 // 追尾ステート更新処理
 void EnemySlime::UpdatePursuitState(float elapsedTime)
 {
+    // プレイヤーid
+    Actor* playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
     // 目標地点ををプレイヤー位置に設定
-    targetPosition = DirectX::XMFLOAT3{ 0, 0, 0 };
+    targetPosition = playerid->GetPosition();
 
     // 目標地点へ移動
     MoveToTarget(elapsedTime, 1.0f);
@@ -354,8 +406,10 @@ void EnemySlime::TransitionIdleBattleState()
 
 void EnemySlime::UpdateIdleBattleState(float elapsedTime)
 {
-    // 目標地点をプレイヤー位置に設定
-    targetPosition = DirectX::XMFLOAT3{ 0, 0, 0 };
+    // プレイヤーid
+    Actor* playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+    // 目標地点ををプレイヤー位置に設定
+    targetPosition = playerid->GetPosition();
 
     // タイマー処理
     stateTimer -= elapsedTime;
@@ -411,20 +465,34 @@ void EnemySlime::UpdateDeathState(float elapsedTime)
     // ダメージアニメーションが終わったら自分を破棄
     if (!model->IsPlayAnimation())
     {
-        Destroy();
+        hp->OnDead();
+        
+          
     }
 }
 
-// 死亡した時に呼ばれる
-void EnemySlime::OnDead()
+void EnemySlime::Destroy()
 {
-    // 死亡ステートへ遷移
-    TransitionDeathState();
+    Actor* enemyId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1);
+    //ActorManager::Instance().Remove();
 }
 
-void EnemySlime::OnDamaged()
-{
-    // ダメージステートへ遷移
-    TransitionDamageState();
-}
+//// 死亡した時に呼ばれる
+//void EnemySlime::OnDead()
+//{
+//    // 死亡ステートへ遷移
+//    TransitionDeathState();
+//}
+//
+//void EnemySlime::OnDamaged()
+//{
+//    // ダメージステートへ遷移
+//    TransitionDamageState();
+//}
 
+
+
+void EnemyManager::Register(Actor* actor)
+{
+    enemies.emplace_back(actor);
+}

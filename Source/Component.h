@@ -29,5 +29,5 @@ public:
 
 private:
 	std::weak_ptr<Actor>	actor;
-
+	
 };
