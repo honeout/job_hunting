@@ -387,12 +387,14 @@ void Model::Update_blend_animations(float elapsedTime, float blendrate, float cu
 
 	// アニメーションデータからキーフレームデータリストを取得
 	const std::vector<ModelResource::Keyframe>& keyframes = animation.keyframes;
-
+	
+	//////////////////////ここ直して
 	// 現在の時間がどのキーフレームの間にいるか判定する
-	const ModelResource::Keyframe& keyframe0 = keyframes.at(currentAnimationSeconds);
-	const ModelResource::Keyframe& keyframe1 = keyframes.at(currentAnimationSecondsblend);
-
-		
+	const ModelResource::Keyframe& keyframe0 = keyframes.at(10);
+	const ModelResource::Keyframe& keyframe1 = keyframes.at(15);
+	if (currentAnimationSeconds <= keyframe0.seconds &&
+		currentAnimationSecondsblend > keyframe1.seconds)
+	{
 
 		int nodeCount = static_cast<int>(nodes.size());
 		for (int nodeIndex = 0; nodeIndex < nodeCount; ++nodeIndex)
@@ -422,6 +424,7 @@ void Model::Update_blend_animations(float elapsedTime, float blendrate, float cu
 			}
 
 		}
+	}
 
 	
 }

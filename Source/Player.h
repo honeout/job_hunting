@@ -65,7 +65,8 @@ public:
 
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
-
+    // GUI描画
+    void OnGUI() override;
 
     // 描画処理
     void Render(const RenderContext& rc, ModelShader* shader);
@@ -161,6 +162,8 @@ private:
     // 攻撃ステージ更新処理
     void UpdateAttackState(float elapsedTime);
 
+    void UpdateProjectile(float elapsedTime);
+
     // ダメージステートへ遷移
     void TransitionDamageState();
 
@@ -186,6 +189,8 @@ private:
     void inFloat3(DirectX::XMFLOAT3 value, DirectX::XMFLOAT3& inValue);
 
     DirectX::XMFLOAT3 GetForwerd(DirectX::XMFLOAT3 angle);
+
+
 
 private:
     // ステート
@@ -248,7 +253,7 @@ private:
     float gravity =-1.0f;
 
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
-    int jumpfliptime = gravity * 5;
+    float jumpfliptime = gravity * 5;
 
     float            leftHandRadius = 0.4f;
 

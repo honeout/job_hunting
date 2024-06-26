@@ -112,7 +112,7 @@ void Character::Turn(float elapsedTime, float vx, float vz, float speed)
 
     // “àÏ’n‚Í-1~1‚Å•\Œ»‚³‚ê‚Ä‚¢‚Ä‚Q‚Â‚Ì’PˆÊƒxƒNƒgƒ‹‚ÌŠp“x‚ª
     // ¬‚³‚¢‚Ù‚Ç‚PD‚O‚É‚¿‚ª‚Ã‚­‚Æ‚¢‚¤«Ž¿‚ð—˜—p‚µ‚Ä‰ñ“]‘¬“x‚ð’²®
-    float rot = 1.0 - dot;
+    float rot = 1.0f - dot;
     if (rot > speed) rot = speed;
 
 

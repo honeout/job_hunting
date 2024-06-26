@@ -119,4 +119,6 @@ private:
 	float airControl = 0.3f;
 
 	DirectX::XMFLOAT3 positionX = { 0,0,0 };
+
+	int butten = 0;
 };

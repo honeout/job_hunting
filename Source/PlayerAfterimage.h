@@ -6,10 +6,11 @@
 #include "AfterimageManager.h"
 //#include "Collision.h"
 //#include "ProjectileManager.h"
-
+#include "Component.h"
+#include "Movement.h"
 
 // プレイヤー
-class PlayerAfterimage : public Afterimage
+class PlayerAfterimage : public Component
 {
 public:
     PlayerAfterimage();
@@ -36,18 +37,21 @@ public:
         Anim_Walking
     };
 
+    // 名前取得
+    const char* GetName() const override { return "Player"; }
 
-
+    // 開始処理
+    void Start() override;
 
     // 更新処理
     void Update(float elapsedTime) override;
 
-    // デバッグプリミティブ描画　デバッグ用
-    void DrawDebugPrimitive() override;
+    //// デバッグプリミティブ描画　デバッグ用
+    //void DrawDebugPrimitive() override;
 
 
-    // 描画処理
-    void Render(RenderContext& rc, ModelShader* shade) override;
+    //// 描画処理
+    //void Render(RenderContext& rc, ModelShader* shade) override;
 
 
     // 弾丸と敵の衝突処理
@@ -60,13 +64,13 @@ public:
     void DrawDebugGUI();
 protected:
     // 着地した時に呼ばれる
-    void OnLanding() override;
+    //void OnLanding() override;
 
-    // 死亡した時に呼ばれる
-    void OnDead() override;
+    //// 死亡した時に呼ばれる
+    //void OnDead() override;
 
-    // ダメージを受けた時に呼ばれる
-    void OnDamaged() override;
+    //// ダメージを受けた時に呼ばれる
+    //void OnDamaged() override;
 
 private:
     // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
@@ -192,7 +196,7 @@ private:
     State                   stated;
 
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
-    int jumpfliptime = grabity * 5;
+   // int jumpfliptime = grabity * 5;
 
     float            leftHandRadius = 0.4f;
 
@@ -205,5 +209,6 @@ private:
 
     float            timeremove = 1.0f;
 
+    float alpha;
 
 };

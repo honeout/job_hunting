@@ -214,6 +214,8 @@ void Player::Update(float elapsedTime)
 
     CollisionProjectilesVsEnemies();
 
+    UpdateProjectile(elapsedTime);
+
     // ’eŠÛXVˆ—
     //projectileManager.Update(elapsedTime);
 
@@ -281,6 +283,12 @@ void Player::DrawDebugPrimitive()
             DirectX::XMFLOAT4(1, 0, 0, 1)
         );
     }
+}
+
+void Player::OnGUI()
+{
+    ImGui::InputFloat("Move Speed", &moveSpeed);
+    ImGui::InputInt("Jump max", &jumpCount);
 }
 
 
@@ -401,7 +409,7 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
     if (vec.x != 0 || vec.y != 0 || vec.z != 0)
     {
-        movement->Move(vec,5, elapsedTime);
+        movement->Move(vec,moveSpeed, elapsedTime);
         movement->Turn( vec ,turnSpeed, elapsedTime);
     }
 
@@ -482,7 +490,6 @@ void Player::CollisionProjectilesVsEnemies()
                 enemy->GetPosition(),
                 enemy->GetRadius(),
                 enemy->GetHeight(),
-                
                 outPositon))
 
             {
@@ -820,7 +827,7 @@ bool Player::InputProjectile()
             Actor* projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
             // ”­Ë
-            projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+            actor->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         }
 
         //projectile->Lanch(dir, pos);
@@ -881,7 +888,7 @@ bool Player::InputProjectile()
                 target.y += enemy->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
             }
             
-
+            
 
         }
 
@@ -1108,6 +1115,8 @@ void Player::TransitionLandState()
     // ’…’nƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
     model->PlayAnimation(Anim_Landing, false);
 
+    movement->SetOnLadius(false);
+
     //movement->SetStepOffSet(false);
     
 }
@@ -1231,6 +1240,50 @@ void Player::UpdateAttackState(float elapsedTime)
     }
 }
 
+void Player::UpdateProjectile(float elapsedTime)
+{
+    DirectX::XMFLOAT3 target;
+    projectileManager = ProjectileManager::Instance();
+
+    // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    int projectileCount = projectileManager.GetProjectileCount();
+
+    for (int i = 0; i < projectileCount; ++i)
+    {
+  
+        Actor* projectile = projectileManager.GetProjectile(i);
+        float dist = FLT_MAX;// float ‚ÌÅ‘å’lfloat‘S‘Ì
+        EnemyManager& enemyManager = EnemyManager::Instance();
+        int enemyCount = enemyManager.GetEnemyCount();
+        for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
+        {
+            // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
+            Actor* enemy = EnemyManager::Instance().GetEnemy(i);
+            DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
+            // “G‚ÌˆÊ’u
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetPosition());
+            // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
+            DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
+            // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
+            DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
+            float d;
+            DirectX::XMStoreFloat(&d, D);
+            if (d < dist)
+            {
+                // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
+                dist = d;
+                target = enemy->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
+                target.y += enemy->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                //if (projectile->GetModel())
+                //    projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+            }
+
+
+        }
+    }
+
+}
+
 void Player::TransitionDamageState()
 {
     state = State::Damage;
@@ -1332,6 +1385,7 @@ DirectX::XMFLOAT3 Player::GetForwerd(DirectX::XMFLOAT3 angle)
 
     return dir;
 }
+
 
 void Player::Ground()
 {

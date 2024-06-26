@@ -29,6 +29,10 @@ void Movement::OnGUI()
     //ImGui::InputFloat("stepOffSet", &stepOffSet);
     ImGui::InputFloat3("velocity", &velocity.x);
 
+    if (onLadius)
+        ++butten;
+    ImGui::InputInt("butten", &butten);
+
     
 }
 
@@ -138,7 +142,7 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapse
 
     // “àÏ’n‚Í-1~1‚Å•\Œ»‚³‚ê‚Ä‚¢‚Ä‚Q‚Â‚Ì’PˆÊƒxƒNƒgƒ‹‚ÌŠp“x‚ª
     // ¬‚³‚¢‚Ù‚Ç‚PD‚O‚É‚¿‚ª‚Ã‚­‚Æ‚¢‚¤«Ž¿‚ð—˜—p‚µ‚Ä‰ñ“]‘¬“x‚ð’²®
-    float rot = 1.0 - dot;
+    float rot = 1.0f - dot;
     if (rot > speed) rot = speed;
 
 

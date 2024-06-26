@@ -125,9 +125,9 @@ private:
 
 
      // 上半身のキーフレーム時間
-	int keyframeUpper = 0.0f;
+	int keyframeUpper = 0;
 	// 下半身のキーフレーム時間
-	int keyframeLower = 0.0f;
+	int keyframeLower = 0;
 
 	// 再生　逆再生
 	bool anim = true;

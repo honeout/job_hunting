@@ -9,98 +9,105 @@
 #include "ProjectileHoming.h"
 #include "Graphics/Model.h"
 
-//
-//// コンストラクタ
-//PlayerAfterimage::PlayerAfterimage()
-//{
-//    //// インスタンスポインタ設定
-//    //instance = this;
-//
-//
-//    model = new Model("Data/Model/Jammo/Jammo.mdl");
-//
-//
-//    // モデルがおおきいのでスケーリング
-//    // キャラクターも1.1倍
-//    scale.x = scale.y = scale.z = 0.01f;
-//
-//    // ヒットエフェクト読込 
-//    //hitEffect = new Effect("Data/Effect/Shot_Hit.efk");
-//    //hitEffect = new Effect("Data/Effect/sunder.efk");
-//    //desEffect = new Effect("Data/Effect/F.efk");
-//
-//    //timeremove = 0.5f;
-//    // 残像の透明度
-//    alpha = 0.8f;
-//
-//    // 移動ステートへ遷移
-//    TransitionMoveState();
-//
-//}
-//
-//// デストラクタ
-//PlayerAfterimage::~PlayerAfterimage()
-//{
-//    //delete hitEffect;
-//    //delete desEffect;
-//    delete model;
-//
-//
-//}
-//
-//
-//
-//
-//// 更新処理
-//// elapsedTime(経過時間)
-//void PlayerAfterimage::Update(float elapsedTime)
-//{
-//    //timeremove -= elapsedTime;
-//    alpha -=  elapsedTime;
-//    //reduce -= elapsedTime;
-//    //// アニメーション選択
-//    //switch (state)
-//    //{
-//    //case State::Idle:
-//    //    UpdateIdleState(elapsedTime);
-//    //    break;
-//    //case State::Move:
-//    //    UpdateMoveState(elapsedTime);
-//    //    break;
-//
-//    //case State::Jump:
-//    //    UpdateJumpState(elapsedTime);
-//    //    break;
-//    //case State::Land:
-//    //    UpdateLandState(elapsedTime);
-//    //    break;
-//
-//    //case State::JumpFlip:
-//    //    UpdatejumpFlipState(elapsedTime);
-//    //    break;
-//    //}
-//
-//    // オブジェクト行列を更新
-//    UpdateTransform();
-//
-//    // モデルアニメーション更新処理
-//    //if (!first)
-//    //model->UpdateAnimation(elapsedTime);
-//
-//    // 時間たったら消す。
-//    if (alpha <= 0.3f)
-//        Destroy();
-//    
-//
-//    // モデル行列更新
-//    // 何処に出してほしいここに 
-//    //model->UpdateTransform(transform);
-//    first = true;
-//
-//
-//}
-//
-//
+
+// コンストラクタ
+PlayerAfterimage::PlayerAfterimage()
+{
+    //// インスタンスポインタ設定
+    //instance = this;
+
+
+    //model = new Model("Data/Model/Jammo/Jammo.mdl");
+
+
+    //// モデルがおおきいのでスケーリング
+    //// キャラクターも1.1倍
+    //scale.x = scale.y = scale.z = 0.01f;
+
+    //// ヒットエフェクト読込 
+    ////hitEffect = new Effect("Data/Effect/Shot_Hit.efk");
+    ////hitEffect = new Effect("Data/Effect/sunder.efk");
+    ////desEffect = new Effect("Data/Effect/F.efk");
+
+    ////timeremove = 0.5f;
+    //// 残像の透明度
+    //alpha = 0.8f;
+
+    //// 移動ステートへ遷移
+    //TransitionMoveState();
+
+}
+
+// デストラクタ
+PlayerAfterimage::~PlayerAfterimage()
+{
+    //delete hitEffect;
+    //delete desEffect;
+    //delete model;
+
+
+}
+
+
+void PlayerAfterimage::Start()
+{
+    alpha = 0.8f;
+    //// 移動ステートへ遷移
+    /*TransitionMoveState();*/
+}
+
+
+
+// 更新処理
+// elapsedTime(経過時間)
+void PlayerAfterimage::Update(float elapsedTime)
+{
+    //timeremove -= elapsedTime;
+    alpha -=  elapsedTime;
+    //reduce -= elapsedTime;
+    //// アニメーション選択
+    //switch (state)
+    //{
+    //case State::Idle:
+    //    UpdateIdleState(elapsedTime);
+    //    break;
+    //case State::Move:
+    //    UpdateMoveState(elapsedTime);
+    //    break;
+
+    //case State::Jump:
+    //    UpdateJumpState(elapsedTime);
+    //    break;
+    //case State::Land:
+    //    UpdateLandState(elapsedTime);
+    //    break;
+
+    //case State::JumpFlip:
+    //    UpdatejumpFlipState(elapsedTime);
+    //    break;
+    //}
+
+    // オブジェクト行列を更新
+    GetActor()->UpdateTransform();
+
+    // モデルアニメーション更新処理
+    //if (!first)
+    //model->UpdateAnimation(elapsedTime);
+
+    // 時間たったら消す。
+    if (alpha <= 0.3f)
+        ActorManager::Instance().Remove(GetActor());
+    
+
+    // モデル行列更新
+    // 何処に出してほしいここに 
+    //model->UpdateTransform(transform);
+    first = true;
+
+
+}
+
+
 //
 //// デバッグプリミティブ描画
 //void PlayerAfterimage::DrawDebugPrimitive()
