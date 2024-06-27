@@ -5,6 +5,7 @@
 #include "Component.h"
 #include "Movement.h"
 #include "HP.h"
+#include "ModelControll.h"
 // スライム
 class EnemySlime : public Component
 {
@@ -18,7 +19,10 @@ public:
     void Start() override;
 
     //// 更新処理
-    void Update(float elapsedTime) ;
+    void Update(float elapsedTime) override;
+
+    // 描画処理
+    void Render(RenderContext rc) override;
 
     //// 描画処理
     //void Render(const RenderContext& rc, ModelShader* shader) override;
@@ -140,6 +144,9 @@ private:
 
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
+
+    //std::unique_ptr<Model> model;
+    // Model* model;
 
     // 速度
     //float moveSpeed = 5;

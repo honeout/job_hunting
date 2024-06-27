@@ -16,11 +16,11 @@
 //// 更新
 //void Actor2D::Update(float elapsedTime)
 //{
-//	// アニメーションの更新
-//	if (model != nullptr)
-//	{
-//		model->UpdateAnimation(elapsedTime, true);
-//	}
+//	//// アニメーションの更新
+//	//if (model != nullptr)
+//	//{
+//	//	model->UpdateAnimation(elapsedTime, true);
+//	//}
 //
 //	for (std::shared_ptr<Component>& component : components)
 //	{
@@ -33,28 +33,28 @@
 //{
 //
 //
-//	// スケールだけ行列を作成
-//	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+//	//// スケールだけ行列を作成
+//	//DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
 //
-//	// 回転行列作成
-//	DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(rotation.x);
-//	DirectX::XMMATRIX Y = DirectX::XMMatrixRotationY(rotation.y);
-//	DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(rotation.z);
-//	DirectX::XMMATRIX R = Y * X * Z;
+//	//// 回転行列作成
+//	//DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(rotation.x);
+//	//DirectX::XMMATRIX Y = DirectX::XMMatrixRotationY(rotation.y);
+//	//DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(rotation.z);
+//	//DirectX::XMMATRIX R = Y * X * Z;
 //
 //
-//	// 位置行列だけを作成
-//	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-//	// 3つの行列を組み合わせ、ワールド行列を作成
-//	DirectX::XMMATRIX W = S * R * T;// 行列は計算順番変えると結果が変わる
-//	// 計算したワールド行列を取り出す
-//	DirectX::XMStoreFloat4x4(&transform, W);
+//	//// 位置行列だけを作成
+//	//DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+//	//// 3つの行列を組み合わせ、ワールド行列を作成
+//	//DirectX::XMMATRIX W = S * R * T;// 行列は計算順番変えると結果が変わる
+//	//// 計算したワールド行列を取り出す
+//	//DirectX::XMStoreFloat4x4(&transform, W);
 //
-//	// モデルの行列更新
-//	if (model != nullptr)
-//	{
-//		model->UpdateTransform(transform);
-//	}
+//	//// モデルの行列更新
+//	//if (model != nullptr)
+//	//{
+//	//	model->UpdateTransform(transform);
+//	//}
 //
 //
 //
@@ -111,13 +111,13 @@
 //// モデルの読み込み
 //void Actor2D::LoadModel(const char* filename)
 //{
-//	model = std::make_unique<Model>(filename);
+//	//model = std::make_unique<Model>(filename);
 //}
 //
-//void Actor2D::LoadModelSabe(const char* filename)
-//{
-//	modelsabe = std::make_unique<Model>(filename);
-//}
+////void Actor2D::LoadModelSabe(const char* filename)
+////{
+////	modelsabe = std::make_unique<Model>(filename);
+////}
 //
 //// 作成
 //std::shared_ptr<Actor2D> Actor2DManager::Create()
@@ -142,33 +142,33 @@
 //// 更新
 //void Actor2DManager::Update(float elapsedTime)
 //{
-//	for (std::shared_ptr<Actor>& actor : startActors)
+//	for (std::shared_ptr<Actor2D>& actor : startActors)
 //	{
 //		actor->Start();
 //		updateActors.emplace_back(actor);
 //	}
 //	startActors.clear();
 //
-//	for (std::shared_ptr<Actor>& actor : updateActors)
+//	for (std::shared_ptr<Actor2D>& actor : updateActors)
 //	{
 //		actor->Update(elapsedTime);
 //	}
 //
-//	for (const std::shared_ptr<Actor>& actor : removeActors)
+//	for (const std::shared_ptr<Actor2D>& actor : removeActors)
 //	{
-//		std::vector<std::shared_ptr<Actor>>::iterator itStart = std::find(startActors.begin(), startActors.end(), actor);
+//		std::vector<std::shared_ptr<Actor2D>>::iterator itStart = std::find(startActors.begin(), startActors.end(), actor);
 //		if (itStart != startActors.end())
 //		{
 //			startActors.erase(itStart);
 //		}
 //
-//		std::vector<std::shared_ptr<Actor>>::iterator itUpdate = std::find(updateActors.begin(), updateActors.end(), actor);
+//		std::vector<std::shared_ptr<Actor2D>>::iterator itUpdate = std::find(updateActors.begin(), updateActors.end(), actor);
 //		if (itUpdate != updateActors.end())
 //		{
 //			updateActors.erase(itUpdate);
 //		}
 //
-//		std::set<std::shared_ptr<Actor>>::iterator itSelection = selectionActors.find(actor);
+//		std::set<std::shared_ptr<Actor2D>>::iterator itSelection = selectionActors.find(actor);
 //		if (itSelection != selectionActors.end())
 //		{
 //			selectionActors.erase(itSelection);
@@ -180,11 +180,11 @@
 //// 行列更新
 //void Actor2DManager::UpdateTransform()
 //{
-//	for (std::shared_ptr<Actor>& actor : updateActors)
-//	{
-//		actor->UpdateTransform();
+//	//for (std::shared_ptr<Actor>& actor : updateActors)
+//	//{
+//	//	actor->UpdateTransform();
 //
-//	}
+//	//}
 //}
 //
 //// 描画
@@ -223,7 +223,7 @@
 //
 //	shader->Begin(rc);// シェーダーにカメラの情報を渡す
 //
-//	for (std::shared_ptr<Actor>& actor : updateActors)
+//	for (std::shared_ptr<Actor2D>& actor : updateActors)
 //	{
 //		// モデルがあれば描画
 //		Model* model = actor->GetModel();
@@ -252,7 +252,7 @@
 //	hiddenLister = !ImGui::Begin("Actor Lister", nullptr, ImGuiWindowFlags_None);
 //	if (!hiddenLister)
 //	{
-//		for (std::shared_ptr<Actor>& actor : updateActors)
+//		for (std::shared_ptr<Actor2D>& actor : updateActors)
 //		{
 //			ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_Leaf;
 //
@@ -286,7 +286,7 @@
 //	hiddenDetail = !ImGui::Begin("Actor Detail", nullptr, ImGuiWindowFlags_None);
 //	if (!hiddenDetail)
 //	{
-//		std::shared_ptr<Actor> lastSelected = selectionActors.empty() ? nullptr : *selectionActors.rbegin();
+//		std::shared_ptr<Actor2D> lastSelected = selectionActors.empty() ? nullptr : *selectionActors.rbegin();
 //		if (lastSelected != nullptr)
 //		{
 //			lastSelected->OnGUI();

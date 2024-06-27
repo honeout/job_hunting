@@ -20,6 +20,7 @@
 #include "Actor.h"
 #include "Movement.h"
 #include "HP.h"
+#include "ModelControll.h"
 #include "ProjectileStraight.h"
 
 
@@ -43,7 +44,8 @@ void SceneGame::Initialize()
 	{
 		const char* filename = "Data/Model/ExampleStage/ExampleStage.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->LoadModel(filename);
+		actor->AddComponent<ModelControll>();
+		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("StageMain");
 		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
 		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
@@ -63,7 +65,8 @@ void SceneGame::Initialize()
 		const char* filename = "Data/Model/Jammo/Jammo.mdl";
 		
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->LoadModel(filename);
+		actor->AddComponent<ModelControll>();
+		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("Player");
 		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
 		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
@@ -85,7 +88,8 @@ void SceneGame::Initialize()
 		// ìGèâä˙âª
 		const char* filename = "Data/Model/Slime/Slime.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->LoadModel(filename);
+		actor->AddComponent<ModelControll>();
+		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("EnemySlime");
 		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 1));
 		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));

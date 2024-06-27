@@ -6,6 +6,7 @@
 #include <string>
 #include <DirectXMath.h>
 #include "Graphics\Model.h"
+#include "Graphics/RenderContext.h"
 
 // 前方宣言
 class Component;
@@ -22,6 +23,9 @@ public:
 
 	// 更新処理
 	virtual void Update(float elapsedTime);
+
+	// 描画
+	virtual void Render(RenderContext rc);
 
 	// 行列の更新
 	virtual void UpdateTransform();
@@ -67,21 +71,21 @@ public:
 	// 向き
 	void SetDirection(const DirectX::XMFLOAT3 direction)  { this->direction = direction; }
 
-	// モデルの読み込み
-	void LoadModel(const char* filename);
+	//// モデルの読み込み
+	//void LoadModel(const char* filename);
 
-	void LoadModelSabe(const char* filename);
+	//void LoadModelSabe(const char* filename);
 
-	// モデルの取得
-	Model* GetModel() const { return model.get(); }
-	Model* GetModelSabe() const { return modelsabe.get(); }
+	//// モデルの取得
+	//Model* GetModel() const { return model.get(); }
+	//Model* GetModelSabe() const { return modelsabe.get(); }
 	
 
 
-	// アニメーションの時間
-	float GetCurrentANimationSeconds() const { return currentANimationSeconds; }
-	// アニメーションの時間
-	void SetCurrentAnimationSeconds(const float currentANimationSeconds) { this->currentANimationSeconds = currentANimationSeconds; }
+	//// アニメーションの時間
+	//float GetCurrentANimationSeconds() const { return currentANimationSeconds; }
+	//// アニメーションの時間
+	//void SetCurrentAnimationSeconds(const float currentANimationSeconds) { this->currentANimationSeconds = currentANimationSeconds; }
 
 	float GetRadius() {return radius;}
 	void  SetRadius(float radius) { this->radius = radius;}
@@ -137,11 +141,11 @@ private:
 	float height = 1;
 
 	//	透明度
-	float alpha = 1;
+	//float alpha = 1;
 
 
 	// アニメーションの時間
-	float currentANimationSeconds = 0.0f;
+	//float currentANimationSeconds = 0.0f;
 	//////////////////////////////////////
 	// 現象
 	//////////////////////////////////////

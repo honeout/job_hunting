@@ -4,7 +4,7 @@
 #include "Projectile.h"
 #include "Component.h"
 #include "BulletFiring.h"
-
+#include "ModelControll.h"
 
 // ’¼i’eŠÛ
 class ProjectileStraight : public Component
@@ -22,6 +22,9 @@ public:
 
     // XVˆ— 
     void Update(float elapsedTime) override;
+
+    // •`‰æˆ—
+    void Render(RenderContext rc) override;
 
     // •`‰æˆ—
     //void Render(const RenderContext& rc, ModelShader* shader)override;

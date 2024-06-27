@@ -1,5 +1,5 @@
 #include "StageMain.h"
-
+#include "Graphics/Graphics.h"
 // コントラスト
 StageMain::StageMain()
 {
@@ -21,7 +21,7 @@ StageMain::~StageMain()
 void StageMain::Start()
 {
     // モデルデータを入れる。
-    model = GetActor()->GetModel();
+    model = GetActor()->GetComponent<ModelControll>()->GetModel();
 }
 
 
@@ -31,16 +31,24 @@ void StageMain::Update(float elasedTime)
 {
     // 今は特にやることなし
     GetActor()->UpdateTransform();
+
+    model->UpdateTransform(GetActor()->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 }
 
 //// 描画処理
-//void StageMain::Render(const RenderContext& rc, ModelShader* shader)
-//{
-//// シェーダーにモデルを描画してもらう
-//    shader->Draw(rc, model);
-//
-//}
+void StageMain::Render(RenderContext rc)
+{
+    Graphics& graphics = Graphics::Instance();
+    //Shader* shader = graphics.GetShader();
+    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    shader->Begin(rc);// シェーダーにカメラの情報を渡す
+
+
+    shader->Draw(rc, model);
+
+    shader->End(rc);
+}
 
 bool StageMain::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end,
     HitResult& hit)

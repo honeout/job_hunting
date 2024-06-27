@@ -1,5 +1,6 @@
 #include <imgui.h>
 #include "BulletFiring.h"
+#include "ModelControll.h"
 
 void BulletFiring::Move(float speed,float elapsedTime)
 {
@@ -21,6 +22,11 @@ void BulletFiring::Move(float speed,float elapsedTime)
     GetActor()->SetPosition(position);
     
     GetActor()->UpdateTransform();
+
+    //GetActor()->GetModel()->UpdateAnimation(elapsedTime, true);
+
+
+    model->UpdateTransform(GetActor()->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
     // ”½ŽË
     //UpdateReflection(elapsedTime);
@@ -139,6 +145,12 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
     GetActor()->SetPosition(position);
 
     GetActor()->UpdateTransformProjectile();
+
+    //GetActor()->GetModel()->UpdateAnimation(elapsedTime, true);
+
+
+
+    model->UpdateTransform(GetActor()->GetTransform());
             //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
           
 }
@@ -149,6 +161,9 @@ void BulletFiring::Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFL
     this->direction = direction;
     this->position = position;
     this->lifeTimer = lifeTimer;
+
+    model = GetActor()->GetComponent<ModelControll>()->GetModel();
+
 
     GetActor()->SetDirection(direction);
 }

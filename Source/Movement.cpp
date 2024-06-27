@@ -5,6 +5,7 @@
 #include "Movement.h"
 #include "Collision.h"
 #include "StageMain.h"
+#include "ModelControll.h"
 
 //#include "StageManager.h"
 
@@ -383,7 +384,7 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
         //Model* model = actor2->GetModel();
 
         // モデルデータ
-        Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetModel();
+        Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetComponent<ModelControll>()->GetModel();
         
         //if (StageManager::instance().RayCast(start, end, hit))
         //if (Collision::IntersectRayVsModel->(start, end,  , hit))
@@ -414,7 +415,7 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
 
 
             // モデルデータ
-            Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetModel();
+            Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetComponent<ModelControll>()->GetModel();
 
             //// モデルデータを入れる。
             //Model* model2 = GetActor()->GetModel();
@@ -497,7 +498,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
         //Model* model = stageMain->GetModel();
 
         // モデルデータ
-        Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetModel();
+        Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetComponent<ModelControll>()->GetModel();
 
         // レイキャストを呼ぶための関数
         //if (StageManager::instance().RayCast(start, end, hit))

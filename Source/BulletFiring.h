@@ -31,4 +31,5 @@ private:
     // ’eŠÛ¶–½ŠÔ
     float   lifeTimer = 3.0f;
 
+    Model* model;
 };

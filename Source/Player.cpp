@@ -10,6 +10,7 @@
 #include "Graphics/Model.h"
 #include "EnemySlime.h"
 
+
 #include "AfterimageManager.h"
 
 
@@ -113,7 +114,7 @@ void Player::Start()
     //projectileStraight = GetActor()->GetComponent<>;
     
     // モデルデータを入れる。
-    model = GetActor()->GetModel();
+    model = GetActor()->GetComponent<ModelControll>()->GetModel();
     
     cameraControlle = new CameraController();
 
@@ -244,12 +245,29 @@ void Player::Update(float elapsedTime)
     //model->Update_blend_animations(0.675f, frontVec.x,1.582f);
     //model->Update_blend_animations(elapsedTime, frontVec.x,36,60, true);
     //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
-    
+    // 位置更新
     GetActor()->UpdateTransform();
+    // アニメーション再生
+    model->UpdateAnimation(elapsedTime, true);
+    // 位置更新
+    model->UpdateTransform(GetActor()->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 
     // モデル行列更新
     //model->UpdateTransform(transform);
+}
+
+void Player::Render(RenderContext rc)
+{
+    Graphics& graphics = Graphics::Instance();
+    //Shader* shader = graphics.GetShader();
+    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    shader->Begin(rc);// シェーダーにカメラの情報を渡す
+
+
+    shader->Draw(rc, model);
+   
+    shader->End(rc);
 }
 
 
@@ -814,7 +832,8 @@ bool Player::InputProjectile()
             const char* filename = "Data/Model/Sword/Sword.mdl";
 
             std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-            actor->LoadModel(filename);
+            actor->AddComponent<ModelControll>();
+            actor->GetComponent<ModelControll>()->LoadModel(filename);
             actor->SetName("ProjectileStraight");
             actor->SetPosition(position);
             actor->SetRotation(GetActor()->GetRotation());
@@ -901,7 +920,8 @@ bool Player::InputProjectile()
         const char* filename = "Data/Model/Sword/Sword.mdl";
 
         std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-        actor->LoadModel(filename);
+        actor->AddComponent<ModelControll>();
+        actor->GetComponent<ModelControll>()->LoadModel(filename);
         actor->SetName("ProjectileHoming");
         actor->SetPosition(position);
         actor->SetRotation(GetActor()->GetRotation());
@@ -1047,6 +1067,8 @@ void Player::UpdateMoveState(float elapsedTime)
     {
         TransitionAttackState();
     }
+    // 落下着地
+    Ground();
 
     // 残像姿勢用
     //currentANimationSeconds = model->GetCurrentANimationSeconds();
@@ -1091,7 +1113,7 @@ void Player::UpdateJumpState(float elapsedTime)
     }
 
 
-
+    // 落下着地
     Ground();
 
     //if (movement->GetStepOffSet())
@@ -1199,6 +1221,7 @@ void Player::TransitionAttackState()
 
 void Player::UpdateAttackState(float elapsedTime)
 {
+
     // もし終わったら待機に変更
     if (updateanim == UpAnim::Doble && !model->IsPlayUpeerBodyAnimation())
     {
@@ -1238,6 +1261,9 @@ void Player::UpdateAttackState(float elapsedTime)
         // 左手ノードとエネミーの衝突処理
         CollisionNodeVsEnemies("mixamorig:LeftHand", leftHandRadius);
     }
+
+    Ground();
+    
 }
 
 void Player::UpdateProjectile(float elapsedTime)

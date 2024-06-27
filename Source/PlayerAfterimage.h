@@ -8,6 +8,7 @@
 //#include "ProjectileManager.h"
 #include "Component.h"
 #include "Movement.h"
+#include "ModelControll.h"
 
 // ƒvƒŒƒCƒ„[
 class PlayerAfterimage : public Component

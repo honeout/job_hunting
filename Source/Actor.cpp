@@ -2,7 +2,7 @@
 #include <imgui.h>
 #include "Graphics\Graphics.h"
 #include "Component.h"
-#include "Actor.h"
+
 
 // 開始処理
 void Actor::Start()
@@ -16,15 +16,23 @@ void Actor::Start()
 // 更新
 void Actor::Update(float elapsedTime)
 {
-	// アニメーションの更新
-	if (model != nullptr)
-	{
-		model->UpdateAnimation(elapsedTime,true);
-	}
+	//// アニメーションの更新
+	//if (model != nullptr)
+	//{
+	//	model->UpdateAnimation(elapsedTime,true);
+	//}
 
 	for (std::shared_ptr<Component>& component : components)
 	{
 		component->Update(elapsedTime);
+	}
+}
+
+void Actor::Render(RenderContext rc)
+{
+	for (std::shared_ptr<Component>& component : components)
+	{
+		component->Render(rc);
 	}
 }
 
@@ -50,13 +58,13 @@ void Actor::UpdateTransform()
 	// 計算したワールド行列を取り出す
 	DirectX::XMStoreFloat4x4(&transform, W);
 
-	// モデルの行列更新
-	if (model != nullptr)
-	{
-		model->UpdateTransform(transform);
-	}
+	//// モデルの行列更新
+	//if (model != nullptr)
+	//{
+	//	model->UpdateTransform(transform);
+	//}
 
-	
+	//////////////////////////////////////////////////
 
 	//// ワールド行列の更新
 	//DirectX::XMVECTOR Q = DirectX::XMLoadFloat4(&rotation);
@@ -123,11 +131,11 @@ void Actor::UpdateTransformProjectile()
 	this->direction = front;// 向きをこっちに入れるこれでむきの計算
 	// を外に
 
-		// モデルの行列更新
-	if (model != nullptr)
-	{
-		model->UpdateTransform(transform);
-	}
+	//	// モデルの行列更新
+	//if (model != nullptr)
+	//{
+	//	model->UpdateTransform(transform);
+	//}
 }
 
 // GUI表示
@@ -165,15 +173,15 @@ void Actor::OnGUI()
 }
 
 // モデルの読み込み
-void Actor::LoadModel(const char* filename)
-{
-	model = std::make_unique<Model>(filename);
-}
+//void Actor::LoadModel(const char* filename)
+//{
+//	model = std::make_unique<Model>(filename);
+//}
 
-void Actor::LoadModelSabe(const char* filename)
-{
-	modelsabe = std::make_unique<Model>(filename);
-}
+//void Actor::LoadModelSabe(const char* filename)
+//{
+//	modelsabe = std::make_unique<Model>(filename);
+//}
 
 // 作成
 std::shared_ptr<Actor> ActorManager::Create()
@@ -278,19 +286,28 @@ void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOA
 
 	//shader->End(dc);
 
-	shader->Begin(rc);// シェーダーにカメラの情報を渡す
 
-	for (std::shared_ptr<Actor>& actor : updateActors)
+    for (std::shared_ptr<Actor>& actor : updateActors)
 	{
 		// モデルがあれば描画
-		Model* model = actor->GetModel();
-		if (model != nullptr)
-		{
-			shader->Draw(rc, model);
-		}
+		actor->Render(rc);
 	}
 
-	shader->End(rc);
+	//shader->Begin(rc);// シェーダーにカメラの情報を渡す
+
+	//for (std::shared_ptr<Actor>& actor : updateActors)
+	//{
+	//	// モデルがあれば描画
+	//	Model* model = actor->GetModel();
+	//	if (model != nullptr)
+	//	{
+	//		shader->Draw(rc, model);
+	//	}
+	//}
+
+	//shader->End(rc);
+
+
 
 	// リスター描画
 	DrawLister();

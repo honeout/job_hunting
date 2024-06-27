@@ -37,7 +37,10 @@ void EnemySlime::Start()
     hp = GetActor()->GetComponent<HP>();
 
     // モデルデータを入れる。
-    model = GetActor()->GetModel();
+    //model = GetActor()->GetModel();
+    model = GetActor()->GetComponent<ModelControll>()->GetModel();
+    
+    //model = std::make_unique<Model>(GetActor()->GetComponent<ModelControll>()->GetModel());
 
     hp->SetHealth(health);
 
@@ -91,6 +94,12 @@ void EnemySlime::Update(float elapsedTime)
     hp->UpdateInbincibleTimer(elapsedTime);
 
     GetActor()->UpdateTransform();
+
+    model->UpdateAnimation(elapsedTime,true);
+
+    //model->UpdateAnimation(elapsedTime, true);
+
+    model->UpdateTransform(GetActor()->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
     
    // UpdateVelocity(elapsedTime);
@@ -111,6 +120,19 @@ void EnemySlime::Update(float elapsedTime)
 //{
 //    shader->Draw(rc, model);
 //}
+
+void EnemySlime::Render(RenderContext rc)
+{
+    Graphics& graphics = Graphics::Instance();
+    //Shader* shader = graphics.GetShader();
+    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    shader->Begin(rc);// シェーダーにカメラの情報を渡す
+
+
+    shader->Draw(rc, model);
+
+    shader->End(rc);
+}
 
 // デバッグプリミティブ描画
 void EnemySlime::DrawDebugPrimitive()

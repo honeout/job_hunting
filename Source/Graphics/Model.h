@@ -26,6 +26,7 @@ public:
 		int now;
 	};
 
+
 	// 行列計算
 	void UpdateTransform(const DirectX::XMFLOAT4X4& transform);
 	// 行列計算　ボーン情報を共有

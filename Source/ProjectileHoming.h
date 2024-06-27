@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "Component.h"
 #include "BulletFiring.h"
+#include "ModelControll.h"
 // ’Ç”ö’eŠÛ
 class ProjectileHoming :public Component
 {
@@ -19,6 +20,9 @@ public:
 
     // XVˆ—
     virtual void Update(float elapsedTime) override;
+
+    // •`‰æˆ—
+    void Render(RenderContext rc) override;
 
     // •`‰æˆ—
     //virtual void Render(const RenderContext& rc, ModelShader* shader) override;

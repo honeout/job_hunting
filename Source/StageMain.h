@@ -6,7 +6,7 @@
 #include "Stage.h"
 
 #include "Component.h"
-
+#include "ModelControll.h"
 
 // ステージ
 class StageMain : public Component
@@ -25,7 +25,8 @@ public:
     // 更新処理
     void Update(float elapsedTime) override;
 
-    //// 描画処理
+    // 描画処理
+    void Render(RenderContext rc) override;
     //void Render(const RenderContext& rc, ModelShader* shader) override;
 
     // レイキャスト

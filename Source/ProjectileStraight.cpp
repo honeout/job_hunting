@@ -1,6 +1,7 @@
 #include "ProjectileStraight.h"
 #include "Collision.h"
 //#include "StageManager.h"
+#include "Graphics/Graphics.h"
 // コンストラクタ
 ProjectileStraight::ProjectileStraight()
                    
@@ -19,7 +20,7 @@ ProjectileStraight::~ProjectileStraight()
 void ProjectileStraight::Start()
 {
     // モデル一様
-    model = GetActor()->GetModel();
+    model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
     // 当たり判定を共有
     GetActor()->SetRadius(radius);
@@ -58,6 +59,21 @@ void ProjectileStraight::Update(float elapsedTime)
     //// モデル行列更新　かわったからここに言って
     //model->UpdateTransform(transform);
 }
+
+// 描画
+void ProjectileStraight::Render(RenderContext rc)
+{
+    Graphics& graphics = Graphics::Instance();
+    //Shader* shader = graphics.GetShader();
+    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    shader->Begin(rc);// シェーダーにカメラの情報を渡す
+
+
+    shader->Draw(rc, model);
+
+    shader->End(rc);
+}
+
 //// 描画処理
 //void ProjectileStraight::Render(const RenderContext& rc, ModelShader* shader)
 //{

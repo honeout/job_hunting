@@ -1,5 +1,5 @@
 #include "ProjectileHoming.h"
-
+#include "Graphics/Graphics.h"
 // コンストラクタ
 ProjectileHoming::ProjectileHoming()
 {
@@ -17,7 +17,7 @@ ProjectileHoming::~ProjectileHoming()
 void ProjectileHoming::Start()
 {
     // モデル一様
-    model = GetActor()->GetModel();
+    model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
     // 当たり判定を共有
     GetActor()->SetRadius(radius);
@@ -130,6 +130,20 @@ void ProjectileHoming::Update(float elapsedTime)
 
         
     
+}
+
+// 描画処理
+void ProjectileHoming::Render(RenderContext rc)
+{
+    Graphics& graphics = Graphics::Instance();
+    //Shader* shader = graphics.GetShader();
+    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    shader->Begin(rc);// シェーダーにカメラの情報を渡す
+
+
+    shader->Draw(rc, model);
+
+    shader->End(rc);
 }
 
 //// 描画処理

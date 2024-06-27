@@ -13,7 +13,7 @@
 #include "Input\GamePad.h"
 #include "CameraController.h"
 #include "Effect.h"
-
+#include "ModelControll.h"
 
 enum class UpAnim
 {
@@ -62,6 +62,9 @@ public:
 
     // 更新処理
     void Update(float elapsedTime) override;
+
+    // 描画処理
+    void Render(RenderContext rc) override;
 
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
@@ -222,7 +225,7 @@ private:
     
     DirectX::XMFLOAT3 velocity = { 0,0,0 };
  
-   Model* model = nullptr;
+    Model* model = nullptr;
 
     GamePad        gamePad;
 
