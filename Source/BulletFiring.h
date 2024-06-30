@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include "Collision.h"
-
+#include "Transform.h"
 // ˆÚ“®
 class BulletFiring : public Component
 {
@@ -24,6 +24,7 @@ public:
     void OnGUI() override;
 
 private:
+    std::shared_ptr<Transform> transformid;
     // ˆÊ’u
     DirectX::XMFLOAT3 position = { 0,0,0 };
     // Œü‚«

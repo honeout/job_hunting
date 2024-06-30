@@ -213,6 +213,12 @@
     <ClInclude Include="Source\BulletFiring.h" />
     <ClInclude Include="Source\Actor2D.h" />
     <ClInclude Include="Source\ModelControll.h" />
+    <ClInclude Include="Source\Transform.h" />
+    <ClInclude Include="Source\SpriteControll.h" />
+    <ClInclude Include="Source\Graphics\ShadowmapCasterShader.h" />
+    <ClInclude Include="Source\Ui.h" />
+    <ClInclude Include="Source\TransForm2D.h" />
+    <ClInclude Include="Source\UiManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -375,6 +381,24 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\ModelControll.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Transform.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SpriteControll.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\ShadowmapCasterShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Ui.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TransForm2D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UiManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

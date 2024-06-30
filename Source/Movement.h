@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 #include "Component.h"
 #include "Collision.h"
-
+#include "Transform.h"
 // ˆÚ“®
 class Movement : public Component
 {
@@ -75,7 +75,7 @@ private:
 	float       jumpSpeed = 0;
 
 	std::shared_ptr<Collision>	collision;
-
+	std::shared_ptr<Transform> transformid;
 	// Å‘åƒWƒƒƒ“ƒv”
 	int jumpCount = 0;
 

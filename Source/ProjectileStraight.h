@@ -5,6 +5,7 @@
 #include "Component.h"
 #include "BulletFiring.h"
 #include "ModelControll.h"
+#include "Transform.h"
 
 // ’¼i’eŠÛ
 class ProjectileStraight : public Component
@@ -26,6 +27,8 @@ public:
     // •`‰æˆ—
     void Render(RenderContext rc) override;
 
+    void OnGUI() override;
+
     // •`‰æˆ—
     //void Render(const RenderContext& rc, ModelShader* shader)override;
 
@@ -46,6 +49,7 @@ private:
     float stepOffset = 1.0f;
 
     std::shared_ptr<BulletFiring> bulletFiring;
+    std::shared_ptr<Transform> transform;
 
     float radius = 0.3f;
 

@@ -1,6 +1,7 @@
 #include <imgui.h>
 #include "BulletFiring.h"
 #include "ModelControll.h"
+#include "ProjectileManager.h"
 
 void BulletFiring::Move(float speed,float elapsedTime)
 {
@@ -10,6 +11,8 @@ void BulletFiring::Move(float speed,float elapsedTime)
     {
         // 自分を削除
         Destroy();
+        ProjectileManager::Instance().DeleteUpdate(elapsedTime);
+
     }
     // 移動　　秒じゃなくとフレームに
     float bulletspeed = speed * elapsedTime;
@@ -19,14 +22,16 @@ void BulletFiring::Move(float speed,float elapsedTime)
     position.y += bulletspeed * direction.y;
     position.z += bulletspeed * direction.z;
 
-    GetActor()->SetPosition(position);
+
+
+    GetActor()->GetComponent<Transform>()->SetPosition(position);
     
-    GetActor()->UpdateTransform();
+    //transformid->UpdateTransform();
 
     //GetActor()->GetModel()->UpdateAnimation(elapsedTime, true);
 
 
-    model->UpdateTransform(GetActor()->GetTransform());
+   // model->UpdateTransform(transformid->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
     // 反射
     //UpdateReflection(elapsedTime);
@@ -46,6 +51,8 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
     {
         // 自分を削除
         Destroy();
+        ProjectileManager::Instance().DeleteUpdate(elapsedTime);
+        
     }
     // 移動　　秒じゃなくとフレームに
     float bulletspeed = speed * elapsedTime;
@@ -117,10 +124,10 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
                 DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationAxis(Axis, rot);
 
 
-                DirectX::XMFLOAT4X4 transform = GetActor()->GetTransform();
+               
 
                 // 現在の行列を回転させる　自分自身の姿勢
-                DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transform);
+                DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transformid->GetTransform());
                 Transform = DirectX::XMMatrixMultiply(Transform, Rotation); // 同じだからただ×だけ  Transform*Rotation
                 // DirectX::XMMatrixMultrixMultiply
                 // 回転後の前方方向を取り出し、単位ベクトル化する
@@ -141,16 +148,16 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
         }
     }
 
-    GetActor()->SetDirection(direction);
-    GetActor()->SetPosition(position);
+    transformid->SetDirection(direction);
+    transformid->SetPosition(position);
 
-    GetActor()->UpdateTransformProjectile();
+    //transformid->UpdateTransformProjectile();
 
     //GetActor()->GetModel()->UpdateAnimation(elapsedTime, true);
 
 
 
-    model->UpdateTransform(GetActor()->GetTransform());
+  
             //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
           
 }
@@ -164,13 +171,18 @@ void BulletFiring::Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFL
 
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
+    // トランスフォーム取得
+    transformid = GetActor()->GetComponent<Transform>();
 
-    GetActor()->SetDirection(direction);
+    transformid->SetDirection(direction);
+
 }
 
 void BulletFiring::Destroy()
 {
     ActorManager::Instance().Remove(GetActor());
+    ProjectileManager::Instance().Remove(GetActor());
+   
 }
 
 void BulletFiring::OnGUI()
@@ -178,5 +190,6 @@ void BulletFiring::OnGUI()
     ImGui::InputFloat3("Move Speed", &position.x);
     ImGui::InputFloat3("direction", &direction.x);
     ImGui::InputFloat("lifeTimer", &lifeTimer);
+    
 
 }

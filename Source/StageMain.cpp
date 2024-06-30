@@ -22,6 +22,8 @@ void StageMain::Start()
 {
     // モデルデータを入れる。
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
+
+    transformid = GetActor()->GetComponent<Transform>();
 }
 
 
@@ -30,9 +32,9 @@ void StageMain::Start()
 void StageMain::Update(float elasedTime)
 {
     // 今は特にやることなし
-    GetActor()->UpdateTransform();
+    transformid->UpdateTransform();
 
-    model->UpdateTransform(GetActor()->GetTransform());
+    model->UpdateTransform(transformid->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 }
 

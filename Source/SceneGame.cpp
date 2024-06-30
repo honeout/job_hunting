@@ -22,6 +22,10 @@
 #include "HP.h"
 #include "ModelControll.h"
 #include "ProjectileStraight.h"
+#include "Transform.h"
+#include "Ui.h"
+#include "TransForm2D.h"
+#include "UiManager.h"
 
 
 
@@ -47,9 +51,17 @@ void SceneGame::Initialize()
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("StageMain");
-		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
-		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
-		actor->SetScale(DirectX::XMFLOAT3(1, 1, 1));
+		actor->AddComponent<Transform>();
+		
+		actor->GetComponent<Transform>()->
+			SetPosition(DirectX::XMFLOAT3(0, 0, 0));
+
+		actor->GetComponent<Transform>()->
+			SetAngle(DirectX::XMFLOAT3( 0, 0, 0));
+
+		actor->GetComponent<Transform>()->
+			SetScale(DirectX::XMFLOAT3(1, 1, 1));
+
 		actor->AddComponent<StageMain>();
 		StageManager::Instance().Register(actor.get());
 		
@@ -68,9 +80,16 @@ void SceneGame::Initialize()
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("Player");
-		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 0));
-		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
-		actor->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+		actor->AddComponent<Transform>();
+
+		actor->GetComponent<Transform>()->
+			SetPosition(DirectX::XMFLOAT3(0, 0, 0));
+
+		actor->GetComponent<Transform>()->
+			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
+
+		actor->GetComponent<Transform>()->
+			SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
 		actor->AddComponent<Movement>();
 		actor->AddComponent<HP>();
 		actor->AddComponent<Player>();
@@ -91,9 +110,16 @@ void SceneGame::Initialize()
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("EnemySlime");
-		actor->SetPosition(DirectX::XMFLOAT3(0, 0, 1));
-		actor->SetRotation(DirectX::XMFLOAT4(0, 0, 0, 1));
-		actor->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+		actor->AddComponent<Transform>();
+
+		actor->GetComponent<Transform>()->
+			SetPosition(DirectX::XMFLOAT3(0, 0, 1));
+
+		actor->GetComponent<Transform>()->
+			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
+
+		actor->GetComponent<Transform>()->
+			SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
 		actor->AddComponent<Movement>();
 		actor->AddComponent<HP>();
 		actor->AddComponent<Collision>();
@@ -103,6 +129,18 @@ void SceneGame::Initialize()
 		
 		
 
+	}
+
+	// UI
+	{
+		const char* filename = "Data/Sprite/Title.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("UI");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		actor->AddComponent<Ui>();
+		UiManager::Instance().Register(actor);
 	}
 
 	//player = new Player();
@@ -257,7 +295,7 @@ void SceneGame::Render()
 
 		shader->End(rc);
 
-		ActorManager::Instance().UpdateTransform();
+		//ActorManager::Instance().UpdateTransform();
 		ActorManager::Instance().Render(rc.view, rc.projection);
 		
 

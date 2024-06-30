@@ -141,6 +141,7 @@
     <ClInclude Include="Source\Graphics\ModelResource.h" />
     <ClInclude Include="Source\Graphics\RenderContext.h" />
     <ClInclude Include="Source\Graphics\Shader.h" />
+    <ClInclude Include="Source\Graphics\ShadowmapCasterShader.h" />
     <ClInclude Include="Source\Graphics\Sprite.h" />
     <ClInclude Include="Source\HighResolutionTimer.h" />
     <ClInclude Include="Source\HP.h" />
@@ -166,9 +167,14 @@
     <ClInclude Include="Source\SceneLoading.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\SceneTitle.h" />
+    <ClInclude Include="Source\SpriteControll.h" />
     <ClInclude Include="Source\Stage.h" />
     <ClInclude Include="Source\StageMain.h" />
     <ClInclude Include="Source\StageMoveFloor.h" />
+    <ClInclude Include="Source\Transform.h" />
+    <ClInclude Include="Source\TransForm2D.h" />
+    <ClInclude Include="Source\Ui.h" />
+    <ClInclude Include="Source\UiManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\DirectXTex\WICTextureLoader.cpp" />
@@ -200,6 +206,7 @@
     <ClCompile Include="Source\Graphics\LineRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Model.cpp" />
     <ClCompile Include="Source\Graphics\ModelResource.cpp" />
+    <ClCompile Include="Source\Graphics\ShadowmapCasterShader.cpp" />
     <ClCompile Include="Source\Graphics\Sprite.cpp" />
     <ClCompile Include="Source\HP.cpp" />
     <ClCompile Include="Source\Input\GamePad.cpp" />
@@ -222,9 +229,14 @@
     <ClCompile Include="Source\SceneLoading.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\SceneTitle.cpp" />
+    <ClCompile Include="Source\SpriteControll.cpp" />
     <ClCompile Include="Source\StageMain.cpp" />
     <ClCompile Include="Source\StageMoveFloor.cpp" />
     <ClCompile Include="Source\PlayerAfterimage.cpp" />
+    <ClCompile Include="Source\Transform.cpp" />
+    <ClCompile Include="Source\TransForm2D.cpp" />
+    <ClCompile Include="Source\Ui.cpp" />
+    <ClCompile Include="Source\UiManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\AfterImageShader.hlsli" />

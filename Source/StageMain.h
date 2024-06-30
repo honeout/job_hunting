@@ -7,6 +7,7 @@
 
 #include "Component.h"
 #include "ModelControll.h"
+#include "Transform.h"
 
 // ステージ
 class StageMain : public Component
@@ -40,6 +41,8 @@ public:
 
 private:
     Model*	model;
+
+    std::shared_ptr<Transform> transformid;
 };
 
 // ステージマネージャー

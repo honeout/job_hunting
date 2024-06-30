@@ -28,8 +28,8 @@ public:
 	virtual void Render(RenderContext rc);
 
 	// 行列の更新
-	virtual void UpdateTransform();
-	virtual void UpdateTransformProjectile();
+	//virtual void UpdateTransform();
+	//virtual void UpdateTransformProjectile();
 
 	// GUI表示
 	virtual void OnGUI();
@@ -40,36 +40,36 @@ public:
 	// 名前の取得
 	const char* GetName() const { return name.c_str(); }
 
-	// 位置の設定
-	void SetPosition(const DirectX::XMFLOAT3& position) { this->position = position; }
+	//// 位置の設定
+	//void SetPosition(const DirectX::XMFLOAT3& position) { this->position = position; }
 
-	// 位置の取得
-	const DirectX::XMFLOAT3& GetPosition() const { return position; }
+	//// 位置の取得
+	//const DirectX::XMFLOAT3& GetPosition() const { return position; }
 
-	// 回転の設定
-	void SetRotation(const DirectX::XMFLOAT4& rotation) { this->rotation = rotation; }
-	void SetRotation3(const DirectX::XMFLOAT3& rotation) { 
-		this->rotation.x = rotation.x;
-		this->rotation.y = rotation.y;
-		this->rotation.z = rotation.z;
-	}
+	//// 回転の設定
+	//void SetRotation(const DirectX::XMFLOAT4& rotation) { this->rotation = rotation; }
+	//void SetRotation3(const DirectX::XMFLOAT3& rotation) { 
+	//	this->rotation.x = rotation.x;
+	//	this->rotation.y = rotation.y;
+	//	this->rotation.z = rotation.z;
+	//}
 
-	// 回転の取得
-	const DirectX::XMFLOAT4& GetRotation() const { return rotation; }
+	//// 回転の取得
+	//const DirectX::XMFLOAT4& GetRotation() const { return rotation; }
 
-	// スケールの設定
-	void SetScale(const DirectX::XMFLOAT3& scale) { this->scale = scale; }
+	//// スケールの設定
+	//void SetScale(const DirectX::XMFLOAT3& scale) { this->scale = scale; }
 
-	// スケールの取得
-	const DirectX::XMFLOAT3& GetScale() const { return scale; }
+	//// スケールの取得
+	//const DirectX::XMFLOAT3& GetScale() const { return scale; }
 
-	// 行列の取得
-	const DirectX::XMFLOAT4X4& GetTransform() const { return transform; }
+	//// 行列の取得
+	//const DirectX::XMFLOAT4X4& GetTransform() const { return transform; }
 
-	void SetTransform(const DirectX::XMFLOAT4X4 transform)  { this->transform = transform; }
+	//void SetTransform(const DirectX::XMFLOAT4X4 transform)  { this->transform = transform; }
 
-	// 向き
-	void SetDirection(const DirectX::XMFLOAT3 direction)  { this->direction = direction; }
+	//// 向き
+	//void SetDirection(const DirectX::XMFLOAT3 direction)  { this->direction = direction; }
 
 	//// モデルの読み込み
 	//void LoadModel(const char* filename);
@@ -87,12 +87,12 @@ public:
 	//// アニメーションの時間
 	//void SetCurrentAnimationSeconds(const float currentANimationSeconds) { this->currentANimationSeconds = currentANimationSeconds; }
 
-	float GetRadius() {return radius;}
-	void  SetRadius(float radius) { this->radius = radius;}
+	//float GetRadius() {return radius;}
+	//void  SetRadius(float radius) { this->radius = radius;}
 
 
-	float GetHeight() { return height; }
-	void  SetHeight(float height) { this->height = height; }
+	//float GetHeight() { return height; }
+	//void  SetHeight(float height) { this->height = height; }
 
 	// コンポーネント追加
 	template<class T, class... Args>
@@ -135,10 +135,10 @@ private:
 
 	DirectX::XMFLOAT3 direction;
 	
-	// 半径05 
-	float radius = 0.5f;
+	//// 半径05 
+	//float radius = 0.5f;
 
-	float height = 1;
+	//float height = 1;
 
 	//	透明度
 	//float alpha = 1;
@@ -194,7 +194,7 @@ public:
 	void Update(float elapsedTime);
 
 	// 行列更新
-	void UpdateTransform();
+	//void UpdateTransform();
 
 	// 描画
 	void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);

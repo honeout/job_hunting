@@ -5,6 +5,7 @@
 #include "Component.h"
 #include "BulletFiring.h"
 #include "ModelControll.h"
+#include "Transform.h"
 // ’Ç”ö’eŠÛ
 class ProjectileHoming :public Component
 {
@@ -44,6 +45,7 @@ private:
     float         turnSpeed = DirectX::XMConvertToRadians(180);// 
 
     std::shared_ptr<BulletFiring> bulletFiring;
+    std::shared_ptr<Transform> transform;
 
     float radius = 0.3f;
 

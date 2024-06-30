@@ -14,6 +14,7 @@
 #include "CameraController.h"
 #include "Effect.h"
 #include "ModelControll.h"
+#include "Transform.h"
 
 enum class UpAnim
 {
@@ -31,8 +32,8 @@ public:
 
 
 
-    // インスタンス取得
-    static Player& Instance();
+    //// インスタンス取得
+    //static Player& Instance();
 
 
     // アニメーション
@@ -221,6 +222,7 @@ private:
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
+    std::shared_ptr<Transform> transform;
 
     
     DirectX::XMFLOAT3 velocity = { 0,0,0 };
@@ -231,6 +233,7 @@ private:
 
     DirectX::XMFLOAT3 position = {};
     DirectX::XMFLOAT3 angle = {};
+    DirectX::XMFLOAT3 scale = {};
 
     // 身長
     float height = 1.0f;

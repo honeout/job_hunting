@@ -36,6 +36,9 @@ void EnemySlime::Start()
     // hp関数を使えるように
     hp = GetActor()->GetComponent<HP>();
 
+    // transform関数を使えるように
+    transform = GetActor()->GetComponent<Transform>();
+
     // モデルデータを入れる。
     //model = GetActor()->GetModel();
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
@@ -46,9 +49,9 @@ void EnemySlime::Start()
 
     hp->SetMaxHealth(maxHealth);
 
-    GetActor()->SetRadius(radius);
+    transform->SetRadius(radius);
 
-    GetActor()->SetHeight(height);
+    transform->SetHeight(height);
 
     // 徘徊ステートへ遷移
     TransitionWanderState();
@@ -86,20 +89,24 @@ void EnemySlime::Update(float elapsedTime)
     }
 
     // 位置
-    position = GetActor()->GetPosition();
+    position = transform->GetPosition();
+    // 向き
+    angle = transform->GetAngle();
+    // 大きさ
+    scale = transform->GetScale();
 
     // 速力処理更新
     movement->UpdateVelocity(elapsedTime);
     // 無敵時間更新
     hp->UpdateInbincibleTimer(elapsedTime);
 
-    GetActor()->UpdateTransform();
+    transform->UpdateTransform();
 
     model->UpdateAnimation(elapsedTime,true);
 
     //model->UpdateAnimation(elapsedTime, true);
 
-    model->UpdateTransform(GetActor()->GetTransform());
+    model->UpdateTransform(transform->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
     
    // UpdateVelocity(elapsedTime);
@@ -256,13 +263,19 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
             // プレイヤー取得
             Actor* playerid = PlayerManager::Instance().GetPlayer(i);
 
+            //　トランスフォーム分解
+            DirectX::XMFLOAT3 playerPosition = playerid->GetComponent<Transform>()->GetPosition();
+            float playerRadius = playerid->GetComponent<Transform>()->GetRadius();
+            float playerHeight = playerid->GetComponent<Transform>()->GetRadius();
+
+
             DirectX::XMFLOAT3 outPosition;
             if (Collision::IntersectSphereVsCylinder(
                 nodePosition,
                 nodeRadius,
-                playerid->GetPosition(),
-                playerid->GetRadius(),
-                playerid->GetHeight(),
+                playerPosition,
+                playerRadius,
+                playerHeight,
                 outPosition))
             {
                 // ダメージを与える
@@ -272,7 +285,7 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
                     // 衝動
                     DirectX::XMFLOAT3 impulse;
                     const float power = 10.0f;
-                    const DirectX::XMFLOAT3& p = playerid->GetPosition();
+                    const DirectX::XMFLOAT3& p = playerPosition;
                     const DirectX::XMFLOAT3& e = nodePosition;
                     float vx = p.x - e.x;
                     float vz = p.z - e.z;
@@ -298,8 +311,16 @@ bool EnemySlime::SearchPlayer()
 {
     // プレイヤー取得
     Actor* playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
+    
+    //　トランスフォーム分解
+    DirectX::XMFLOAT3 playerPosition = playerid->GetComponent<Transform>()->GetPosition();
+    float playerRadius = playerid->GetComponent<Transform>()->GetRadius();
+    float playerHeight = playerid->GetComponent<Transform>()->GetRadius();
+
+
+    
     // プレイヤーと高低差を考慮して３Dでの距離判定をする
-    const DirectX::XMFLOAT3& playerPosition = playerid->GetPosition();
+    //const DirectX::XMFLOAT3& playerPosition = playerid->GetPosition();
     //const DirectX::XMFLOAT3& playerPosition = DirectX::XMFLOAT3{0, 0, 0};
     float vx = playerPosition.x - position.x;
     float vy = playerPosition.y - position.y;
@@ -367,7 +388,7 @@ void EnemySlime::UpdatePursuitState(float elapsedTime)
     // プレイヤーid
     Actor* playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
     // 目標地点ををプレイヤー位置に設定
-    targetPosition = playerid->GetPosition();
+    targetPosition = playerid->GetComponent<Transform>()->GetPosition();
 
     // 目標地点へ移動
     MoveToTarget(elapsedTime, 1.0f);
@@ -431,7 +452,7 @@ void EnemySlime::UpdateIdleBattleState(float elapsedTime)
     // プレイヤーid
     Actor* playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
     // 目標地点ををプレイヤー位置に設定
-    targetPosition = playerid->GetPosition();
+    targetPosition = playerid->GetComponent<Transform>()->GetPosition();
 
     // タイマー処理
     stateTimer -= elapsedTime;

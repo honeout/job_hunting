@@ -6,6 +6,7 @@
 #include "Movement.h"
 #include "HP.h"
 #include "ModelControll.h"
+#include "Transform.h"
 // ƒXƒ‰ƒCƒ€
 class EnemySlime : public Component
 {
@@ -141,9 +142,11 @@ private:
 
     DirectX::XMFLOAT3 position = {};
     DirectX::XMFLOAT3 angle = {};
+    DirectX::XMFLOAT3 scale = {};
 
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
+    std::shared_ptr<Transform>	transform;
 
     //std::unique_ptr<Model> model;
     // Model* model;

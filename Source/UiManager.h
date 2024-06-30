@@ -1,0 +1,49 @@
+#pragma once
+
+#include <vector>
+#include "Actor.h"
+#include <set>
+
+
+// uiマネージャー
+class UiManager// 複数の弾がん球数
+{
+public:
+
+    UiManager() {};
+    // 誰が持つか分からないから複数の奴が別々に持つかもしれない
+    ~UiManager() {};
+
+    // インスタンス取得
+    static UiManager& Instance()
+    {
+        static UiManager instance;
+        return instance;
+    }
+
+
+    // デバッグプリミティブ描画
+    //void DrawDebugPrimitive();
+
+    // ui登録
+    void Register(std::shared_ptr<Actor> ui);
+
+    // ui全削除
+    void Clear();
+
+    // ui数取得
+    int GetUiesCount() const { return static_cast<int> (uies.size()); }
+
+
+    // ui取得
+    std::shared_ptr<Actor> GetUies(int index) { return uies.at(index); }
+
+    // ui削除
+    void Remove(std::shared_ptr<Actor> ui);
+
+private:
+    // ui取得
+    std::vector<std::shared_ptr<Actor>>   uies;
+    // 特定ui削除登録
+    std::set<std::shared_ptr<Actor>>       removes;
+};

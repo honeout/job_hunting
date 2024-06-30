@@ -14,13 +14,13 @@
 #include "AfterimageManager.h"
 
 
-static Player* instance = nullptr;
-
-// インスタンス取得
-Player& Player::Instance()
-{
-    return *instance;
-}
+//static Player* instance = nullptr;
+//
+//// インスタンス取得
+//Player& Player::Instance()
+//{
+//    return *instance;
+//}
 
 
 
@@ -101,14 +101,17 @@ Player::~Player()
 
 void Player::Start()
 {
-    // インスタンス化
-    instance = this;
+    //// インスタンス化
+    //instance = this;
 
     // ムーブメント関数を使えるように
     movement = GetActor()->GetComponent<Movement>();
 
     // hp関数を使えるように
     hp = GetActor()->GetComponent<HP>();
+
+    // トランスフォーム関数を呼び出し
+    transform = GetActor()->GetComponent<Transform>();
 
     // projectileStraight関数を使えるように
     //projectileStraight = GetActor()->GetComponent<>;
@@ -134,8 +137,8 @@ void Player::Start()
 
     hp->SetMaxHealth(maxHealth);
 
-    GetActor()->SetRadius(radius);
-    GetActor()->SetHeight(height);
+    transform->SetRadius(radius);
+    transform->SetHeight(height);
     // 待機ステートへ遷移
     TransitionIdleState();
 
@@ -181,13 +184,11 @@ void Player::Update(float elapsedTime)
     }
     // 速力処理更新
 
-    position = GetActor()->GetPosition();
+    position = transform->GetPosition();
 
-    angle = { 
-        GetActor()->GetRotation().x,
-        GetActor()->GetRotation().y,
-        GetActor()->GetRotation().z
-    };
+    angle = transform->GetAngle();
+
+    scale = transform->GetScale();
 
     //velocity = movement->GetVelocity();
 
@@ -215,7 +216,7 @@ void Player::Update(float elapsedTime)
 
     CollisionProjectilesVsEnemies();
 
-    UpdateProjectile(elapsedTime);
+    //UpdateProjectile(elapsedTime);
 
     // 弾丸更新処理
     //projectileManager.Update(elapsedTime);
@@ -246,11 +247,11 @@ void Player::Update(float elapsedTime)
     //model->Update_blend_animations(elapsedTime, frontVec.x,36,60, true);
     //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
     // 位置更新
-    GetActor()->UpdateTransform();
+    transform->UpdateTransform();
     // アニメーション再生
     model->UpdateAnimation(elapsedTime, true);
     // 位置更新
-    model->UpdateTransform(GetActor()->GetTransform());
+    model->UpdateTransform(transform->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 
     // モデル行列更新
@@ -307,6 +308,7 @@ void Player::OnGUI()
 {
     ImGui::InputFloat("Move Speed", &moveSpeed);
     ImGui::InputInt("Jump max", &jumpCount);
+
 }
 
 
@@ -493,21 +495,27 @@ void Player::CollisionProjectilesVsEnemies()
     for (int i = 0; i < projectileCount; ++i)
     {
     int enemyCount = EnemyManager::Instance().GetEnemyCount();
-        Actor* projectile = projectileManager.GetProjectile(i);
+    std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
         for (int j = 0; j < enemyCount; ++j)
         {
             Actor* enemy = enemyManager.GetEnemy(j);
-
             
+            DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
+            float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
+            
+            DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+            float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
+            float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+
             // 衝突処理
             DirectX::XMFLOAT3 outPositon;
             // 円柱と円
             if (Collision::IntersectSphereVsCylinder(
-                projectile->GetPosition(),
-                projectile->GetRadius(),
-                enemy->GetPosition(),
-                enemy->GetRadius(),
-                enemy->GetHeight(),
+                projectilePosition,
+                projectileRadius,
+                enemyPosition,
+                enemyRadius,
+                enemyHeight,
                 outPositon))
 
             {
@@ -520,8 +528,8 @@ void Player::CollisionProjectilesVsEnemies()
                         // 衝動
                         DirectX::XMFLOAT3 impulse;
                         const float power = 10.0f;
-                        const DirectX::XMFLOAT3& e = enemy->GetPosition();
-                        const DirectX::XMFLOAT3& p = projectile->GetPosition();
+                        const DirectX::XMFLOAT3& e = enemyPosition;
+                        const DirectX::XMFLOAT3& p = projectilePosition;
                         float vx = e.x - p.x;
                         float vz = e.z - p.z;
                         float lengthXZ = sqrtf(vx * vx + vz * vz);
@@ -536,22 +544,13 @@ void Player::CollisionProjectilesVsEnemies()
                     }
                     // ヒットエフェクト再生
                     {
-                        DirectX::XMFLOAT3 e = enemy->GetPosition();
-                        e.y += enemy->GetHeight() * 0.5f;
+                        DirectX::XMFLOAT3 e = enemyPosition;
+                        e.y += enemyHeight * 0.5f;
 
 
                         hitEffect->Play(e);
                     }
                     // 弾丸破棄
-                    //projectile->;
-                    //ActorManager::Instance().Remove();
-                    //if (projectile->GetName() == "ProjectileStraight")
-                    //ActorManager::Instance().Remove(projectile->GetComponent<ProjectileStraight>()->GetActor());
-
-                    //if (projectile->GetName() == "ProjectileHoming")
-                    //    ActorManager::Instance().Remove(projectile->GetComponent<ProjectileHoming>()->GetActor());
-
-
                     projectile->GetComponent<BulletFiring>()->Destroy();
                 }
             }
@@ -577,20 +576,23 @@ void Player::CollisionPlayerVsEnemies()
             //// 衝突処理
             DirectX::XMFLOAT3 outPositon;
 
+            DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+            float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
+            float enemyHeight = enemy->GetComponent<Transform>()->GetRadius();
 
 
             if (Collision::IntersectCylinderVsCylinder(
                 position, radius, height,
-                enemy->GetPosition(),
-                enemy->GetRadius(),
-                enemy->GetHeight(),
+                enemyPosition,
+                enemyRadius,
+                enemyHeight,
                 outPositon))
 
             {
 
 
                     DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-                    DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetPosition());
+                    DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemyPosition);
                     DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
                     DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
                     DirectX::XMFLOAT3 normal;
@@ -609,7 +611,7 @@ void Player::CollisionPlayerVsEnemies()
                     else
                     {
                         // 押し出し後の位置設定　
-                        enemy->SetPosition(outPositon);
+                        enemy->GetComponent<Transform>()->SetPosition(outPositon);
                     }
                 
             }
@@ -646,6 +648,9 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
     {
         Actor* enemy = enemyManager.GetEnemy(i);
 
+        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+        float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
+        float enemyHeight = enemy->GetComponent<Transform>()->GetRadius();
 
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
@@ -654,9 +659,9 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
         if (Collision::IntersectSphereVsCylinder(
             nodePosition,
             nodeRadius,
-            enemy->GetPosition(),
-            enemy->GetRadius(),
-            enemy->GetHeight(),
+            enemyPosition,
+            enemyRudius,
+            enemyHeight,
             outPositon))
 
         {
@@ -672,7 +677,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
                     // 衝動
                     DirectX::XMFLOAT3 impulse;
                     const float power = 10.0f;
-                    const DirectX::XMFLOAT3& e = enemy->GetPosition();
+                    const DirectX::XMFLOAT3& e = enemyPosition;
                     const DirectX::XMFLOAT3& p = nodePosition;
                     float vx = e.x - p.x;
                     float vz = e.z - p.z;
@@ -688,8 +693,8 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
                 }
                 // ヒットエフェクト再生
                 {
-                    DirectX::XMFLOAT3 e = enemy->GetPosition();
-                    e.y += enemy->GetHeight() * 0.5f;
+                    DirectX::XMFLOAT3 e = enemyPosition;
+                    e.y += enemyHeight * 0.5f;
 
 
                     hitEffect->Play(e);
@@ -835,15 +840,16 @@ bool Player::InputProjectile()
             actor->AddComponent<ModelControll>();
             actor->GetComponent<ModelControll>()->LoadModel(filename);
             actor->SetName("ProjectileStraight");
-            actor->SetPosition(position);
-            actor->SetRotation(GetActor()->GetRotation());
-            actor->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+            actor->AddComponent<Transform>();
+            actor->GetComponent<Transform>()->SetPosition(position);
+            actor->GetComponent<Transform>()->SetAngle(angle);
+            actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
             actor->AddComponent<BulletFiring>();
             actor->AddComponent<ProjectileStraight>();
             //actor->AddComponent<Collision>();
-            ProjectileManager::Instance().Register(actor.get());
+            ProjectileManager::Instance().Register(actor);
             //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-            Actor* projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+            //std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
             // 発射
             actor->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
@@ -892,7 +898,7 @@ bool Player::InputProjectile()
             Actor* enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
             // 敵の位置
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetPosition());
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
             // 自分から敵までの位置を計測
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
             // ベクトルのながさを２乗する。√つけていない奴
@@ -903,8 +909,8 @@ bool Player::InputProjectile()
             {
                 // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
                 dist = d;
-                target = enemy->GetPosition();// 位置を入れる
-                target.y += enemy->GetHeight() * 0.5f;// 位置に身長分
+                target = enemy->GetComponent<Transform>()->GetPosition();// 位置を入れる
+                target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
             }
             
             
@@ -923,15 +929,16 @@ bool Player::InputProjectile()
         actor->AddComponent<ModelControll>();
         actor->GetComponent<ModelControll>()->LoadModel(filename);
         actor->SetName("ProjectileHoming");
-        actor->SetPosition(position);
-        actor->SetRotation(GetActor()->GetRotation());
-        actor->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+        actor->AddComponent<Transform>();
+        actor->GetComponent<Transform>()->SetPosition(position);
+        actor->GetComponent<Transform>()->SetAngle(angle);
+        actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f,3.0f,3.0f));
         actor->AddComponent<BulletFiring>();
         actor->AddComponent<ProjectileHoming>();
         //actor->AddComponent<Collision>();
-        ProjectileManager::Instance().Register(actor.get());
+        ProjectileManager::Instance().Register(actor);
         //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-        Actor* projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+        std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
         // 発射
         projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
@@ -1035,7 +1042,7 @@ void Player::TransitionMoveState()
 void Player::UpdateMoveState(float elapsedTime)
 {
     // 位置情報を入れる。
-    position = GetActor()->GetPosition();
+    //position = GetActor()->GetPosition();
 
 
     // 移動入力処理
@@ -1277,7 +1284,7 @@ void Player::UpdateProjectile(float elapsedTime)
     for (int i = 0; i < projectileCount; ++i)
     {
   
-        Actor* projectile = projectileManager.GetProjectile(i);
+        std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
         float dist = FLT_MAX;// float の最大値float全体
         EnemyManager& enemyManager = EnemyManager::Instance();
         int enemyCount = enemyManager.GetEnemyCount();
@@ -1285,9 +1292,12 @@ void Player::UpdateProjectile(float elapsedTime)
         {
             // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
             Actor* enemy = EnemyManager::Instance().GetEnemy(i);
+
+
+
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
             // 敵の位置
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetPosition());
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
             // 自分から敵までの位置を計測
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
             // ベクトルのながさを２乗する。√つけていない奴
@@ -1298,8 +1308,8 @@ void Player::UpdateProjectile(float elapsedTime)
             {
                 // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
                 dist = d;
-                target = enemy->GetPosition();// 位置を入れる
-                target.y += enemy->GetHeight() * 0.5f;// 位置に身長分
+                target = enemy->GetComponent<Transform>()->GetPosition();// 位置を入れる
+                target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
                 //if (projectile->GetModel())
                 //    projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
             }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "Projectile.h"
+//#include "Projectile.h"
 #include "Actor.h"
 #include <set>
 
@@ -26,16 +26,16 @@ public:
 
 
     // XVˆ—
-    void Update(float elapsedTime) ;
+    void DeleteUpdate(float elapsedTime) ;
 
     // •`‰æˆ—
-    void Render(const RenderContext& rc, ModelShader* shader);
+    //void Render(const RenderContext& rc, ModelShader* shader);
 
     // ƒfƒoƒbƒOƒvƒŠƒ~ƒeƒBƒu•`‰æ
     void DrawDebugPrimitive();
 
     // ’eŠÛ“o˜^
-    void Register(Actor* projectile);
+    void Register(std::shared_ptr<Actor> projectile);
 
     // ’eŠÛ‘Síœ
     void Clear();
@@ -45,13 +45,13 @@ public:
 
 
     // ’eŠÛæ“¾
-    Actor* GetProjectile(int index) { return projectiles.at(index); }
+    std::shared_ptr<Actor> GetProjectile(int index) { return projectiles.at(index); }
 
     // ’eŠÛíœ
-    void Remove(Projectile* projectile);
+    void Remove(std::shared_ptr<Actor> projectile);
 
 private:
-    std::vector<Actor*>   projectiles;
+    std::vector<std::shared_ptr<Actor>>   projectiles;
     // “Á’è‚Ì’eŠÛíœ‚¾‚êíœ‚·‚é
-    std::set<Actor*>       removes;
+    std::set<std::shared_ptr<Actor>>       removes;
 };

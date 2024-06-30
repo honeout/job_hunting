@@ -23,18 +23,23 @@ void ProjectileStraight::Start()
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
     // 当たり判定を共有
-    GetActor()->SetRadius(radius);
+    GetActor()->GetComponent<Transform>()->SetRadius(radius);
     
     // 銃移動のコンポーネント
     bulletFiring = GetActor()->GetComponent<BulletFiring>();
 
-    
+    // トランスフォーム取得
+    transform = GetActor()->GetComponent<Transform>();
 }
 // 更新処理
 void ProjectileStraight::Update(float elapsedTime)
 {
     // 寿命まで飛ぶ
     bulletFiring->Move(speed,elapsedTime);
+
+    transform->UpdateTransformProjectile();
+
+    model->UpdateTransform(transform->GetTransform());
     ////　寿命処理 
 
     //lifeTimer -= elapsedTime;
@@ -72,6 +77,11 @@ void ProjectileStraight::Render(RenderContext rc)
     shader->Draw(rc, model);
 
     shader->End(rc);
+}
+
+void ProjectileStraight::OnGUI()
+{
+
 }
 
 //// 描画処理
