@@ -211,7 +211,6 @@
       <Filter>Source\Character</Filter>
     </ClInclude>
     <ClInclude Include="Source\BulletFiring.h" />
-    <ClInclude Include="Source\Actor2D.h" />
     <ClInclude Include="Source\ModelControll.h" />
     <ClInclude Include="Source\Transform.h" />
     <ClInclude Include="Source\SpriteControll.h" />
@@ -219,6 +218,10 @@
     <ClInclude Include="Source\Ui.h" />
     <ClInclude Include="Source\TransForm2D.h" />
     <ClInclude Include="Source\UiManager.h" />
+    <ClInclude Include="Source\ComponentlF.h" />
+    <ClInclude Include="Source\StateBase.h" />
+    <ClInclude Include="Source\StateDerived.h" />
+    <ClInclude Include="Source\StateMachine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -377,9 +380,6 @@
     <ClCompile Include="Source\BulletFiring.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Actor2D.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\ModelControll.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -399,6 +399,12 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\UiManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StateDerived.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StateMachine.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

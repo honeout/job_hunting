@@ -11,7 +11,7 @@ public:
     ~ModelControll() override;
 
     // –¼‘Oæ“¾
-    const char* GetName() const override { return "Model"; }
+    const char* GetName() const override { return "ModelControll"; }
 
     // ŠJnˆ—
     void Start() override;

@@ -94,12 +94,12 @@ void SceneGame::Initialize()
 		actor->AddComponent<HP>();
 		actor->AddComponent<Player>();
 		actor->AddComponent<Collision>();
-		actor->AddComponent<StageMain>();
+		//actor->AddComponent<StageMain>();
 		//actor->AddComponent<ProjectileStraight>();
-		PlayerManager::Instance().Register(actor.get());
+		PlayerManager::Instance().Register(actor);
 		
 	}
-
+	// 敵
 	{
 		// 重い
 		//for (int i = 0; i < 10; ++i)
@@ -123,9 +123,9 @@ void SceneGame::Initialize()
 		actor->AddComponent<Movement>();
 		actor->AddComponent<HP>();
 		actor->AddComponent<Collision>();
-		actor->AddComponent<StageMain>();
+		//actor->AddComponent<StageMain>();
 		actor->AddComponent<EnemySlime>();
-		EnemyManager::Instance().Register(actor.get());
+		EnemyManager::Instance().Register(actor);
 		
 		
 
@@ -161,20 +161,7 @@ void SceneGame::Initialize()
 		0.1f,
 		1000.0f
 	);
-	// カメラコントローラー初期化
-	//cameraController = new CameraController();
 
-	// エネミー初期化
-	//EnemyManager& enemyManager = EnemyManager::Instance();
-	//for (int i = 0; i < 2; ++i)
-	//{
-	//	EnemySlime* slime = new EnemySlime();
-	//	slime->SetPosition(DirectX::XMFLOAT3(i * 2.0f, 0, 5));
-	//	// 縄張り
-	//	slime->SetTerritory(slime->GetPosition(), 10.0f);
-	//	enemyManager.Register(slime);
-
-	//}
 
 
 	// ゲージスプライト

@@ -7,7 +7,7 @@
 class Ui : public Component
 {
 public:
-    Ui() ;
+    Ui() {};
     ~Ui() override;
 
     // –¼‘OŽæ“¾

@@ -27,7 +27,7 @@ enum class UpAnim
 class Player : public Component
 {
 public:
-    Player();
+    Player() {};
     ~Player() override;
 
 
@@ -85,7 +85,8 @@ public:
     // デバッグ用GUI描画
     void DrawDebugGUI();
 
-
+    // 破棄
+    void Destroy();
 
 protected:
     //// 着地した時に呼ばれる
@@ -335,20 +336,20 @@ public:
         return instance;
     }
 
-    // 描画
-    void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
-
     // 登録
-    void Register(Actor* actor);
+    void Register(std::shared_ptr<Actor> actor);
 
-    void Clear();
 
     // ステージ数取得
     int GetPlayerCount() const { return static_cast<int>(players.size()); }
 
     // エネミー取得
-    Actor* GetPlayer(int index) { return players.at(index); }
+    std::shared_ptr<Actor> GetPlayer(int index) { return players.at(index); }
 
+    // 削除
+    void Remove(std::shared_ptr<Actor> player);
 private:
-    std::vector<Actor*> players;
+    std::vector<std::shared_ptr<Actor>> players;
+    // 削除予約
+    std::set<std::shared_ptr<Actor>>       removes;
 };

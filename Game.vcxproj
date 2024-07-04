@@ -115,7 +115,6 @@
     <ClInclude Include="External\imgui\imstb_textedit.h" />
     <ClInclude Include="External\imgui\imstb_truetype.h" />
     <ClInclude Include="Source\Actor.h" />
-    <ClInclude Include="Source\Actor2D.h" />
     <ClInclude Include="Source\Afterimage.h" />
     <ClInclude Include="Source\Audio\Audio.h" />
     <ClInclude Include="Source\Audio\AudioResource.h" />
@@ -126,6 +125,7 @@
     <ClInclude Include="Source\Character.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Component.h" />
+    <ClInclude Include="Source\ComponentlF.h" />
     <ClInclude Include="Source\Effect.h" />
     <ClInclude Include="Source\EffectManager.h" />
     <ClInclude Include="Source\Enemy.h" />
@@ -171,6 +171,9 @@
     <ClInclude Include="Source\Stage.h" />
     <ClInclude Include="Source\StageMain.h" />
     <ClInclude Include="Source\StageMoveFloor.h" />
+    <ClInclude Include="Source\StateBase.h" />
+    <ClInclude Include="Source\StateDerived.h" />
+    <ClInclude Include="Source\StateMachine.h" />
     <ClInclude Include="Source\Transform.h" />
     <ClInclude Include="Source\TransForm2D.h" />
     <ClInclude Include="Source\Ui.h" />
@@ -183,7 +186,6 @@
     <ClCompile Include="External\imgui\imgui_draw.cpp" />
     <ClCompile Include="External\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source\Actor.cpp" />
-    <ClCompile Include="Source\Actor2D.cpp" />
     <ClCompile Include="Source\Afterimage.cpp" />
     <ClCompile Include="Source\Audio\Audio.cpp" />
     <ClCompile Include="Source\Audio\AudioResource.cpp" />
@@ -233,6 +235,8 @@
     <ClCompile Include="Source\StageMain.cpp" />
     <ClCompile Include="Source\StageMoveFloor.cpp" />
     <ClCompile Include="Source\PlayerAfterimage.cpp" />
+    <ClCompile Include="Source\StateDerived.cpp" />
+    <ClCompile Include="Source\StateMachine.cpp" />
     <ClCompile Include="Source\Transform.cpp" />
     <ClCompile Include="Source\TransForm2D.cpp" />
     <ClCompile Include="Source\Ui.cpp" />

@@ -1,8 +1,5 @@
 #include "Ui.h"
 
-Ui::Ui()
-{
-}
 
 Ui::~Ui()
 {
@@ -10,8 +7,9 @@ Ui::~Ui()
 
 void Ui::Start()
 {
+    // ‰æ‘œ
     sprite = GetActor()->GetComponent<SpriteControll>()->GetSprite();
-    
+    // ˆÊ’u“™
     transForm2D = GetActor()->GetComponent<TransForm2D>();
 }
 

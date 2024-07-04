@@ -24,35 +24,7 @@
 
 
 
-// コンストラクタ
-Player::Player()
-{
-    // インスタンスポインタ設定
-    //instance = this;
 
-    //model = new Model("Data/Model/Jammo/Jammo.mdl");
-    //model = new Model("Data/Model/AimTest/AimTest.mdl");
-
-    // モデルがおおきいのでスケーリング
-    // キャラクターも1.1倍
-    //scale.x = scale.y = scale.z = 0.01f;
-
-    //// ヒットエフェクト読込 
-    //hitEffect = new Effect("Data/Effect/sunder.efk");
-    //desEffect = new Effect("Data/Effect/F.efk");
-
-    //// 上下別アニメーション用
-    //state = State::Idle;
-
-    //// 上半身
-    //bornUpStartPoint = "mixamorig:Spine";
-    //// 下半身
-    //bornDownerEndPoint = "mixamorig:Spine";
-
-    //// 待機ステートへ遷移
-    //TransitionIdleState();
-
-}
 
 // デストラクタ
 Player::~Player()
@@ -81,28 +53,13 @@ Player::~Player()
         cameraControlle = nullptr;
     }
 
-    //if (model != nullptr)
-    //{
-    //    delete model;
-    //    //model = nullptr;
-    //}
+
 }
 
 
 
-
-//void Player::UpdateTransform()
-//{
-//
-//
-//
-//    
-//}
-
 void Player::Start()
 {
-    //// インスタンス化
-    //instance = this;
 
     // ムーブメント関数を使えるように
     movement = GetActor()->GetComponent<Movement>();
@@ -112,13 +69,10 @@ void Player::Start()
 
     // トランスフォーム関数を呼び出し
     transform = GetActor()->GetComponent<Transform>();
-
-    // projectileStraight関数を使えるように
-    //projectileStraight = GetActor()->GetComponent<>;
     
     // モデルデータを入れる。
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
-    
+    // カメラ初期化
     cameraControlle = new CameraController();
 
     // ヒットエフェクト読込 
@@ -132,12 +86,13 @@ void Player::Start()
     bornDownerEndPoint = "mixamorig:Spine";
 
    
-
+    // hp設定
     hp->SetHealth(health);
-
+    // hp最大値の設定
     hp->SetMaxHealth(maxHealth);
-
+    // 半径
     transform->SetRadius(radius);
+    // 身長
     transform->SetHeight(height);
     // 待機ステートへ遷移
     TransitionIdleState();
@@ -198,34 +153,20 @@ void Player::Update(float elapsedTime)
 
     hp->UpdateInbincibleTimer(elapsedTime);
 
+    DrawDebugPrimitive();
+
+    // カメラ設定
     cameraControlle->Update(elapsedTime);
     cameraControlle->SetTarget(position);
 
     hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
-
+    // 加速度等
     movement->UpdateVelocity(elapsedTime);
-
-
-
-    //UpdateTransform();
-    //CameraControl(elapsedTime);
-   //CharacterControl(elapsedTime);
 
     // プレイヤーと敵との衝突処理
     CollisionPlayerVsEnemies();
-
+    // 弾丸当たり判定
     CollisionProjectilesVsEnemies();
-
-    //UpdateProjectile(elapsedTime);
-
-    // 弾丸更新処理
-    //projectileManager.Update(elapsedTime);
-
-    // オブジェクト行列を更新
-    //UpdateTransform();
-
-    // モデルアニメーション更新処理
-    //model->UpdateAnimation(elapsedTime, true);
 
     //switch (updateanim)
     //{
@@ -498,7 +439,7 @@ void Player::CollisionProjectilesVsEnemies()
     std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
         for (int j = 0; j < enemyCount; ++j)
         {
-            Actor* enemy = enemyManager.GetEnemy(j);
+            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(j);
             
             DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
             float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
@@ -570,7 +511,7 @@ void Player::CollisionPlayerVsEnemies()
 
         for (int i = 0; i < enemyCount; ++i)
         {
-            Actor* enemy = enemyManager.GetEnemy(i);
+            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
 
             //// 衝突処理
@@ -646,7 +587,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
     // 指定のノードと全ての敵を総当たりで衝突処理
     for (int i = 0; i < enemyCount; ++i)
     {
-        Actor* enemy = enemyManager.GetEnemy(i);
+        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
         DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
         float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
@@ -756,6 +697,11 @@ void Player::DrawDebugGUI()
     }
     }
     ImGui::End();
+}
+
+void Player::Destroy()
+{
+    PlayerManager::Instance().Remove(GetActor());
 }
 
 //// 着地した時に呼ばれる
@@ -895,7 +841,7 @@ bool Player::InputProjectile()
         for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
         {
             // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
-            Actor* enemy = EnemyManager::Instance().GetEnemy(i);
+            std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
             // 敵の位置
             DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
@@ -1291,7 +1237,7 @@ void Player::UpdateProjectile(float elapsedTime)
         for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
         {
             // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
-            Actor* enemy = EnemyManager::Instance().GetEnemy(i);
+            std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
 
 
 
@@ -1433,7 +1379,18 @@ void Player::Ground()
     
 }
 
-void PlayerManager::Register(Actor* actor)
+
+
+
+void PlayerManager::Register(std::shared_ptr<Actor> actor)
 {
     players.emplace_back(actor);
+}
+
+
+
+void PlayerManager::Remove(std::shared_ptr<Actor> player)
+{
+    // 削除登録
+    removes.insert(player);
 }

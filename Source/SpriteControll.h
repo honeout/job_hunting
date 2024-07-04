@@ -11,16 +11,10 @@ public:
     ~SpriteControll() override;
 
     // 名前取得
-    const char* GetName() const override { return "Sprite"; }
-
-    //// 開始処理
-    //void Start() override;
-
-    //// 更新処理
-    //void Update(float elapsedTime) override;
+    const char* GetName() const override { return "SpriteControll"; }
 
     //// GUI表示
-    //void OnGUI() override;
+    void OnGUI() override;
 
     // モデルの読み込み
     void LoadSprite(const char* filename);

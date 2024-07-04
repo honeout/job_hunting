@@ -5,27 +5,18 @@
 #include "Mathf.h"
 #include "Player.h"
 //#include "Collision.h"
+#include "StateDerived.h"
 
-//// コンストラクタ
-EnemySlime::EnemySlime()
-{
-//    model = new Model("Data/Model/Slime/Slime.mdl");
-//
-//    // モデルがおおきいのでスケーリング
-//    scale.x = scale.y = scale.z = 0.01f;
-//
-//    // 幅、高さ設定(円柱)
-//    radius = 0.5f;
-//    height = 1.0f;
-//    
-//        // 徘徊ステートへ遷移
-//    TransitionWanderState();
-}
 
 // デストラクタ
 EnemySlime::~EnemySlime()
 {
    // delete model;
+    if (stateMachine != nullptr)
+    {
+        delete stateMachine;
+        stateMachine = nullptr;
+    }
 }
 
 void EnemySlime::Start()
@@ -40,10 +31,8 @@ void EnemySlime::Start()
     transform = GetActor()->GetComponent<Transform>();
 
     // モデルデータを入れる。
-    //model = GetActor()->GetModel();
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
     
-    //model = std::make_unique<Model>(GetActor()->GetComponent<ModelControll>()->GetModel());
 
     hp->SetHealth(health);
 
@@ -54,16 +43,29 @@ void EnemySlime::Start()
     transform->SetHeight(height);
 
     // 徘徊ステートへ遷移
-    TransitionWanderState();
+    //TransitionWanderState();
 
-    SetTerritory(position, territoryarea);
+    //SetTerritory(position, territoryarea);
+
+    //stateMachine = std::make_unique<StateMachine>();
+    stateMachine = new StateMachine();
+
+    // ステートマシンにステート登録
+    stateMachine->RegisterState(new WanderState(this));
+    stateMachine->RegisterState(new IdleState(this));
+    stateMachine->RegisterState(new PursuitState(this));
+    stateMachine->RegisterState(new AttackState(this));
+
+    // ステートセット
+    stateMachine->SetState(static_cast<int>(State::Idle));
+
 }
 
 // 更新処理
 void EnemySlime::Update(float elapsedTime)
 {
     // ステート毎の処理
-    switch (state)
+   /* switch (state)
     {
     case State::Wander:
         UpdateWanderState(elapsedTime);
@@ -86,7 +88,9 @@ void EnemySlime::Update(float elapsedTime)
     case State::Death:
         UpdateDeathState(elapsedTime);
         break;
-    }
+    }*/
+
+    stateMachine->Update(elapsedTime);
 
     // 位置
     position = transform->GetPosition();
@@ -99,6 +103,8 @@ void EnemySlime::Update(float elapsedTime)
     movement->UpdateVelocity(elapsedTime);
     // 無敵時間更新
     hp->UpdateInbincibleTimer(elapsedTime);
+
+    DrawDebugPrimitive();
 
     transform->UpdateTransform();
 
@@ -261,7 +267,7 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
         for (int i = 0; i < playercount; ++i)
         {
             // プレイヤー取得
-            Actor* playerid = PlayerManager::Instance().GetPlayer(i);
+            std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(i);
 
             //　トランスフォーム分解
             DirectX::XMFLOAT3 playerPosition = playerid->GetComponent<Transform>()->GetPosition();
@@ -310,7 +316,7 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
 bool EnemySlime::SearchPlayer()
 {
     // プレイヤー取得
-    Actor* playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
+    std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
     
     //　トランスフォーム分解
     DirectX::XMFLOAT3 playerPosition = playerid->GetComponent<Transform>()->GetPosition();
@@ -386,7 +392,7 @@ void EnemySlime::TransitionPursuitState()
 void EnemySlime::UpdatePursuitState(float elapsedTime)
 {
     // プレイヤーid
-    Actor* playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+    std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
     // 目標地点ををプレイヤー位置に設定
     targetPosition = playerid->GetComponent<Transform>()->GetPosition();
 
@@ -450,7 +456,7 @@ void EnemySlime::TransitionIdleBattleState()
 void EnemySlime::UpdateIdleBattleState(float elapsedTime)
 {
     // プレイヤーid
-    Actor* playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+    std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
     // 目標地点ををプレイヤー位置に設定
     targetPosition = playerid->GetComponent<Transform>()->GetPosition();
 
@@ -509,14 +515,15 @@ void EnemySlime::UpdateDeathState(float elapsedTime)
     if (!model->IsPlayAnimation())
     {
         hp->OnDead();
-        
-          
+        EnemyManager::Instance().Remove(GetActor());
+        EnemyManager::Instance().DeleteUpdate(elapsedTime);
     }
 }
 
 void EnemySlime::Destroy()
 {
-    Actor* enemyId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1);
+    //Actor* enemyId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1);
+    EnemyManager::Instance().Remove(GetActor());
     //ActorManager::Instance().Remove();
 }
 
@@ -535,7 +542,33 @@ void EnemySlime::Destroy()
 
 
 
-void EnemyManager::Register(Actor* actor)
+void EnemyManager::DeleteUpdate(float elapsedTime)
+{
+    // 破棄処理 毎フレームここで一気に消す。
+    for (std::shared_ptr<Actor> enemy : removes)// 殺しますよリストを殺す
+    {
+        std::vector<std::shared_ptr<Actor>>::iterator it = std::find(enemies.begin(), enemies.end(),
+            enemy);
+        if (it != enemies.end())
+        {
+            enemies.erase(it);// 削除
+        }
+
+        // 弾丸の破棄処理
+        //delete projectile;// 入れ物破棄
+
+    }
+    // 破棄リストをクリア
+    removes.clear();
+}
+
+void EnemyManager::Register(std::shared_ptr<Actor> actor)
 {
     enemies.emplace_back(actor);
+}
+
+void EnemyManager::Remove(std::shared_ptr<Actor> actor)
+{
+    // 削除登録
+    removes.insert(actor);
 }

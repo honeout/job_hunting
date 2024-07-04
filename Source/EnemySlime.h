@@ -7,11 +7,18 @@
 #include "HP.h"
 #include "ModelControll.h"
 #include "Transform.h"
+
+#include "StateMachine.h"
+// ステート
+
+
+
+
 // スライム
 class EnemySlime : public Component
 {
 public:
-    EnemySlime();
+    EnemySlime() {};
     ~EnemySlime() override;
 
     // 名前取得
@@ -34,7 +41,33 @@ public:
     // 縄張り設定
     void SetTerritory(const DirectX::XMFLOAT3& origin, float range);
 
-private:
+    // ターゲットポジション設定
+    void SetTargetPosition(DirectX::XMFLOAT3 position) { targetPosition = position; }
+
+    // ターゲットポジション取得
+    DirectX::XMFLOAT3 GetTargetPosition() { return targetPosition; }
+
+
+    // ステートマシーン取得
+    StateMachine* GetStateMachine() { return stateMachine; }
+
+
+    // アニメーション　ゲット
+    int GetAnimationStateNormal() { return Animation::Anim_IdleNormal; }
+    int GetAnimationStateAttack() { return Animation::Anim_Attack1; }
+    int GetAnimationStateWalk() { return Animation::Anim_WalkFWD; }
+    int GetAnimationStateHit() { return Animation::Anim_GetHit; }
+    int GetAnimationStateDie() { return Animation::Anim_Die; }
+
+    // ステートタイマー設定
+    void SetStateTimer(float timer) {
+        stateTimer = timer;
+    }
+    // ステートタイマー取得
+    float GetStateTimer() { return stateTimer; }
+
+
+//private:
     // ターゲット位置をランダム設定
     void SetRandomTargetPosition();
 
@@ -92,24 +125,34 @@ private:
     // 破棄
     void Destroy();
 
+    // ターゲットポジション取得
+    //DirectX::XMFLOAT3 GetTargetPosition() { return targetPosition; }
+
+    // ポジション取得
+    DirectX::XMFLOAT3 GetPosition() { return position; }
+
+    // 半径
+    float GetRadius() { return radius; }
+
+public:
+        enum class State
+        {
+            Wander,
+            Idle,
+            Pursuit,
+            Attack,
+            IdleBattle,
+            Damage,
+            Death
+        };
+
 private:
-    // ステート
-    enum class State
-    {
-        Wander,
-        Idle,
-        Pursuit,
-        Attack,
-        IdleBattle,
-        Damage,
-        Death
-    };
 
     // アニメーション
     enum Animation
     {
-        Anim_IdleNormal,
-        Anim_IdleBattle,
+        Anim_IdleNormal,       
+        Anim_IdleBattle,       
         Anim_Attack1,
         Anim_Attack2,
         Anim_WalkFWD,
@@ -191,6 +234,12 @@ private:
 
     float territoryarea = 10.0f;
 
+    // ステートマシン用
+    StateMachine* stateMachine = nullptr ;
+
+    // ステート切り替え時間管理
+   // float				stateTimer = 0.0f;
+
 };
 
 // エネミーマネージャー
@@ -209,10 +258,13 @@ public:
     }
 
     // 描画
-    void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+    //void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+
+    // 更新処理
+    void DeleteUpdate(float elapsedTime);
 
     // 登録
-    void Register(Actor* actor);
+    void Register(std::shared_ptr<Actor> actor);
 
     void Clear();
 
@@ -220,8 +272,15 @@ public:
     int GetEnemyCount() const { return static_cast<int>(enemies.size()); }
 
     // エネミー取得
-    Actor* GetEnemy(int index) { return enemies.at(index); }
+    std::shared_ptr<Actor> GetEnemy(int index) { return enemies.at(index); }
+
+    void Remove(std::shared_ptr<Actor> projectile);
 
 private:
-    std::vector<Actor*> enemies;
+    std::vector<std::shared_ptr<Actor>> enemies;
+
+    // 削除予約
+    std::set<std::shared_ptr<Actor>>       removes;
+
+
 };
