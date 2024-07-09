@@ -134,7 +134,7 @@ void EnemySlime::Update(float elapsedTime)
 //    shader->Draw(rc, model);
 //}
 
-void EnemySlime::Render(RenderContext rc)
+void EnemySlime::Render(RenderContext& rc)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();

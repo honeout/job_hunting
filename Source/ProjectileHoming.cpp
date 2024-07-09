@@ -137,7 +137,7 @@ void ProjectileHoming::Update(float elapsedTime)
 }
 
 // •`‰æˆ—
-void ProjectileHoming::Render(RenderContext rc)
+void ProjectileHoming::Render(RenderContext& rc)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();

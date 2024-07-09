@@ -19,7 +19,7 @@ public:
 	virtual void Update(float elapsedTime) {}
 
 	// •`‰æ
-	virtual void Render(RenderContext rc) {}
+	virtual void Render(RenderContext& rc) {}
 
 	// GUI•`‰æ
 	virtual void OnGUI() {}

@@ -20,7 +20,7 @@ public:
     void Update(float elapsedTime) override;
 
     // •`‰æˆ—
-    void Render(RenderContext rc) override;
+    void Render(RenderContext& rc) override;
 
     // GUI•`‰æ
     void OnGUI() override;

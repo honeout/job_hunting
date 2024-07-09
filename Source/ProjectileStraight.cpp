@@ -66,7 +66,7 @@ void ProjectileStraight::Update(float elapsedTime)
 }
 
 // •`‰æ
-void ProjectileStraight::Render(RenderContext rc)
+void ProjectileStraight::Render(RenderContext& rc)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();

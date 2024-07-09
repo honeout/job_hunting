@@ -39,7 +39,7 @@ void StageMain::Update(float elasedTime)
 }
 
 //// •`‰æˆ—
-void StageMain::Render(RenderContext rc)
+void StageMain::Render(RenderContext& rc)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();

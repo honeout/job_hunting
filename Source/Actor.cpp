@@ -32,6 +32,8 @@ void Actor::Render(RenderContext rc)
 {
 	for (std::shared_ptr<Component>& component : components)
 	{
+
+
 		component->Render(rc);
 	}
 }
@@ -156,7 +158,7 @@ void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOA
 {
 	Graphics& graphics = Graphics::Instance();
 	//Shader* shader = graphics.GetShader();
-	ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+	//ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	// •`‰æˆ— 
 	RenderContext rc;// •`‰æ‚·‚é‚½‚ß‚É•K—v‚Èî•ñ‚ð‚Ü‚Æ‚ß‚½\‘¢‘Ì
@@ -184,7 +186,7 @@ void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOA
 	//}
 
 	//shader->End(dc);
-
+	
 
     for (std::shared_ptr<Actor>& actor : updateActors)
 	{

@@ -33,16 +33,6 @@
 // 初期化
 void SceneGame::Initialize()
 {
-	// ステージ初期化
-	//StageManager& stageManager = StageManager::instance();
-	//StageMain* stageMain = new StageMain();
-	//stageManager.Register(stageMain);
-
-	//StageMoveFloor* stageMoveFloor = new StageMoveFloor();
-	//stageMoveFloor->SetStartPosint(DirectX::XMFLOAT3(0, 1, 3));
-	//stageMoveFloor->SetGoalPoint(DirectX::XMFLOAT3(10, 2, 3));
-	//stageMoveFloor->SetTorque(DirectX::XMFLOAT3(0, 1.0f, 0));
-	//stageManager.Register(stageMoveFloor);
 	
 	// ステージ初期化
 	{
@@ -65,13 +55,11 @@ void SceneGame::Initialize()
 		actor->AddComponent<StageMain>();
 		StageManager::Instance().Register(actor.get());
 		
-		//StageManager::instance().Register();
-		//StageManager::instance().Register();
 
 	}
 
 
-	player = new Player;
+	//player = new Player;
 	{
 		// プレイヤー初期化
 		const char* filename = "Data/Model/Jammo/Jammo.mdl";
@@ -191,11 +179,11 @@ void SceneGame::Finalize()
 	//}
 
 	// プレイヤー終了化
-	if (this->player)
-	{
-		delete player;
-		player = nullptr;
-	}
+	//if (this->player)
+	//{
+	//	delete player;
+	//	player = nullptr;
+	//}
 	// ステージ終了化
 	//StageManager::instance().Clear();
 

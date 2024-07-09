@@ -27,7 +27,7 @@ public:
     void Update(float elapsedTime) override;
 
     // 描画処理
-    void Render(RenderContext rc) override;
+    void Render(RenderContext& rc) override;
     //void Render(const RenderContext& rc, ModelShader* shader) override;
 
     // レイキャスト

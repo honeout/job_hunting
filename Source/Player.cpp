@@ -97,6 +97,9 @@ void Player::Start()
     // 待機ステートへ遷移
     TransitionIdleState();
 
+    // コマンド操作用
+    selectCheck = 0;
+
 }
 
 // 更新処理
@@ -156,8 +159,33 @@ void Player::Update(float elapsedTime)
     DrawDebugPrimitive();
 
     // カメラ設定
-    cameraControlle->Update(elapsedTime);
-    cameraControlle->SetTarget(position);
+    {
+        cameraControlle->Update(elapsedTime);
+        cameraControlle->SetTarget(position);
+
+
+        //DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&position);
+
+        //DirectX::XMVECTOR EPosition =  DirectX::XMLoadFloat3(&EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>()->GetPosition());
+
+        //DirectX::XMVECTOR Pos = DirectX::XMVectorSubtract(EPosition,Position);
+
+        //Pos = DirectX::XMVector3Normalize(Pos);
+
+        //float scaler = 50.0f;
+
+        //Pos = DirectX::XMVectorScale(Pos, scaler);
+
+        //Pos = DirectX::XMVectorAdd(Position, Pos);
+
+        //DirectX::XMFLOAT3 pos;
+        //
+        //DirectX::XMStoreFloat3(&pos, Pos);
+
+        //
+
+        //cameraControlle->SetTarget(pos);
+    }
 
     hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
     // 加速度等
@@ -199,7 +227,7 @@ void Player::Update(float elapsedTime)
     //model->UpdateTransform(transform);
 }
 
-void Player::Render(RenderContext rc)
+void Player::Render(RenderContext& rc)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();
@@ -249,6 +277,7 @@ void Player::OnGUI()
 {
     ImGui::InputFloat("Move Speed", &moveSpeed);
     ImGui::InputInt("Jump max", &jumpCount);
+    ImGui::InputInt("selectCheck", &selectCheck);
 
 }
 
@@ -264,6 +293,21 @@ bool Player::InputMove(float elapsedTime)
 
     // 進行ベクトルがゼロベクトルでない場合は入力された
     return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
+}
+// 攻撃方法選択
+bool Player::InputSelectCheck()
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    if (gamePad.GetButtonDown() & GamePad::BTN_B)
+    {
+        ++selectCheck;
+    }
+
+    if (selectCheck >= 2)
+    {
+        selectCheck = 0;
+    }
+    return false;
 }
 
 
@@ -408,14 +452,19 @@ void Player::CharacterControl(float elapsedTime)
 
 
 
-// 描画処理
-void Player::Render(const RenderContext& rc, ModelShader* shader)
-{
-    // 描画
-    shader->Draw(rc, model);
-    // 弾丸描画処理
-    //projectileManager.Render(rc, shader);
-}
+//// 描画処理
+//void Player::Render(RenderContext& rc, ModelShader* shader)
+//{
+//
+//
+//    shader->Begin(rc);
+//    // 描画
+//    shader->Draw(rc, model);
+//
+//    shader->End(rc);
+//    // 弾丸描画処理
+//    //projectileManager.Render(rc, shader);
+//}
 
 
 
@@ -904,7 +953,8 @@ bool Player::InputAttack()
     GamePad& gamePad = Input::Instance().GetGamePad();
 
     // 直進弾丸発射　xボタンを押したら
-    if (gamePad.GetButtonDown() & GamePad::BTN_B)
+    //if (gamePad.GetButtonDown() & GamePad::BTN_B)
+    if (gamePad.GetButtonDown() & GamePad::BTN_X)
     {
   
         return true;
@@ -945,16 +995,21 @@ void Player::UpdateIdleState(float elapsedTime)
         TransitionJumpState();
     }
 
-    if (InputAttack())
+
+    InputSelectCheck();
+
+    if (InputAttack() && selectCheck == 0)
     {
         //stated = state;
         TransitionAttackState();
     }
 
     // 弾丸入力処理
-    if (InputProjectile())
+    //if (InputProjectile()&& selectCheck == 1)
+    else if (selectCheck == 1)
     {
-        TransitionAttackState();
+        InputProjectile();
+        //TransitionAttackState();
     }
     //currentANimationSeconds = model->GetCurrentANimationSeconds();
 
@@ -1007,7 +1062,9 @@ void Player::UpdateMoveState(float elapsedTime)
         TransitionJumpState();
     }
 
-    if (InputAttack())
+    InputSelectCheck();
+
+    if (InputAttack() && selectCheck == 0)
     {
         //stated = state;
         TransitionAttackState();
@@ -1016,9 +1073,11 @@ void Player::UpdateMoveState(float elapsedTime)
     
 
     // 弾丸入力処理
-    if (InputProjectile())
+    //if (InputProjectile()&& selectCheck == 1)
+    else if (selectCheck == 1)
     {
-        TransitionAttackState();
+        InputProjectile();
+        //TransitionAttackState();
     }
     // 落下着地
     Ground();

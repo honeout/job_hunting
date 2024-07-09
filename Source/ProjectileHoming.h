@@ -23,7 +23,7 @@ public:
     virtual void Update(float elapsedTime) override;
 
     // •`‰æˆ—
-    void Render(RenderContext rc) override;
+    void Render(RenderContext& rc) override;
 
     // •`‰æˆ—
     //virtual void Render(const RenderContext& rc, ModelShader* shader) override;

@@ -65,7 +65,7 @@ public:
     void Update(float elapsedTime) override;
 
     // 描画処理
-    void Render(RenderContext rc) override;
+    //void Render(RenderContext rc) override;
 
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
@@ -73,7 +73,7 @@ public:
     void OnGUI() override;
 
     // 描画処理
-    void Render(const RenderContext& rc, ModelShader* shader);
+    void Render(RenderContext& rc) override;
 
 
     // 弾丸と敵の衝突処理
@@ -112,6 +112,9 @@ private:
 
     // 移動入力処理
     bool InputMove(float elapsedTime);
+
+    // 攻撃方法選択
+    bool InputSelectCheck();
  
 
 
@@ -318,7 +321,8 @@ private:
     float				cameraRange = 100.0f;
     float				characterHeight = 10.0f;
 
-
+    // 攻撃方法の選択
+    int selectCheck = false;
 };
 
 // プレイヤーマネージャー

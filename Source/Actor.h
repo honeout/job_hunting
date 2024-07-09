@@ -6,7 +6,8 @@
 #include <string>
 #include <DirectXMath.h>
 #include "Graphics\Model.h"
-#include "Graphics/RenderContext.h"
+#include "Graphics\RenderContext.h"
+#include "Graphics\Shader.h"
 
 // ‘O•ûéŒ¾
 class Component;
