@@ -13,7 +13,7 @@
 void WanderState::Enter()
 {
 	//owner->GetActor()->GetComponent<EnemySlime>()->
-
+	
 	owner->SetRandomTargetPosition();
 	owner->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(owner->GetAnimationStateWalk(), true);
 }
@@ -159,5 +159,53 @@ void AttackState::Execute(float elapsedTime)
 }
 // ç≈å„Ç…Ç‚ÇËÇΩÇ¢èàóùëSî 
 void AttackState::Exit()
+{
+}
+
+void PlayerIdleState::Enter()
+{
+}
+
+void PlayerIdleState::Execute(float elapsedTime)
+{
+}
+
+void PlayerIdleState::Exit()
+{
+}
+
+void PlayerMovestate::Enter()
+{
+}
+
+void PlayerMovestate::Execute(float elapsedTime)
+{
+}
+
+void PlayerMovestate::Exit()
+{
+}
+
+void PlayerJumpState::Enter()
+{
+}
+
+void PlayerJumpState::Execute(float elapsedTime)
+{
+}
+
+void PlayerJumpState::Exit()
+{
+}
+
+void PlayerLandState::Enter()
+{
+}
+
+void PlayerLandState::Execute(float elapsedTime)
+{
+}
+
+void PlayerLandState::Exit()
 {
 }

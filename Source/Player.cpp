@@ -100,6 +100,9 @@ void Player::Start()
     // コマンド操作用
     selectCheck = 0;
 
+    // 特殊攻撃ため初期値
+    specialAttackCharge = 0.0f;
+
 }
 
 // 更新処理
@@ -161,28 +164,35 @@ void Player::Update(float elapsedTime)
     // カメラ設定
     {
         cameraControlle->Update(elapsedTime);
+
+
+
         cameraControlle->SetTarget(position);
+
 
 
         //DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&position);
 
         //DirectX::XMVECTOR EPosition =  DirectX::XMLoadFloat3(&EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>()->GetPosition());
 
-        //DirectX::XMVECTOR Pos = DirectX::XMVectorSubtract(EPosition,Position);
+        //DirectX::XMVECTOR Pos = DirectX::XMVectorSubtract(Position,EPosition);
+
+      
 
         //Pos = DirectX::XMVector3Normalize(Pos);
 
-        //float scaler = 50.0f;
-
-        //Pos = DirectX::XMVectorScale(Pos, scaler);
+        //Pos = DirectX::XMVectorScale(Pos, 5.0f);
 
         //Pos = DirectX::XMVectorAdd(Position, Pos);
 
         //DirectX::XMFLOAT3 pos;
-        //
+
         //DirectX::XMStoreFloat3(&pos, Pos);
 
+      
         //
+        //pos = { position.x /2, 0, position.z /2};
+
 
         //cameraControlle->SetTarget(pos);
     }
@@ -278,6 +288,8 @@ void Player::OnGUI()
     ImGui::InputFloat("Move Speed", &moveSpeed);
     ImGui::InputInt("Jump max", &jumpCount);
     ImGui::InputInt("selectCheck", &selectCheck);
+    ImGui::InputFloat("specialAttackCharge", &specialAttackCharge);
+    ImGui::InputFloat("specialShotCharge", &specialShotCharge);
 
 }
 
@@ -306,6 +318,31 @@ bool Player::InputSelectCheck()
     if (selectCheck >= 2)
     {
         selectCheck = 0;
+    }
+    return false;
+}
+
+bool Player::InputSpecialAttackCharge()
+{
+
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttackCharge >= 1.5f)
+    {
+        // 一度発動すると初期化
+        specialAttackCharge = 0.0f;
+        return true;
+    }
+    return false;
+}
+
+bool Player::InputSpecialShotCharge()
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialShotCharge >= 1.5f)
+    {
+        // 一度発動すると初期化
+        specialShotCharge = 0.0f;
+        return true;
     }
     return false;
 }
@@ -540,6 +577,11 @@ void Player::CollisionProjectilesVsEnemies()
 
                         hitEffect->Play(e);
                     }
+                    // 当たった時の副次的効果
+                    {
+                        specialShotCharge += 0.1f;
+                    }
+
                     // 弾丸破棄
                     projectile->GetComponent<BulletFiring>()->Destroy();
                 }
@@ -692,6 +734,10 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
 
                     //desEffect->Play(e);
 
+                }
+                // 当たった時の副次的効果
+                {
+                    specialAttackCharge += 0.1f;
                 }
 
             }
@@ -1004,12 +1050,26 @@ void Player::UpdateIdleState(float elapsedTime)
         TransitionAttackState();
     }
 
+
+
+
+
     // 弾丸入力処理
-    //if (InputProjectile()&& selectCheck == 1)
     else if (selectCheck == 1)
     {
         InputProjectile();
         //TransitionAttackState();
+    }
+
+    // 特殊攻撃
+    if (InputSpecialAttackCharge())
+    {
+        TransitionAttackState();
+    }
+    // 特殊魔法
+    if (InputSpecialShotCharge())
+    {
+        InputProjectile();
     }
     //currentANimationSeconds = model->GetCurrentANimationSeconds();
 
@@ -1070,14 +1130,23 @@ void Player::UpdateMoveState(float elapsedTime)
         TransitionAttackState();
     }
 
-    
+
 
     // 弾丸入力処理
-    //if (InputProjectile()&& selectCheck == 1)
     else if (selectCheck == 1)
     {
         InputProjectile();
-        //TransitionAttackState();
+    }
+
+    // 特殊攻撃
+    if (InputSpecialAttackCharge())
+    {
+        TransitionAttackState();
+    }
+    // 特殊魔法
+    if (InputSpecialShotCharge())
+    {
+        InputProjectile();
     }
     // 落下着地
     Ground();

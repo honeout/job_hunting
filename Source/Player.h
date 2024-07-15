@@ -115,6 +115,10 @@ private:
 
     // 攻撃方法選択
     bool InputSelectCheck();
+
+    // 特殊攻撃選択
+    bool InputSpecialAttackCharge();
+    bool InputSpecialShotCharge();
  
 
 
@@ -215,7 +219,16 @@ private:
         Revive
     };
 
-    public:
+private:
+    // 構造体
+    struct SpecialMode
+    {
+        bool specialAttack;
+        bool specialShot;
+    };
+
+
+public:
 
     bool GetAfterimageMove() const { return this->afterimagemove; }
 
@@ -323,6 +336,10 @@ private:
 
     // 攻撃方法の選択
     int selectCheck = false;
+
+    // 特殊攻撃出るまで
+    float specialAttackCharge = 0.0f;
+    float specialShotCharge = 0.0f;
 };
 
 // プレイヤーマネージャー
