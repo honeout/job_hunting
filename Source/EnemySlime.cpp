@@ -51,10 +51,10 @@ void EnemySlime::Start()
     stateMachine = new StateMachine();
 
     // ステートマシンにステート登録
-    stateMachine->RegisterState(new WanderState(this));
-    stateMachine->RegisterState(new IdleState(this));
-    stateMachine->RegisterState(new PursuitState(this));
-    stateMachine->RegisterState(new AttackState(this));
+    stateMachine->RegisterState(new WanderState(GetActor().get()));
+    stateMachine->RegisterState(new IdleState(GetActor().get()));
+    stateMachine->RegisterState(new PursuitState(GetActor().get()));
+    stateMachine->RegisterState(new AttackState(GetActor().get()));
 
     // ステートセット
     stateMachine->SetState(static_cast<int>(State::Idle));

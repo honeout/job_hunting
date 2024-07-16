@@ -15,6 +15,7 @@
 #include "Effect.h"
 #include "ModelControll.h"
 #include "Transform.h"
+#include "StateMachine.h"
 
 enum class UpAnim
 {
@@ -98,7 +99,7 @@ protected:
     //// ダメージを受けた時に呼ばれる
     //void OnDamaged() override;
 
-private:
+public:
 
     // カメラ操作
     void CameraControl(float elapsedTime);
@@ -202,9 +203,33 @@ private:
 
     DirectX::XMFLOAT3 GetForwerd(DirectX::XMFLOAT3 angle);
 
+    // ステートマシーン取得
+    StateMachine* GetStateMachine() { return stateMachine; }
 
+    // 攻撃方法変更
+    void SetSelectCheck(bool selectCheck) { this->selectCheck = selectCheck; }
+    // 攻撃方法変更
+    bool GetSelectCheck() const { return selectCheck; }
 
-private:
+    // 特殊魔法発動ため
+    void SetSpecialAttackCharge(float specialAttackCharge) { this->specialAttackCharge = specialAttackCharge; }
+
+    // 特殊アクション発動ため
+    float GetSpecialAttackCharge() const { return specialAttackCharge; }
+
+    // ジャンプの最大値
+    int GetJumpCount() { return jumpCount; }
+
+    // 攻撃開始
+    void SetAttackCollisionFlag(bool attackCollisionFlag) { this->attackCollisionFlag = attackCollisionFlag; }
+
+    // 攻撃開始
+    bool GetAttackCollisionFlag() const { return attackCollisionFlag; }
+
+    // 左手の当たり判定
+    float GetLeftHandRadius() const { return leftHandRadius; }
+
+public:
     // ステート
     enum class State
     {
@@ -234,7 +259,11 @@ public:
 
    // Model* GetModel() const { return model; }
 
-    void Ground();
+    bool Ground();
+
+    State GetStateTuren() const { return this->state; }
+
+    void SetStateTuren(State state)  { this->state = state; }
 
 private:
     std::shared_ptr<Movement>	movement;
@@ -281,7 +310,7 @@ private:
     float            leftHandRadius = 0.4f;
 
     bool             attackCollisionFlag = false;
-
+  
     //int   health = 10;
 
     // 歩いている判定
@@ -340,6 +369,9 @@ private:
     // 特殊攻撃出るまで
     float specialAttackCharge = 0.0f;
     float specialShotCharge = 0.0f;
+
+    // ステートマシン用
+    StateMachine* stateMachine = nullptr;
 };
 
 // プレイヤーマネージャー

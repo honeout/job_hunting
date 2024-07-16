@@ -1,13 +1,13 @@
 #pragma once
 #include "StateBase.h"
-
+#include "Actor.h"
 
 // 徘徊ステートオブジェクト
 class WanderState : public State
 {
 public:
 	// コンストラクタ
-	WanderState(EnemySlime* enemy) :State(enemy) {};
+	WanderState(Actor* enemy) :State(enemy) {};
 	// デストラクタ
 	~WanderState() {}
 	// ステートに入った時のメソッド
@@ -23,7 +23,7 @@ class IdleState : public State
 {
 public:
 	// コンストラクタ
-	IdleState(EnemySlime* enemy) :State(enemy) {};
+	IdleState(Actor* enemy) :State(enemy) {};
 	// デストラクタ
 	~IdleState() {}
 	// ステートに入った時のメソッド
@@ -41,7 +41,7 @@ class PursuitState : public State
 {
 public:
 	// コンストラクタ
-	PursuitState(EnemySlime* enemy) :State(enemy) {};
+	PursuitState(Actor* enemy) :State(enemy) {};
 	// デストラクタ
 	~PursuitState() {}
 	// ステートに入った時のメソッド
@@ -60,7 +60,7 @@ class AttackState : public State
 {
 public:
 	// コンストラクタ
-	AttackState(EnemySlime* enemy) :State(enemy) {};
+	AttackState(Actor* enemy) :State(enemy) {};
 	// デストラクタ
 	~AttackState() {}
 	// ステートに入った時のメソッド
@@ -83,11 +83,11 @@ private:
 
 
 // 待機ステートオブジェクト
-class PlayerIdleState : public StatePlayer
+class PlayerIdleState : public State
 {
 public:
 	// コンストラクタ
-	PlayerIdleState(Player* player) :StatePlayer(player) {};
+	PlayerIdleState(Actor* player) :State(player) {};
 	// デストラクタ
 	~PlayerIdleState() {}
 	// ステートに入った時のメソッド
@@ -101,11 +101,11 @@ private:
 };
 
 // 徘徊ステートオブジェクト
-class PlayerMovestate : public StatePlayer
+class PlayerMovestate : public State
 {
 public:
 	// コンストラクタ
-	PlayerMovestate(Player* player) :StatePlayer(player) {};
+	PlayerMovestate(Actor* player) :State(player) {};
 	// デストラクタ
 	~PlayerMovestate() {}
 	// ステートに入った時のメソッド
@@ -118,11 +118,11 @@ public:
 
 
 // ジャンプステートオブジェクト
-class PlayerJumpState : public StatePlayer
+class PlayerJumpState : public State
 {
 public:
 	// コンストラクタ
-	PlayerJumpState(Player* player) :StatePlayer(player) {};
+	PlayerJumpState(Actor* player) :State(player) {};
 	// デストラクタ
 	~PlayerJumpState() {}
 	// ステートに入った時のメソッド
@@ -137,11 +137,11 @@ private:
 };
 
 // 着地ステートオブジェクト
-class PlayerLandState : public StatePlayer
+class PlayerLandState : public State
 {
 public:
 	// コンストラクタ
-	PlayerLandState(Player* player) :StatePlayer(player) {};
+	PlayerLandState(Actor* player) :State(player) {};
 	// デストラクタ
 	~PlayerLandState() {}
 	// ステートに入った時のメソッド
@@ -155,11 +155,11 @@ private:
 };
 
 // ジャンプ中ステートオブジェクト
-class PlayerJumpFlipState : public StatePlayer
+class PlayerJumpFlipState : public State
 {
 public:
 	// コンストラクタ
-	PlayerJumpFlipState(Player* player) :StatePlayer(player) {};
+	PlayerJumpFlipState(Actor* player) :State(player) {};
 	// デストラクタ
 	~PlayerJumpFlipState() {}
 	// ステートに入った時のメソッド
@@ -174,11 +174,11 @@ private:
 
 
 // 攻撃ステートオブジェクト
-class PlayerAttackState : public StatePlayer
+class PlayerAttackState : public State
 {
 public:
 	// コンストラクタ
-	PlayerAttackState(Player* player) :StatePlayer(player) {};
+	PlayerAttackState(Actor* player) :State(player) {};
 	// デストラクタ
 	~PlayerAttackState() {}
 	// ステートに入った時のメソッド
@@ -192,11 +192,11 @@ private:
 };
 
 // よろけステートオブジェクト
-class PlayerDamageState : public StatePlayer
+class PlayerDamageState : public State
 {
 public:
 	// コンストラクタ
-	PlayerDamageState(Player* player) :StatePlayer(player) {};
+	PlayerDamageState(Actor* player) :State(player) {};
 	// デストラクタ
 	~PlayerDamageState() {}
 	// ステートに入った時のメソッド
@@ -210,11 +210,11 @@ private:
 };
 
 // 死亡ステートオブジェクト
-class PlayerDeathState : public StatePlayer
+class PlayerDeathState : public State
 {
 public:
 	// コンストラクタ
-	PlayerDeathState(Player* player) :StatePlayer(player) {};
+	PlayerDeathState(Actor* player) :State(player) {};
 	// デストラクタ
 	~PlayerDeathState() {}
 	// ステートに入った時のメソッド
@@ -228,11 +228,11 @@ private:
 };
 
 // 復活ステートオブジェクト
-class PlayerReviveState : public StatePlayer
+class PlayerReviveState : public State
 {
 public:
 	// コンストラクタ
-	PlayerReviveState(Player* player) :StatePlayer(player) {};
+	PlayerReviveState(Actor* player) :State(player) {};
 	// デストラクタ
 	~PlayerReviveState() {}
 	// ステートに入った時のメソッド

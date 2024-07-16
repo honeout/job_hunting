@@ -10,6 +10,7 @@
 #include "Graphics/Model.h"
 #include "EnemySlime.h"
 
+#include "StateDerived.h"
 
 #include "AfterimageManager.h"
 
@@ -103,46 +104,64 @@ void Player::Start()
     // 特殊攻撃ため初期値
     specialAttackCharge = 0.0f;
 
+    // ステートマシン
+    stateMachine = new StateMachine();
+
+    stateMachine->RegisterState(new PlayerIdleState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerMovestate(GetActor().get()));
+    stateMachine->RegisterState(new PlayerJumpState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerLandState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerJumpFlipState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerAttackState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerDamageState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerDeathState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerReviveState(GetActor().get()));
+
+    // ステートセット
+    stateMachine->SetState(static_cast<int>(State::Idle));
 }
 
 // 更新処理
 // elapsedTime(経過時間)
 void Player::Update(float elapsedTime)
 {
-    // ステート毎の処理
-    switch (state)
-    {
-    case State::Idle:
-        UpdateIdleState(elapsedTime);
-        break;
-    case State::Move:
-        UpdateMoveState(elapsedTime);
-        break;
+    //// ステート毎の処理
+    stateMachine->Update(elapsedTime);
 
-    case State::Jump:
-        UpdateJumpState(elapsedTime);
-        break;
-    case State::Land:
-        UpdateLandState(elapsedTime);
-        break;
+    //switch (state)
+    //{
+    //case State::Idle:
+    //    UpdateIdleState(elapsedTime);
+    //    break;
+    //case State::Move:
+    //    UpdateMoveState(elapsedTime);
+    //    break;
 
-    case State::JumpFlip:
-        UpdatejumpFlipState(elapsedTime);
-        break;
+    //case State::Jump:
+    //    UpdateJumpState(elapsedTime);
+    //    break;
+    //case State::Land:
+    //    UpdateLandState(elapsedTime);
+    //    break;
 
-    case State::Attack:
-        UpdateAttackState(elapsedTime);
-        break;
-    case State::Damage:
-        UpdateDamageState(elapsedTime);
-        break;
-    case State::Death:
-        UpdateDeathState(elapsedTime);
-        break;
-    case State::Revive:
-        UpdateReviveState(elapsedTime);
-        break;
-    }
+    //case State::JumpFlip:
+    //    UpdatejumpFlipState(elapsedTime);
+    //    break;
+
+    //case State::Attack:
+    //    UpdateAttackState(elapsedTime);
+    //    break;
+    //case State::Damage:
+    //    UpdateDamageState(elapsedTime);
+    //    break;
+    //case State::Death:
+    //    UpdateDeathState(elapsedTime);
+    //    break;
+    //case State::Revive:
+    //    UpdateReviveState(elapsedTime);
+    //    break;
+    //}
+    
     // 速力処理更新
 
     position = transform->GetPosition();
@@ -1497,13 +1516,15 @@ DirectX::XMFLOAT3 Player::GetForwerd(DirectX::XMFLOAT3 angle)
 }
 
 
-void Player::Ground()
+bool Player::Ground()
 {
     if (movement->GetOnLadius())
     {
         jumpCount = 0;
-        TransitionLandState();
+        //TransitionLandState();
+        return true;
     }
+    return false;
     
 }
 
