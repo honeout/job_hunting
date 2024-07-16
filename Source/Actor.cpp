@@ -38,6 +38,14 @@ void Actor::Render(RenderContext rc)
 	}
 }
 
+void Actor::RenderShadwomap(RenderContext rc)
+{
+	for (std::shared_ptr<Component>& component : components)
+	{
+		component->RenderShadowmap(rc);
+	}
+}
+
 
 // GUI表示
 void Actor::OnGUI()
@@ -216,6 +224,26 @@ void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOA
 	// 詳細描画
 	DrawDetail();
 
+}
+
+void ActorManager::RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
+{
+	// 描画処理 
+	Graphics& graphics = Graphics::Instance();
+	RenderContext rc;// 描画するために必要な情報をまとめた構造体
+	// 描画用
+	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
+
+	rc.deviceContext = dc;
+
+	rc.view = view;
+	rc.projection = projection;
+
+	for (std::shared_ptr<Actor>& actor : updateActors)
+	{
+		// モデルがあれば描画
+		actor->RenderShadwomap(rc);
+	}
 }
 
 // リスター描画

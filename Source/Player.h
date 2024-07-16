@@ -76,6 +76,9 @@ public:
     // 描画処理
     void Render(RenderContext& rc) override;
 
+    // シャドウマップ処理
+    void RenderShadowmap(RenderContext& rc) override;
+
 
     // 弾丸と敵の衝突処理
     void CollisionProjectilesVsEnemies();

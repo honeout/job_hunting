@@ -222,6 +222,16 @@
     <ClInclude Include="Source\StateBase.h" />
     <ClInclude Include="Source\StateDerived.h" />
     <ClInclude Include="Source\StateMachine.h" />
+    <ClInclude Include="Source\Graphics\DepthStencil.h" />
+    <ClInclude Include="Source\Graphics\RenderTarget.h" />
+    <ClInclude Include="Source\Light.h" />
+    <ClInclude Include="Source\LightManager.h" />
+    <ClInclude Include="Source\Graphics\PhongShader.h" />
+    <ClInclude Include="Source\PostprocessingRenderer.h" />
+    <ClInclude Include="Source\Graphics\FinalpassShader.h" />
+    <ClInclude Include="Source\Graphics\GaussianBlurShader.h" />
+    <ClInclude Include="Source\Graphics\LuminanceExtractionShader.h" />
+    <ClInclude Include="Source\Graphics\ColorGradingShader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -407,6 +417,36 @@
     <ClCompile Include="Source\StateMachine.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\DepthStencil.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\RenderTarget.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Light.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LightManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\PhongShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PostprocessingRenderer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\FinalpassShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\GaussianBlurShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\LuminanceExtractionShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\ColorGradingShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Debug.hlsli">
@@ -431,6 +471,27 @@
       <Filter>HLSL</Filter>
     </None>
     <None Include="HLSL\ShadowmapFunctions.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\Phong.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\Light.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\ColorGrading.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\LuminanceExtracition.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\FilterFunctions.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\GaussianBlur.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\Finalpass.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -472,6 +533,36 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\ShadowmapCasterVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\PhongPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\PhongVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\ColorGradingPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\ColorGradingVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\LuminanceExtracitionPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\LuminanceExtracitionVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\GaussianBlurPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\GaussianBlurVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\FinalpassPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\FinalpassVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

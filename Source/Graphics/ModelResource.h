@@ -36,6 +36,12 @@ public:
 
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> diffuse_map;
+		// UNIT06
+		// このメンバ変数に納入されます。ない場合はダミーの法線マップが入ります。
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normal_map;
+
+
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};

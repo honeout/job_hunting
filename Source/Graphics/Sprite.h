@@ -19,6 +19,15 @@ public:
 		DirectX::XMFLOAT2	texcoord;
 	};
 
+	// バッファ更新
+	void Update(
+		float dx, float dy,
+		float dw, float dh,
+		float sx, float sy,
+		float sw, float sh,
+		float angle,
+		float r, float g, float b, float a) const;
+
 	// 描画実行
 	void Render(ID3D11DeviceContext *dc,
 		float dx, float dy,
@@ -27,6 +36,17 @@ public:
 		float sw, float sh,
 		float angle,
 		float r, float g, float b, float a) const;
+
+
+	// シェーダーリソースビューの設定
+	void SetShaderResourceView(const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& srv, int texWidth, int texHeight);
+
+	// 頂点バッファの取得
+	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetVertexBuffer() const { return vertexBuffer; }
+	
+	// シェーダーリソースビューの取得
+	const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GetShaderResourceView() const { return shaderResourceView; }
+
 
 	// テクスチャ幅取得
 	int GetTextureWidth() const { return textureWidth; }

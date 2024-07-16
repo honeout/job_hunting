@@ -28,6 +28,10 @@ public:
 	// 描画
 	virtual void Render(RenderContext rc);
 
+	// シャドウマップ描画
+	virtual void RenderShadwomap(RenderContext rc);
+
+
 	// GUI表示
 	virtual void OnGUI();
 
@@ -97,6 +101,7 @@ public:
 	// 描画
 	void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
 
+	void RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
 
 private:
 	void DrawLister();

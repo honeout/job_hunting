@@ -8,6 +8,11 @@
 
 #include "AfterimageManager.h"
 
+#include "Graphics/RenderTarget.h"
+#include "Graphics/DepthStencil.h"
+#include "Light.h"
+#include "PostprocessingRenderer.h"
+
 // ゲームシーン
 class SceneGame : public Scene
 {
@@ -27,7 +32,16 @@ public:
 	// 描画処理
 	void Render() override;
 
+
+
 private:
+	// 3D空間の描画
+	void Render3DScene();
+
+	// シャドウマップの描画
+	void RenderShadowmap();
+
+
 	// エネミーHPゲージ描画
 	void RenderEnemyGauge(
 	ID3D11DeviceContext* dc,
@@ -61,4 +75,20 @@ private:
 	float reduceMax = 0.4f;
 	// 残像消えるまで
 	float reduce = reduceMax;
+
+
+	// オフスクリーンレンダリング用描画ターゲット
+	std::unique_ptr<RenderTarget> renderTarget;
+
+	// シャドウマップ用情報
+	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源
+	std::unique_ptr<DepthStencil> shadowmapDepthStencil; // シャドウマップ用深度ステンシルバッファ
+	float shadowDrawRect = 500.0f;// シャドウマップに描画する範囲
+	DirectX::XMFLOAT4X4 lightViewProjeciton; // ライトビュープロジェクション行列
+	DirectX::XMFLOAT3 shadowColor = { 0.2,0.2f,0.2f };// 影の色
+	float shadowBias = 0.001f;// 深度比較用のオフセット値
+
+	// ポストプロセス
+	std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
+
 };

@@ -32,6 +32,9 @@ public:
     // 描画処理
     void Render(RenderContext& rc) override;
 
+    // シャドウマップ処理
+    void RenderShadowmap(RenderContext& rc) override;
+
     //// 描画処理
     //void Render(const RenderContext& rc, ModelShader* shader) override;
 

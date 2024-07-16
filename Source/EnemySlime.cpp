@@ -145,6 +145,19 @@ void EnemySlime::Render(RenderContext& rc)
     shader->Draw(rc, model);
 
     shader->End(rc);
+
+}
+// シャドウマップ
+void EnemySlime::RenderShadowmap(RenderContext& rc)
+{
+    Graphics& graphics = Graphics::Instance();
+    ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
+    shader->Begin(rc);// シェーダーにカメラの情報を渡す
+
+
+    shader->Draw(rc, model);
+
+    shader->End(rc);
 }
 
 // デバッグプリミティブ描画
