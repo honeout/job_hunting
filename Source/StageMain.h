@@ -28,10 +28,6 @@ public:
 
     // 描画処理
     void Render(RenderContext& rc) override;
-
-    // シャドウマップ処理
-    void RenderShadowmap(RenderContext& rc) override;
-
     //void Render(const RenderContext& rc, ModelShader* shader) override;
 
     // レイキャスト

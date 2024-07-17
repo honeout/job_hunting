@@ -2,16 +2,6 @@
 #include "Graphics/LambertShader.h"
 #include "Graphics\AfterImageShader.h"
 #include "Graphics/Graphics.h"
-#include "Graphics/PhongShader.h"
-#include "Graphics/ColorGradingShader.h"
-// UNIT08
-#include "Graphics/ColorGradingShader.h"
-#include "Graphics/GaussianBlurShader.h"
-
-// UNIT09
-#include "Graphics/LuminanceExtractionShader.h"
-#include "Graphics/FinalpassShader.h"
-#include "Graphics\ShadowmapCasterShader.h"
 
 Graphics* Graphics::instance = nullptr;
 
@@ -162,22 +152,11 @@ Graphics::Graphics(HWND hWnd)
 		//modelShaders[static_cast<int>(ModelShaderId::AfterImage)] =
 		//	std::make_unique<AfterImageShader>(device.Get());
 
-
-		modelShaders[static_cast<int>(ModelShaderId::Phong)] =
-			std::make_unique<PhonShader>(device.Get());
-
-
-
-		modelShaders[static_cast<int>(ModelShaderId::Lanbert)] =
-			std::make_unique<LambertShader>(device.Get());
-
-		modelShaders[static_cast<int>(ModelShaderId::ShadowmapCaster)] =
-			std::make_unique<ShadowmapCasterShader>(device.Get());
-
 		modelShaders[static_cast<int>(ModelShaderId::AfterImage)] =
 			std::make_unique<AfterImageShader>(device.Get());
 
-
+		modelShaders[static_cast<int>(ModelShaderId::Lanbert)] =
+			std::make_unique<LambertShader>(device.Get());
 	}
 
 
@@ -192,19 +171,19 @@ Graphics::Graphics(HWND hWnd)
 		//	std::make_unique<MaskShader>(device.Get());
 
 		//// UNIT07
-		spriteShaders[static_cast<int>(SpriteShaderId::ColorGrading)] =
-			std::make_unique<ColorGradingShader>(device.Get());
+		//spriteShaders[static_cast<int>(SpriteShaderId::ColorGrading)] =
+		//	std::make_unique<ColorGradingShader>(device.Get());
 
-		// UNIT08
-		spriteShaders[static_cast<int>(SpriteShaderId::GaussianBlur)] =
-			std::make_unique<GaussianBlurShader>(device.Get());
+		//// UNIT08
+		//spriteShaders[static_cast<int>(SpriteShaderId::GaussianBlur)] =
+		//	std::make_unique<GaussianBlurShader>(device.Get());
 
-		// UNIT09
-		spriteShaders[static_cast<int>(SpriteShaderId::LuminanceExtraction)] =
-			std::make_unique<LuminanceExtractionShader>(device.Get());
+		//// UNIT09
+		//spriteShaders[static_cast<int>(SpriteShaderId::LuminanceExtraction)] =
+		//	std::make_unique<LuminanceExtractionShader>(device.Get());
 
-		spriteShaders[static_cast<int>(SpriteShaderId::Finalpass)] =
-			std::make_unique<FinalpassShader>(device.Get());
+		//spriteShaders[static_cast<int>(SpriteShaderId::Finalpass)] =
+		//	std::make_unique<FinalpassShader>(device.Get());
 
 		//// UNIT12
 		//spriteShaders[static_cast<int>(SpriteShaderId::Skybox)] =

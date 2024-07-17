@@ -8,11 +8,6 @@
 
 #include "AfterimageManager.h"
 
-#include "Graphics/RenderTarget.h"
-#include "Graphics/DepthStencil.h"
-#include "Light.h"
-#include "PostprocessingRenderer.h"
-
 // ƒQ[ƒ€ƒV[ƒ“
 class SceneGame : public Scene
 {
@@ -32,20 +27,16 @@ public:
 	// •`‰æˆ—
 	void Render() override;
 
+<<<<<<< HEAD
 	// •`‰æˆ—
 	void DrawDebugParameter(DirectX::XMFLOAT4X4& transform, const char* label);
 
 	// ƒOƒŠƒbƒh•`‰æ
 	void DrawGrid(ID3D11DeviceContext* context, int subdivisions, float scale);
 
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 private:
-	// 3D‹óŠÔ‚Ì•`‰æ
-	void Render3DScene();
-
-	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì•`‰æ
-	void RenderShadowmap();
-
-
 	// ƒGƒlƒ~[HPƒQ[ƒW•`‰æ
 	void RenderEnemyGauge(
 	ID3D11DeviceContext* dc,
@@ -79,6 +70,7 @@ private:
 	float reduceMax = 0.4f;
 	// c‘œÁ‚¦‚é‚Ü‚Å
 	float reduce = reduceMax;
+<<<<<<< HEAD
 
 
 	// ƒIƒtƒXƒNƒŠ[ƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒO—p•`‰æƒ^[ƒQƒbƒg
@@ -96,4 +88,6 @@ private:
 	// ƒ|ƒXƒgƒvƒƒZƒX
 	std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
 
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 };

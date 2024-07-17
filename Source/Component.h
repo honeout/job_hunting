@@ -21,9 +21,6 @@ public:
 	// 描画
 	virtual void Render(RenderContext& rc) {}
 
-	// シャドウマップ描画
-	virtual void RenderShadowmap(RenderContext& rc) {}
-
 	// GUI描画
 	virtual void OnGUI() {}
 

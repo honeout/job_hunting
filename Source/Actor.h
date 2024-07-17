@@ -28,10 +28,6 @@ public:
 	// •`‰æ
 	virtual void Render(RenderContext rc);
 
-	// ƒVƒƒƒhƒEƒ}ƒbƒv•`‰æ
-	virtual void RenderShadwomap(RenderContext rc);
-
-
 	// GUI•\¦
 	virtual void OnGUI();
 
@@ -101,7 +97,10 @@ public:
 	// •`‰æ
 	void Render(RenderContext rc);
 
+<<<<<<< HEAD
 	void RenderShadowmap(RenderContext rc);
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 
 private:
 	void DrawLister();

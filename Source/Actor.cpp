@@ -38,14 +38,6 @@ void Actor::Render(RenderContext rc)
 	}
 }
 
-void Actor::RenderShadwomap(RenderContext rc)
-{
-	for (std::shared_ptr<Component>& component : components)
-	{
-		component->RenderShadowmap(rc);
-	}
-}
-
 
 // GUI•\¦
 void Actor::OnGUI()
@@ -226,6 +218,7 @@ void ActorManager::Render(RenderContext rc)
 
 }
 
+<<<<<<< HEAD
 void ActorManager::RenderShadowmap(RenderContext rc)
 {
 	// •`‰æˆ— 
@@ -246,6 +239,8 @@ void ActorManager::RenderShadowmap(RenderContext rc)
 	}
 }
 
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 // ƒŠƒXƒ^[•`‰æ
 void ActorManager::DrawLister()
 {

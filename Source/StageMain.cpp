@@ -50,22 +50,6 @@ void StageMain::Render(RenderContext& rc)
     shader->Draw(rc, model);
 
     shader->End(rc);
-
-}
-// シャドウマップ
-void StageMain::RenderShadowmap(RenderContext& rc)
-{
-
-    // シャドウマップ
-    Graphics& graphics = Graphics::Instance();
-    ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
-    shader->Begin(rc);// シェーダーにカメラの情報を渡す
-
-
-    shader->Draw(rc, model);
-
-    shader->End(rc);
-
 }
 
 bool StageMain::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end,

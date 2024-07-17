@@ -47,6 +47,7 @@ shadowColor, float shadowBias)
     return lerp(shadowColor, 1, ahadow);
 }
 
+<<<<<<< HEAD
 //// UNIT12
 ////--------------------------------------
 ////  PCFƒtƒBƒ‹ƒ^[Œƒ\ƒtƒgƒVƒƒƒhƒEƒ}ƒbƒv
@@ -86,3 +87,44 @@ shadowColor, float shadowBias)
 //    // [“x’l‚ğ”äŠr‚µ‚Ä‰e‚©‚Ç‚¤‚©‚ğ”»’è‚·‚é
 //    return lerp(shadowColor, 1, factor / (PCFKernelSize*PCFKernelSize));
 //}
+=======
+// UNIT12
+//--------------------------------------
+//  PCFƒtƒBƒ‹ƒ^[Œƒ\ƒtƒgƒVƒƒƒhƒEƒ}ƒbƒv
+//--------------------------------------
+// tex          : ƒVƒƒƒhƒEƒ}ƒbƒv
+// lightViewProjection    : ƒTƒ“ƒvƒ‰ƒXƒXƒe[ƒg
+// shadowTexcoord@                : ƒVƒƒƒhƒEƒ}ƒbƒvQÆ—pî•ñ
+// shadowColor@                : ‰e‚ÌF
+// shadowBias@                : [“x”äŠr—p‚ÌƒIƒtƒZƒbƒg’l
+// shadowColor                : ‰e‚ÌF
+// •Ô‚·’l@                : ‰e‚ÌF
+float3 CalcShadowColorPCFFilter(Texture2D tex, SamplerState samplerState, float3 shadowTexcoord, float3
+    shadowColor, float shadowBias)
+{
+    // ƒeƒNƒZƒ‹ƒTƒCƒY‚ÌŒvZ
+    float2 texelSize;
+    {
+        // ƒeƒNƒXƒ`ƒƒ‚Ì—§•‰¡•‚ğæ“¾‚·‚é
+        uint width, height;
+        tex.GetDimensions(width, height);
+
+        // Zo
+        texelSize = float2(1.0f / width, 1.0f / height);
+    }
+
+    float factor = 0;
+    static const int PCFKernelSize = 5; // w’è‚ÍŠï”‚É‚·‚é‚±‚Æ
+    for (int x = -PCFKernelSize / 2; x <= PCFKernelSize / 2; ++x)
+    {
+        for (int y = -PCFKernelSize / 2; y <= PCFKernelSize / 2; ++y)
+        {
+            // ƒVƒƒƒhƒEƒ}ƒbƒv‚©‚ç[“x’læ“¾
+            float depth = tex.Sample(samplerState, shadowTexcoord.xy + texelSize * float2(x, y)).r;
+            factor += step(shadowTexcoord.z - depth, shadowBias);
+        }
+    }
+    // [“x’l‚ğ”äŠr‚µ‚Ä‰e‚©‚Ç‚¤‚©‚ğ”»’è‚·‚é
+    return lerp(shadowColor, 1, factor / (PCFKernelSize*PCFKernelSize));
+}
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
