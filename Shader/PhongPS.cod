@@ -178,15 +178,13 @@ mov r2.xyz, r2.xyzx
 mov r7.xyz, cb0[7].xyzx
 mov r5.xyz, r5.xyzx
 
-#line 50 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 49 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+itof r2.w, l(0)
 mov r8.xyz, -r2.xyzx
-dp3 r2.w, r8.xyzx, r1.xyzx
-itof r3.w, l(0)
-max r2.w, r2.w, r3.w
-mul r2.w, r7.x, r2.w
-mul r2.w, r5.x, r2.w  // r2.w <- d
+dp3 r3.w, r1.xyzx, r8.xyzx
+max r2.w, r2.w, r3.w  // r2.w <- d
 
-#line 54
+#line 52
 mul r7.xyz, r7.xyzx, r5.xyzx
 mul r7.xyz, r2.wwww, r7.xyzx  // r7.x <- <CalcLambertDiffuse return value>.x; r7.y <- <CalcLambertDiffuse return value>.y; r7.z <- <CalcLambertDiffuse return value>.z
 
@@ -202,25 +200,25 @@ mov r3.xyz, r3.xyzx
 mov r1.w, r1.w
 mov r6.xyz, r6.xyzx
 
-#line 71 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 69 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
 dp3 r2.w, r2.xyzx, r1.xyzx
 add r2.w, r2.w, r2.w
 mov r2.w, -r2.w
 mul r9.xyz, r1.xyzx, r2.wwww
 add r9.xyz, r2.xyzx, r9.xyzx  // r9.x <- R.x; r9.y <- R.y; r9.z <- R.z
 
-#line 75
-dp3 r2.w, r9.xyzx, r3.xyzx
+#line 73
+dp3 r2.w, r3.xyzx, r9.xyzx
 itof r3.w, l(0)
 max r2.w, r2.w, r3.w  // r2.w <- d
 
-#line 81
+#line 79
 log r2.w, r2.w
 mul r2.w, r1.w, r2.w
 exp r2.w, r2.w  // r2.w <- d
 
-#line 83
-mul r8.xyz, r8.xyzx, r2.wwww
+#line 82
+mul r8.xyz, r2.wwww, r8.xyzx
 mul r8.xyz, r6.xyzx, r8.xyzx  // r8.x <- <CalcPhongSpecular return value>.x; r8.y <- <CalcPhongSpecular return value>.y; r8.z <- <CalcPhongSpecular return value>.z
 
 #line 57 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
@@ -284,15 +282,13 @@ loop
   mov r15.xyz, cb0[r4.w + 9].xyzx
   mov r16.xyz, r5.xyzx
 
-#line 50 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 49 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+  itof r4.w, l(0)
   mov r17.xyz, -r13.xyzx
-  dp3 r4.w, r17.xyzx, r14.xyzx
-  itof r6.w, l(0)
-  max r4.w, r4.w, r6.w
-  mul r4.w, r15.x, r4.w
-  mul r4.w, r16.x, r4.w  // r4.w <- d
+  dp3 r6.w, r14.xyzx, r17.xyzx
+  max r4.w, r4.w, r6.w  // r4.w <- d
 
-#line 54
+#line 52
   mul r14.xyz, r15.xyzx, r16.xyzx
   mul r14.xyz, r4.wwww, r14.xyzx  // r14.x <- <CalcLambertDiffuse return value>.x; r14.y <- <CalcLambertDiffuse return value>.y; r14.z <- <CalcLambertDiffuse return value>.z
 
@@ -310,25 +306,25 @@ loop
   mov r4.w, r1.w
   mov r17.xyz, r6.xyzx
 
-#line 71 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 69 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
   dp3 r6.w, r13.xyzx, r14.xyzx
   add r6.w, r6.w, r6.w
   mov r6.w, -r6.w
   mul r14.xyz, r6.wwww, r14.xyzx
   add r13.xyz, r13.xyzx, r14.xyzx  // r13.x <- R.x; r13.y <- R.y; r13.z <- R.z
 
-#line 75
-  dp3 r6.w, r13.xyzx, r16.xyzx
+#line 73
+  dp3 r6.w, r16.xyzx, r13.xyzx
   itof r7.w, l(0)
   max r6.w, r6.w, r7.w  // r6.w <- d
 
-#line 81
+#line 79
   log r6.w, r6.w
   mul r4.w, r4.w, r6.w
   exp r4.w, r4.w  // r4.w <- d
 
-#line 83
-  mul r13.xyz, r15.xyzx, r4.wwww
+#line 82
+  mul r13.xyz, r4.wwww, r15.xyzx
   mul r13.xyz, r17.xyzx, r13.xyzx  // r13.x <- <CalcPhongSpecular return value>.x; r13.y <- <CalcPhongSpecular return value>.y; r13.z <- <CalcPhongSpecular return value>.z
 
 #line 104 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
@@ -422,15 +418,13 @@ loop
   mov r17.xyz, cb0[r5.w + 34].xyzx
   mov r18.xyz, r5.xyzx
 
-#line 50 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 49 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+  itof r5.w, l(0)
   mov r19.xyz, -r15.xyzx
-  dp3 r5.w, r19.xyzx, r16.xyzx
-  itof r6.w, l(0)
-  max r5.w, r5.w, r6.w
-  mul r5.w, r17.x, r5.w
-  mul r5.w, r18.x, r5.w  // r5.w <- d
+  dp3 r6.w, r16.xyzx, r19.xyzx
+  max r5.w, r5.w, r6.w  // r5.w <- d
 
-#line 54
+#line 52
   mul r16.xyz, r17.xyzx, r18.xyzx
   mul r16.xyz, r5.wwww, r16.xyzx  // r16.x <- <CalcLambertDiffuse return value>.x; r16.y <- <CalcLambertDiffuse return value>.y; r16.z <- <CalcLambertDiffuse return value>.z
 
@@ -448,25 +442,25 @@ loop
   mov r5.w, r1.w
   mov r19.xyz, r6.xyzx
 
-#line 71 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 69 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
   dp3 r6.w, r15.xyzx, r16.xyzx
   add r6.w, r6.w, r6.w
   mov r6.w, -r6.w
   mul r16.xyz, r6.wwww, r16.xyzx
   add r15.xyz, r15.xyzx, r16.xyzx  // r15.x <- R.x; r15.y <- R.y; r15.z <- R.z
 
-#line 75
-  dp3 r6.w, r15.xyzx, r18.xyzx
+#line 73
+  dp3 r6.w, r18.xyzx, r15.xyzx
   itof r7.w, l(0)
   max r6.w, r6.w, r7.w  // r6.w <- d
 
-#line 81
+#line 79
   log r6.w, r6.w
   mul r5.w, r5.w, r6.w
   exp r5.w, r5.w  // r5.w <- d
 
-#line 83
-  mul r15.xyz, r17.xyzx, r5.wwww
+#line 82
+  mul r15.xyz, r5.wwww, r17.xyzx
   mul r15.xyz, r19.xyzx, r15.xyzx  // r15.x <- <CalcPhongSpecular return value>.x; r15.y <- <CalcPhongSpecular return value>.y; r15.z <- <CalcPhongSpecular return value>.z
 
 #line 151 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
@@ -501,22 +495,22 @@ mov r3.xyz, r3.xyzx
 mov r2.xyz, r2.xyzx
 mov r4.xyz, cb0[7].xyzx
 
-#line 123 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
-dp3 r1.x, r3.xyzx, r1.xyzx
+#line 110 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+mov r5.xyz, -r3.xyzx
+dp3 r1.x, r1.xyzx, r5.xyzx
 max r1.x, r1.x, l(0.000000)
 min r1.x, r1.x, l(1.000000)
 mov r1.x, -r1.x
 add r1.x, r1.x, l(1.000000)  // r1.x <- rim
 
-#line 124
+#line 111
 mov r1.y, l(1.000000)
 mul r1.y, r1.x, r1.y
 mul r1.x, r1.x, r1.x
-mul r1.x, r1.x, r1.y  // r1.x <- rim
-
-#line 127
+mul r1.x, r1.x, r1.y
 mul r1.xyz, r1.xxxx, r4.xyzx
-dp3 r1.w, r3.xyzx, r2.xyzx
+mov r3.xyz, -r3.xyzx
+dp3 r1.w, r2.xyzx, r3.xyzx
 max r1.w, r1.w, l(0.000000)
 min r1.w, r1.w, l(1.000000)
 mul r1.xyz, r1.wwww, r1.xyzx  // r1.x <- <CalcRimLight return value>.x; r1.y <- <CalcRimLight return value>.y; r1.z <- <CalcRimLight return value>.z
@@ -528,4 +522,4 @@ add r0.xyz, r0.xyzx, r1.xyzx
 mov o0.xyz, r0.xyzx
 mov o0.w, r0.w
 ret 
-// Approximately 270 instruction slots used
+// Approximately 266 instruction slots used

@@ -8,6 +8,13 @@
 
 #include "AfterimageManager.h"
 
+
+#include "Light.h"
+#include "LightManager.h"
+
+#include "PostprocessingRenderer.h"
+#include "Graphics\DepthStencil.h"
+
 // ƒQ[ƒ€ƒV[ƒ“
 class SceneGame : public Scene
 {
@@ -27,16 +34,21 @@ public:
 	// •`‰æˆ—
 	void Render() override;
 
-<<<<<<< HEAD
+
 	// •`‰æˆ—
 	void DrawDebugParameter(DirectX::XMFLOAT4X4& transform, const char* label);
 
 	// ƒOƒŠƒbƒh•`‰æ
 	void DrawGrid(ID3D11DeviceContext* context, int subdivisions, float scale);
 
-=======
->>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
+
 private:
+	// 3D‹óŠÔ‚Ì•`‰æ
+	void Render3DScene();
+
+	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì•`‰æ
+	void RenderShadowmap();
+
 	// ƒGƒlƒ~[HPƒQ[ƒW•`‰æ
 	void RenderEnemyGauge(
 	ID3D11DeviceContext* dc,
@@ -70,7 +82,7 @@ private:
 	float reduceMax = 0.4f;
 	// c‘œÁ‚¦‚é‚Ü‚Å
 	float reduce = reduceMax;
-<<<<<<< HEAD
+
 
 
 	// ƒIƒtƒXƒNƒŠ[ƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒO—p•`‰æƒ^[ƒQƒbƒg
@@ -79,15 +91,14 @@ private:
 
 	// ƒVƒƒƒhƒEƒ}ƒbƒv—pî•ñ
 	Light* mainDirectionalLight = nullptr; // ƒVƒƒƒhƒEƒ}ƒbƒv‚ğ¶¬‚·‚é•½sŒõŒ¹
-	std::unique_ptr<DepthStencil> shadowmapDepthStencil; // ƒVƒƒƒhƒEƒ}ƒbƒv—p[“xƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@
+	std::unique_ptr<DepthStencil> shadowmapDepthStencil[ShadowmapCount]; // ƒVƒƒƒhƒEƒ}ƒbƒv—p[“xƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@
 	float shadowDrawRect = 500.0f;// ƒVƒƒƒhƒEƒ}ƒbƒv‚É•`‰æ‚·‚é”ÍˆÍ
-	DirectX::XMFLOAT4X4 lightViewProjeciton; // ƒ‰ƒCƒgƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
+	DirectX::XMFLOAT4X4 lightViewProjection[ShadowmapCount]; // ƒ‰ƒCƒgƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
 	DirectX::XMFLOAT3 shadowColor = { 0.2,0.2f,0.2f };// ‰e‚ÌF
-	float shadowBias = 0.001f;// [“x”äŠr—p‚ÌƒIƒtƒZƒbƒg’l
+	float							shadowBias[ShadowmapCount] = { 0.0001f, 0.002f, 0.004f, 0.01f };// [“x”äŠr—p‚ÌƒIƒtƒZƒbƒg’l
 
 	// ƒ|ƒXƒgƒvƒƒZƒX
 	std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
 
-=======
->>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
+
 };

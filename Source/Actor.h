@@ -97,10 +97,9 @@ public:
 	// �`��
 	void Render(RenderContext rc);
 
-<<<<<<< HEAD
+
 	void RenderShadowmap(RenderContext rc);
-=======
->>>>>>> parent of 8a0ff20 (とりあえずシェーダー綺麗な奴入った)
+
 
 private:
 	void DrawLister();

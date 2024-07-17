@@ -47,7 +47,7 @@ shadowColor, float shadowBias)
     return lerp(shadowColor, 1, ahadow);
 }
 
-<<<<<<< HEAD
+
 //// UNIT12
 ////--------------------------------------
 ////  PCFƒtƒBƒ‹ƒ^[Œƒ\ƒtƒgƒVƒƒƒhƒEƒ}ƒbƒv
@@ -87,7 +87,7 @@ shadowColor, float shadowBias)
 //    // [“x’l‚ğ”äŠr‚µ‚Ä‰e‚©‚Ç‚¤‚©‚ğ”»’è‚·‚é
 //    return lerp(shadowColor, 1, factor / (PCFKernelSize*PCFKernelSize));
 //}
-=======
+
 // UNIT12
 //--------------------------------------
 //  PCFƒtƒBƒ‹ƒ^[Œƒ\ƒtƒgƒVƒƒƒhƒEƒ}ƒbƒv
@@ -127,4 +127,4 @@ float3 CalcShadowColorPCFFilter(Texture2D tex, SamplerState samplerState, float3
     // [“x’l‚ğ”äŠr‚µ‚Ä‰e‚©‚Ç‚¤‚©‚ğ”»’è‚·‚é
     return lerp(shadowColor, 1, factor / (PCFKernelSize*PCFKernelSize));
 }
->>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
+
