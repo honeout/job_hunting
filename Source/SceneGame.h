@@ -32,7 +32,11 @@ public:
 	// 描画処理
 	void Render() override;
 
+	// 描画処理
+	void DrawDebugParameter(DirectX::XMFLOAT4X4& transform, const char* label);
 
+	// グリッド描画
+	void DrawGrid(ID3D11DeviceContext* context, int subdivisions, float scale);
 
 private:
 	// 3D空間の描画
@@ -79,6 +83,7 @@ private:
 
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;
+
 
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源

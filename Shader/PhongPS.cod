@@ -226,6 +226,11 @@ mul r8.xyz, r6.xyzx, r8.xyzx  // r8.x <- <CalcPhongSpecular return value>.x; r8.
 #line 57 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
 mov r8.xyz, r8.xyzx  // r8.x <- directionalSpecular.x; r8.y <- directionalSpecular.y; r8.z <- directionalSpecular.z
 
+#line 61
+nop 
+nop 
+nop 
+
 #line 78
 itof r9.xyz, l(0, 0, 0, 0)  // r9.x <- pointDiffuse.x; r9.y <- pointDiffuse.y; r9.z <- pointDiffuse.z
 
@@ -523,4 +528,4 @@ add r0.xyz, r0.xyzx, r1.xyzx
 mov o0.xyz, r0.xyzx
 mov o0.w, r0.w
 ret 
-// Approximately 267 instruction slots used
+// Approximately 270 instruction slots used

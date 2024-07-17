@@ -138,7 +138,7 @@ void EnemySlime::Render(RenderContext& rc)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();
-    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
     shader->Begin(rc);// シェーダーにカメラの情報を渡す
 
 

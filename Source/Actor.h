@@ -99,9 +99,9 @@ public:
 	//void UpdateTransform();
 
 	// •`‰æ
-	void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+	void Render(RenderContext rc);
 
-	void RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+	void RenderShadowmap(RenderContext rc);
 
 private:
 	void DrawLister();

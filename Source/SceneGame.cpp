@@ -154,12 +154,33 @@ void SceneGame::Initialize()
 		1000.0f
 	);
 
-	// 平行光源を追加
+
+	 // 平行光源を追加
 	{
 		mainDirectionalLight = new Light(LightType::Directional);
 		mainDirectionalLight->SetDirection({ 1,-1,-1 });
 		LightManager::Instanes().Register(mainDirectionalLight);
 	}
+
+	// 点光源を追加
+	{
+		Light* light = new Light(LightType::Point);
+		light->SetPosition(DirectX::XMFLOAT3(0, 1, 0));
+		light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+		LightManager::Instanes().Register(light);
+	}
+
+
+	// スポットライトを追加
+	{
+		Light* light = new Light(LightType::Spot);
+		light->SetPosition(DirectX::XMFLOAT3(-30, 1, 0));
+		light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+		light->SetDirection(DirectX::XMFLOAT3(+1, -1, 0));
+		light->SetRange(40.0f);
+		LightManager::Instanes().Register(light);
+	}
+
 
 	// 新しい描画ターゲットの生成
 	{
@@ -187,6 +208,7 @@ void SceneGame::Initialize()
 		postprocessingRenderer->SetSceneData(srvData);
 	}
 
+	//LightManager::Instanes().Clear();
 
 	// ゲージスプライト
 	gauge = new Sprite();
@@ -205,7 +227,7 @@ void SceneGame::Finalize()
 	// エネミー終了化
 	//EnemyManager::Instance().Clear();
 
-	AfterimageManager::Instance().Clear();
+	//AfterimageManager::Instance().Clear();
 
 	//// カメラコントーラー終了化
 	//if (this->cameraController)
@@ -249,7 +271,7 @@ void SceneGame::Update(float elapsedTime)
 	
 
 	// 残像ステート更新
-	AfterimageManager::Instance().Update(elapsedTime);
+	//AfterimageManager::Instance().Update(elapsedTime);
 
 
 
@@ -270,10 +292,7 @@ void SceneGame::Render()
 	ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
-	// シャドウマップの描画
-	RenderShadowmap();
 
-	Render3DScene();
 
 	// 画面クリア＆レンダーターゲット設定
 	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0～1.0)
@@ -281,7 +300,7 @@ void SceneGame::Render()
 	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	dc->OMSetRenderTargets(1, &rtv, dsv);
 
-	// 描画処理 
+	//// 描画処理 
 	RenderContext rc;// 描画するために必要な情報をまとめた構造体
 	rc.lightDirection = { 0.0f, -1.0f, 0.0f, 0.0f };	// ライト方向（下方向）
 
@@ -293,12 +312,54 @@ void SceneGame::Render()
 	// モデルそれぞれでシェーダーをするために
 	rc.deviceContext = dc;
 
+	// シャドウマップの描画
+	RenderShadowmap();
+
+	Render3DScene();
+
+
 	// ライトの情報を詰め込む
 	//LightManager::Instanes().PushRenderContext(rc);
 
+
+     // 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
+	{
+		ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
+		ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
+
+		// 画面クリア＆レンダーターゲット設定
+		FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
+		dc->ClearRenderTargetView(rtv, color);
+		dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		dc->OMSetRenderTargets(1, &rtv, dsv);
+
+		// UINT11
+		// ビューポートの設定
+		D3D11_VIEWPORT vp = {};
+		vp.Width = graphics.GetScreenWidth();
+		vp.Height = graphics.GetScreenHeight();
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+		dc->RSSetViewports(1, &vp);
+
+		// unit09
+		//RenderContext rc;
+		//rc.deviceContext = dc;
+
+		//SpriteShader* shader = graphics.GetShader(SpriteShaderId::ColorGrading);
+		//shader->Begin(rc);
+
+		////rc.colorGradingData = colorGradingData;
+		//shader->Draw(rc, sprite.get());
+
+		//shader->End(rc);
+		// ポストプロセスを処理を行う
+		postprocessingRenderer->Render(dc);
+	}
+
 	// 3Dモデル描画
 	{
-		ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+		//ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 		// シェーダーに必要な情報を書く
 		//shader->Begin(rc);// シェーダーにカメラの情報を渡す
 		// ステージ描画
@@ -317,40 +378,7 @@ void SceneGame::Render()
 		//ActorManager::Instance().UpdateTransform();
 		//ActorManager::Instance().Render(rc.view, rc.projection);
 		//
-		// 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
-		{
-			ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
-			ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
-			// 画面クリア＆レンダーターゲット設定
-			FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
-			dc->ClearRenderTargetView(rtv, color);
-			dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-			dc->OMSetRenderTargets(1, &rtv, dsv);
-
-			// UINT11
-			// ビューポートの設定
-			D3D11_VIEWPORT vp = {};
-			vp.Width = graphics.GetScreenWidth();
-			vp.Height = graphics.GetScreenHeight();
-			vp.MinDepth = 0.0f;
-			vp.MaxDepth = 1.0f;
-			dc->RSSetViewports(1, &vp);
-
-			// unit09
-			//RenderContext rc;
-			//rc.deviceContext = dc;
-
-			//SpriteShader* shader = graphics.GetShader(SpriteShaderId::ColorGrading);
-			//shader->Begin(rc);
-
-			////rc.colorGradingData = colorGradingData;
-			//shader->Draw(rc, sprite.get());
-
-			//shader->End(rc);
-			// ポストプロセスを処理を行う
-			postprocessingRenderer->Render(dc);
-		}
 
 
 		//ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
@@ -370,8 +398,32 @@ void SceneGame::Render()
 		EffectManager::Instance().Render(rc.view, rc.projection);
 	}
 
+
+	// デバッグ情報の表示
+	{
+		//DrawDebugParameter(jummo_transform, "jummo");
+		//DrawDebugParameter(uncle_transform, "uncle");
+		//DrawDebugParameter(stage_transform, "stage");
+		LightManager::Instanes().DrawDebugGUI();
+		ImGui::Separator();
+		// UNIT11
+		if (ImGui::TreeNode("shadowmap"))
+		{
+			ImGui::SliderFloat("DrawRect", &shadowDrawRect, 1.0f, 2048.0f);
+			ImGui::ColorEdit3("Color", &shadowColor.x);
+			ImGui::SliderFloat("Bias", &shadowBias, 0.0f, 0.1f);
+			ImGui::Text("texture");
+			ImGui::Image(shadowmapDepthStencil->GetShaderResourceView().Get(), { 256,256 }, { 0,0 }, { 1,1 },
+				{ 1,1,1,1 });
+			ImGui::TreePop();
+		}
+	}
+
 	// 3Dデバッグ描画
 	{
+
+
+
 		// 当たり判定の形をうつ
 		// プレイヤーデバッグプリミティブ描画
 		//player->DrawDebugPrimitive();
@@ -406,6 +458,124 @@ void SceneGame::Render()
 	}
 
 	
+}
+
+void SceneGame::DrawDebugParameter(DirectX::XMFLOAT4X4& transform, const char* label)
+{
+	ImGui::PushID(label);
+	if (ImGui::TreeNode(label))
+	{
+		DirectX::XMVECTOR Scale, Rotation, Position;
+		DirectX::XMMatrixDecompose(&Scale, &Rotation, &Position, DirectX::XMLoadFloat4x4(&transform));
+		DirectX::XMFLOAT3 scale, rotation, position;
+		DirectX::XMStoreFloat3(&scale, Scale);
+		DirectX::XMStoreFloat3(&rotation, Rotation);
+		DirectX::XMStoreFloat3(&position, Position);
+		ImGui::SliderFloat3("scale", &scale.x, 0.0f, 10.0f);
+		ImGui::SliderFloat3("rotation", &rotation.x, -DirectX::XM_PI, DirectX::XM_PI);
+		ImGui::SliderFloat3("position", &position.x, -300.0f, 1000.0f);
+		DirectX::XMMATRIX Transform;
+		Transform = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z)
+			* DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z)
+			* DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+		DirectX::XMStoreFloat4x4(&transform, Transform);
+		ImGui::TreePop();
+	}
+	ImGui::PopID();
+}
+
+void SceneGame::DrawGrid(ID3D11DeviceContext* context, int subdivisions, float scale)
+{
+	int numLines = (subdivisions + 1) * 2;
+	int vertexCount = numLines * 2;
+
+	float corner = 0.5f;
+	float step = 1.0f / static_cast<float>(subdivisions);
+
+	int index = 0;
+	float s = -corner;
+
+	const DirectX::XMFLOAT4 white = DirectX::XMFLOAT4(1, 1, 1, 1);
+
+	LineRenderer* lineRenderer = Graphics::Instance().GetLineRenderer();
+	// Create vertical lines
+	float scaling = static_cast<float>(subdivisions) * scale;
+	DirectX::XMMATRIX M = DirectX::XMMatrixScaling(scaling, scaling, scaling);
+	DirectX::XMVECTOR V, P;
+	DirectX::XMFLOAT3 position;
+	for (int i = 0; i <= subdivisions; i++)
+	{
+		V = DirectX::XMVectorSet(s, 0, corner, 0);
+		P = DirectX::XMVector3TransformCoord(V, M);
+		DirectX::XMStoreFloat3(&position, P);
+		lineRenderer->AddVertex(position, white);
+
+		V = DirectX::XMVectorSet(s, 0, -corner, 0);
+		P = DirectX::XMVector3TransformCoord(V, M);
+		DirectX::XMStoreFloat3(&position, P);
+		lineRenderer->AddVertex(position, white);
+
+		s += step;
+	}
+
+	// Create horizontal lines
+	s = -corner;
+	for (int i = 0; i <= subdivisions; i++)
+	{
+		V = DirectX::XMVectorSet(corner, 0, s, 0);
+		P = DirectX::XMVector3TransformCoord(V, M);
+		DirectX::XMStoreFloat3(&position, P);
+		lineRenderer->AddVertex(position, white);
+
+		V = DirectX::XMVectorSet(-corner, 0, s, 0);
+		P = DirectX::XMVector3TransformCoord(V, M);
+		DirectX::XMStoreFloat3(&position, P);
+		lineRenderer->AddVertex(position, white);
+
+		s += step;
+	}
+
+	// X軸
+	{
+		const DirectX::XMFLOAT4 red = DirectX::XMFLOAT4(1, 0, 0, 1);
+		V = DirectX::XMVectorSet(0, 0, 0, 0);
+		P = DirectX::XMVector3TransformCoord(V, M);
+		DirectX::XMStoreFloat3(&position, P);
+		lineRenderer->AddVertex(position, red);
+
+		V = DirectX::XMVectorSet(corner, 0, 0, 0);
+		P = DirectX::XMVector3TransformCoord(V, M);
+		DirectX::XMStoreFloat3(&position, P);
+		lineRenderer->AddVertex(position, red);
+	}
+
+	// Y軸
+	{
+		const DirectX::XMFLOAT4 green = DirectX::XMFLOAT4(0, 1, 0, 1);
+		V = DirectX::XMVectorSet(0, 0, 0, 0);
+		P = DirectX::XMVector3TransformCoord(V, M);
+		DirectX::XMStoreFloat3(&position, P);
+		lineRenderer->AddVertex(position, green);
+
+		V = DirectX::XMVectorSet(0, corner, 0, 0);
+		P = DirectX::XMVector3TransformCoord(V, M);
+		DirectX::XMStoreFloat3(&position, P);
+		lineRenderer->AddVertex(position, green);
+	}
+
+	// Z軸
+	{
+		const DirectX::XMFLOAT4 blue = DirectX::XMFLOAT4(0, 0, 1, 1);
+		V = DirectX::XMVectorSet(0, 0, 0, 0);
+		P = DirectX::XMVector3TransformCoord(V, M);
+		DirectX::XMStoreFloat3(&position, P);
+		lineRenderer->AddVertex(position, blue);
+
+		V = DirectX::XMVectorSet(0, 0, corner, 0);
+		P = DirectX::XMVector3TransformCoord(V, M);
+		DirectX::XMStoreFloat3(&position, P);
+		lineRenderer->AddVertex(position, blue);
+	}
 }
 
 void SceneGame::Render3DScene()
@@ -466,7 +636,7 @@ void SceneGame::Render3DScene()
 
 		//shader->End(rc);
 
-		ActorManager::Instance().Render(rc.view, rc.projection);
+		ActorManager::Instance().Render(rc);
 
 
 	}
@@ -474,7 +644,7 @@ void SceneGame::Render3DScene()
 	// デバッグプリミティブの表示
 	{
 		// グリッド描画
-		//DrawGrid(dc, 20, 10.0f);
+		DrawGrid(dc, 20, 10.0f);
 
 		// ライトのデバッグプリミティブの描画
 		LightManager::Instanes().DrawDebugPrimitive();
@@ -497,7 +667,8 @@ void SceneGame::RenderShadowmap()
 	// 画面クリア
 	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-
+	if (!mainDirectionalLight)
+		return;
 
 	// レンダーターゲット設定
 	dc->OMSetRenderTargets(0, &rtv, dsv);
@@ -531,7 +702,9 @@ void SceneGame::RenderShadowmap()
 		DirectX::XMStoreFloat4x4(&lightViewProjeciton, V * P);
 	}
 
-	ActorManager::Instance().RenderShadowmap(rc.view, rc.projection);
+	ActorManager::Instance().RenderShadowmap(rc);
+
+	rc.deviceContext->OMSetRenderTargets(0, &rtv, nullptr);
 }
 
 // エネミーHPゲージ描画

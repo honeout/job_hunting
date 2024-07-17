@@ -47,17 +47,17 @@ shadowColor, float shadowBias)
     return lerp(shadowColor, 1, ahadow);
 }
 
-// UNIT12
-//--------------------------------------
-//  PCFフィルター月ソフトシャドウマップ
-//--------------------------------------
-// tex          : シャドウマップ
-// lightViewProjection    : サンプラスステート
-// shadowTexcoord　                : シャドウマップ参照用情報
-// shadowColor　                : 影の色
-// shadowBias　                : 深度比較用のオフセット値
-// shadowColor                : 影の色
-// 返す値　                : 影の色
+//// UNIT12
+////--------------------------------------
+////  PCFフィルター月ソフトシャドウマップ
+////--------------------------------------
+//// tex          : シャドウマップ
+//// lightViewProjection    : サンプラスステート
+//// shadowTexcoord　                : シャドウマップ参照用情報
+//// shadowColor　                : 影の色
+//// shadowBias　                : 深度比較用のオフセット値
+//// shadowColor                : 影の色
+//// 返す値　                : 影の色
 //float3 CalcShadowColorPCFFilter(Texture2D tex, SamplerState samplerState, float3 shadowTexcoord, float3
 //    shadowColor, float shadowBias)
 //{
@@ -66,7 +66,7 @@ shadowColor, float shadowBias)
 //    {
 //        // テクスチャの立幅横幅を取得する
 //        uint width, height;
-//        //tex.GetDimensions(width, height);
+//        tex.GetDimensions(width, height);
 //
 //        // 算出
 //        texelSize = float2(1.0f / width, 1.0f / height);
