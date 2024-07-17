@@ -58,15 +58,15 @@ float4 main(VS_OUT pin) : SV_TARGET
 
     // UNIT11
     //// 平行光源の影なので、平行光源に退位して影を適応
-    float3 shadow = CalcShadowColor(shadowMap, shadowMapSamplerState, pin.shadowTexcoord, shadowColor,
-        shadowBias);
+    //float3 shadow = CalcShadowColor(shadowMap, shadowMapSamplerState, pin.shadowTexcoord, shadowColor,
+    //    shadowBias);
 
     // UNIT12
         // 平行光源の影なので、平行光源に退位して影を適応
-    //float3 shadow = CalcShadowColorPCFFilter(shadowMap, shadowMapSamplerState, pin.shadowTexcoord, shadowColor,
-    //    shadowBias);
-    //directionalDiffuse *= shadow;
-    //directionalSpecular *= shadow;
+  /*  float3 shadow = CalcShadowColorPCFFilter(shadowMap, shadowMapSamplerState, pin.shadowTexcoord, shadowColor,
+        shadowBias);
+    directionalDiffuse *= shadow;
+    directionalSpecular *= shadow;*/
     //float4 color = float4(ambient,diffuseColor.a);
     //color.rgb += diffuseColor.rgb*directionalDiffuse;
     //color.rgb += directionalSpecular;

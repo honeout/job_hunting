@@ -154,24 +154,24 @@ void ActorManager::Update(float elapsedTime)
 //}
 
 // •`‰æ
-void ActorManager::Render(RenderContext rc)
+void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
 {
 	Graphics& graphics = Graphics::Instance();
 	//Shader* shader = graphics.GetShader();
 	//ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-	//// •`‰æˆ— 
-	//RenderContext rc;// •`‰æ‚·‚é‚½‚ß‚É•K—v‚Èî•ñ‚ğ‚Ü‚Æ‚ß‚½\‘¢‘Ì
+	// •`‰æˆ— 
+	RenderContext rc;// •`‰æ‚·‚é‚½‚ß‚É•K—v‚Èî•ñ‚ğ‚Ü‚Æ‚ß‚½\‘¢‘Ì
 
-	//rc.view = view;
-	//rc.projection = projection;
+	rc.view = view;
+	rc.projection = projection;
 
-	//// ƒ‰ƒCƒg‚Ì•ûŒü
-	//DirectX::XMFLOAT3 lightDirection = DirectX::XMFLOAT3(0.2f, -0.8f, 0.0f);
-	//
-	//rc.lightDirection = { lightDirection.x,lightDirection.y,lightDirection.z ,0};
-	//// ƒ‚ƒfƒ‹‚»‚ê‚¼‚ê‚ÅƒVƒF[ƒ_[‚ğ‚·‚é‚½‚ß‚É
-	//rc.deviceContext = dc;
+	// ƒ‰ƒCƒg‚Ì•ûŒü
+	DirectX::XMFLOAT3 lightDirection = DirectX::XMFLOAT3(0.2f, -0.8f, 0.0f);
+	
+	rc.lightDirection = { lightDirection.x,lightDirection.y,lightDirection.z ,0};
+	// ƒ‚ƒfƒ‹‚»‚ê‚¼‚ê‚ÅƒVƒF[ƒ_[‚ğ‚·‚é‚½‚ß‚É
+	rc.deviceContext = dc;
 	// •`‰æ
 	//shader->Begin(dc, view, projection, lightDirection);
 
@@ -219,19 +219,23 @@ void ActorManager::Render(RenderContext rc)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 void ActorManager::RenderShadowmap(RenderContext rc)
+=======
+void ActorManager::RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 {
 	// •`‰æˆ— 
 	Graphics& graphics = Graphics::Instance();
-	//RenderContext rc;// •`‰æ‚·‚é‚½‚ß‚É•K—v‚Èî•ñ‚ğ‚Ü‚Æ‚ß‚½\‘¢‘Ì
+	RenderContext rc;// •`‰æ‚·‚é‚½‚ß‚É•K—v‚Èî•ñ‚ğ‚Ü‚Æ‚ß‚½\‘¢‘Ì
 	// •`‰æ—p
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 
-	//rc.deviceContext = dc;
+	rc.deviceContext = dc;
 
-	//rc.view = view;
-	//rc.projection = projection;
+	rc.view = view;
+	rc.projection = projection;
 
 	for (std::shared_ptr<Actor>& actor : updateActors)
 	{

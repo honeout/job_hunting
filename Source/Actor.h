@@ -95,10 +95,14 @@ public:
 	//void UpdateTransform();
 
 	// �`��
-	void Render(RenderContext rc);
+	void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
 
+<<<<<<< HEAD
 
 	void RenderShadowmap(RenderContext rc);
+=======
+	void RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+>>>>>>> parent of 0db33c3 (一度保存ワーニング大量)
 
 
 private:

@@ -43,7 +43,7 @@ void StageMain::Render(RenderContext& rc)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();
-    ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
+    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
     shader->Begin(rc);// シェーダーにカメラの情報を渡す
 
 

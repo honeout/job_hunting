@@ -13,7 +13,6 @@
 #include "StateDerived.h"
 
 #include "AfterimageManager.h"
-#include "Graphics\PhongShader.h"
 
 
 //static Player* instance = nullptr;
@@ -261,7 +260,7 @@ void Player::Render(RenderContext& rc)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();
-    ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
+    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
     shader->Begin(rc);// シェーダーにカメラの情報を渡す
 
 
@@ -271,6 +270,16 @@ void Player::Render(RenderContext& rc)
 <<<<<<< HEAD
 
 
+    // シャドウマップ
+    {
+        ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+        shader->Begin(rc);// シェーダーにカメラの情報を渡す
+
+
+        shader->Draw(rc, model);
+
+        shader->End(rc);
+    }
 }
 
 // シャドウマップ

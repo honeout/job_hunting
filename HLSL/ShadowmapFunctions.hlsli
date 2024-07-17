@@ -48,6 +48,7 @@ shadowColor, float shadowBias)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 //// UNIT12
 ////--------------------------------------
@@ -60,6 +61,19 @@ shadowColor, float shadowBias)
 //// shadowBias@                : [“x”äŠr—p‚ÌƒIƒtƒZƒbƒg’l
 //// shadowColor                : ‰e‚ÌF
 //// •Ô‚·’l@                : ‰e‚ÌF
+=======
+// UNIT12
+//--------------------------------------
+//  PCFƒtƒBƒ‹ƒ^[Œƒ\ƒtƒgƒVƒƒƒhƒEƒ}ƒbƒv
+//--------------------------------------
+// tex          : ƒVƒƒƒhƒEƒ}ƒbƒv
+// lightViewProjection    : ƒTƒ“ƒvƒ‰ƒXƒXƒe[ƒg
+// shadowTexcoord@                : ƒVƒƒƒhƒEƒ}ƒbƒvQÆ—pî•ñ
+// shadowColor@                : ‰e‚ÌF
+// shadowBias@                : [“x”äŠr—p‚ÌƒIƒtƒZƒbƒg’l
+// shadowColor                : ‰e‚ÌF
+// •Ô‚·’l@                : ‰e‚ÌF
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 //float3 CalcShadowColorPCFFilter(Texture2D tex, SamplerState samplerState, float3 shadowTexcoord, float3
 //    shadowColor, float shadowBias)
 //{
@@ -68,7 +82,7 @@ shadowColor, float shadowBias)
 //    {
 //        // ƒeƒNƒXƒ`ƒƒ‚Ì—§•‰¡•‚ğæ“¾‚·‚é
 //        uint width, height;
-//        tex.GetDimensions(width, height);
+//        //tex.GetDimensions(width, height);
 //
 //        // Zo
 //        texelSize = float2(1.0f / width, 1.0f / height);

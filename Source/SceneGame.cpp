@@ -159,14 +159,19 @@ void SceneGame::Initialize()
 	);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 	 // •½sŒõŒ¹‚ğ’Ç‰Á
+=======
+	// •½sŒõŒ¹‚ğ’Ç‰Á
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 	{
 		mainDirectionalLight = new Light(LightType::Directional);
 		mainDirectionalLight->SetDirection({ 1,-1,-1 });
 		LightManager::Instance().Register(mainDirectionalLight);
 	}
+<<<<<<< HEAD
 	
 	// “_ŒõŒ¹‚ğ’Ç‰Á
 	{
@@ -187,6 +192,8 @@ void SceneGame::Initialize()
 		LightManager::Instance().Register(light);
 	}
 
+=======
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 
 	// V‚µ‚¢•`‰æƒ^[ƒQƒbƒg‚Ì¶¬
 	{
@@ -217,7 +224,6 @@ void SceneGame::Initialize()
 >>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 
 
-	//LightManager::Instanes().Clear();
 
 	// ƒQ[ƒWƒXƒvƒ‰ƒCƒg
 	gauge = new Sprite();
@@ -236,7 +242,7 @@ void SceneGame::Finalize()
 	// ƒGƒlƒ~[I—¹‰»
 	//EnemyManager::Instance().Clear();
 
-	//AfterimageManager::Instance().Clear();
+	AfterimageManager::Instance().Clear();
 
 	//// ƒJƒƒ‰ƒRƒ“ƒg[ƒ‰[I—¹‰»
 	//if (this->cameraController)
@@ -280,7 +286,7 @@ void SceneGame::Update(float elapsedTime)
 	
 
 	// c‘œƒXƒe[ƒgXV
-	//AfterimageManager::Instance().Update(elapsedTime);
+	AfterimageManager::Instance().Update(elapsedTime);
 
 
 
@@ -302,7 +308,13 @@ void SceneGame::Render()
 	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì•`‰æ
+	RenderShadowmap();
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 
+	Render3DScene();
 
 
 
@@ -314,7 +326,7 @@ void SceneGame::Render()
 	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	dc->OMSetRenderTargets(1, &rtv, dsv);
 
-	//// •`‰æˆ— 
+	// •`‰æˆ— 
 	RenderContext rc;// •`‰æ‚·‚é‚½‚ß‚É•K—v‚Èî•ñ‚ğ‚Ü‚Æ‚ß‚½\‘¢‘Ì
 	rc.lightDirection = { 0.0f, -1.0f, 0.0f, 0.0f };	// ƒ‰ƒCƒg•ûŒüi‰º•ûŒüj
 
@@ -326,6 +338,7 @@ void SceneGame::Render()
 	// ƒ‚ƒfƒ‹‚»‚ê‚¼‚ê‚ÅƒVƒF[ƒ_[‚ğ‚·‚é‚½‚ß‚É
 	rc.deviceContext = dc;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì•`‰æ
@@ -376,9 +389,14 @@ void SceneGame::Render()
 
 =======
 >>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
+=======
+	// ƒ‰ƒCƒg‚Ìî•ñ‚ğ‹l‚ß‚Ş
+	//LightManager::Instanes().PushRenderContext(rc);
+
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 	// 3Dƒ‚ƒfƒ‹•`‰æ
 	{
-		//ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+		ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 		// ƒVƒF[ƒ_[‚É•K—v‚Èî•ñ‚ğ‘‚­
 		shader->Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
 		// ƒXƒe[ƒW•`‰æ
@@ -399,7 +417,40 @@ void SceneGame::Render()
 
 		//ActorManager::Instance().Render(rc.view, rc.projection);
 		//
+		// ‘‚«‚İæ‚ğƒoƒbƒNƒoƒbƒtƒ@‚É•Ï‚¦‚ÄƒIƒtƒXƒNƒŠ[ƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌŒ‹‰Ê‚ğ•`‰æ‚·‚é
+		{
+			ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
+			ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
+			// ‰æ–ÊƒNƒŠƒA•ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgİ’è
+			FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
+			dc->ClearRenderTargetView(rtv, color);
+			dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+			dc->OMSetRenderTargets(1, &rtv, dsv);
+
+			// UINT11
+			// ƒrƒ…[ƒ|[ƒg‚Ìİ’è
+			D3D11_VIEWPORT vp = {};
+			vp.Width = graphics.GetScreenWidth();
+			vp.Height = graphics.GetScreenHeight();
+			vp.MinDepth = 0.0f;
+			vp.MaxDepth = 1.0f;
+			dc->RSSetViewports(1, &vp);
+
+			// unit09
+			//RenderContext rc;
+			//rc.deviceContext = dc;
+
+			//SpriteShader* shader = graphics.GetShader(SpriteShaderId::ColorGrading);
+			//shader->Begin(rc);
+
+			////rc.colorGradingData = colorGradingData;
+			//shader->Draw(rc, sprite.get());
+
+			//shader->End(rc);
+			// ƒ|ƒXƒgƒvƒƒZƒX‚ğˆ—‚ğs‚¤
+			postprocessingRenderer->Render(dc);
+		}
 
 
 		//ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
@@ -435,6 +486,7 @@ void SceneGame::Render()
 		EffectManager::Instance().Render(rc.view, rc.projection);
 	}
 
+<<<<<<< HEAD
 
 	// ƒfƒoƒbƒOî•ñ‚Ì•\¦
 	{
@@ -456,11 +508,10 @@ void SceneGame::Render()
 		}
 	}
 
+=======
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 	// 3DƒfƒoƒbƒO•`‰æ
 	{
-
-
-
 		// “–‚½‚è”»’è‚ÌŒ`‚ğ‚¤‚Â
 		// ƒvƒŒƒCƒ„[ƒfƒoƒbƒOƒvƒŠƒ~ƒeƒBƒu•`‰æ
 		//player->DrawDebugPrimitive();
@@ -497,6 +548,7 @@ void SceneGame::Render()
 	
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 void SceneGame::DrawDebugParameter(DirectX::XMFLOAT4X4& transform, const char* label)
@@ -617,6 +669,8 @@ void SceneGame::DrawGrid(ID3D11DeviceContext* context, int subdivisions, float s
 	}
 }
 
+=======
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 void SceneGame::Render3DScene()
 {
 	Graphics& graphics = Graphics::Instance();
@@ -678,7 +732,7 @@ void SceneGame::Render3DScene()
 
 		//shader->End(rc);
 
-		ActorManager::Instance().Render(rc);
+		ActorManager::Instance().Render(rc.view, rc.projection);
 
 
 	}
@@ -686,7 +740,7 @@ void SceneGame::Render3DScene()
 	// ƒfƒoƒbƒOƒvƒŠƒ~ƒeƒBƒu‚Ì•\¦
 	{
 		// ƒOƒŠƒbƒh•`‰æ
-		DrawGrid(dc, 20, 10.0f);
+		//DrawGrid(dc, 20, 10.0f);
 
 		// ƒ‰ƒCƒg‚ÌƒfƒoƒbƒOƒvƒŠƒ~ƒeƒBƒu‚Ì•`‰æ
 		LightManager::Instance().DrawDebugPrimitive();
@@ -708,8 +762,7 @@ void SceneGame::RenderShadowmap()
 	// ‰æ–ÊƒNƒŠƒA
 	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	if (!mainDirectionalLight)
-		return;
+
 
 	// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgİ’è
 	dc->OMSetRenderTargets(0, &rtv, dsv);
@@ -743,9 +796,7 @@ void SceneGame::RenderShadowmap()
 		DirectX::XMStoreFloat4x4(&lightViewProjeciton, V * P);
 	}
 
-	ActorManager::Instance().RenderShadowmap(rc);
-
-	rc.deviceContext->OMSetRenderTargets(0, &rtv, nullptr);
+	ActorManager::Instance().RenderShadowmap(rc.view, rc.projection);
 }
 
 

@@ -38,12 +38,13 @@ public:
 	void Render() override;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	// •`‰æˆ—
 	void DrawDebugParameter(DirectX::XMFLOAT4X4& transform, const char* label);
+=======
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 
-	// ƒOƒŠƒbƒh•`‰æ
-	void DrawGrid(ID3D11DeviceContext* context, int subdivisions, float scale);
 
 
 private:
@@ -95,7 +96,6 @@ private:
 
 	// ƒIƒtƒXƒNƒŠ[ƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒO—p•`‰æƒ^[ƒQƒbƒg
 	std::unique_ptr<RenderTarget> renderTarget;
-
 
 	// ƒVƒƒƒhƒEƒ}ƒbƒv—pî•ñ
 	Light* mainDirectionalLight = nullptr; // ƒVƒƒƒhƒEƒ}ƒbƒv‚ğ¶¬‚·‚é•½sŒõŒ¹
