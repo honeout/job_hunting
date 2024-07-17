@@ -8,6 +8,7 @@
 
 #include "AfterimageManager.h"
 
+<<<<<<< HEAD
 
 #include "Light.h"
 #include "LightManager.h"
@@ -15,6 +16,8 @@
 #include "PostprocessingRenderer.h"
 #include "Graphics\DepthStencil.h"
 
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 // ƒQ[ƒ€ƒV[ƒ“
 class SceneGame : public Scene
 {
@@ -34,6 +37,7 @@ public:
 	// •`‰æˆ—
 	void Render() override;
 
+<<<<<<< HEAD
 
 	// •`‰æˆ—
 	void DrawDebugParameter(DirectX::XMFLOAT4X4& transform, const char* label);
@@ -49,6 +53,9 @@ private:
 	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì•`‰æ
 	void RenderShadowmap();
 
+=======
+private:
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 	// ƒGƒlƒ~[HPƒQ[ƒW•`‰æ
 	void RenderEnemyGauge(
 	ID3D11DeviceContext* dc,
@@ -82,6 +89,7 @@ private:
 	float reduceMax = 0.4f;
 	// c‘œÁ‚¦‚é‚Ü‚Å
 	float reduce = reduceMax;
+<<<<<<< HEAD
 
 
 
@@ -101,4 +109,6 @@ private:
 	std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
 
 
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 };

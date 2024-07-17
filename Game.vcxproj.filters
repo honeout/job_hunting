@@ -222,10 +222,13 @@
     <ClInclude Include="Source\StateBase.h" />
     <ClInclude Include="Source\StateDerived.h" />
     <ClInclude Include="Source\StateMachine.h" />
+<<<<<<< HEAD
     <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\LightManager.h" />
     <ClInclude Include="Source\PostprocessingRenderer.h" />
     <ClInclude Include="Source\Graphics\DepthStencil.h" />
+=======
+>>>>>>> parent of 8a0ff20 (とりあえずシェーダー綺麗な奴入った)
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -411,6 +414,7 @@
     <ClCompile Include="Source\StateMachine.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Source\Light.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -423,6 +427,8 @@
     <ClCompile Include="Source\Graphics\DepthStencil.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+=======
+>>>>>>> parent of 8a0ff20 (とりあえずシェーダー綺麗な奴入った)
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Debug.hlsli">
@@ -449,6 +455,7 @@
     <None Include="HLSL\ShadowmapFunctions.hlsli">
       <Filter>HLSL</Filter>
     </None>
+<<<<<<< HEAD
     <None Include="HLSL\Phong.hlsli">
       <Filter>HLSL</Filter>
     </None>
@@ -470,6 +477,8 @@
     <None Include="HLSL\FilterFunctions.hlsli">
       <Filter>HLSL</Filter>
     </None>
+=======
+>>>>>>> parent of 8a0ff20 (とりあえずシェーダー綺麗な奴入った)
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="HLSL\DebugPS.hlsl">
@@ -511,6 +520,7 @@
     <FxCompile Include="HLSL\ShadowmapCasterVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
+<<<<<<< HEAD
     <FxCompile Include="HLSL\PhongPS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
@@ -541,5 +551,7 @@
     <FxCompile Include="HLSL\LuminanceExtractionVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
+=======
+>>>>>>> parent of 8a0ff20 (とりあえずシェーダー綺麗な奴入った)
   </ItemGroup>
 </Project>

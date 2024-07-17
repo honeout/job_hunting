@@ -27,11 +27,16 @@
 #include "TransForm2D.h"
 #include "UiManager.h"
 
+<<<<<<< HEAD
 
 
 
 // ƒVƒƒƒhƒEƒ}ƒbƒv‚ÌƒTƒCƒY
 static const UINT SHADOWMAP_SIZE = 2048;
+=======
+
+
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 
 // ‰Šú‰»
 void SceneGame::Initialize()
@@ -153,6 +158,7 @@ void SceneGame::Initialize()
 		1000.0f
 	);
 
+<<<<<<< HEAD
 
 
 	 // •½sŒõŒ¹‚ğ’Ç‰Á
@@ -207,6 +213,8 @@ void SceneGame::Initialize()
 		srvData.height = renderTarget->GetHeight();
 		postprocessingRenderer->SetSceneData(srvData);
 	}
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 
 
 	//LightManager::Instanes().Clear();
@@ -293,10 +301,13 @@ void SceneGame::Render()
 	ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
+<<<<<<< HEAD
 
 
 
 
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 	// ‰æ–ÊƒNƒŠƒA•ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgİ’è
 	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0`1.0)
 	dc->ClearRenderTargetView(rtv, color);
@@ -315,6 +326,7 @@ void SceneGame::Render()
 	// ƒ‚ƒfƒ‹‚»‚ê‚¼‚ê‚ÅƒVƒF[ƒ_[‚ğ‚·‚é‚½‚ß‚É
 	rc.deviceContext = dc;
 
+<<<<<<< HEAD
 
 	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì•`‰æ
 	RenderShadowmap();
@@ -362,11 +374,13 @@ void SceneGame::Render()
 	}
 
 
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 	// 3Dƒ‚ƒfƒ‹•`‰æ
 	{
 		//ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 		// ƒVƒF[ƒ_[‚É•K—v‚Èî•ñ‚ğ‘‚­
-		//shader->Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
+		shader->Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
 		// ƒXƒe[ƒW•`‰æ
 		//StageManager::instance().Render(rc, shader);
 	// ƒvƒŒƒCƒ„[•`‰æ
@@ -378,9 +392,10 @@ void SceneGame::Render()
 		// ƒGƒlƒ~[•`‰æ
 		//EnemyManager::Instance().Render(rc, shader);
 
-		//shader->End(rc);
+		shader->End(rc);
 
 		//ActorManager::Instance().UpdateTransform();
+<<<<<<< HEAD
 
 		//ActorManager::Instance().Render(rc.view, rc.projection);
 		//
@@ -390,6 +405,14 @@ void SceneGame::Render()
 		//ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
 		//
 		//mdlshader->Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
+=======
+		ActorManager::Instance().Render(rc.view, rc.projection);
+		
+
+		ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
+		
+		mdlshader->Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 
 		ActorManager::Instance().Render(rc);
 		
@@ -474,6 +497,7 @@ void SceneGame::Render()
 	
 }
 
+<<<<<<< HEAD
 
 void SceneGame::DrawDebugParameter(DirectX::XMFLOAT4X4& transform, const char* label)
 {
@@ -725,6 +749,8 @@ void SceneGame::RenderShadowmap()
 }
 
 
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 // ƒGƒlƒ~[HPƒQ[ƒW•`‰æ
 void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 	const DirectX::XMFLOAT4X4& view,

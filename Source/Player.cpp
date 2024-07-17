@@ -268,6 +268,7 @@ void Player::Render(RenderContext& rc)
     shader->Draw(rc, model);
    
     shader->End(rc);
+<<<<<<< HEAD
 
 
 }
@@ -285,6 +286,8 @@ void Player::RenderShadowmap(RenderContext& rc)
     shader->End(rc);
     
 
+=======
+>>>>>>> parent of 8a0ff20 (とりあえずシェーダー綺麗な奴入った)
 }
 
 

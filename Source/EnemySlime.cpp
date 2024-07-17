@@ -138,7 +138,11 @@ void EnemySlime::Render(RenderContext& rc)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();
+<<<<<<< HEAD
     ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
+=======
+    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
     shader->Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
 
 

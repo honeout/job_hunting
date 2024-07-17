@@ -218,6 +218,7 @@ void ActorManager::Render(RenderContext rc)
 
 }
 
+<<<<<<< HEAD
 
 void ActorManager::RenderShadowmap(RenderContext rc)
 {
@@ -240,6 +241,8 @@ void ActorManager::RenderShadowmap(RenderContext rc)
 }
 
 
+=======
+>>>>>>> parent of 8a0ff20 (とりあえずシェーダー綺麗な奴入った)
 // ���X�^�[�`��
 void ActorManager::DrawLister()
 {

@@ -2,6 +2,7 @@
 
 #include <DirectXMath.h>
 
+<<<<<<< HEAD
 // •½sŒõŒ¹î•ñ
 struct DirectionalLightData
 {
@@ -93,18 +94,23 @@ struct ShadowMapData
 
 };
 
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 // ƒŒƒ“ƒ_[ƒRƒ“ƒeƒLƒXƒg
 struct RenderContext
 {
 	ID3D11DeviceContext* deviceContext;
 
+<<<<<<< HEAD
 	// ƒJƒƒ‰î•ñ
 	DirectX::XMFLOAT4		viewPosition;
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 	DirectX::XMFLOAT4X4		view;
 	DirectX::XMFLOAT4X4		projection;
-
 	DirectX::XMFLOAT4		lightDirection;
 	float                   alpha;
+<<<<<<< HEAD
 
 
 	// ƒ‰ƒCƒgî•ñ
@@ -126,4 +132,6 @@ struct RenderContext
 
 	// ƒVƒƒƒhƒEƒ}ƒbƒvî•ñ
 	ShadowMapData			shadowMapData;
+=======
+>>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
 };
