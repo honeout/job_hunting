@@ -96,6 +96,7 @@ public:
 
 	// �`��
 	void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 
@@ -104,6 +105,10 @@ public:
 	void RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
 >>>>>>> parent of 0db33c3 (一度保存ワーニング大量)
 
+=======
+
+	void RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+>>>>>>> parent of 0db33c3 (一度保存ワーニング大量)
 
 private:
 	void DrawLister();

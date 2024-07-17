@@ -160,9 +160,13 @@ void SceneGame::Initialize()
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 	 // •½sŒõŒ¹‚ğ’Ç‰Á
+=======
+	// •½sŒõŒ¹‚ğ’Ç‰Á
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 =======
 	// •½sŒõŒ¹‚ğ’Ç‰Á
 >>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
@@ -171,6 +175,7 @@ void SceneGame::Initialize()
 		mainDirectionalLight->SetDirection({ 1,-1,-1 });
 		LightManager::Instance().Register(mainDirectionalLight);
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 	
 	// “_ŒõŒ¹‚ğ’Ç‰Á
@@ -192,6 +197,8 @@ void SceneGame::Initialize()
 		LightManager::Instance().Register(light);
 	}
 
+=======
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 =======
 >>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 
@@ -309,13 +316,19 @@ void SceneGame::Render()
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì•`‰æ
 	RenderShadowmap();
 >>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 
 	Render3DScene();
+=======
+	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì•`‰æ
+	RenderShadowmap();
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 
+	Render3DScene();
 
 
 =======
@@ -338,6 +351,7 @@ void SceneGame::Render()
 	// ƒ‚ƒfƒ‹‚»‚ê‚¼‚ê‚ÅƒVƒF[ƒ_[‚ğ‚·‚é‚½‚ß‚É
 	rc.deviceContext = dc;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -389,6 +403,11 @@ void SceneGame::Render()
 
 =======
 >>>>>>> parent of 8a0ff20 (ã¨ã‚Šã‚ãˆãšã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç¶ºéº—ãªå¥´å…¥ã£ãŸ)
+=======
+	// ƒ‰ƒCƒg‚Ìî•ñ‚ğ‹l‚ß‚Ş
+	//LightManager::Instanes().PushRenderContext(rc);
+
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 =======
 	// ƒ‰ƒCƒg‚Ìî•ñ‚ğ‹l‚ß‚Ş
 	//LightManager::Instanes().PushRenderContext(rc);
@@ -487,6 +506,7 @@ void SceneGame::Render()
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	// ƒfƒoƒbƒOî•ñ‚Ì•\¦
 	{
@@ -508,6 +528,8 @@ void SceneGame::Render()
 		}
 	}
 
+=======
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 =======
 >>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 	// 3DƒfƒoƒbƒO•`‰æ
@@ -548,6 +570,7 @@ void SceneGame::Render()
 	
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -669,6 +692,8 @@ void SceneGame::DrawGrid(ID3D11DeviceContext* context, int subdivisions, float s
 	}
 }
 
+=======
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 =======
 >>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 void SceneGame::Render3DScene()

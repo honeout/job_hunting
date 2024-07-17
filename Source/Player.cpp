@@ -269,7 +269,10 @@ void Player::Render(RenderContext& rc)
     shader->End(rc);
 <<<<<<< HEAD
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
     // ƒVƒƒƒhƒEƒ}ƒbƒv
     {
         ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);

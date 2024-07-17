@@ -518,7 +518,11 @@ mov o0.xyz, r0.xyzx
 mov o0.w, r0.w
 ret 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Approximately 266 instruction slots used
+=======
+// Approximately 267 instruction slots used
+>>>>>>> parent of 0db33c3 (一度保存ワーニング大量)
 =======
 // Approximately 267 instruction slots used
 >>>>>>> parent of 0db33c3 (一度保存ワーニング大量)

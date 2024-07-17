@@ -49,6 +49,7 @@ shadowColor, float shadowBias)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 //// UNIT12
 ////--------------------------------------
@@ -62,6 +63,8 @@ shadowColor, float shadowBias)
 //// shadowColor                : ‰e‚ÌF
 //// •Ô‚·’l@                : ‰e‚ÌF
 =======
+=======
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 // UNIT12
 //--------------------------------------
 //  PCFƒtƒBƒ‹ƒ^[Œƒ\ƒtƒgƒVƒƒƒhƒEƒ}ƒbƒv
@@ -73,6 +76,9 @@ shadowColor, float shadowBias)
 // shadowBias@                : [“x”äŠr—p‚ÌƒIƒtƒZƒbƒg’l
 // shadowColor                : ‰e‚ÌF
 // •Ô‚·’l@                : ‰e‚ÌF
+<<<<<<< HEAD
+>>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
+=======
 >>>>>>> parent of 0db33c3 (ä¸€åº¦ä¿å­˜ãƒ¯ãƒ¼ãƒ‹ãƒ³ã‚°å¤§é‡)
 //float3 CalcShadowColorPCFFilter(Texture2D tex, SamplerState samplerState, float3 shadowTexcoord, float3
 //    shadowColor, float shadowBias)

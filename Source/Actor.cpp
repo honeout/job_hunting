@@ -220,8 +220,12 @@ void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOA
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 void ActorManager::RenderShadowmap(RenderContext rc)
+=======
+void ActorManager::RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
+>>>>>>> parent of 0db33c3 (一度保存ワーニング大量)
 =======
 void ActorManager::RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
 >>>>>>> parent of 0db33c3 (一度保存ワーニング大量)

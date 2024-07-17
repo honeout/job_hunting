@@ -39,12 +39,15 @@ public:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	// �`�揈��
 	void DrawDebugParameter(DirectX::XMFLOAT4X4& transform, const char* label);
 =======
 >>>>>>> parent of 0db33c3 (一度保存ワーニング大量)
 
+=======
+>>>>>>> parent of 0db33c3 (一度保存ワーニング大量)
 
 
 private:
