@@ -210,28 +210,72 @@
     <ClInclude Include="Source\Renderer.h">
       <Filter>Source\Character</Filter>
     </ClInclude>
-    <ClInclude Include="Source\BulletFiring.h" />
-    <ClInclude Include="Source\ModelControll.h" />
-    <ClInclude Include="Source\Transform.h" />
-    <ClInclude Include="Source\SpriteControll.h" />
-    <ClInclude Include="Source\Graphics\ShadowmapCasterShader.h" />
-    <ClInclude Include="Source\Ui.h" />
-    <ClInclude Include="Source\TransForm2D.h" />
-    <ClInclude Include="Source\UiManager.h" />
-    <ClInclude Include="Source\ComponentlF.h" />
-    <ClInclude Include="Source\StateBase.h" />
-    <ClInclude Include="Source\StateDerived.h" />
-    <ClInclude Include="Source\StateMachine.h" />
-    <ClInclude Include="Source\Graphics\DepthStencil.h" />
-    <ClInclude Include="Source\Graphics\RenderTarget.h" />
-    <ClInclude Include="Source\Light.h" />
-    <ClInclude Include="Source\LightManager.h" />
-    <ClInclude Include="Source\Graphics\PhongShader.h" />
-    <ClInclude Include="Source\PostprocessingRenderer.h" />
-    <ClInclude Include="Source\Graphics\FinalpassShader.h" />
-    <ClInclude Include="Source\Graphics\GaussianBlurShader.h" />
-    <ClInclude Include="Source\Graphics\LuminanceExtractionShader.h" />
-    <ClInclude Include="Source\Graphics\ColorGradingShader.h" />
+    <ClInclude Include="Source\Light.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LightManager.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BulletFiring.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\ColorGradingShader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ComponentlF.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\DepthStencil.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\FinalpassShader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\GaussianBlurShader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\LuminanceExtractionShader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModelControll.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\PhongShader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PostprocessingRenderer.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\RenderTarget.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\ShadowmapCasterShader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SpriteControll.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StateBase.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StateDerived.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StateMachine.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Transform.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TransForm2D.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Ui.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UiManager.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">

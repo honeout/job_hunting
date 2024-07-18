@@ -166,7 +166,7 @@ Graphics::Graphics(HWND hWnd)
 		modelShaders[static_cast<int>(ModelShaderId::Phong)] =
 			std::make_unique<PhonShader>(device.Get());
 
-
+	
 
 		modelShaders[static_cast<int>(ModelShaderId::Lanbert)] =
 			std::make_unique<LambertShader>(device.Get());

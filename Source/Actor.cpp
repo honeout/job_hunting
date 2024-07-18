@@ -162,24 +162,24 @@ void ActorManager::Update(float elapsedTime)
 //}
 
 // 描画
-void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
+void ActorManager::Render(RenderContext rc)
 {
 	Graphics& graphics = Graphics::Instance();
 	//Shader* shader = graphics.GetShader();
 	//ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
+	//ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	// 描画処理 
-	RenderContext rc;// 描画するために必要な情報をまとめた構造体
+	//RenderContext rc;// 描画するために必要な情報をまとめた構造体
 
-	rc.view = view;
-	rc.projection = projection;
+	//rc.view = view;
+	//rc.projection = projection;
 
-	// ライトの方向
-	DirectX::XMFLOAT3 lightDirection = DirectX::XMFLOAT3(0.2f, -0.8f, 0.0f);
-	
-	rc.lightDirection = { lightDirection.x,lightDirection.y,lightDirection.z ,0};
-	// モデルそれぞれでシェーダーをするために
-	rc.deviceContext = dc;
+	//// ライトの方向
+	//DirectX::XMFLOAT3 lightDirection = DirectX::XMFLOAT3(0.2f, -0.8f, 0.0f);
+	//
+	//rc.lightDirection = { lightDirection.x,lightDirection.y,lightDirection.z ,0};
+	//// モデルそれぞれでシェーダーをするために
+	//rc.deviceContext = dc;
 	// 描画
 	//shader->Begin(dc, view, projection, lightDirection);
 

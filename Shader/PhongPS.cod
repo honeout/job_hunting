@@ -47,15 +47,27 @@
 //
 // }
 //
+// cbuffer CbShadowmap
+// {
+//
+//   row_major float4x4 lightViewProjection;// Offset:    0 Size:    64 [unused]
+//   float3 shadowColor;                // Offset:   64 Size:    12
+//   float shadowBias;                  // Offset:   76 Size:     4
+//
+// }
+//
 //
 // Resource Bindings:
 //
 // Name                                 Type  Format         Dim      HLSL Bind  Count
 // ------------------------------ ---------- ------- ----------- -------------- ------
 // diffuseMapSamplerState            sampler      NA          NA             s0      1 
+// shadowMapSamplerState             sampler      NA          NA             s1      1 
 // diffuseMap                        texture  float4          2d             t0      1 
 // normalMap                         texture  float4          2d             t1      1 
+// shadowMap                         texture  float4          2d             t2      1 
 // CbScene                           cbuffer      NA          NA            cb0      1 
+// CbShadowmap                       cbuffer      NA          NA            cb3      1 
 //
 //
 //
@@ -70,7 +82,7 @@
 // BINORMAL                 0   xyz         4     NONE   float   xyz 
 // TEXCOORD                 0   xy          5     NONE   float   xy  
 // COLOR                    0   xyzw        6     NONE   float   xyzw
-// TEXCOORD                 1   xyz         7     NONE   float       
+// TEXCOORD                 1   xyz         7     NONE   float   xyz 
 //
 //
 // Output signature:
@@ -82,15 +94,19 @@
 ps_5_0
 dcl_globalFlags refactoringAllowed | skipOptimization
 dcl_constantbuffer CB0[65], dynamicIndexed
+dcl_constantbuffer CB3[5], immediateIndexed
 dcl_sampler s0, mode_default
+dcl_sampler s1, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_resource_texture2d (float,float,float,float) t1
+dcl_resource_texture2d (float,float,float,float) t2
 dcl_input_ps linear v1.xyz
 dcl_input_ps linear v2.xyz
 dcl_input_ps linear v3.xyz
 dcl_input_ps linear v4.xyz
 dcl_input_ps linear v5.xy
 dcl_input_ps linear v6.xyzw
+dcl_input_ps linear v7.xyz
 dcl_output o0.xyzw
 dcl_temps 20
 //
@@ -105,7 +121,7 @@ dcl_temps 20
 //   v7.x <- pin.shadowTexcoord.x; v7.y <- pin.shadowTexcoord.y; v7.z <- pin.shadowTexcoord.z; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 19 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
+#line 19 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongPS.hlsl"
 sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v5.xyxx, t0.xyzw, s0
 mul r0.xyzw, r0.xyzw, v6.xyzw  // r0.x <- diffuseColor.x; r0.y <- diffuseColor.y; r0.z <- diffuseColor.z; r0.w <- diffuseColor.w
 
@@ -178,7 +194,7 @@ mov r2.xyz, r2.xyzx
 mov r7.xyz, cb0[7].xyzx
 mov r5.xyz, r5.xyzx
 
-#line 50 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 50 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\Light.hlsli"
 mov r8.xyz, -r2.xyzx
 dp3 r2.w, r8.xyzx, r1.xyzx
 itof r3.w, l(0)
@@ -190,7 +206,7 @@ mul r2.w, r5.x, r2.w  // r2.w <- d
 mul r7.xyz, r7.xyzx, r5.xyzx
 mul r7.xyz, r2.wwww, r7.xyzx  // r7.x <- <CalcLambertDiffuse return value>.x; r7.y <- <CalcLambertDiffuse return value>.y; r7.z <- <CalcLambertDiffuse return value>.z
 
-#line 56 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
+#line 56 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongPS.hlsl"
 mov r7.xyz, r7.xyzx  // r7.x <- directionalDiffuse.x; r7.y <- directionalDiffuse.y; r7.z <- directionalDiffuse.z
 
 #line 57
@@ -202,7 +218,7 @@ mov r3.xyz, r3.xyzx
 mov r1.w, r1.w
 mov r6.xyz, r6.xyzx
 
-#line 71 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 71 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\Light.hlsli"
 dp3 r2.w, r2.xyzx, r1.xyzx
 add r2.w, r2.w, r2.w
 mov r2.w, -r2.w
@@ -223,8 +239,88 @@ exp r2.w, r2.w  // r2.w <- d
 mul r8.xyz, r8.xyzx, r2.wwww
 mul r8.xyz, r6.xyzx, r8.xyzx  // r8.x <- <CalcPhongSpecular return value>.x; r8.y <- <CalcPhongSpecular return value>.y; r8.z <- <CalcPhongSpecular return value>.z
 
-#line 57 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
+#line 57 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongPS.hlsl"
 mov r8.xyz, r8.xyzx  // r8.x <- directionalSpecular.x; r8.y <- directionalSpecular.y; r8.z <- directionalSpecular.z
+
+#line 66
+nop 
+nop 
+nop 
+mov r9.xyz, v7.xyzx
+mov r10.xyz, cb3[4].xyzx
+mov r2.w, cb3[4].w
+
+#line 69 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\ShadowmapFunctions.hlsli"
+resinfo_indexable(texture2d)(float,float,float,float)_uint r11.xy, l(0), t2.xyzw
+mov r11.x, r11.x  // r11.x <- width
+mov r11.y, r11.y  // r11.y <- height
+
+#line 72
+utof r3.w, r11.x
+div r12.x, l(1.000000), r3.w  // r12.x <- texelSize.x
+utof r3.w, r11.y
+div r12.y, l(1.000000), r3.w  // r12.y <- texelSize.y
+
+#line 75
+itof r3.w, l(0)  // r3.w <- factor
+
+#line 77
+mov r4.w, l(-2)  // r4.w <- x
+mov r5.w, r3.w  // r5.w <- factor
+mov r6.w, r4.w  // r6.w <- x
+loop 
+  ige r7.w, l(2), r6.w
+  breakc_z r7.w
+
+#line 79
+  mov r7.w, l(-2)  // r7.w <- y
+  mov r8.w, r5.w  // r8.w <- factor
+  mov r9.w, r7.w  // r9.w <- y
+  loop 
+    ige r10.w, l(2), r9.w
+    breakc_z r10.w
+
+#line 82
+    itof r11.x, r6.w
+    itof r11.y, r9.w
+    mul r11.xy, r11.xyxx, r12.xyxx
+    add r11.xy, r9.xyxx, r11.xyxx
+    sample_indexable(texture2d)(float,float,float,float) r10.w, r11.xyxx, t2.yzwx, s1
+    mov r10.w, r10.w  // r10.w <- depth
+
+#line 83
+    mov r10.w, -r10.w
+    add r10.w, r9.z, r10.w
+    ge r10.w, r2.w, r10.w
+    movc r10.w, r10.w, l(1.000000), l(0)
+    add r8.w, r8.w, r10.w
+
+#line 84
+    iadd r9.w, r9.w, l(1)
+  endloop 
+  mov r5.w, r8.w  // r5.w <- factor
+
+#line 85
+  iadd r6.w, r6.w, l(1)
+endloop 
+
+#line 87
+itof r9.xyz, l(1, 1, 1, 0)
+itof r2.w, l(25)
+div r2.w, r5.w, r2.w
+mov r11.xyz, -r10.xyzx
+add r9.xyz, r9.xyzx, r11.xyzx
+mul r9.xyz, r2.wwww, r9.xyzx
+add r9.xyz, r9.xyzx, r10.xyzx  // r9.x <- <CalcShadowColorPCFFilter return value>.x; r9.y <- <CalcShadowColorPCFFilter return value>.y; r9.z <- <CalcShadowColorPCFFilter return value>.z
+
+#line 66 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongPS.hlsl"
+mov r9.xyz, r9.xyzx  // r9.x <- shadow.x; r9.y <- shadow.y; r9.z <- shadow.z
+
+#line 68
+mul r7.xyz, r7.xyzx, r9.xyzx
+
+#line 69
+mul r8.xyz, r8.xyzx, r9.xyzx
 
 #line 78
 itof r9.xyz, l(0, 0, 0, 0)  // r9.x <- pointDiffuse.x; r9.y <- pointDiffuse.y; r9.z <- pointDiffuse.z
@@ -279,7 +375,7 @@ loop
   mov r15.xyz, cb0[r4.w + 9].xyzx
   mov r16.xyz, r5.xyzx
 
-#line 50 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 50 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\Light.hlsli"
   mov r17.xyz, -r13.xyzx
   dp3 r4.w, r17.xyzx, r14.xyzx
   itof r6.w, l(0)
@@ -291,7 +387,7 @@ loop
   mul r14.xyz, r15.xyzx, r16.xyzx
   mul r14.xyz, r4.wwww, r14.xyzx  // r14.x <- <CalcLambertDiffuse return value>.x; r14.y <- <CalcLambertDiffuse return value>.y; r14.z <- <CalcLambertDiffuse return value>.z
 
-#line 101 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
+#line 101 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongPS.hlsl"
   mul r14.xyz, r5.wwww, r14.xyzx
   add r11.xyz, r11.xyzx, r14.xyzx
 
@@ -305,7 +401,7 @@ loop
   mov r4.w, r1.w
   mov r17.xyz, r6.xyzx
 
-#line 71 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 71 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\Light.hlsli"
   dp3 r6.w, r13.xyzx, r14.xyzx
   add r6.w, r6.w, r6.w
   mov r6.w, -r6.w
@@ -326,7 +422,7 @@ loop
   mul r13.xyz, r15.xyzx, r4.wwww
   mul r13.xyz, r17.xyzx, r13.xyzx  // r13.x <- <CalcPhongSpecular return value>.x; r13.y <- <CalcPhongSpecular return value>.y; r13.z <- <CalcPhongSpecular return value>.z
 
-#line 104 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
+#line 104 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongPS.hlsl"
   mul r13.xyz, r5.wwww, r13.xyzx
   add r12.xyz, r12.xyzx, r13.xyzx
 
@@ -417,7 +513,7 @@ loop
   mov r17.xyz, cb0[r5.w + 34].xyzx
   mov r18.xyz, r5.xyzx
 
-#line 50 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 50 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\Light.hlsli"
   mov r19.xyz, -r15.xyzx
   dp3 r5.w, r19.xyzx, r16.xyzx
   itof r6.w, l(0)
@@ -429,7 +525,7 @@ loop
   mul r16.xyz, r17.xyzx, r18.xyzx
   mul r16.xyz, r5.wwww, r16.xyzx  // r16.x <- <CalcLambertDiffuse return value>.x; r16.y <- <CalcLambertDiffuse return value>.y; r16.z <- <CalcLambertDiffuse return value>.z
 
-#line 148 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
+#line 148 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongPS.hlsl"
   mul r16.xyz, r4.wwww, r16.xyzx
   add r13.xyz, r13.xyzx, r16.xyzx
 
@@ -443,7 +539,7 @@ loop
   mov r5.w, r1.w
   mov r19.xyz, r6.xyzx
 
-#line 71 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 71 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\Light.hlsli"
   dp3 r6.w, r15.xyzx, r16.xyzx
   add r6.w, r6.w, r6.w
   mov r6.w, -r6.w
@@ -464,7 +560,7 @@ loop
   mul r15.xyz, r17.xyzx, r5.wwww
   mul r15.xyz, r19.xyzx, r15.xyzx  // r15.x <- <CalcPhongSpecular return value>.x; r15.y <- <CalcPhongSpecular return value>.y; r15.z <- <CalcPhongSpecular return value>.z
 
-#line 151 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
+#line 151 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongPS.hlsl"
   mul r15.xyz, r4.wwww, r15.xyzx
   add r14.xyz, r14.xyzx, r15.xyzx
 
@@ -496,7 +592,7 @@ mov r3.xyz, r3.xyzx
 mov r2.xyz, r2.xyzx
 mov r4.xyz, cb0[7].xyzx
 
-#line 123 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\個人製作\HLSL\Light.hlsli"
+#line 123 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\Light.hlsli"
 dp3 r1.x, r3.xyzx, r1.xyzx
 max r1.x, r1.x, l(0.000000)
 min r1.x, r1.x, l(1.000000)
@@ -516,11 +612,11 @@ max r1.w, r1.w, l(0.000000)
 min r1.w, r1.w, l(1.000000)
 mul r1.xyz, r1.wwww, r1.xyzx  // r1.x <- <CalcRimLight return value>.x; r1.y <- <CalcRimLight return value>.y; r1.z <- <CalcRimLight return value>.z
 
-#line 170 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\PhongPS.hlsl"
+#line 170 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongPS.hlsl"
 add r0.xyz, r0.xyzx, r1.xyzx
 
 #line 172
 mov o0.xyz, r0.xyzx
 mov o0.w, r0.w
 ret 
-// Approximately 267 instruction slots used
+// Approximately 319 instruction slots used

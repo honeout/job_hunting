@@ -1,4 +1,4 @@
-#include "Graphics/Graphics.h"
+ï»¿#include "Graphics/Graphics.h"
 #include "SceneGame.h"
 #include "Camera.h"
 //#include "EnemyManager.h"
@@ -30,15 +30,15 @@
 #include "LightManager.h"
 
 
-// ƒVƒƒƒhƒEƒ}ƒbƒv‚ÌƒTƒCƒY
+// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã®ã‚µã‚¤ã‚º
 static const UINT SHADOWMAP_SIZE = 2048;
 
 
-// ‰Šú‰»
+// åˆæœŸåŒ–
 void SceneGame::Initialize()
 {
 	
-	// ƒXƒe[ƒW‰Šú‰»
+	// ã‚¹ãƒ†ãƒ¼ã‚¸åˆæœŸåŒ–
 	{
 		const char* filename = "Data/Model/ExampleStage/ExampleStage.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -65,7 +65,7 @@ void SceneGame::Initialize()
 
 	//player = new Player;
 	{
-		// ƒvƒŒƒCƒ„[‰Šú‰»
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åˆæœŸåŒ–
 		const char* filename = "Data/Model/Jammo/Jammo.mdl";
 		
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -91,12 +91,12 @@ void SceneGame::Initialize()
 		PlayerManager::Instance().Register(actor);
 		
 	}
-	// “G
+	// æ•µ
 	{
-		// d‚¢
+		// é‡ã„
 		//for (int i = 0; i < 10; ++i)
 		//{
-		// “G‰Šú‰»
+		// æ•µåˆæœŸåŒ–
 		const char* filename = "Data/Model/Slime/Slime.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
@@ -137,7 +137,7 @@ void SceneGame::Initialize()
 
 	//player = new Player();
 
-	// ƒJƒƒ‰‰Šúİ’è Œ©‚¦‚éˆÊ’u’Ç‚¢‚©‚¯‚é‚à‚Ì‚È‚Ç
+	// ã‚«ãƒ¡ãƒ©åˆæœŸè¨­å®š è¦‹ãˆã‚‹ä½ç½®è¿½ã„ã‹ã‘ã‚‹ã‚‚ã®ãªã©
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
 	camera.SetLookAt(
@@ -146,7 +146,7 @@ void SceneGame::Initialize()
 		DirectX::XMFLOAT3(0, 1, 0)
 
 		);
-	// ‚Ç‚Ì”ÍˆÍ‚ğ‚Ç‚ê‚¾‚¯Œ©‚é‚©‰œsŠÜ‚ß
+	// ã©ã®ç¯„å›²ã‚’ã©ã‚Œã ã‘è¦‹ã‚‹ã‹å¥¥è¡Œå«ã‚
 	camera.SetPerspedtiveFov(
 		DirectX::XMConvertToRadians(45),
 		graphics.GetScreenWidth() / graphics.GetScreenHeight(),
@@ -154,14 +154,35 @@ void SceneGame::Initialize()
 		1000.0f
 	);
 
-	// •½sŒõŒ¹‚ğ’Ç‰Á
+
+
+	// å¹³è¡Œå…‰æºã‚’è¿½åŠ 
 	{
 		mainDirectionalLight = new Light(LightType::Directional);
 		mainDirectionalLight->SetDirection({ 1,-1,-1 });
+		//ambientLightColor = { 0.2f,0.2f,0.2f,0.2f };
 		LightManager::Instanes().Register(mainDirectionalLight);
 	}
 
-	// V‚µ‚¢•`‰æƒ^[ƒQƒbƒg‚Ì¶¬
+	// ç‚¹å…‰æºã‚’è¿½åŠ 
+	{
+		Light* light = new Light(LightType::Point);
+		light->SetPosition(DirectX::XMFLOAT3(0, 1, 0));
+		light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+		LightManager::Instanes().Register(light);
+	}
+
+	// ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆã‚’è¿½åŠ 
+	{
+		Light* light = new Light(LightType::Spot);
+		light->SetPosition(DirectX::XMFLOAT3(-30, 20, 0));
+		light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+		light->SetDirection(DirectX::XMFLOAT3(+1, -1, 0));
+		light->SetRange(40.0f);
+		LightManager::Instanes().Register(light);
+	}
+
+	// æ–°ã—ã„æç”»ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ç”Ÿæˆ
 	{
 		Graphics& graphics = Graphics::Instance();
 		renderTarget = std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth())
@@ -171,15 +192,15 @@ void SceneGame::Initialize()
 
 	}
 
-	// ƒVƒƒƒhƒEƒ}ƒbƒv—p‚É[“xƒXƒeƒ“ƒVƒ‹‚Ì¶¬
+	// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ç”¨ã«æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ã®ç”Ÿæˆ
 	{
 		shadowmapDepthStencil = std::make_unique<DepthStencil>(SHADOWMAP_SIZE, SHADOWMAP_SIZE);
 	}
 
-	// ƒ|ƒXƒgƒvƒƒZƒX•`‰æƒNƒ‰ƒX¶¬
+	// ãƒã‚¹ãƒˆãƒ—ãƒ­ã‚»ã‚¹æç”»ã‚¯ãƒ©ã‚¹ç”Ÿæˆ
 	{
 		postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
-		// ƒV[ƒ“ƒeƒNƒXƒ`ƒƒ‚ğİ’è‚µ‚Ä‚¨‚­
+		// ã‚·ãƒ¼ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è¨­å®šã—ã¦ãŠã
 		ShaderResourceViewData srvData;
 		srvData.srv = renderTarget->GetShaderResourceView();
 		srvData.width = renderTarget->GetWidth();
@@ -188,81 +209,82 @@ void SceneGame::Initialize()
 	}
 
 
-	// ƒQ[ƒWƒXƒvƒ‰ƒCƒg
+	// ã‚²ãƒ¼ã‚¸ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
 	gauge = new Sprite();
 }
 
-// I—¹‰»
+// çµ‚äº†åŒ–
 void SceneGame::Finalize()
 {
-	// ƒQ[ƒWƒXƒvƒ‰ƒCƒg
+	// ã‚²ãƒ¼ã‚¸ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
 	if (this->gauge)
 	{
 		delete gauge;
 		gauge = nullptr;
 	}
 
-	// ƒGƒlƒ~[I—¹‰»
+
+	// ã‚¨ãƒãƒŸãƒ¼çµ‚äº†åŒ–
 	//EnemyManager::Instance().Clear();
 
 	AfterimageManager::Instance().Clear();
 
-	//// ƒJƒƒ‰ƒRƒ“ƒg[ƒ‰[I—¹‰»
+	//// ã‚«ãƒ¡ãƒ©ã‚³ãƒ³ãƒˆãƒ¼ãƒ©ãƒ¼çµ‚äº†åŒ–
 	//if (this->cameraController)
 	//{
 	//	delete cameraController;
 	//	cameraController = nullptr;
 	//}
 
-	// ƒvƒŒƒCƒ„[I—¹‰»
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼çµ‚äº†åŒ–
 	//if (this->player)
 	//{
 	//	delete player;
 	//	player = nullptr;
 	//}
-	// ƒXƒe[ƒWI—¹‰»
+	// ã‚¹ãƒ†ãƒ¼ã‚¸çµ‚äº†åŒ–
 	//StageManager::instance().Clear();
 
 	LightManager::Instanes().Clear();
 }
 
-// XVˆ—
+// æ›´æ–°å‡¦ç†
 void SceneGame::Update(float elapsedTime)
 {
 	
-	// ƒJƒƒ‰ƒRƒ“ƒgƒ[ƒ‰[XVˆ—
+	// ã‚«ãƒ¡ãƒ©ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼æ›´æ–°å‡¦ç†
 	//DirectX::XMFLOAT3 target = player->GetPosition();
-	//target.y += 0.5f;// ‘«Œ³‚©‚ç‚T‚OƒZƒ“ƒ`‚®‚ç‚¢
-	//cameraController->SetTarget();// ƒvƒŒƒCƒ„[‚Ì˜“–‚½‚è
+	//target.y += 0.5f;// è¶³å…ƒã‹ã‚‰ï¼•ï¼ã‚»ãƒ³ãƒãã‚‰ã„
+	//cameraController->SetTarget();// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è…°å½“ãŸã‚Š
 	//cameraController->Update(elapsedTime);
 
-	// ƒXƒe[ƒWXVˆ—
+	// ã‚¹ãƒ†ãƒ¼ã‚¸æ›´æ–°å‡¦ç†
 	//StageManager::instance().Update(elapsedTime);
 	
-	// ƒvƒŒƒCƒ„[XVˆ—
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ›´æ–°å‡¦ç†
 	//player->Update(elapsedTime);
 	ActorManager::Instance().Update(elapsedTime);
 
-	// c‘œŒo‰ßŠÔ
+	// æ®‹åƒçµŒéæ™‚é–“
 	//AfterimageTime(elapsedTime);
 
 	
 
-	// c‘œƒXƒe[ƒgXV
+	// æ®‹åƒã‚¹ãƒ†ãƒ¼ãƒˆæ›´æ–°
 	AfterimageManager::Instance().Update(elapsedTime);
 
 
 
-	// ƒGƒlƒ~[XVˆ—
+	// ã‚¨ãƒãƒŸãƒ¼æ›´æ–°å‡¦ç†
 	//EnemyManager::Instance().Update(elapsedTime);
 
-	// ƒGƒtƒFƒNƒgXVˆ—
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆæ›´æ–°å‡¦ç†
 	EffectManager::Instance().Update(elapsedTime);
 }
 
 
 
-// •`‰æˆ—
+// æç”»å‡¦ç†
 void SceneGame::Render()
 {
 	Graphics& graphics = Graphics::Instance();
@@ -270,139 +292,108 @@ void SceneGame::Render()
 	ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
-	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì•`‰æ
-	RenderShadowmap();
+	// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã®æç”»
+	//RenderShadowmap();
 
-	Render3DScene();
+	//Render3DScene();
 
-	// ‰æ–ÊƒNƒŠƒA•ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgİ’è
-	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0`1.0)
+
+
+	FLOAT color[] = {0.0f, 0.0f, 0.5f, 1.0f};// RGBA
 	dc->ClearRenderTargetView(rtv, color);
 	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	dc->OMSetRenderTargets(1, &rtv, dsv);
 
-	// •`‰æˆ— 
-	RenderContext rc;// •`‰æ‚·‚é‚½‚ß‚É•K—v‚Èî•ñ‚ğ‚Ü‚Æ‚ß‚½\‘¢‘Ì
-	rc.lightDirection = { 0.0f, -1.0f, 0.0f, 0.0f };	// ƒ‰ƒCƒg•ûŒüi‰º•ûŒüj
+	RenderContext rc;
+	rc.lightDirection = { 0.0f,-1.0f, 0.0f, 0.0f };
 
-	// ƒJƒƒ‰ƒpƒ‰ƒ[ƒ^İ’è
+	// ã‚«ãƒ¡ãƒ©æƒ…å ±
 	Camera& camera = Camera::Instance();
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
-	// ƒ‚ƒfƒ‹‚»‚ê‚¼‚ê‚ÅƒVƒF[ƒ_[‚ğ‚·‚é‚½‚ß‚É
 	rc.deviceContext = dc;
 
-	// ƒ‰ƒCƒg‚Ìî•ñ‚ğ‹l‚ß‚Ş
-	//LightManager::Instanes().PushRenderContext(rc);
 
-	// 3Dƒ‚ƒfƒ‹•`‰æ
+	// UNIT11
+    // ãƒ©ã‚¤ãƒˆã®æƒ…å ±ã‚’ã¤ã‚ã“ã‚€ 
+	rc.shadowMapData.shadowMap = shadowmapDepthStencil->GetShaderResourceView().Get();
+	rc.shadowMapData.lightViewProjection = lightViewProjeciton;
+	rc.shadowMapData.shadowColor = shadowColor;
+	rc.shadowMapData.shadowBias = shadowBias;
+
+
+
+	// ãƒ©ã‚¤ãƒˆã®æƒ…å ±ã‚’è©°ã‚è¾¼ã‚€
+	LightManager::Instanes().PushRenderContext(rc);
+
+	// 3Dãƒ¢ãƒ‡ãƒ«æç”»
 	{
-		ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-		// ƒVƒF[ƒ_[‚É•K—v‚Èî•ñ‚ğ‘‚­
-		//shader->Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
-		// ƒXƒe[ƒW•`‰æ
-		//StageManager::instance().Render(rc, shader);
-	// ƒvƒŒƒCƒ„[•`‰æ
-		//player->Render(rc, shader);
-
-		// c‘œ•`‰æ
-		//AfterimageManager::Instance().Render(dc, shader);
-
-		// ƒGƒlƒ~[•`‰æ
-		//EnemyManager::Instance().Render(rc, shader);
-
-		//shader->End(rc);
-
-		//ActorManager::Instance().UpdateTransform();
-		//ActorManager::Instance().Render(rc.view, rc.projection);
-		//
-		// ‘‚«‚İæ‚ğƒoƒbƒNƒoƒbƒtƒ@‚É•Ï‚¦‚ÄƒIƒtƒXƒNƒŠ[ƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌŒ‹‰Ê‚ğ•`‰æ‚·‚é
-		{
-			ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
-			ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
-
-			// ‰æ–ÊƒNƒŠƒA•ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgİ’è
-			FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
-			dc->ClearRenderTargetView(rtv, color);
-			dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-			dc->OMSetRenderTargets(1, &rtv, dsv);
-
-			// UINT11
-			// ƒrƒ…[ƒ|[ƒg‚Ìİ’è
-			D3D11_VIEWPORT vp = {};
-			vp.Width = graphics.GetScreenWidth();
-			vp.Height = graphics.GetScreenHeight();
-			vp.MinDepth = 0.0f;
-			vp.MaxDepth = 1.0f;
-			dc->RSSetViewports(1, &vp);
-
-			// unit09
-			//RenderContext rc;
-			//rc.deviceContext = dc;
-
-			//SpriteShader* shader = graphics.GetShader(SpriteShaderId::ColorGrading);
-			//shader->Begin(rc);
-
-			////rc.colorGradingData = colorGradingData;
-			//shader->Draw(rc, sprite.get());
-
-			//shader->End(rc);
-			// ƒ|ƒXƒgƒvƒƒZƒX‚ğˆ—‚ğs‚¤
-			postprocessingRenderer->Render(dc);
-		}
 
 
-		//ModelShader* mdlshader = graphics.GetShader(ModelShaderId::AfterImage);
-		//
-		//mdlshader->Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
+		ActorManager::Instance().Render(rc);
 
-		
-		// c‘œ•`‰æ
-	   // AfterimageManager::Instance().Render(rc, mdlshader);
-
-
-		//mdlshader->End(rc);
 	}
 
-	// 3DƒGƒtƒFƒNƒg•`‰æ
+	// 3Dã‚¨ãƒ•ã‚§ã‚¯ãƒˆæç”»
 	{
 		EffectManager::Instance().Render(rc.view, rc.projection);
 	}
 
-	// 3DƒfƒoƒbƒO•`‰æ
+	// 3Dãƒ‡ãƒãƒƒã‚°æç”»
 	{
-		// “–‚½‚è”»’è‚ÌŒ`‚ğ‚¤‚Â
-		// ƒvƒŒƒCƒ„[ƒfƒoƒbƒOƒvƒŠƒ~ƒeƒBƒu•`‰æ
+		// å½“ãŸã‚Šåˆ¤å®šã®å½¢ã‚’ã†ã¤
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‡ãƒãƒƒã‚°ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»
 		//player->DrawDebugPrimitive();
 
-		// ƒGƒlƒ~[ƒfƒoƒbƒOƒvƒŠƒ~ƒeƒBƒu•`‰æ
+		// ã‚¨ãƒãƒŸãƒ¼ãƒ‡ãƒãƒƒã‚°ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»
 		//EnemyManager::Instance().DrawDebugPrimitive();
-		for (int i = 0; i >= EnemyManager::Instance().GetEnemyCount(); i++)
+
+
+
+		for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); i++)
 		{
 			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->DrawDebugPrimitive();
 		}
-		// ƒ‰ƒCƒ“ƒŒƒ“ƒ_ƒ‰•`‰æÀs
+
+		// ãƒ©ã‚¤ãƒˆã®ãƒ‡ãƒãƒƒã‚°ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã®æç”»
+		LightManager::Instanes().DrawDebugPrimitive();
+
+		// ãƒ©ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ©æç”»å®Ÿè¡Œ
 		graphics.GetLineRenderer()->Render(dc, rc.view, rc.projection);
 
-		// ÀÛ‚Ì“–‚½‚è”»’è•`‰æ
-		// ƒfƒoƒbƒOƒŒƒ“ƒ_ƒ‰•`‰æÀs
+		// å®Ÿéš›ã®å½“ãŸã‚Šåˆ¤å®šæç”»
+		// ãƒ‡ãƒãƒƒã‚°ãƒ¬ãƒ³ãƒ€ãƒ©æç”»å®Ÿè¡Œ
 		graphics.GetDebugRenderer()->Render(dc, rc.view, rc.projection);
 	}
 
-	// 2DƒXƒvƒ‰ƒCƒg•`‰æ
+	// 2Dã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæç”»
 	{
 		//RenderEnemyGauge(dc, rc.view, rc.projection);
 	}
 
-	// 2DƒfƒoƒbƒOGUI•`‰æ
+	// 2Dãƒ‡ãƒãƒƒã‚°GUIæç”»
 	{
-		// ƒvƒŒƒCƒ„[ƒfƒoƒbƒO•`‰æ
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‡ãƒãƒƒã‚°æç”»
 		//player->DrawDebugGUI();
 		//cameraController->DrawDebugGUI();
 
 		//EnemyManager::Instance().DrawDebugGUI();
+		ImGui::Separator();
+		// UNIT11
+		if (ImGui::TreeNode("shadowmap"))
+		{
+			ImGui::SliderFloat("DrawRect", &shadowDrawRect, 1.0f, 2048.0f);
+			ImGui::ColorEdit3("Color", &shadowColor.x);
+			ImGui::SliderFloat("Bias", &shadowBias, 0.0f, 0.1f);
+			ImGui::Text("texture");
+			ImGui::Image(shadowmapDepthStencil->GetShaderResourceView().Get(), { 256,256 }, { 0,0 }, { 1,1 },
+				{ 1,1,1,1 });
+			ImGui::TreePop();
+		}
+		ImGui::Separator();
 
+		postprocessingRenderer->DrawDebugGUI();
 	}
 
 	
@@ -415,13 +406,13 @@ void SceneGame::Render3DScene()
 	ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView().Get();
 	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
-	// ‰æ–ÊƒNƒŠƒA•ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgİ’è
-	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0`1.0)
+	// ç”»é¢ã‚¯ãƒªã‚¢ï¼†ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆè¨­å®š
+	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0ï½1.0)
 	dc->ClearRenderTargetView(rtv, color);
 	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	dc->OMSetRenderTargets(1, &rtv, dsv);
 
-	// ƒrƒ…[ƒ|[ƒg‚Ìİ’è
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®è¨­å®š
 	D3D11_VIEWPORT vp = {};
 	vp.Width = graphics.GetScreenWidth();
 	vp.Height = graphics.GetScreenHeight();
@@ -429,21 +420,24 @@ void SceneGame::Render3DScene()
 	vp.MaxDepth = 1.0f;
 	dc->RSSetViewports(1, &vp);
 
-	// •`‰æˆ—
+	// æç”»å‡¦ç†
 	RenderContext rc;
 	rc.deviceContext = dc;
 
-	// ƒ‰ƒCƒg‚Ìî•ñ‚ğ‹l‚ß‚Ş
+	// ãƒ©ã‚¤ãƒˆã®æƒ…å ±ã‚’è©°ã‚è¾¼ã‚€
 	LightManager::Instanes().PushRenderContext(rc);
 
 	// UNIT11
-	// ƒ‰ƒCƒg‚Ìî•ñ‚ğ‚Â‚ß‚±‚Ş 
+	// ãƒ©ã‚¤ãƒˆã®æƒ…å ±ã‚’ã¤ã‚ã“ã‚€ 
 	rc.shadowMapData.shadowMap = shadowmapDepthStencil->GetShaderResourceView().Get();
 	rc.shadowMapData.lightViewProjection = lightViewProjeciton;
 	rc.shadowMapData.shadowColor = shadowColor;
 	rc.shadowMapData.shadowBias = shadowBias;
 
-	// ƒJƒƒ‰ƒpƒ‰ƒ[ƒ^İ’è
+
+
+
+	// ã‚«ãƒ¡ãƒ©ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 	Camera& camera = Camera::Instance();
 	rc.viewPosition.x = camera.GetEye().x;
 	rc.viewPosition.y = camera.GetEye().y;
@@ -452,8 +446,12 @@ void SceneGame::Render3DScene()
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
+	// 3Dã‚¨ãƒ•ã‚§ã‚¯ãƒˆæç”»
+	{
+		EffectManager::Instance().Render(rc.view, rc.projection);
+	}
 
-	// 3Dƒ‚ƒfƒ‹•`‰æ
+	// 3Dãƒ¢ãƒ‡ãƒ«æç”»
 	{
 		//ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
 		////ModelShader* shader = graphics.GetShader(ModelShaderId::Toon);
@@ -466,23 +464,28 @@ void SceneGame::Render3DScene()
 
 		//shader->End(rc);
 
-		ActorManager::Instance().Render(rc.view, rc.projection);
+		ActorManager::Instance().Render(rc);
 
 
 	}
 
-	// ƒfƒoƒbƒOƒvƒŠƒ~ƒeƒBƒu‚Ì•\¦
+	// ãƒ‡ãƒãƒƒã‚°ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã®è¡¨ç¤º
 	{
-		// ƒOƒŠƒbƒh•`‰æ
+		// ã‚°ãƒªãƒƒãƒ‰æç”»
 		//DrawGrid(dc, 20, 10.0f);
 
-		// ƒ‰ƒCƒg‚ÌƒfƒoƒbƒOƒvƒŠƒ~ƒeƒBƒu‚Ì•`‰æ
+		for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); i++)
+		{
+			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->DrawDebugPrimitive();
+		}
+
+		// ãƒ©ã‚¤ãƒˆã®ãƒ‡ãƒãƒƒã‚°ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã®æç”»
 		LightManager::Instanes().DrawDebugPrimitive();
 
-		// ƒ‰ƒCƒ“ƒŒƒ“ƒ_ƒ‰•`‰æÀs
+		// ãƒ©ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ©æç”»å®Ÿè¡Œ
 		graphics.GetLineRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
 
-		// ƒfƒoƒbƒOƒŒƒ“ƒ_ƒ‰•`‰æÀs
+		// ãƒ‡ãƒãƒƒã‚°ãƒ¬ãƒ³ãƒ€ãƒ©æç”»å®Ÿè¡Œ
 		graphics.GetDebugRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
 	}
 }
@@ -494,15 +497,16 @@ void SceneGame::RenderShadowmap()
 	ID3D11RenderTargetView* rtv = nullptr;
 	ID3D11DepthStencilView* dsv = shadowmapDepthStencil->GetDepthStencilView().Get();
 
-	// ‰æ–ÊƒNƒŠƒA
+	// ç”»é¢ã‚¯ãƒªã‚¢
 	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	if (!mainDirectionalLight)
+		return;
 
-
-	// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgİ’è
+	// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆè¨­å®š
 	dc->OMSetRenderTargets(0, &rtv, dsv);
 
-	// ƒrƒ…[ƒ|[ƒg‚Ìİ’è
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®è¨­å®š
 	D3D11_VIEWPORT vp = {};
 	vp.Width = static_cast<float>(shadowmapDepthStencil->GetWidth());
 	vp.Height = static_cast<float> (shadowmapDepthStencil->GetHeight());
@@ -510,20 +514,20 @@ void SceneGame::RenderShadowmap()
 	vp.MaxDepth = 1.0f;
 	dc->RSSetViewports(1, &vp);
 
-	// •`‰æˆ—
+	// æç”»å‡¦ç†
 	RenderContext rc;
 	rc.deviceContext = dc;
 
-	// ƒJƒƒ‰ƒpƒ‰ƒ[ƒ^[İ’è
+	// ã‚«ãƒ¡ãƒ©ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼è¨­å®š
 	{
-		// •½sŒõŒ¹‚©‚çƒJƒƒ‰ˆÊ’u‚ğì¬‚µA‚»‚±‚©‚çŒ´“_‚ÌˆÊ’u‚ğŒ©‚é‚æ‚¤‚É‹üs—ñ‚ğ¶¬
+		// å¹³è¡Œå…‰æºã‹ã‚‰ã‚«ãƒ¡ãƒ©ä½ç½®ã‚’ä½œæˆã—ã€ãã“ã‹ã‚‰åŸç‚¹ã®ä½ç½®ã‚’è¦‹ã‚‹ã‚ˆã†ã«è¦–ç·šè¡Œåˆ—ã‚’ç”Ÿæˆ
 		DirectX::XMVECTOR LightPosition = DirectX::XMLoadFloat3(&mainDirectionalLight->GetDirection());
 		LightPosition = DirectX::XMVectorScale(LightPosition, -250.0f);
 		DirectX::XMMATRIX V = DirectX::XMMatrixLookAtLH(LightPosition,
 			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 			DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 
-		// ƒVƒƒƒhƒEƒ}ƒbƒv‚É•`‰æ‚µ‚½‚¢”ÍˆÍ‚ÌË‰es—ñ‚ğ¶¬
+		// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã«æç”»ã—ãŸã„ç¯„å›²ã®å°„å½±è¡Œåˆ—ã‚’ç”Ÿæˆ
 		DirectX::XMMATRIX P = DirectX::XMMatrixOrthographicLH(shadowDrawRect, shadowDrawRect, 0.1f,
 			1000.0f);
 		DirectX::XMStoreFloat4x4(&rc.view, V);
@@ -534,7 +538,7 @@ void SceneGame::RenderShadowmap()
 	ActorManager::Instance().RenderShadowmap(rc.view, rc.projection);
 }
 
-// ƒGƒlƒ~[HPƒQ[ƒW•`‰æ
+// ã‚¨ãƒãƒŸãƒ¼HPã‚²ãƒ¼ã‚¸æç”»
 void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 	const DirectX::XMFLOAT4X4& view,
 	const DirectX::XMFLOAT4X4& projection
@@ -542,21 +546,21 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 {
 
 
-	//// ƒrƒ…[ƒ|[ƒg ‰æ–Ê‚ÌƒTƒCƒY“™
-	//// ƒrƒ…[ƒ|[ƒg‚Æ‚Í2D‚Ì‰æ–Ê‚É•`‰æ”ÍˆÍ‚Ìw’è(ƒNƒŠƒbƒsƒ“ƒOw’è‚ào—ˆ‚é)ˆÊ’u‚ğw’è
+	//// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆ ç”»é¢ã®ã‚µã‚¤ã‚ºç­‰
+	//// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã¨ã¯2Dã®ç”»é¢ã«æç”»ç¯„å›²ã®æŒ‡å®š(ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°æŒ‡å®šã‚‚å‡ºæ¥ã‚‹)ä½ç½®ã‚’æŒ‡å®š
 	//D3D11_VIEWPORT viewport;
 	//UINT numViewports = 1;
-	//// ƒ‰ƒXƒ^ƒ‰ƒCƒU[ƒXƒe[ƒg‚ÉƒoƒCƒ“ƒh‚³‚ê‚Ä‚¢‚éƒrƒ…[ƒ|[ƒg”z—ñ‚ğæ“¾
+	//// ãƒ©ã‚¹ã‚¿ãƒ©ã‚¤ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆã«ãƒã‚¤ãƒ³ãƒ‰ã•ã‚Œã¦ã„ã‚‹ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆé…åˆ—ã‚’å–å¾—
 	//dc->RSGetViewports(&numViewports, &viewport);
 
-	//// •ÏŠ·s—ñ
+	//// å¤‰æ›è¡Œåˆ—
 	//DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&view);
 	//DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
-	//// ƒ[ƒJƒ‹‚©‚çƒ[ƒ‹ƒh‚És‚­‚Æ‚«‚É‚¢‚é“z‘Šè‚Ìƒ|ƒWƒVƒ‡ƒ“‚ğ“n‚·B
+	//// ãƒ­ãƒ¼ã‚«ãƒ«ã‹ã‚‰ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¡Œãã¨ãã«ã„ã‚‹å¥´ç›¸æ‰‹ã®ãƒã‚¸ã‚·ãƒ§ãƒ³ã‚’æ¸¡ã™ã€‚
 	//DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
 
 
-	//// ‘S‚Ä‚Ì“G‚Ì“ªã‚ÉHPƒQ[ƒW‚ğ•\¦
+	//// å…¨ã¦ã®æ•µã®é ­ä¸Šã«HPã‚²ãƒ¼ã‚¸ã‚’è¡¨ç¤º
 	//EnemyManager& enemyManager = EnemyManager::Instance();
 	//int enemyCount = enemyManager.GetEnemyCount();
 
@@ -564,15 +568,15 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 	//{
 
 	//	Enemy* enemy = enemyManager.GetEnemy(i);
-	//	// ƒGƒlƒ~[“ªã
+	//	// ã‚¨ãƒãƒŸãƒ¼é ­ä¸Š
 	//	DirectX::XMFLOAT3 worldPosition = enemy->GetPosition();
 	//	worldPosition.y += enemy->GetHeight();
 
-	//	// ƒ[ƒ‹ƒh‚©‚çƒXƒNƒŠ[ƒ“
+	//	// ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 	//	DirectX::XMVECTOR WorldPosition = DirectX::XMLoadFloat3(&worldPosition);
 
 
-	//		// ƒQ[ƒW•`‰æ // ƒ[ƒ‹ƒh‚©‚çƒXƒNƒŠ[ƒ“
+	//		// ã‚²ãƒ¼ã‚¸æç”» // ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 
 	//	DirectX::XMVECTOR ScreenPosition = DirectX::XMVector3Project(
 	//		WorldPosition,
@@ -587,11 +591,11 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 	//		World
 
 	//	);
-	//	// ƒXƒNƒŠ[ƒ“À•W
+	//	// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™
 	//	DirectX::XMFLOAT3 scereenPosition;
 	//	DirectX::XMStoreFloat3(&scereenPosition, ScreenPosition);
 
-	//	// ƒQ[ƒW’·‚³
+	//	// ã‚²ãƒ¼ã‚¸é•·ã•
 	//	const float gaugeWidth = 30.0f;
 	//	const float gaugeHeight = 5.0f;
 
@@ -600,9 +604,9 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 
 	//	if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f)continue;
 
-	//	// 2DƒXƒvƒ‰ƒCƒg•`‰æ
+	//	// 2Dã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæç”»
 	//	{
-	//		// •`‰æ
+	//		// æç”»
 	//		gauge->Render(dc,
 	//			scereenPosition.x - gaugeWidth * 0.5f,
 	//			scereenPosition.y - gaugeHeight
@@ -613,8 +617,8 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 	//			static_cast<float> (gauge->GetTextureHeight()),
 	//			0.0f,
 	//			1, 0, 0, 1);
-	//		// {ˆÊ’u}{ƒTƒCƒY}{‰æ‘œ‚Ç‚±‚©‚ç}{‰æ‘œ‰½ˆ‚Ü‚Å}
-	//		// dc , o”ÍˆÍpop
+	//		// {ä½ç½®}{ã‚µã‚¤ã‚º}{ç”»åƒã©ã“ã‹ã‚‰}{ç”»åƒä½•å‡¦ã¾ã§}
+	//		// dc , ï½›ç¯„å›²ï½ï½›ï½
 	//	}
 	//
 	//
@@ -622,23 +626,23 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 	//	}
 
 
-	//// ƒGƒlƒ~[”z’uˆ—
+	//// ã‚¨ãƒãƒŸãƒ¼é…ç½®å‡¦ç†
 	//Mouse& mouse = Input::Instance().GetMouse();
 	//if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 	//{
-	//	// ƒ}ƒEƒXƒJ[ƒ\ƒ‹À•W‚ğæ“¾
+	//	// ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«åº§æ¨™ã‚’å–å¾—
 	//	DirectX::XMFLOAT3 scereenPosition;
 	//	scereenPosition.x = static_cast<float>(mouse.GetPositionX());
 	//	scereenPosition.y = static_cast<float>(mouse.GetPositionY());
 	//	scereenPosition.z = 0.0f;
 
-	//	// ƒŒƒC‚Ìn“_‚ğZo
+	//	// ãƒ¬ã‚¤ã®å§‹ç‚¹ã‚’ç®—å‡º
 	//	DirectX::XMVECTOR WorldPosition{};
 	//	WorldPosition = DirectX::XMLoadFloat3(&scereenPosition);
 
 
 
-	//	// ƒXƒNƒŠ[ƒ“î•ñ‚ğƒ[ƒ‹ƒh‹óŠÔ‚É
+	//	// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³æƒ…å ±ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“ã«
 	//	WorldPosition = DirectX::XMVector3Unproject(
 	//		WorldPosition,
 	//		viewport.TopLeftX,
@@ -651,11 +655,11 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 	//		View,
 	//		World
 	//	);
-	//	// n“_
+	//	// å§‹ç‚¹
 	//	DirectX::XMFLOAT3 rayStart;
 	//	DirectX::XMStoreFloat3(&rayStart, WorldPosition);
 
-	//	// ƒŒƒC‚ÌI“_‚ğZo
+	//	// ãƒ¬ã‚¤ã®çµ‚ç‚¹ã‚’ç®—å‡º
 	//	scereenPosition.z = 1.0f;
 	//	WorldPosition = DirectX::XMLoadFloat3(&scereenPosition);
 	//	WorldPosition = DirectX::XMVector3Unproject(
@@ -673,11 +677,11 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 	//	DirectX::XMFLOAT3 rayEnd;
 	//	DirectX::XMStoreFloat3(&rayEnd, WorldPosition);
 
-	//	// ƒŒƒCƒLƒƒƒXƒg
+	//	// ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆ
 	//	HitResult hit;
 	////	if (StageManager::instance().RayCast(rayStart, rayEnd, hit))
 	////	{
-	////		// “G‚ğ”z’u
+	////		// æ•µã‚’é…ç½®
 	/////*		EnemySlime* slime = new EnemySlime();
 	////		slime->SetPosition(hit.position);
 	////		EnemyManager::Instance().Register(slime);*/
@@ -689,7 +693,7 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,
 void SceneGame::AfterimageTime(float elapsedTime)
 {
 	//afterImageAlpha -=  elapsedTime;
-	//// “®‚¢‚Ä‚¢‚½‚çc‘œ‚ªo‚éB
+	//// å‹•ã„ã¦ã„ãŸã‚‰æ®‹åƒãŒå‡ºã‚‹ã€‚
 	//if (player->GetAfterimageMove())
 	//{
 	//	elapsedFrame -= elapsedTime;
@@ -703,38 +707,38 @@ void SceneGame::AfterimageTime(float elapsedTime)
 	//	elapsedFrame = spawnafterimagetimemax;
 	//}
 
-	//// c‘œo‚·ŠÔŠu
+	//// æ®‹åƒå‡ºã™é–“éš”
 	//if (elapsedFrame <= 0)
 	//{
 
 	//	PlayerAfterimage* playerAfterimage = new PlayerAfterimage();
-	//	// ”z’u‚µ‚Ä
+	//	// é…ç½®ã—ã¦
 	//	playerAfterimage->SetPosition({ player->GetPosition() });
 	//	playerAfterimage->SetAngle(player->GetAngle());
 	//	playerAfterimage->SetTransform(player->GetTransform());
-	//	// “®‚©‚µ‚Ä
+	//	// å‹•ã‹ã—ã¦
 	//	playerAfterimage->GetModel()->UpdateTransform(player->GetTransform(),
 	//		player->GetModel()->GetNodes());
 
-	//	// c‘œ‚Ìo‚éŠÔŠuÄİ’è
+	//	// æ®‹åƒã®å‡ºã‚‹é–“éš”å†è¨­å®š
 	//	elapsedFrame = spawnafterimagetimemax;
 
-	//	// “§–¾“x Å‘å’l‚ğÄİ’è
+	//	// é€æ˜åº¦ æœ€å¤§å€¤ã‚’å†è¨­å®š
 	//	afterImageAlpha = afterImageAlphaMax;
 	//	
-	//	// ¶‘¶ŠÔƒZƒbƒg
+	//	// ç”Ÿå­˜æ™‚é–“ã‚»ãƒƒãƒˆ
 	//	playerAfterimage->SetSurvivalTime(afterImageAlpha);
 
-	//	// Á‚¦‚é‚Ü‚Å‚ÌŠÔÄİ’è
+	//	// æ¶ˆãˆã‚‹ã¾ã§ã®æ™‚é–“å†è¨­å®š
 	//	reduce = reduceMax;
 
-	//	// Á‚¦‚é‚Ü‚Å‚ÌŠÔƒZƒbƒg
+	//	// æ¶ˆãˆã‚‹ã¾ã§ã®æ™‚é–“ã‚»ãƒƒãƒˆ
 	//	playerAfterimage->SetReduce(reduce);
 
-	//	// “o˜^
+	//	// ç™»éŒ²
 	//	AfterimageManager::Instance().Register(playerAfterimage);
 
-	//	// c‹ÆƒXƒe[ƒgƒAƒjƒ[ƒVƒ‡ƒ“‚ÌŠÔ p¨
+	//	// æ®‹æ¥­ã‚¹ãƒ†ãƒ¼ãƒˆã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æ™‚é–“ å§¿å‹¢
 	//	AfterimageManager::Instance().GetAfterimage(
 	//		AfterimageManager::Instance().GetAfterimageCount() - 1
 	//	)->SetCurrentAnimationSeconds(

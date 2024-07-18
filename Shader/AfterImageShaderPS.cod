@@ -54,7 +54,7 @@ dcl_temps 2
 //   v2.x <- pin.color.x; v2.y <- pin.color.y; v2.z <- pin.color.z; v2.w <- pin.color.w; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 9 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\個人製作\HLSL\AfterImageShaderPS.hlsl"
+#line 9 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\AfterImageShaderPS.hlsl"
 mov r0.w, cb3[0].x  // r0.w <- pin.color.w
 
 #line 10

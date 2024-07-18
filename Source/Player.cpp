@@ -268,16 +268,7 @@ void Player::Render(RenderContext& rc)
    
     shader->End(rc);
 
-    // シャドウマップ
-    {
-        ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-        shader->Begin(rc);// シェーダーにカメラの情報を渡す
 
-
-        shader->Draw(rc, model);
-
-        shader->End(rc);
-    }
 }
 
 // シャドウマップ

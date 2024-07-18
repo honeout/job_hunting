@@ -71,7 +71,7 @@ PhonShader::PhonShader(ID3D11Device* device)
         // ピクセルシェーダー生成
         HRESULT hr = device->CreatePixelShader(csoData.get(), csoSize, nullptr,
             pixelShader.GetAddressOf());
-            _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+        _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
     }
 
     // 定数バッファ シェーダーに送る為の奴
@@ -95,7 +95,7 @@ PhonShader::PhonShader(ID3D11Device* device)
 
         hr = device->CreateBuffer(&desc, 0, meshConstantBuffer.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-        
+
         // サブセット用バッファ
         desc.ByteWidth = sizeof(CbSubset);
 
@@ -194,7 +194,7 @@ PhonShader::PhonShader(ID3D11Device* device)
         desc.BorderColor[2] = FLT_MAX;
         desc.BorderColor[3] = FLT_MAX;
 
-         hr = device->CreateSamplerState(&desc, shadowMapSamplerState.GetAddressOf());
+        hr = device->CreateSamplerState(&desc, shadowMapSamplerState.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
     }
 }
@@ -216,7 +216,7 @@ void PhonShader::Begin(const RenderContext& rc)
     };
     rc.deviceContext->VSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
     rc.deviceContext->PSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
-    
+
     ID3D11SamplerState* samplerStates[] =
     {
         samplerState.Get(),
@@ -271,7 +271,7 @@ void PhonShader::Begin(const RenderContext& rc)
     // UINT11
     // シャドウマップ設定
     rc.deviceContext->PSSetShaderResources(2, 1, &rc.shadowMapData.shadowMap);
-    
+
 }
 
 // 描画

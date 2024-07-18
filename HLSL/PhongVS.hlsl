@@ -27,7 +27,7 @@ VS_OUT main(
     vout.tangent = normalize(t);
     vout.color = color * materialColor;
 
-    vout.binormal = normalize(cross(vout.normal,vout.tangent));
+    vout.binormal = normalize(cross(vout.normal, vout.tangent));
 
     vout.texcoord = texcoord;
 

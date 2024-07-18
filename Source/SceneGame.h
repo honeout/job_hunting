@@ -76,9 +76,13 @@ private:
 	// 残像消えるまで
 	float reduce = reduceMax;
 
+	//DirectX::XMFLOAT4 ambientLightColor;
+
 
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;
+
+
 
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源

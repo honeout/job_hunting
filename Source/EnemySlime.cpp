@@ -146,6 +146,7 @@ void EnemySlime::Render(RenderContext& rc)
 
     shader->End(rc);
 
+
 }
 // シャドウマップ
 void EnemySlime::RenderShadowmap(RenderContext& rc)

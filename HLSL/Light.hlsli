@@ -47,12 +47,12 @@ float3 CalcLambertDiffuse(float3 normal, float3 LightVector, float3 LightColor, 
     // それをそのまま乗算すると色がおかしくなります。
     // 0以下で有れば０になるように制限をつけましょう。
     // -LightVector理由内積
-    float d = max(dot(-LightVector,normal),0)*LightColor*kd;
+    float d = max(dot(-LightVector, normal), 0) * LightColor * kd;
     //float d = clamp((dot(-lightVector,normal)*0.5+0.5),0,1)*lightColor*kd;
 
     // 入射光色と内積の結果、および反射率を全て蒸散して返却しましょう。
-    return kd* LightColor*d;
- }
+    return kd * LightColor * d;
+}
 
 //-----------------------------------------------------
 //  フォンの鏡面反射計算関数
@@ -72,7 +72,7 @@ float3 CalcPhongSpecular(float3 normal, float3 lightVector,
 
     // 反射ベクトルと視線ベクトルとで内積
     // 内積した結果を０以下で有れば０になるように制限をつけましょう
-    float d = max(dot(R,eyeVector),0);
+    float d = max(dot(R, eyeVector), 0);
 
     // 光尺処理
     // 反射は表面がつるつるなほどハイライトは強くなり、範囲が小さくなります。
@@ -82,7 +82,7 @@ float3 CalcPhongSpecular(float3 normal, float3 lightVector,
     // 入射光色と内積の結果、及び反射率をすべtえ蒸散して返却しましょう
     return d * lightColor * ks;
 }
- 
+
 //---------------------------------------------------
 //  ハーフランバート拡散反射計算関数
 //---------------------------------------------------
@@ -116,7 +116,7 @@ float3 CalcHalfLambert(float3 normal, float3 LightVector, float3 LightColor, flo
 // lightColor  : 入射光色
 // rimPower    : リムライトの強さ(初期値はテキトーなので自分で死っていするが吉)
 //
-float3 CalcRimLight(float3 normal,float3 eyeVector, float3 LightVector, float3 LightColor, float rimPower
+float3 CalcRimLight(float3 normal, float3 eyeVector, float3 LightVector, float3 LightColor, float rimPower
     = 3.0f)
 {
 
@@ -124,7 +124,7 @@ float3 CalcRimLight(float3 normal,float3 eyeVector, float3 LightVector, float3 L
     rim = pow(rim, rimPower);
 
     // 入射光色と内積の結果、および反射率を全て蒸散して返却しましょう。
-    return  LightColor * rim*saturate(dot(eyeVector, LightVector));
+    return  LightColor * rim * saturate(dot(eyeVector, LightVector));
 }
 
 //-----------------------------------------------------
@@ -143,9 +143,9 @@ float3 CalcToonDiffuse(Texture2D toonTexture, SamplerState toonSamplerState,
 {
     // 入射と入射ベクトルからU座標を求める
     // ０～１までを納める為の計算その間でテクスチャから濃い色薄い色を抜き取る
-    float u = clamp(dot(normal, - LightVector) * 0.5f + 0.5f,0.01f,0.99f);
+    float u = clamp(dot(normal, -LightVector) * 0.5f + 0.5f, 0.01f, 0.99f);
 
-    float3 c = toonTexture.Sample(toonSamplerState, float2(u,0.1f));
+    float3 c = toonTexture.Sample(toonSamplerState, float2(u, 0.1f));
 
     // 反射ベクトルと視線ベクトルとで内積
     // 内積した結果を０以下で有れば０になるように制限をつけましょう

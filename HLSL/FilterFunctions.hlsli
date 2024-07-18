@@ -7,8 +7,8 @@ float3 RGB2HSV(float3 rgb)
 {
     float3 hsv = 0;
     // v(明度)の最大値と最小値を求めましょう。
-    float Vmax = max(rgb.x,max(rgb.y, rgb.z));
-    float Vmin = min(rgb.x,min(rgb.y, rgb.z));
+    float Vmax = max(rgb.x, max(rgb.y, rgb.z));
+    float Vmin = min(rgb.x, min(rgb.y, rgb.z));
 
     // 最大値と最小値の差
     float delta = Vmax - Vmin;
@@ -28,21 +28,21 @@ float3 RGB2HSV(float3 rgb)
         {
             //hsv.x = ((rgb.g - rgb.b) / hsv.y)+ (60*hsv.y);
             //hsv.x = ((rgb.y - rgb.z) / delta)+ (60* delta);
-            hsv.x = 60*((rgb.y - rgb.z) / delta);
+            hsv.x = 60 * ((rgb.y - rgb.z) / delta);
             //hsv.x = (((rgb.g - rgb.b) + (60 * delta)) /  delta);
         }
         // gの時
         if (Vmax == rgb.y)
         {
             //hsv.x = (((rgb.b - rgb.r) / hsv.y) + (60 * hsv.y)) +120;
-            hsv.x = 60 * ((rgb.z - rgb.x)/ delta) +120;
+            hsv.x = 60 * ((rgb.z - rgb.x) / delta) + 120;
             //hsv.x = (((rgb.b - rgb.r)+ (60 * delta)) /  delta) +120;
         }
         // bの時
         if (Vmax == rgb.z)
         {
             //hsv.x = (((rgb.r - rgb.g) / hsv.y) + (60 * hsv.y)) +240;
-            hsv.x = 60 * ((rgb.x - rgb.y) / delta) +240;
+            hsv.x = 60 * ((rgb.x - rgb.y) / delta) + 240;
             //hsv.x = (((rgb.r - rgb.g) + (60 * delta)) / delta) +240;
         }
 
@@ -77,8 +77,8 @@ float3 HSV2RGB(float3 hsv)
         float Huei = (int)(hsv.x / 60);
         float Huef = hsv.x / 60 - Huei;
         float p = Vmax * (1.0 - hsv.y);
-        float q = Vmax * (1.0 - hsv.y*Huef);
-        float t = Vmax * (1.0 - hsv.y*(1.0f - Huef));
+        float q = Vmax * (1.0 - hsv.y * Huef);
+        float t = Vmax * (1.0 - hsv.y * (1.0f - Huef));
         if (Huei == 0)
         {
             rgb.x = Vmax;
