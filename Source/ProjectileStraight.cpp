@@ -66,17 +66,18 @@ void ProjectileStraight::Update(float elapsedTime)
 }
 
 // 描画
-void ProjectileStraight::Render(RenderContext& rc)
+void ProjectileStraight::Render(RenderContext& rc, ModelShader& shader)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();
-    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-    shader->Begin(rc);// シェーダーにカメラの情報を渡す
+    //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    shader = *graphics.GetShader(ModelShaderId::Lanbert);
+    shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
 
-    shader->Draw(rc, model);
+    shader.Draw(rc, model);
 
-    shader->End(rc);
+    shader.End(rc);
 }
 
 void ProjectileStraight::OnGUI()

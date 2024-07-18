@@ -25,7 +25,7 @@ public:
     void Update(float elapsedTime) override;
 
     // •`‰æˆ—
-    void Render(RenderContext& rc) override;
+    void Render(RenderContext& rc, ModelShader& shader) override;
 
     void OnGUI() override;
 

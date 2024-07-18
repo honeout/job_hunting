@@ -28,13 +28,13 @@ void Actor::Update(float elapsedTime)
 	}
 }
 
-void Actor::Render(RenderContext rc)
+void Actor::Render(RenderContext rc, ModelShader* shader)
 {
 	for (std::shared_ptr<Component>& component : components)
 	{
 
 
-		component->Render(rc);
+		component->Render(rc, *shader);
 	}
 }
 
@@ -162,7 +162,7 @@ void ActorManager::Update(float elapsedTime)
 //}
 
 // 描画
-void ActorManager::Render(RenderContext rc)
+void ActorManager::Render(RenderContext rc, ModelShader* shader)
 {
 	Graphics& graphics = Graphics::Instance();
 	//Shader* shader = graphics.GetShader();
@@ -199,7 +199,7 @@ void ActorManager::Render(RenderContext rc)
     for (std::shared_ptr<Actor>& actor : updateActors)
 	{
 		// モデルがあれば描画
-		actor->Render(rc);
+		actor->Render(rc, shader);
 	}
 
 	//shader->Begin(rc);// シェーダーにカメラの情報を渡す

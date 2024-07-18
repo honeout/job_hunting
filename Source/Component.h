@@ -19,7 +19,7 @@ public:
 	virtual void Update(float elapsedTime) {}
 
 	// 描画
-	virtual void Render(RenderContext& rc) {}
+	virtual void Render(RenderContext& rc, ModelShader& shader) {}
 
 	// シャドウマップ描画
 	virtual void RenderShadowmap(RenderContext& rc) {}

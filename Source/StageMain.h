@@ -27,7 +27,7 @@ public:
     void Update(float elapsedTime) override;
 
     // •`‰æˆ—
-    void Render(RenderContext& rc) override;
+    void Render(RenderContext& rc, ModelShader& shader) override;
 
     // ƒVƒƒƒhƒEƒ}ƒbƒvˆ—
     void RenderShadowmap(RenderContext& rc) override;
@@ -65,7 +65,7 @@ public:
     }
 
     // •`‰æ
-    void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
+    void Render(RenderContext& rc, ModelShader& shader);
 
     // “o˜^
     void Register(Actor* actor);

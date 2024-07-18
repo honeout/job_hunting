@@ -39,18 +39,18 @@ void StageMain::Update(float elasedTime)
 }
 
 //// 描画処理
-void StageMain::Render(RenderContext& rc)
+void StageMain::Render(RenderContext& rc, ModelShader& shader)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();
     //ModelShader* shader = graphics.GetShader(  graphics.GetShader(ModelShaderId::Default);
-    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-    shader->Begin(rc);// シェーダーにカメラの情報を渡す
+    //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
 
-    shader->Draw(rc, model);
+    shader.Draw(rc, model);
 
-    shader->End(rc);
+    shader.End(rc);
 
 
 

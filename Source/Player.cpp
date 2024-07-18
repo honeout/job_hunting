@@ -256,17 +256,17 @@ void Player::Update(float elapsedTime)
     //model->UpdateTransform(transform);
 }
 
-void Player::Render(RenderContext& rc)
+void Player::Render(RenderContext& rc, ModelShader& shader)
 {
     Graphics& graphics = Graphics::Instance();
     //Shader* shader = graphics.GetShader();
-    ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-    shader->Begin(rc);// シェーダーにカメラの情報を渡す
+    //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
 
-    shader->Draw(rc, model);
+    shader.Draw(rc, model);
    
-    shader->End(rc);
+    shader.End(rc);
 
 
 }

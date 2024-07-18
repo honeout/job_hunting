@@ -26,7 +26,7 @@ public:
 	virtual void Update(float elapsedTime);
 
 	// •`‰æ
-	virtual void Render(RenderContext rc);
+	virtual void Render(RenderContext rc, ModelShader* shader);
 
 	// ƒVƒƒƒhƒEƒ}ƒbƒv•`‰æ
 	virtual void RenderShadwomap(RenderContext rc);
@@ -99,7 +99,7 @@ public:
 	//void UpdateTransform();
 
 	// •`‰æ
-	void Render(RenderContext rc);
+	void Render(RenderContext rc, ModelShader* shader);
 
 	void RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
 

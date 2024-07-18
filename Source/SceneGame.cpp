@@ -329,9 +329,9 @@ void SceneGame::Render()
 
 	// 3Dモデル描画
 	{
+		ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 
-
-		ActorManager::Instance().Render(rc);
+		ActorManager::Instance().Render(rc, shader);
 
 	}
 
@@ -463,8 +463,9 @@ void SceneGame::Render3DScene()
 		////shader->Draw(rc, earth.get());
 
 		//shader->End(rc);
+		ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 
-		ActorManager::Instance().Render(rc);
+		ActorManager::Instance().Render(rc, shader);
 
 
 	}
