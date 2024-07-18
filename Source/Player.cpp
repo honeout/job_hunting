@@ -119,6 +119,9 @@ void Player::Start()
 
     // ステートセット
     stateMachine->SetState(static_cast<int>(State::Idle));
+
+    // アニメーションルール
+    updateanim = UpAnim::Normal;
 }
 
 // 更新処理
@@ -128,39 +131,6 @@ void Player::Update(float elapsedTime)
     //// ステート毎の処理
     stateMachine->Update(elapsedTime);
 
-    //switch (state)
-    //{
-    //case State::Idle:
-    //    UpdateIdleState(elapsedTime);
-    //    break;
-    //case State::Move:
-    //    UpdateMoveState(elapsedTime);
-    //    break;
-
-    //case State::Jump:
-    //    UpdateJumpState(elapsedTime);
-    //    break;
-    //case State::Land:
-    //    UpdateLandState(elapsedTime);
-    //    break;
-
-    //case State::JumpFlip:
-    //    UpdatejumpFlipState(elapsedTime);
-    //    break;
-
-    //case State::Attack:
-    //    UpdateAttackState(elapsedTime);
-    //    break;
-    //case State::Damage:
-    //    UpdateDamageState(elapsedTime);
-    //    break;
-    //case State::Death:
-    //    UpdateDeathState(elapsedTime);
-    //    break;
-    //case State::Revive:
-    //    UpdateReviveState(elapsedTime);
-    //    break;
-    //}
     
     // 速力処理更新
 
@@ -225,29 +195,41 @@ void Player::Update(float elapsedTime)
     // 弾丸当たり判定
     CollisionProjectilesVsEnemies();
 
-    //switch (updateanim)
-    //{
-    //case UpAnim::Normal:
-    //{
-    //    // モデルアニメーション更新処理
-    //    //model->UpdateAnimation(elapsedTime, true);
-    //    break;
-    //}
-    //case UpAnim::Doble:
-    //{
-    //    // モデルアニメーション更新処理
-    //    //model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint,bornUpEndPoint, true);
-    //    //model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
-    //    break;
-    //}
-    //}
+
     //model->Update_blend_animations(0.675f, frontVec.x,1.582f);
     //model->Update_blend_animations(elapsedTime, frontVec.x,36,60, true);
     //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
     // 位置更新
     transform->UpdateTransform();
-    // アニメーション再生
-    model->UpdateAnimation(elapsedTime, true);
+
+    // モーション更新処理
+    switch (updateanim)
+    {
+    // 通常アニメーション
+    case UpAnim::Normal:
+    {
+        // アニメーション再生
+        model->UpdateAnimation(elapsedTime, true);
+        break;
+    }
+    // 部分再生
+    case UpAnim::Doble:
+    {
+        // モデル部分アニメーション更新処理
+        model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint,bornUpEndPoint, true);
+        model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
+        break;
+    }
+    // 複数ブレンド再生
+    case UpAnim::Blend:
+    {
+        // モデル複数ブレンドアニメーション更新処理
+        model->Update_blend_animations(elapsedTime, 0.675f, frontVec.x, 1.582f);
+        break;
+    }
+    }
+
+
     // 位置更新
     model->UpdateTransform(transform->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
@@ -294,7 +276,7 @@ void Player::DrawDebugPrimitive()
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
 
     //// 衝突判定用のデバッグ球を描画
-    //debugRenderer->DrawSphere(position, radius, DirectX::XMFLOAT4(0, 0, 0, 1));
+    debugRenderer->DrawSphere(position, radius, DirectX::XMFLOAT4(0, 0, 0, 1));
 
     // 衝突判定用のデバッグ円柱を描画
     debugRenderer->DrawCylinder(position, radius, height, DirectX::XMFLOAT4(0, 0, 0, 1));

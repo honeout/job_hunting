@@ -468,6 +468,9 @@ void SceneGame::Render3DScene()
 		ActorManager::Instance().Render(rc, shader);
 
 
+		//shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
+		//ActorManager::Instance().Render(rc, shader);
+
 	}
 
 	// デバッグプリミティブの表示

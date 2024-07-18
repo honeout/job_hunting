@@ -21,6 +21,7 @@ enum class UpAnim
 {
     Normal,
     Doble,
+    Blend,
 
 };
 
@@ -268,6 +269,11 @@ public:
 
     void SetStateTuren(State state)  { this->state = state; }
 
+    // 再生方法
+    void  SetUpdateAnim(UpAnim  updateanim) { this->updateanim = updateanim; }
+
+    UpAnim  GetUpdateAnim() const  { return this->updateanim; }
+
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
@@ -335,7 +341,7 @@ private:
     char* bornUpEndPoint = "";
 
     // 下半身更新終了位置
-    char* bornDownerEndPoint;
+    char* bornDownerEndPoint = "";
 
     // 当たり判定半径
     float radius = 0.5f;
