@@ -242,6 +242,10 @@ void PlayerMovestate::Enter()
 		owner->GetComponent<Player>()->Anim_Running, loop
 	);
 
+	//owner->GetComponent<ModelControll>()->GetModel()->PlayAnimationBlend(
+	//	 owner->GetComponent<Player>()->Anim_Walking,owner->GetComponent<Player>()->Anim_Running, loop,0.0f, owner->GetComponent<Player>()->GetMoveSpeedAnimation()
+	//);
+
 	// アニメーションルール
 	owner->GetComponent<Player>()->SetUpdateAnim(UpAnim::Doble);
 }

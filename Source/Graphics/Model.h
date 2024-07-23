@@ -49,7 +49,10 @@ public:
 	void ReverseplaybackAnimation(float elapsedTime, bool blend = false);
 
 	// 二つをブレンド
-	void Update_blend_animations(float elapsedTime, float blendrate,float currentAnimationSeconds, float currentAnimationSecondsblend,bool blend = false);
+	void Update_blend_animations_gun(float elapsedTime, float blendrate,float currentAnimationSeconds, float currentAnimationSecondsblend,bool blend = false);
+
+	// 二つのアニメーションブレンド
+	void Update_blend_animations(float elapsedTime, bool blend = false);
 
 
 	//上半身アニメーション更新処理
@@ -76,6 +79,8 @@ public:
 	//逆再生アニメーション
 	void PlayReverseAnimation(int index, bool loop, float blendSeconds = 0.2f);
 
+	// 二つのアニメーションブレンド
+	void PlayAnimationBlend(int index,int index2, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);
 	
 
 	// アニメーション再生中か
@@ -83,6 +88,7 @@ public:
 
 	bool IsPlayUpeerBodyAnimation() const;
 
+	bool IsPlayAnimationBlend() const;
 
 	// ノード検索
 	Node* FindNode(const char* name);
@@ -101,7 +107,10 @@ private:
 
 	// 個々がーだとないという事
 	int currentAnimationIndex = -1;           //アニメーション番号
+	int currentAnimationIndexSeconds = -1;           //アニメーション番号 ブレンド用
 	float currentAnimationSeconds = 0.0f;    //アニメーションの再生用時間
+
+	float animationSecondsLengthMax = 0.0f;
 
 	//パンチをした即ー１つまりアニメーション終了つまりTポーズに戻る。
 

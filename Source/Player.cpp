@@ -122,6 +122,8 @@ void Player::Start()
 
     // アニメーションルール
     updateanim = UpAnim::Normal;
+
+    moveSpeedAnimation = 0.0f;
 }
 
 // 更新処理
@@ -224,7 +226,7 @@ void Player::Update(float elapsedTime)
     case UpAnim::Blend:
     {
         // モデル複数ブレンドアニメーション更新処理
-        model->Update_blend_animations(elapsedTime, 0.675f, frontVec.x, 1.582f);
+        model->Update_blend_animations(elapsedTime, true);
         break;
     }
     }
@@ -307,6 +309,8 @@ void Player::OnGUI()
     ImGui::InputInt("selectCheck", &selectCheck);
     ImGui::InputFloat("specialAttackCharge", &specialAttackCharge);
     ImGui::InputFloat("specialShotCharge", &specialShotCharge);
+
+    ImGui::SliderFloat("blend", &moveSpeedAnimation, 0.0f, 1.0f);
 
 }
 

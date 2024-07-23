@@ -274,6 +274,8 @@ public:
 
     UpAnim  GetUpdateAnim() const  { return this->updateanim; }
 
+    float GetMoveSpeedAnimation() const { return moveSpeedAnimation; }
+
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
@@ -381,6 +383,9 @@ private:
 
     // ステートマシン用
     StateMachine* stateMachine = nullptr;
+
+    // 移動傾き
+    float moveSpeedAnimation;
 };
 
 // プレイヤーマネージャー

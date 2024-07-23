@@ -373,7 +373,7 @@ void Model::ReverseplaybackAnimation(float elapsedTime, bool blend)
 
 }
 
-void Model::Update_blend_animations(float elapsedTime, float blendrate, float currentAnimationSeconds, float currentAnimationSecondsblend, bool blend)
+void Model::Update_blend_animations_gun(float elapsedTime, float blendrate, float currentAnimationSeconds, float currentAnimationSecondsblend, bool blend)
 {
 
 
@@ -427,6 +427,231 @@ void Model::Update_blend_animations(float elapsedTime, float blendrate, float cu
 	}
 
 	
+}
+
+void Model::Update_blend_animations(float elapsedTime,   bool blend)
+{
+
+	// 再生中でないなら処理しない
+	if (!IsPlayAnimation())return;
+
+	// ブレンド率の計算
+	float blendRate = 1.0f;
+	// 現在のブレンドが時間より下なら
+	if (animationBlendTime < animationBlendSeconds)
+	{
+		// 足している。
+		animationBlendTime += elapsedTime;
+		if (animationBlendTime >= animationBlendSeconds)
+		{
+			animationBlendTime = animationBlendSeconds;
+		}
+		blendRate = animationBlendTime / animationBlendSeconds;
+		// 二条してひづみを消す。
+		blendRate *= blendRate;
+	}
+
+	// 指定のアニメーションデータを取得
+	const std::vector<ModelResource::Animation>& animations = resource->GetAnimations();
+	// アニメーション種類
+	const ModelResource::Animation& animation = animations.at(currentAnimationIndex);
+	const ModelResource::Animation& animationSeconds = animations.at(currentAnimationIndexSeconds);
+
+	// アニメーションデータからキーフレームデータリストを取得
+
+
+	float animationKeyFrames;
+	
+	//DirectX::XMStoreFloat(&animationKeyFrames, DirectX::XMVector3Normalize(DirectX::XMLoadFloat(&animation.keyframes)));
+	const std::vector<ModelResource::Keyframe>& keyframes = animation.keyframes;
+	const std::vector<ModelResource::Keyframe>& keyframesSeconds = animationSeconds.keyframes;
+
+
+
+	int keyCount = static_cast<int> (keyframes.size());
+
+	int keyCountSeconds = static_cast<int> (keyframesSeconds.size());
+	for (int keyIndex = 0; keyIndex < keyCount - 1 && keyIndex < keyCountSeconds - 1; ++keyIndex)
+	{
+
+		//////////////////////ここ直して
+		// 現在の時間がどのキーフレームの間にいるか判定する
+		
+		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex + 1);
+		
+		const ModelResource::Keyframe& keyframeSeconds0 = keyframesSeconds.at(keyIndex);
+		const ModelResource::Keyframe& keyframeSeconds1 = keyframesSeconds.at(keyIndex + 1);
+
+
+
+
+
+		if (currentAnimationSeconds >= keyframe0.seconds &&
+			currentAnimationSeconds < keyframe1.seconds&&
+			currentAnimationSeconds >= keyframeSeconds0.seconds &&
+			currentAnimationSeconds < keyframeSeconds1.seconds)
+		{
+			// 再生時間とキーフレームの時間から補完率を算出する
+			//float rate = (currentAnimationSeconds - keyframe0.seconds ) / (keyframe1.seconds
+			//	- keyframe0.seconds);
+
+			int nodeCount = static_cast<int>(nodes.size());
+			for (int nodeIndex = 0; nodeIndex < nodeCount; ++nodeIndex)
+			{
+				//2つのキーフレーム間の補完計算
+				const ModelResource::NodeKeyData& key0 = keyframe0.nodeKeys.at(nodeIndex);
+				const ModelResource::NodeKeyData& key1 = keyframe1.nodeKeys.at(nodeIndex);
+
+				const ModelResource::NodeKeyData& keySeconds0 = keyframeSeconds0.nodeKeys.at(nodeIndex);
+				const ModelResource::NodeKeyData& keySeconds1 = keyframeSeconds1.nodeKeys.at(nodeIndex);
+				
+				Node& node = nodes[nodeIndex];
+				// アニメーション間
+				if (blendRate < 1.0f && blend)
+				{
+
+					DirectX::XMVECTOR S0 = DirectX::XMLoadFloat3(&key0.scale);
+					DirectX::XMVECTOR S1 = DirectX::XMLoadFloat3(&key1.scale);
+					DirectX::XMVECTOR R0 = DirectX::XMLoadFloat4(&key0.rotate);
+					DirectX::XMVECTOR R1 = DirectX::XMLoadFloat4(&key1.rotate);
+					DirectX::XMVECTOR T0 = DirectX::XMLoadFloat3(&key0.translate);
+					DirectX::XMVECTOR T1 = DirectX::XMLoadFloat3(&key1.translate);
+
+					DirectX::XMVECTOR S0Seconds = DirectX::XMLoadFloat3(&keySeconds0.scale);
+					DirectX::XMVECTOR S1Seconds = DirectX::XMLoadFloat3(&keySeconds1.scale);
+					DirectX::XMVECTOR R0Seconds = DirectX::XMLoadFloat4(&keySeconds0.rotate);
+					DirectX::XMVECTOR R1Seconds = DirectX::XMLoadFloat4(&keySeconds1.rotate);
+					DirectX::XMVECTOR T0Seconds = DirectX::XMLoadFloat3(&keySeconds0.translate);
+					DirectX::XMVECTOR T1Seconds = DirectX::XMLoadFloat3(&keySeconds1.translate);
+
+					S0 = DirectX::XMVectorLerp(S0, S0Seconds, blendRate);
+					S1 = DirectX::XMVectorLerp(S1, S1Seconds, blendRate);
+					R0 = DirectX::XMQuaternionSlerp(R0, R0Seconds, blendRate);
+					R1 = DirectX::XMQuaternionSlerp(R1, R1Seconds, blendRate);
+					T0 = DirectX::XMVectorLerp(T0, T0Seconds, blendRate);
+					T1 = DirectX::XMVectorLerp(T1, T1Seconds, blendRate);
+
+
+					// キーフレームの割合を求める。
+					DirectX::XMVECTOR S = DirectX::XMVectorLerp(S0, S1, blendRate);
+					DirectX::XMVECTOR R = DirectX::XMQuaternionSlerp(R0, R1, blendRate);
+					DirectX::XMVECTOR T = DirectX::XMVectorLerp(T0, T1, blendRate);
+					// 計算結果をボーンに格納
+					DirectX::XMStoreFloat3(&node.scale, S);
+					DirectX::XMStoreFloat4(&node.rotate, R);
+					DirectX::XMStoreFloat3(&node.translate, T);
+				}
+				// 通常の計算
+				else
+				{
+
+					DirectX::XMVECTOR S0 = DirectX::XMLoadFloat3(&key0.scale);
+					DirectX::XMVECTOR S1 = DirectX::XMLoadFloat3(&key1.scale);
+					DirectX::XMVECTOR R0 = DirectX::XMLoadFloat4(&key0.rotate);
+					DirectX::XMVECTOR R1 = DirectX::XMLoadFloat4(&key1.rotate);
+					DirectX::XMVECTOR T0 = DirectX::XMLoadFloat3(&key0.translate);
+					DirectX::XMVECTOR T1 = DirectX::XMLoadFloat3(&key1.translate);
+
+					DirectX::XMVECTOR S0Seconds = DirectX::XMLoadFloat3(&keySeconds0.scale);
+					DirectX::XMVECTOR S1Seconds = DirectX::XMLoadFloat3(&keySeconds1.scale);
+					DirectX::XMVECTOR R0Seconds = DirectX::XMLoadFloat4(&keySeconds0.rotate);
+					DirectX::XMVECTOR R1Seconds = DirectX::XMLoadFloat4(&keySeconds1.rotate);
+					DirectX::XMVECTOR T0Seconds = DirectX::XMLoadFloat3(&keySeconds0.translate);
+					DirectX::XMVECTOR T1Seconds = DirectX::XMLoadFloat3(&keySeconds1.translate);
+
+					S0 = DirectX::XMVectorLerp(S0, S0Seconds, animationBlendSeconds);
+					S1 = DirectX::XMVectorLerp(S1, S1Seconds, animationBlendSeconds);
+					R0 = DirectX::XMQuaternionSlerp(R0, R0Seconds, animationBlendSeconds);
+					R1 = DirectX::XMQuaternionSlerp(R1, R1Seconds, animationBlendSeconds);
+					T0 = DirectX::XMVectorLerp(T0, T0Seconds, animationBlendSeconds);
+					T1 = DirectX::XMVectorLerp(T1, T1Seconds, animationBlendSeconds);
+
+
+					// キーフレームの割合を求める。
+					DirectX::XMVECTOR S = DirectX::XMVectorLerp(S0, S1, animationBlendSeconds);
+					DirectX::XMVECTOR R = DirectX::XMQuaternionSlerp(R0, R1, animationBlendSeconds);
+					DirectX::XMVECTOR T = DirectX::XMVectorLerp(T0, T1, animationBlendSeconds);
+
+
+					// 計算結果をボーンに格納
+					DirectX::XMStoreFloat3(&node.scale, S);
+					DirectX::XMStoreFloat4(&node.rotate, R);
+					DirectX::XMStoreFloat3(&node.translate, T);
+				}
+
+			}
+			break;
+		}
+	}
+
+
+	// 最終フレーム処理
+	if (animationEndFlag)
+	{
+		animationEndFlag = false;
+		currentAnimationIndex = -1;
+		currentAnimationIndexSeconds = -1;
+		return;
+	}
+
+
+
+	// 時間経過
+	currentAnimationSeconds += elapsedTime;
+
+	//float animationtime = animation.secondsLength - animationSeconds.secondsLength;
+
+	//float animationSecondsLength;
+	//DirectX::XMStoreFloat(&animationSecondsLength,DirectX::XMVector3Normalize(DirectX::XMLoadFloat(&animation.secondsLength)));
+
+	// 再生時間が終端時間を超えたら
+	// 最高を超えた場合のループの場合を作る。
+	//if (currentAnimationSeconds >= animationSecondsLength)
+	if (currentAnimationSeconds >= animation.secondsLength)
+	{
+		// ループならトゥルー
+		if (animationLoopFlag)
+		{
+			// 再生時間が終端時間を超えたら
+
+			
+			// 何でー＝オーバーした分の事を考え引く事でがくとしない。
+			// 再生時価を巻き戻す
+			
+
+
+			//currentAnimationSeconds -= animation.secondsLength;
+			DirectX::XMVECTOR anim = DirectX::XMLoadFloat(&animation.secondsLength);
+			DirectX::XMVECTOR animSecond = DirectX::XMLoadFloat(&animationSeconds.secondsLength);
+
+			// アニメーション時間
+			float animSecondsLength;
+			DirectX::XMStoreFloat(&animSecondsLength, DirectX::XMVectorLerp(anim, animSecond, animationBlendSeconds));
+			currentAnimationSeconds -= animSecondsLength;
+
+
+
+		}
+		else
+		{
+			// 再生時間が終端時間を超えたら
+
+				// 何でー＝オーバーした分の事を考え引く事でがくとしない。
+				// 再生時価を巻き戻す
+			// 一番最後にオーバーしたら止める。
+			
+			currentAnimationSeconds = animation.secondsLength;
+
+			// 終わりました。
+			animationEndFlag = true;
+		}
+	}
+
+
+
+
+
 }
 
 
@@ -995,7 +1220,19 @@ void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,boo
 void Model::PlayReverseAnimation(int index, bool loop, float blendSeconds)
 {
 	currentAnimationIndex = index;
+	currentAnimationIndex = index;
 	currentAnimationSeconds = 0.0f;
+	animationLoopFlag = loop;
+	animationEndFlag = false;
+	animationBlendTime = 0.0f;
+	animationBlendSeconds = blendSeconds;
+}
+
+void Model::PlayAnimationBlend(int index,int index2, bool loop, float currentanimationseconds,float blendSeconds)
+{
+	currentAnimationIndex = index;
+	currentAnimationIndexSeconds = index2;
+	currentAnimationSeconds = currentanimationseconds;
 	animationLoopFlag = loop;
 	animationEndFlag = false;
 	animationBlendTime = 0.0f;
@@ -1013,6 +1250,14 @@ bool Model::IsPlayUpeerBodyAnimation() const
 {
 	if (currentAnimationIndexUpeer < 0) return false;
 	if (currentAnimationIndexUpeer >= resource->GetAnimations().size()) return false;
+	return true;
+}
+
+bool Model::IsPlayAnimationBlend() const
+{
+	
+	if (currentAnimationIndex < 0 && currentAnimationIndexSeconds < 0) return false;
+	if (currentAnimationIndex >= resource->GetAnimations().size() && currentAnimationIndexSeconds >= resource->GetAnimations().size()) return false;
 	return true;
 }
 
