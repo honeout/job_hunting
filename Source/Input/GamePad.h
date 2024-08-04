@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 using GamePadButton = unsigned int;
 
 // ゲームパッド
@@ -60,6 +62,12 @@ public:
 	// 右トリガー入力状態の取得
 	float GetTriggerR() const { return triggerR; }
 
+	// コマンド記録
+	void SetInputKey(GamePadButton newButtonState);
+
+	// コマンド入力確認
+	bool ConfirmCommand(const std::vector<GamePadButton>& command, int frame);
+
 private:
 	GamePadButton		buttonState[2] = { 0 };
 	GamePadButton		buttonDown = 0;
@@ -71,4 +79,10 @@ private:
 	float				triggerL = 0.0f;
 	float				triggerR = 0.0f;
 	int					slot = 0;
+
+	// 先行入力最大保存値
+	static const int MAX_INPUT_KEY = 60;
+	// コマンド操作用
+	GamePadButton							inputKeys[MAX_INPUT_KEY];
+
 };

@@ -133,11 +133,18 @@ public:
     // ノードとエネミーの衝突処理
     void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius);
 
+    // ノードとエネミーの衝突処理
+    void CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius);
+
+
     // ジャンプ入力処理
     bool InputJump();
 
     // 弾丸入力
     bool InputProjectile();
+
+    // 回避入力
+    bool InputAvoidance();
 
     // 攻撃入力
     bool InputAttack();
@@ -233,10 +240,19 @@ public:
     // 左手の当たり判定
     float GetLeftHandRadius() const { return leftHandRadius; }
 
+    // ゲット当たり判定無効
+    bool GetInvalidJudgment() const { return invalidJudgment;}
+    // セット当たり判定無効
+    void SetInvalidJudgment(bool invalidJudgment) { this->invalidJudgment = invalidJudgment;}
+
+    // 自分の当たり判定有無
+    void DmageInvalidJudment(bool invalidJudgment);
+
 public:
     // ステート
     enum class State
     {
+        // ステート入れるのは後ろから
         Idle,
         Move,
         Jump,
@@ -245,7 +261,9 @@ public:
         Attack,
         Damage,
         Death,
-        Revive
+        Revive,
+        Avoidance,
+        Reflection,
     };
 
 private:
@@ -386,6 +404,9 @@ private:
 
     // 移動傾き
     float moveSpeedAnimation;
+
+    // 当たり判定無効判定
+    bool invalidJudgment = true;
 };
 
 // プレイヤーマネージャー
@@ -403,6 +424,9 @@ public:
         return instance;
     }
 
+    // 更新
+    void DeleteUpdate();
+
     // 登録
     void Register(std::shared_ptr<Actor> actor);
 
@@ -415,6 +439,8 @@ public:
 
     // 削除
     void Remove(std::shared_ptr<Actor> player);
+
+    void Clear();
 private:
     std::vector<std::shared_ptr<Actor>> players;
     // 削除予約

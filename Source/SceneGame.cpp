@@ -29,6 +29,10 @@
 
 #include "LightManager.h"
 
+#include "SceneLoading.h"
+#include "SceneManager.h"
+#include "SceneGameClear.h"
+#include "SceneGameOver.h"
 
 // シャドウマップのサイズ
 static const UINT SHADOWMAP_SIZE = 2048;
@@ -57,7 +61,7 @@ void SceneGame::Initialize()
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
 		actor->AddComponent<StageMain>();
-		StageManager::Instance().Register(actor.get());
+		StageManager::Instance().Register(actor);
 		
 
 	}
@@ -119,7 +123,7 @@ void SceneGame::Initialize()
 		actor->AddComponent<EnemySlime>();
 		EnemyManager::Instance().Register(actor);
 		
-		
+		//
 
 	}
 
@@ -229,6 +233,7 @@ void SceneGame::Finalize()
 
 	AfterimageManager::Instance().Clear();
 
+
 	//// カメラコントーラー終了化
 	//if (this->cameraController)
 	//{
@@ -246,6 +251,14 @@ void SceneGame::Finalize()
 	//StageManager::instance().Clear();
 
 	LightManager::Instanes().Clear();
+
+	EnemyManager::Instance().Clear();
+
+	PlayerManager::Instance().Clear();
+
+	StageManager::Instance().Clear();
+
+	ActorManager::Instance().Clear();
 }
 
 // 更新処理
@@ -280,6 +293,34 @@ void SceneGame::Update(float elapsedTime)
 
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
+
+	// シーン切り替え
+	{
+		for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
+		{
+			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead())
+			{
+				PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->SetDead(false);
+				ActorManager::Instance().Clear();
+				//// プレイヤー更新処理
+				//ActorManager::Instance().Update(elapsedTime);
+				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
+			}
+		}
+
+		for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
+		{
+			if (EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>()->GetDead())
+			{
+				EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>()->SetDead(false);
+				ActorManager::Instance().Clear();
+				//// プレイヤー更新処理
+				//ActorManager::Instance().Update(elapsedTime);
+				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameClear));
+			}
+		}
+	}
+
 }
 
 
@@ -292,7 +333,7 @@ void SceneGame::Render()
 	ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
-	// シャドウマップの描画
+	//// シャドウマップの描画
 	//RenderShadowmap();
 
 	//Render3DScene();
@@ -303,6 +344,16 @@ void SceneGame::Render()
 	dc->ClearRenderTargetView(rtv, color);
 	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	dc->OMSetRenderTargets(1, &rtv, dsv);
+
+	// UINT11
+    // ビューポートの設定
+	D3D11_VIEWPORT vp = {};
+	vp.Width = graphics.GetScreenWidth();
+	vp.Height = graphics.GetScreenHeight();
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	dc->RSSetViewports(1, &vp);
+
 
 	RenderContext rc;
 	rc.lightDirection = { 0.0f,-1.0f, 0.0f, 0.0f };
@@ -322,16 +373,21 @@ void SceneGame::Render()
 	rc.shadowMapData.shadowColor = shadowColor;
 	rc.shadowMapData.shadowBias = shadowBias;
 
+	// ポストプロセスを処理を行う
+	//postprocessingRenderer->Render(dc);
 
-
-	// ライトの情報を詰め込む
-	LightManager::Instanes().PushRenderContext(rc);
+	//// ライトの情報を詰め込む
+	//LightManager::Instanes().PushRenderContext(rc);
 
 	// 3Dモデル描画
 	{
-		ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+		//ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
 
-		ActorManager::Instance().Render(rc, shader);
+		//ActorManager::Instance().Render(rc, shader);
+	ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+
+	ActorManager::Instance().Render(rc, shader);
+
 
 	}
 
@@ -394,6 +450,8 @@ void SceneGame::Render()
 		ImGui::Separator();
 
 		postprocessingRenderer->DrawDebugGUI();
+		ImGui::Separator();
+		LightManager::Instanes().DrawDebugGUI();
 	}
 
 	
@@ -405,6 +463,8 @@ void SceneGame::Render3DScene()
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView().Get();
 	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
+
+	//RenderShadowmap();
 
 	// 画面クリア＆レンダーターゲット設定
 	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0～1.0)
@@ -434,7 +494,9 @@ void SceneGame::Render3DScene()
 	rc.shadowMapData.shadowColor = shadowColor;
 	rc.shadowMapData.shadowBias = shadowBias;
 
-
+	dissolveThreshold = 0.0f;
+	edgeThreshold = 0.2f; // 緑の閾値
+	edgeColor = { 1,0,0,1 }; // 緑の色
 
 
 	// カメラパラメータ設定
@@ -463,13 +525,11 @@ void SceneGame::Render3DScene()
 		////shader->Draw(rc, earth.get());
 
 		//shader->End(rc);]
-		ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
+		ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 
 		ActorManager::Instance().Render(rc, shader);
 
-		 shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
 
-		ActorManager::Instance().Render(rc, shader);
 
 
 		//shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
@@ -502,17 +562,20 @@ void SceneGame::RenderShadowmap()
 {
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-	ID3D11RenderTargetView* rtv = nullptr;
+	ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView().Get();
 	ID3D11DepthStencilView* dsv = shadowmapDepthStencil->GetDepthStencilView().Get();
 
 	// 画面クリア
-	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	//dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	if (!mainDirectionalLight)
 		return;
-
+	// 画面クリア＆レンダーターゲット設定
+	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0～1.0)
+	dc->ClearRenderTargetView(rtv, color);
+	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	// レンダーターゲット設定
-	dc->OMSetRenderTargets(0, &rtv, dsv);
+	dc->OMSetRenderTargets(1, &rtv, dsv);
 
 	// ビューポートの設定
 	D3D11_VIEWPORT vp = {};
@@ -543,7 +606,13 @@ void SceneGame::RenderShadowmap()
 		DirectX::XMStoreFloat4x4(&lightViewProjeciton, V * P);
 	}
 
-	ActorManager::Instance().RenderShadowmap(rc.view, rc.projection);
+	// シェーダー
+	{
+		ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
+
+		ActorManager::Instance().Render(rc, shader);
+	}
+	//ActorManager::Instance().RenderShadowmap(rc.view, rc.projection);
 }
 
 // エネミーHPゲージ描画

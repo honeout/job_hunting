@@ -69,6 +69,15 @@ public:
     // ステートタイマー取得
     float GetStateTimer() { return stateTimer; }
 
+    // ゲット当たり判定無効
+    bool GetInvalidJudgment() const { return invalidJudgment; }
+    // セット当たり判定無効
+    void SetInvalidJudgment(bool Judgment) { invalidJudgment = Judgment; }
+
+    // ゲットカウンター
+    bool GetCounterJudgment() const { return counterJudgment; }
+    // セットカウンター
+    void SetCounterJudgment(bool counterJudgment) { this->counterJudgment = counterJudgment; }
 
 //private:
     // ターゲット位置をランダム設定
@@ -144,9 +153,9 @@ public:
             Idle,
             Pursuit,
             Attack,
-            IdleBattle,
             Damage,
-            Death
+            Death,
+            IdleBattle,
         };
 
 private:
@@ -239,6 +248,12 @@ private:
 
     // ステートマシン用
     StateMachine* stateMachine = nullptr ;
+
+    // 当たり判定無効判定
+    bool invalidJudgment = true;
+
+    // playerカウンター用
+    bool counterJudgment = false;
 
     // ステート切り替え時間管理
    // float				stateTimer = 0.0f;

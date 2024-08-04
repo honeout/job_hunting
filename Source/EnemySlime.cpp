@@ -55,10 +55,16 @@ void EnemySlime::Start()
     stateMachine->RegisterState(new IdleState(GetActor().get()));
     stateMachine->RegisterState(new PursuitState(GetActor().get()));
     stateMachine->RegisterState(new AttackState(GetActor().get()));
+    stateMachine->RegisterState(new DamageState(GetActor().get()));
 
     // ステートセット
     stateMachine->SetState(static_cast<int>(State::Idle));
 
+    // 当たり判定無効判定
+    invalidJudgment = true;
+
+    // playerカウンター用
+    counterJudgment = false;
 }
 
 // 更新処理
@@ -259,7 +265,9 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
 {
     // ノード位置と当たり判定を行う
     Model::Node* node = model->FindNode(nodeName);
-    if (node != nullptr)
+
+
+    if (node != nullptr && invalidJudgment)
     {
         // ノードのワールド座標
         DirectX::XMFLOAT3 nodePosition(
@@ -579,6 +587,19 @@ void EnemyManager::DeleteUpdate(float elapsedTime)
 void EnemyManager::Register(std::shared_ptr<Actor> actor)
 {
     enemies.emplace_back(actor);
+}
+
+void EnemyManager::Clear()
+{
+    for (std::shared_ptr<Actor>& actor : enemies)// 
+    {
+        // 実体を消した管理している数はそのまま
+       // delete projectile;
+       // Remove(actor);
+        //actor.reset();
+        actor.reset();
+    }
+    enemies.clear();
 }
 
 void EnemyManager::Remove(std::shared_ptr<Actor> actor)

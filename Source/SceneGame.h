@@ -82,7 +82,9 @@ private:
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;
 
-
+	float dissolveThreshold;
+	float edgeThreshold; // 緑の閾値
+	DirectX::XMFLOAT4 edgeColor; // 緑の色
 
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源

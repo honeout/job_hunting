@@ -80,6 +80,15 @@ void ProjectileStraight::Render(RenderContext& rc, ModelShader& shader)
     shader.End(rc);
 }
 
+void ProjectileStraight::DrawDebugPrimitive()
+{
+    DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
+
+    // 今は何も表示しない
+        //// 衝突判定用のデバッグ球を描画
+    debugRenderer->DrawSphere(transform->GetPosition(), radius, DirectX::XMFLOAT4(0, 0, 1, 1));
+}
+
 void ProjectileStraight::OnGUI()
 {
 

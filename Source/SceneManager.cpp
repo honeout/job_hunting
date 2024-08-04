@@ -3,22 +3,11 @@
 // 更新処理
 void SceneManager::Update(float elapsedTime)
 {
-    if (this->nextScene)
-    {
-        // 古いシーン終了処理
-        this->Clear();
+    //if (nextScene)
+    //{
 
 
-        // 新しいシーンを設定
-        this->currentScene = this->nextScene;
-        this->nextScene = nullptr;
-
-        // シーン初期化処理
-        // 違う場所で呼ばれてるからもし呼ばれていたら通らない風にする。
-        if (!this->currentScene->IsReady())
-            this->currentScene->Initialize();
-
-    }
+    //}
 
     if (currentScene )
     {
@@ -31,15 +20,15 @@ void SceneManager::Update(float elapsedTime)
 void SceneManager::Render()
 {
     // 今動いてるものをする
-    if (this->currentScene)
+    if (currentScene)
     {
-        this->currentScene->Render();
+        currentScene->Render();
     }
 }
 // シーンクリア
 void SceneManager::Clear()
 {
-    if (this->currentScene)
+    if (currentScene)
     {
         currentScene->Finalize();
         delete currentScene;
@@ -50,5 +39,18 @@ void SceneManager::Clear()
 void SceneManager::ChangeScene(Scene* scene)
 {
     // 新しいシーンを設定
-    this->nextScene = scene;
+    nextScene = scene;
+
+    // 古いシーン終了処理
+    Clear();
+
+
+    // 新しいシーンを設定
+    currentScene = nextScene;
+    nextScene = nullptr;
+
+    // シーン初期化処理
+    // 違う場所で呼ばれてるからもし呼ばれていたら通らない風にする。
+    if (!currentScene->IsReady())
+        currentScene->Initialize();
 }

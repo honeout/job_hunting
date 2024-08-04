@@ -29,7 +29,7 @@ float4 main(VS_OUT pin) : SV_TARGET
 
     float3 N = normalize(mul(normal * 2.0f - 1.0f, CM));
     //float3 N = normalize(mul(normal , CM));
-
+    
     //float3 N = normalize(pin.normal);
     float3 L = normalize(directionalLightData.direction.xyz);
     float3 E = normalize(viewPosition.xyz - pin.world_position.xyz);
@@ -83,7 +83,7 @@ float4 main(VS_OUT pin) : SV_TARGET
     for (i = 0; i < pointLightCount; ++i)
     {
         // ライトベクトルを算出
-        float3 lightVector = pin.world_position - pointLightData[i].position;
+        float3 lightVector =    pin.world_position - pointLightData[i].position;
 
         // ライトベクトルの長さを算出 サイズ型
         float lightLenght = length(lightVector);
@@ -116,11 +116,11 @@ float4 main(VS_OUT pin) : SV_TARGET
     // 円光
     // 結果
     float3 spotSpecular = (float3)0;
-
+ 
     for (i = 0; i < spotLightCount; ++i)
     {
         // ライトベクトルを算出
-        float3 lightVector = pin.world_position - spotLightData[i].position;
+        float3 lightVector =  pin.world_position - spotLightData[i].position;
 
         // ライトベクトルの長さを算出 サイズ型
         float lightLenght = length(lightVector);
@@ -139,7 +139,7 @@ float4 main(VS_OUT pin) : SV_TARGET
 
         // 角度減衰を算出してattenuateに乗算する
         float3 spotDirection = normalize(spotLightData[i].direction.xyz);
-        float  angle = dot(spotDirection,lightVector);
+        float  angle = dot(spotDirection,lightVector );
         float area = spotLightData[i].innerCorn - spotLightData[i].outerCorn;
         attenuate *= clamp(1.0f - (spotLightData[i].innerCorn - angle) / area, 0.0f, 1.0f);
 

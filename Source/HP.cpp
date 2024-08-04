@@ -7,7 +7,7 @@
 // コンストラクタ
 HP::HP()
 {
-
+    dead = false;
 }
 
 // デストラクタ
@@ -41,10 +41,10 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     // 死亡している場合は健康状態を変更しない
     if (health <= 0)return false;
 
-    if (this->invincibleTimer >= 0.0f)return false;
+    if (invincibleTimer > 0.0f)return false;
 
     // 何秒無敵
-    this->invincibleTimer = invincibleTime;
+    invincibleTimer = invincibleTime;
 
     // ダメージ処理
     health -= damage;
@@ -54,6 +54,7 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     if (health <= 0)
     {
         OnDead();
+        dead = true;
         return true;
     }
     // ダメージ通知
@@ -73,7 +74,7 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
 
 bool HP::OnDamaged()
 {
-    --health;
+    //--health;
     return true;
 }
 

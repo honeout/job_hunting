@@ -8,15 +8,15 @@ Projectile::Projectile()
    /* manager->Register(this);*/
 }
 
-void Projectile::DrawDebugPrimitive()
-{
-    DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
-
-    // 今は何も表示しない
-        //// 衝突判定用のデバッグ球を描画
-    debugRenderer->DrawSphere(position, radius, DirectX::XMFLOAT4(0, 0, 0, 1));
-
-}
+//void Projectile::DrawDebugPrimitive()
+//{
+//    DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
+//
+//    // 今は何も表示しない
+//        //// 衝突判定用のデバッグ球を描画
+//    debugRenderer->DrawSphere(position, radius, DirectX::XMFLOAT4(0, 0, 1, 1));
+//
+//}
 
 
 

@@ -103,6 +103,9 @@ public:
 
 	void RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
 
+	void Clear();
+
+
 private:
 	void DrawLister();
 	void DrawDetail();

@@ -44,6 +44,11 @@ public:
 	bool OnDamaged();
 	// €–S‚µ‚½‚ÉŒÄ‚Î‚ê‚é
 	bool OnDead();
+
+	bool GetDead() const { return dead; }
+
+	void SetDead(bool dead) { this->dead = dead; }
+
 private:
 	// Å‘å’lHP
 	int          maxHealth = 5;
@@ -53,6 +58,9 @@ private:
 
 	// –³“GŠÔ
 	float   invincibleTimer = 1.0f;
+
+	// ”»’è
+	bool dead = false;
 
 	
 };

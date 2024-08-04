@@ -25,6 +25,8 @@ public:
     // •`‰æˆ—
     void Render(RenderContext& rc, ModelShader& shader) override;
 
+    void DrawDebugPrimitive();
+
     // •`‰æˆ—
     //virtual void Render(const RenderContext& rc, ModelShader* shader) override;
 

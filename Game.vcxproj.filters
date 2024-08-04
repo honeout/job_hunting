@@ -219,9 +219,6 @@
     <ClInclude Include="Source\BulletFiring.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\ColorGradingShader.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\ComponentlF.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -231,25 +228,16 @@
     <ClInclude Include="Source\Graphics\FinalpassShader.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\GaussianBlurShader.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Graphics\LuminanceExtractionShader.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\ModelControll.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\PhongShader.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\PostprocessingRenderer.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Graphics\RenderTarget.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Graphics\ShadowmapCasterShader.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\SpriteControll.h">
@@ -274,6 +262,24 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\UiManager.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\PhongShader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\ColorGradingShader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\ShadowmapCasterShader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\GaussianBlurShader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneGameClear.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneGameOver.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
@@ -443,9 +449,6 @@
     <ClCompile Include="Source\SpriteControll.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\ShadowmapCasterShader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Ui.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -473,22 +476,31 @@
     <ClCompile Include="Source\LightManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\PhongShader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\PostprocessingRenderer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\FinalpassShader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\GaussianBlurShader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Graphics\LuminanceExtractionShader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\PhongShader.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Graphics\ColorGradingShader.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\ShadowmapCasterShader.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\GaussianBlurShader.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneGameClear.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneGameOver.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

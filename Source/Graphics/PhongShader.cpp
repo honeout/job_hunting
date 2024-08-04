@@ -247,11 +247,11 @@ void PhonShader::Begin(const RenderContext& rc)
         sizeof(rc.pointLightData));
     cbScene.pointLightCount = rc.pointLightCount;
 
-    memcpy_s(cbScene.spotLightData,
-        sizeof(cbScene.spotLightData),
-        rc.spotLightData,
-        sizeof(rc.spotLightData));
-    cbScene.spotLightCount = rc.spotLightCount;
+    //memcpy_s(cbScene.spotLightData,
+    //    sizeof(cbScene.spotLightData),
+    //    rc.spotLightData,
+    //    sizeof(rc.spotLightData));
+    //cbScene.spotLightCount = rc.spotLightCount;
 
     rc.deviceContext->UpdateSubresource(sceneConstantBuffer.Get(), 0, 0, &cbScene, 0, 0);
 

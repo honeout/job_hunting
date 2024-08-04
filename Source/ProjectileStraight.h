@@ -27,6 +27,9 @@ public:
     // •`‰æˆ—
     void Render(RenderContext& rc, ModelShader& shader) override;
 
+    // “–‚½‚è”»’èŒ©‚é
+    void DrawDebugPrimitive();
+
     void OnGUI() override;
 
     // •`‰æˆ—

@@ -1,7 +1,9 @@
 #include "EnemySlime.h"
 #include "StateDerived.h"
+#include "Input\GamePad.h"
 #include "Player.h"
 #include "Mathf.h"
+
 
 
 // TODO 02_03 Stateを基底クラスとして各種Stateクラスを用意する。
@@ -13,7 +15,10 @@
 void WanderState::Enter()
 {
 	//owner->GetActor()->GetComponent<EnemySlime>()->
+	// 縄張り
 	owner->GetComponent<EnemySlime>()->SetRandomTargetPosition();
+
+	// アニメーション再生
 	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(owner->GetComponent<EnemySlime>()->GetAnimationStateWalk(), true);
 }
 
@@ -145,8 +150,10 @@ void AttackState::Execute(float elapsedTime)
 {
 	// 攻撃モーションが終了したとき追跡ステートへ移行
 	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
+	{
+		owner->GetComponent<EnemySlime>()->SetCounterJudgment(false);
 		owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
-
+	}
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
@@ -155,12 +162,40 @@ void AttackState::Execute(float elapsedTime)
 		// 目玉ノードとプレイヤーの衝突処理
 		owner->GetComponent<EnemySlime>()->CollisitionNodeVsPlayer("EyeBall", 0.2f);
 	}
+	if (animationTime >= 0.3f && animationTime <= 0.4f)
+	{
+		owner->GetComponent<EnemySlime>()->SetCounterJudgment(true);
+	}
+
+
 }
 // 最後にやりたい処理全般
 void AttackState::Exit()
 {
 }
 
+
+void DamageState::Enter()
+{
+	bool loop = false;
+
+	owner->GetComponent<ModelControll>()->GetModel()->
+		PlayAnimation(
+			owner->GetComponent<EnemySlime>()->GetAnimationStateDie(), loop);
+
+
+}
+
+void DamageState::Execute(float elapsedTime)
+{
+		if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
+		owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
+
+}
+
+void DamageState::Exit()
+{
+}
 
 // プレイヤー
 void PlayerIdleState::Enter()
@@ -183,6 +218,13 @@ void PlayerIdleState::Execute(float elapsedTime)
 	{
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 		//TransitionMoveState();
+	}
+
+	// 反射入力処理
+	if (owner->GetComponent<Player>()->InputAvoidance())
+	{
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Reflection));
+
 	}
 
 	// ジャンプ入力処理
@@ -261,6 +303,12 @@ void PlayerMovestate::Execute(float elapsedTime)
 	}
 
 
+	// 回避入力処理
+	if (owner->GetComponent<Player>()->InputAvoidance())
+	{
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+
+	}
 
 	// ジャンプ入力処理
 	if (owner->GetComponent<Player>()->InputJump())
@@ -459,7 +507,7 @@ void PlayerAttackState::Execute(float elapsedTime)
 	}
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentAnimationSecondsUpeer();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 	bool CollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
 
@@ -500,7 +548,7 @@ void PlayerDamageState::Execute(float elapsedTime)
 {
 	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
 	{
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 	}
 }
@@ -540,3 +588,83 @@ void PlayerReviveState::Execute(float elapsedTime)
 void PlayerReviveState::Exit()
 {
 }
+
+// 回避初期化
+void PlayerAvoidanceState::Enter()
+{
+	bool loop = false;
+
+	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+		owner->GetComponent<Player>()->Anim_Jump_Flip, loop);
+
+	// 当たり判定の有無
+	owner->GetComponent<Player>()->DmageInvalidJudment(false);
+
+
+}
+
+// 回避更新
+void PlayerAvoidanceState::Execute(float elapsedTime)
+{
+	// 移動入力処理
+	owner->GetComponent<Player>()->InputMove(elapsedTime);
+
+	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
+	{
+		// 当たり判定の有無
+		owner->GetComponent<Player>()->DmageInvalidJudment(true);
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
+
+	}
+}
+
+// 回避終了
+void PlayerAvoidanceState::Exit()
+{
+}
+
+// 反射開始
+void PlayerReflectionState::Enter()
+{
+	bool loop = false;
+
+	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+		owner->GetComponent<Player>()->Anim_Attack, loop);
+
+	// 当たり判定の有無
+	//owner->GetComponent<Player>()->DmageInvalidJudment(false);
+
+}
+
+// 反射更新
+void PlayerReflectionState::Execute(float elapsedTime)
+{
+	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
+	{
+		// 当たり判定の有無
+		//owner->GetComponent<Player>()->DmageInvalidJudment(true);
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
+
+	}
+
+
+	// 任意のアニメーション再生区間でのみ衝突判定処理をする
+	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
+	bool CollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
+
+	//owner->GetComponent<Player>()->SetAttackCollisionFlag(CollisionFlag);
+
+	if (CollisionFlag)
+	{
+		// 左手ノードとエネミーの衝突処理
+		owner->GetComponent<Player>()->CollisionNodeVsEnemiesCounter("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius());
+	}
+}
+
+// 反射終了
+void PlayerReflectionState::Exit()
+{
+}
+
+

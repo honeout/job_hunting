@@ -73,6 +73,24 @@ private:
 	float				stateTimer = 0.0f;
 };
 
+// ダメージステートオブジェクト
+class DamageState : public State
+{
+public:
+	// コンストラクタ
+	DamageState(Actor* enemy) :State(enemy) {};
+	// デストラクタ
+	~DamageState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	float				stateTimer = 0.0f;
+};
+
 
 
 
@@ -199,6 +217,42 @@ public:
 	PlayerDamageState(Actor* player) :State(player) {};
 	// デストラクタ
 	~PlayerDamageState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	float				stateTimer = 0.0f;
+};
+
+// 回避ステートオブジェクト
+class PlayerAvoidanceState : public State
+{
+public:
+	// コンストラクタ
+	PlayerAvoidanceState(Actor* player) :State(player) {};
+	// デストラクタ
+	~PlayerAvoidanceState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	float				stateTimer = 0.0f;
+};
+
+// 反射ステートオブジェクト
+class PlayerReflectionState : public State
+{
+public:
+	// コンストラクタ
+	PlayerReflectionState(Actor* player) :State(player) {};
+	// デストラクタ
+	~PlayerReflectionState() {}
 	// ステートに入った時のメソッド
 	void Enter()override;
 	// ステートで実行するメソッド

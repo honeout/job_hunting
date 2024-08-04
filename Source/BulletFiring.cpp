@@ -11,9 +11,10 @@ void BulletFiring::Move(float speed,float elapsedTime)
     {
         // 自分を削除
         Destroy();
-        ProjectileManager::Instance().DeleteUpdate(elapsedTime);
+       
 
     }
+    ProjectileManager::Instance().DeleteUpdate(elapsedTime);
     // 移動　　秒じゃなくとフレームに
     float bulletspeed = speed * elapsedTime;
 
@@ -51,9 +52,10 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
     {
         // 自分を削除
         Destroy();
-        ProjectileManager::Instance().DeleteUpdate(elapsedTime);
+        
         
     }
+    ProjectileManager::Instance().DeleteUpdate(elapsedTime);
     // 移動　　秒じゃなくとフレームに
     float bulletspeed = speed * elapsedTime;
 

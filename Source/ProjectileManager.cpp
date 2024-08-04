@@ -82,7 +82,8 @@ void ProjectileManager::Clear()
     {
         // À‘Ì‚ğÁ‚µ‚½ŠÇ—‚µ‚Ä‚¢‚é”‚Í‚»‚Ì‚Ü‚Ü
        // delete projectile;
-
+           // Remove(projectile);
+            projectile.reset();
     }
     // vector‚Ì”‚ğ‚O‚É
     projectiles.clear();
@@ -90,6 +91,7 @@ void ProjectileManager::Clear()
 
 void ProjectileManager::Remove(std::shared_ptr<Actor> projectile)
 {
+    //projectile.reset();
     // íœ“o˜^
     removes.insert(projectile);// E‚·ƒŠƒXƒgE‚·ˆ×‚ÌƒŠƒXƒg
 }

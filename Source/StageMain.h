@@ -68,7 +68,12 @@ public:
     void Render(RenderContext& rc, ModelShader& shader);
 
     // “o˜^
-    void Register(Actor* actor);
+    void Register(std::shared_ptr <Actor> actor);
+
+
+    // íœ
+    void Remove(std::shared_ptr<Actor> stage);
+
 
     void Clear();
 
@@ -76,8 +81,10 @@ public:
     int GetStageCount() const { return static_cast<int>(stages.size()); }
 
     // ƒGƒlƒ~[æ“¾
-    Actor* GetStage(int index) { return stages.at(index); }
+    std::shared_ptr <Actor> GetStage(int index) { return stages.at(index); }
 
 private:
-    std::vector<Actor*> stages;
+    std::vector<std::shared_ptr<Actor>>  stages;
+    // íœ—\–ñ
+    std::set<std::shared_ptr<Actor>>removes;
 };

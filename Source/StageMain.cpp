@@ -77,20 +77,26 @@ bool StageMain::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3&
     return Collision::IntersectRayVsModel(start, end, model, hit);
 }
 
-void StageManager::Register(Actor* actor)
+void StageManager::Register(std::shared_ptr <Actor> actor)
 {
     stages.emplace_back(actor);
 }
 
 
+void StageManager::Remove(std::shared_ptr<Actor> stage)
+{
+    // íœ“o˜^
+    removes.insert(stage);
+}
+
 // ƒXƒe[ƒW‘Síœ
 void StageManager::Clear()
 {
-    for (Actor* stage : stages)// 
+    for (std::shared_ptr<Actor>& actor  : stages)// 
     {
         // À‘Ì‚ğÁ‚µ‚½ŠÇ—‚µ‚Ä‚¢‚é”‚Í‚»‚Ì‚Ü‚Ü
-        delete stage;
-
+        //Remove(actor);
+        actor.reset();
     }
     // vector‚Ì”‚ğ‚O‚É
     stages.clear();

@@ -22,7 +22,7 @@ public:
     virtual void Render(const RenderContext& rc, ModelShader* shader) = 0;
 
     // デバッグプリミティブ描画
-    virtual void DrawDebugPrimitive();
+    //virtual void DrawDebugPrimitive();
 
     // 破壊　
     void Destroy();

@@ -246,6 +246,23 @@ void ActorManager::RenderShadowmap(const DirectX::XMFLOAT4X4& view, const Direct
 	}
 }
 
+void ActorManager::Clear()
+{
+
+	for (std::shared_ptr<Actor>& actor : updateActors)// 
+	{
+		// À‘Ì‚ğÁ‚µ‚½ŠÇ—‚µ‚Ä‚¢‚é”‚Í‚»‚Ì‚Ü‚Ü
+	   // delete projectile;
+		Remove(actor);
+		//actor.reset();
+	}
+	updateActors.clear();
+
+
+    
+	
+}
+
 // ƒŠƒXƒ^[•`‰æ
 void ActorManager::DrawLister()
 {

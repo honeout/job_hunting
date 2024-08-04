@@ -36,12 +36,14 @@ Player::~Player()
     //delete desEffect;
     //if (model == nullptr)
     //delete model;
+
+    hitEffect->Stop(hitEffect->GetEfeHandle());
     if (hitEffect != nullptr)
     {
         delete hitEffect;
         hitEffect = nullptr;
     }
-
+    desEffect->Stop(desEffect->GetEfeHandle());
     if (desEffect != nullptr)
     {
         delete desEffect;
@@ -54,7 +56,8 @@ Player::~Player()
         cameraControlle = nullptr;
     }
 
-
+    ProjectileManager::Instance().Clear();
+  
 }
 
 
@@ -116,6 +119,8 @@ void Player::Start()
     stateMachine->RegisterState(new PlayerDamageState(GetActor().get()));
     stateMachine->RegisterState(new PlayerDeathState(GetActor().get()));
     stateMachine->RegisterState(new PlayerReviveState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerAvoidanceState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerReflectionState(GetActor().get()));
 
     // ステートセット
     stateMachine->SetState(static_cast<int>(State::Idle));
@@ -124,6 +129,8 @@ void Player::Start()
     updateanim = UpAnim::Normal;
 
     moveSpeedAnimation = 0.0f;
+
+
 }
 
 // 更新処理
@@ -155,8 +162,6 @@ void Player::Update(float elapsedTime)
     // カメラ設定
     {
         cameraControlle->Update(elapsedTime);
-
-
 
         cameraControlle->SetTarget(position);
 
@@ -196,6 +201,7 @@ void Player::Update(float elapsedTime)
     CollisionPlayerVsEnemies();
     // 弾丸当たり判定
     CollisionProjectilesVsEnemies();
+    
 
 
     //model->Update_blend_animations(0.675f, frontVec.x,1.582f);
@@ -203,6 +209,9 @@ void Player::Update(float elapsedTime)
     //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
     // 位置更新
     transform->UpdateTransform();
+
+
+
 
     // モーション更新処理
     switch (updateanim)
@@ -285,6 +294,11 @@ void Player::DrawDebugPrimitive()
 
     // 弾丸デバッグプリミティブ描画
     //projectileManager.DrawDebugPrimitive();
+    //for (int i = 0; i < projectileManager.GetProjectileCount(); ++i)
+    //{
+    //    projectileManager.GetProjectile(i)->GetComponent<ProjectileStraight>()->DrawDebugPrimitive();
+
+    //}
 
     if (attackCollisionFlag)
     {
@@ -770,6 +784,74 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
  
 }
 
+void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius)
+{
+    // ノード取得
+    Model::Node* node = model->FindNode(nodeName);
+    //worldTransform
+    //localTransform
+    // ノード位置取得
+    DirectX::XMFLOAT3 nodePosition;
+    nodePosition = {
+        node->worldTransform._41,
+        node->worldTransform._42,
+        node->worldTransform._43
+    };
+    // マネージャー取得
+    EnemyManager& enemyManager = EnemyManager::Instance();
+
+    int enemyCount = enemyManager.GetEnemyCount();
+    // 指定のノードと全ての敵を総当たりで衝突処理
+    for (int i = 0; i < enemyCount; ++i)
+    {
+        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+
+        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+        float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
+        float enemyHeight = enemy->GetComponent<Transform>()->GetRadius();
+
+
+        //// 衝突処理
+        DirectX::XMFLOAT3 outPositon;
+
+        std::shared_ptr<EnemySlime> enemySlime = enemy->GetComponent<EnemySlime>();
+        
+
+        // 円柱と円
+        if (Collision::IntersectSphereVsCylinder(
+            nodePosition,
+            nodeRadius,
+            enemyPosition,
+            enemyRudius,
+            enemyHeight,
+            outPositon) && 
+            enemySlime->GetCounterJudgment())
+        {
+            
+
+            enemySlime->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+            enemySlime->SetCounterJudgment(false);
+            // ヒットエフェクト再生
+            {
+                DirectX::XMFLOAT3 e = enemyPosition;
+                e.y += enemyHeight * 0.5f;
+
+
+                hitEffect->Play(e);
+
+
+                //desEffect->Play(e);
+
+            }
+        
+            
+        }
+
+
+
+    }
+}
+
 
 
 // デバッグ用GUI描画
@@ -921,105 +1003,121 @@ bool Player::InputProjectile()
         return true;
     }
 
-    // 追尾弾丸発射
-    if (gamePad.GetButtonDown() & GamePad::BTN_Y)
-    {
-        // 前方向 sinの計算
-        DirectX::XMFLOAT3 dir;
-        //dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
-        //dir.y = 0;
-        //dir.z = cosf(angle.y);
+    //// 追尾弾丸発射
+    //if (gamePad.GetButtonDown() & GamePad::BTN_Y)
+    //{
+    //    // 前方向 sinの計算
+    //    DirectX::XMFLOAT3 dir;
+    //    //dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
+    //    //dir.y = 0;
+    //    //dir.z = cosf(angle.y);
 
-        dir = GetForwerd(angle);
+    //    dir = GetForwerd(angle);
 
-        //sinf0度０　cosf0は１度
-        //９０sin1,cos0返ってくる横
-        //４５sin0.5,cos0.5斜め
-        // 360度を上手く表現出来る。2dでも行ける。
-
-
-        // 発射位置（プレイヤーの腰当たり)
-        DirectX::XMFLOAT3 pos;
-        pos.x = position.x;
-        pos.y = position.y + height * 0.5f;// 身長÷位置のｙ
-        pos.z = position.z;
-        //ターゲット（デフォルトではプレイヤーの前方）
-        DirectX::XMFLOAT3 target;
-        // 敵がいなかった時のために　1000先まで飛んでくれ
-        target.x = pos.x+dir.x * 1000.0f;
-        target.y = pos.y+dir.y * 1000.0f;
-        target.z = pos.z+dir.z * 1000.0f;
-
-        // 一番近くの敵をターゲットにする
-        float dist = FLT_MAX;// float の最大値float全体
-        EnemyManager& enemyManager = EnemyManager::Instance();
-        int enemyCount = enemyManager.GetEnemyCount();
-        for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
-        {
-            // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
-            std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
-            DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-            // 敵の位置
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
-            // 自分から敵までの位置を計測
-            DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
-            // ベクトルのながさを２乗する。√つけていない奴
-            DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
-            float d;
-            DirectX::XMStoreFloat(&d, D);
-            if (d < dist)
-            {
-                // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
-                dist = d;
-                target = enemy->GetComponent<Transform>()->GetPosition();// 位置を入れる
-                target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
-            }
-            
-            
-
-        }
+    //    //sinf0度０　cosf0は１度
+    //    //９０sin1,cos0返ってくる横
+    //    //４５sin0.5,cos0.5斜め
+    //    // 360度を上手く表現出来る。2dでも行ける。
 
 
-        // 発射　ストレート弾丸を用意
-        //ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
-        //projectile->Lanch(dir, pos,target);
+    //    // 発射位置（プレイヤーの腰当たり)
+    //    DirectX::XMFLOAT3 pos;
+    //    pos.x = position.x;
+    //    pos.y = position.y + height * 0.5f;// 身長÷位置のｙ
+    //    pos.z = position.z;
+    //    //ターゲット（デフォルトではプレイヤーの前方）
+    //    DirectX::XMFLOAT3 target;
+    //    // 敵がいなかった時のために　1000先まで飛んでくれ
+    //    target.x = pos.x+dir.x * 1000.0f;
+    //    target.y = pos.y+dir.y * 1000.0f;
+    //    target.z = pos.z+dir.z * 1000.0f;
 
-        // 弾丸初期化
-        const char* filename = "Data/Model/Sword/Sword.mdl";
+    //    // 一番近くの敵をターゲットにする
+    //    float dist = FLT_MAX;// float の最大値float全体
+    //    EnemyManager& enemyManager = EnemyManager::Instance();
+    //    int enemyCount = enemyManager.GetEnemyCount();
+    //    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+    //    {
+    //        // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
+    //        std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+    //        DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
+    //        // 敵の位置
+    //        DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
+    //        // 自分から敵までの位置を計測
+    //        DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
+    //        // ベクトルのながさを２乗する。√つけていない奴
+    //        DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
+    //        float d;
+    //        DirectX::XMStoreFloat(&d, D);
+    //        if (d < dist)
+    //        {
+    //            // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
+    //            dist = d;
+    //            target = enemy->GetComponent<Transform>()->GetPosition();// 位置を入れる
+    //            target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
+    //        }
+    //        
+    //        
 
-        std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-        actor->AddComponent<ModelControll>();
-        actor->GetComponent<ModelControll>()->LoadModel(filename);
-        actor->SetName("ProjectileHoming");
-        actor->AddComponent<Transform>();
-        actor->GetComponent<Transform>()->SetPosition(position);
-        actor->GetComponent<Transform>()->SetAngle(angle);
-        actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f,3.0f,3.0f));
-        actor->AddComponent<BulletFiring>();
-        actor->AddComponent<ProjectileHoming>();
-        //actor->AddComponent<Collision>();
-        ProjectileManager::Instance().Register(actor);
-        //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-        std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
-
-        // 発射
-        projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
-        projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+    //    }
 
 
-        return true;
+    //    // 発射　ストレート弾丸を用意
+    //    //ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
+    //    //projectile->Lanch(dir, pos,target);
 
-    }
+    //    // 弾丸初期化
+    //    const char* filename = "Data/Model/Sword/Sword.mdl";
+
+    //    std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+    //    actor->AddComponent<ModelControll>();
+    //    actor->GetComponent<ModelControll>()->LoadModel(filename);
+    //    actor->SetName("ProjectileHoming");
+    //    actor->AddComponent<Transform>();
+    //    actor->GetComponent<Transform>()->SetPosition(position);
+    //    actor->GetComponent<Transform>()->SetAngle(angle);
+    //    actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f,3.0f,3.0f));
+    //    actor->AddComponent<BulletFiring>();
+    //    actor->AddComponent<ProjectileHoming>();
+    //    //actor->AddComponent<Collision>();
+    //    ProjectileManager::Instance().Register(actor);
+    //    //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
+    //    std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+
+    //    // 発射
+    //    projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+    //    projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+
+
+    //    return true;
+
+    //}
     return false;
 }
+// 回避入力
+bool Player::InputAvoidance()
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
 
+    // 直進弾丸発射　rボタンを押したら
+    //if (gamePad.GetButtonDown() & GamePad::BTN_B)
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y)
+    {
+
+        return true;
+    }
+
+
+    return false;
+}
+// 攻撃入力
 bool Player::InputAttack()
 {
     // 攻撃入力処理
 
     GamePad& gamePad = Input::Instance().GetGamePad();
 
-    // 直進弾丸発射　xボタンを押したら
+    // 直進弾丸発射　ｃボタンを押したら
     //if (gamePad.GetButtonDown() & GamePad::BTN_B)
     if (gamePad.GetButtonDown() & GamePad::BTN_X)
     {
@@ -1517,6 +1615,20 @@ DirectX::XMFLOAT3 Player::GetForwerd(DirectX::XMFLOAT3 angle)
     return dir;
 }
 
+// 自分の当たり判定有無
+void Player::DmageInvalidJudment(bool invalidJudgment)
+{
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    int enemyCount = enemyManager.GetEnemyCount();
+    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+    {
+        // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
+        std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+
+        enemy->GetComponent<EnemySlime>()->SetInvalidJudgment(invalidJudgment);
+    }
+}
+
 
 bool Player::Ground()
 {
@@ -1533,6 +1645,29 @@ bool Player::Ground()
 
 
 
+//更新処理
+void PlayerManager::DeleteUpdate()
+{
+
+    //破棄処理
+    for (std::shared_ptr<Actor> player : removes)
+    {
+        //std::vector要素を削除する場合はイテレータで削除する
+        std::vector<std::shared_ptr<Actor>>::iterator it = std::find(players.begin(), players.end(), player);
+
+        if (it != players.end())
+        {
+            players.erase(it);
+        }
+
+        //削除
+        //delete player;
+        
+    }
+    //破棄リストをクリア
+    removes.clear();
+}
+
 void PlayerManager::Register(std::shared_ptr<Actor> actor)
 {
     players.emplace_back(actor);
@@ -1545,3 +1680,18 @@ void PlayerManager::Remove(std::shared_ptr<Actor> player)
     // 削除登録
     removes.insert(player);
 }
+
+void PlayerManager::Clear()
+{
+    for (std::shared_ptr<Actor>& actor : players)// 
+    {
+        // 実体を消した管理している数はそのまま
+       // delete projectile;
+        //Remove(actor);
+        actor.reset();
+        //actor.reset();
+    }
+
+    players.clear();
+}
+
