@@ -16,6 +16,7 @@
 #include "ModelControll.h"
 #include "Transform.h"
 #include "StateMachine.h"
+#include <stack>
 
 enum class UpAnim
 {
@@ -125,7 +126,8 @@ public:
     bool InputSpecialAttackCharge();
     bool InputSpecialShotCharge();
  
-
+    bool GetSpecialAttackTime() const { return specialAttackTime; }
+    void SetSpecialAttackTime(bool specialAttackTime) { this->specialAttackTime = specialAttackTime; }
 
     // プレイヤーとエネミーとの衝突処理
     //void CollisionPlayerVsEnemies();
@@ -264,6 +266,19 @@ public:
         Revive,
         Avoidance,
         Reflection,
+    };
+
+    enum class CommandAttack
+    {
+        Attack,
+        MagicFire
+    };
+
+    enum class SpecialAttack
+    {
+        Normal = -1,
+        Attack,
+        MagicFire
     };
 
 private:
@@ -407,6 +422,12 @@ private:
 
     // 当たり判定無効判定
     bool invalidJudgment = true;
+
+    // 特殊攻撃をためる奴
+    std::stack<int> specialAttack;
+
+    // 特殊アクション確認
+    bool specialAttackTime;
 };
 
 // プレイヤーマネージャー

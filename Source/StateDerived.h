@@ -89,6 +89,7 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
 };
 
 
@@ -207,6 +208,7 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+	bool				button = false;
 };
 
 // よろけステートオブジェクト

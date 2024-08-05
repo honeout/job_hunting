@@ -36,7 +36,9 @@ public:
 	void SetSlot(int slot) { this->slot = slot; }
 
 	// ボタン入力状態の取得
-	GamePadButton GetButton() const { return buttonState[0]; }
+	GamePadButton GetButton() const { return inputKeys[0]; }
+
+	//GamePadButton GetButton() const { return buttonState[0]; }
 
 	// ボタン押下状態の取得
 	GamePadButton GetButtonDown() const { return buttonDown; }
@@ -67,6 +69,7 @@ public:
 
 	// コマンド入力確認
 	bool ConfirmCommand(const std::vector<GamePadButton>& command, int frame);
+
 
 private:
 	GamePadButton		buttonState[2] = { 0 };

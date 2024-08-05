@@ -148,6 +148,8 @@ void AttackState::Enter()
 // update
 void AttackState::Execute(float elapsedTime)
 {
+
+
 	// 攻撃モーションが終了したとき追跡ステートへ移行
 	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
 	{
@@ -162,7 +164,7 @@ void AttackState::Execute(float elapsedTime)
 		// 目玉ノードとプレイヤーの衝突処理
 		owner->GetComponent<EnemySlime>()->CollisitionNodeVsPlayer("EyeBall", 0.2f);
 	}
-	if (animationTime >= 0.3f && animationTime <= 0.4f)
+	if (animationTime >= 0.2f && animationTime <= 0.5f)
 	{
 		owner->GetComponent<EnemySlime>()->SetCounterJudgment(true);
 	}
@@ -220,12 +222,12 @@ void PlayerIdleState::Execute(float elapsedTime)
 		//TransitionMoveState();
 	}
 
-	// 反射入力処理
-	if (owner->GetComponent<Player>()->InputAvoidance())
-	{
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Reflection));
+	//// 反射入力処理
+	//if (owner->GetComponent<Player>()->InputAvoidance())
+	//{
+	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Reflection));
 
-	}
+	//}
 
 	// ジャンプ入力処理
 	if (owner->GetComponent<Player>()->InputJump())
@@ -237,7 +239,7 @@ void PlayerIdleState::Execute(float elapsedTime)
 
 	owner->GetComponent<Player>()->InputSelectCheck();
 
-	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == 0)
+	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::SpecialAttack::Attack)
 	{
 		//stated = state;
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
@@ -249,7 +251,7 @@ void PlayerIdleState::Execute(float elapsedTime)
 
 
 	// 弾丸入力処理
-	else if (owner->GetComponent<Player>()->GetSelectCheck() == 1)
+	else if (owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::SpecialAttack::MagicFire)
 	{
 		owner->GetComponent<Player>()->InputProjectile();
 		//TransitionAttackState();
@@ -321,7 +323,7 @@ void PlayerMovestate::Execute(float elapsedTime)
 	owner->GetComponent<Player>()->InputSelectCheck();
 
 	// 通常攻撃
-	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == 0)
+	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::SpecialAttack::Attack)
 	{
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
 	}
@@ -329,7 +331,7 @@ void PlayerMovestate::Execute(float elapsedTime)
 
 
 	// 弾丸入力処理
-	else if (owner->GetComponent<Player>()->GetSelectCheck() == 1)
+	else if (owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::SpecialAttack::MagicFire)
 	{
 		owner->GetComponent<Player>()->InputProjectile();
 	}
@@ -477,24 +479,30 @@ void PlayerAttackState::Enter()
 
 void PlayerAttackState::Execute(float elapsedTime)
 {
-
+	if (owner->GetComponent<Player>()->InputAttack())
+	{
+		button = true;
+	}
 	// もし終わったら待機に変更
 	if (owner->GetComponent<Player>()->GetUpdateAnim() == UpAnim::Doble && !owner->GetComponent<ModelControll>()->GetModel()->IsPlayUpeerBodyAnimation())
 	{
 		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
-
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button ? Player::State::Attack : Player::State::Move));
+		button = false;
+		owner->GetComponent<Player>()->SetSpecialAttackTime(false);
 		//attackCollisionFlag = false;
 		//TransitionMoveState();
 
 
 	}
+	// 部分再生
 	else if (owner->GetComponent<Player>()->GetUpdateAnim() == UpAnim::Normal && !owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
 	{
 		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+		owner->GetComponent<Player>()->SetSpecialAttackTime(false);
 	}
-
+	// もし移動中に手を離したら
 	if (owner->GetComponent<Player>()->GetUpdateAnim() == UpAnim::Doble && !owner->GetComponent<Player>()->InputMove(elapsedTime))
 	{
 		//updateanim = UpAnim::Doble;
@@ -531,7 +539,7 @@ void PlayerAttackState::Execute(float elapsedTime)
 
 void PlayerAttackState::Exit()
 {
-
+	
 }
 
 void PlayerDamageState::Enter()

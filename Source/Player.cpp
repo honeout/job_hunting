@@ -37,15 +37,15 @@ Player::~Player()
     //if (model == nullptr)
     //delete model;
 
-    hitEffect->Stop(hitEffect->GetEfeHandle());
     if (hitEffect != nullptr)
     {
+        hitEffect->Stop(hitEffect->GetEfeHandle());
         delete hitEffect;
         hitEffect = nullptr;
     }
-    desEffect->Stop(desEffect->GetEfeHandle());
     if (desEffect != nullptr)
     {
+        desEffect->Stop(desEffect->GetEfeHandle());
         delete desEffect;
         desEffect = nullptr;
     }
@@ -102,7 +102,7 @@ void Player::Start()
     TransitionIdleState();
 
     // コマンド操作用
-    selectCheck = 0;
+    selectCheck = (int)CommandAttack::Attack;
 
     // 特殊攻撃ため初期値
     specialAttackCharge = 0.0f;
@@ -130,6 +130,11 @@ void Player::Start()
 
     moveSpeedAnimation = 0.0f;
 
+    // 特殊アクションの種類
+    specialAttack.push((int)SpecialAttack::Normal);
+
+    // 特殊アクション発動不
+    specialAttackTime = false;
 
 }
 
@@ -321,8 +326,10 @@ void Player::OnGUI()
     ImGui::InputFloat("Move Speed", &moveSpeed);
     ImGui::InputInt("Jump max", &jumpCount);
     ImGui::InputInt("selectCheck", &selectCheck);
-    ImGui::InputFloat("specialAttackCharge", &specialAttackCharge);
-    ImGui::InputFloat("specialShotCharge", &specialShotCharge);
+    ImGui::InputInt("specialAttack.top", &specialAttack.top());
+    //ImGui::InputInt("specialAttack.0", &specialAttack.);
+    ImGui::SliderFloat("specialAttackCharge", &specialAttackCharge,0,1.5f);
+    ImGui::SliderFloat("specialShotCharge", &specialShotCharge,0,1.5f);
 
     ImGui::SliderFloat("blend", &moveSpeedAnimation, 0.0f, 1.0f);
 
@@ -352,7 +359,7 @@ bool Player::InputSelectCheck()
 
     if (selectCheck >= 2)
     {
-        selectCheck = 0;
+        selectCheck = (int)CommandAttack::Attack;
     }
     return false;
 }
@@ -361,24 +368,46 @@ bool Player::InputSpecialAttackCharge()
 {
 
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttackCharge >= 1.5f)
+
+    if (specialAttackCharge >= 1.5f)
     {
         // 一度発動すると初期化
         specialAttackCharge = 0.0f;
+        specialAttack.push((int)SpecialAttack::Attack);
+    }
+
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::Attack && !specialAttackTime)
+    {
+        // 一度発動すると初期化
+        if (specialAttack.top() != (int)SpecialAttack::Normal)
+            specialAttack.pop();
+        specialAttackTime = true;
         return true;
     }
+
     return false;
 }
 
 bool Player::InputSpecialShotCharge()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialShotCharge >= 1.5f)
+
+    if (specialShotCharge >= 1.5f)
     {
         // 一度発動すると初期化
         specialShotCharge = 0.0f;
+        specialAttack.push((int)SpecialAttack::MagicFire);
+    }
+
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::MagicFire && !specialAttackTime)
+    {
+        // 一度発動すると初期化
+        if (specialAttack.top() != (int)SpecialAttack::Normal)
+            specialAttack.pop();
+        specialAttackTime = true;
         return true;
     }
+
     return false;
 }
 
@@ -830,7 +859,6 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
             
 
             enemySlime->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
-            enemySlime->SetCounterJudgment(false);
             // ヒットエフェクト再生
             {
                 DirectX::XMFLOAT3 e = enemyPosition;
@@ -842,6 +870,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
 
                 //desEffect->Play(e);
 
+                enemySlime->SetCounterJudgment(false);
             }
         
             
@@ -1003,95 +1032,95 @@ bool Player::InputProjectile()
         return true;
     }
 
-    //// 追尾弾丸発射
-    //if (gamePad.GetButtonDown() & GamePad::BTN_Y)
-    //{
-    //    // 前方向 sinの計算
-    //    DirectX::XMFLOAT3 dir;
-    //    //dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
-    //    //dir.y = 0;
-    //    //dir.z = cosf(angle.y);
+    // 追尾弾丸発射
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y)
+    {
+        // 前方向 sinの計算
+        DirectX::XMFLOAT3 dir;
+        //dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
+        //dir.y = 0;
+        //dir.z = cosf(angle.y);
 
-    //    dir = GetForwerd(angle);
+        dir = GetForwerd(angle);
 
-    //    //sinf0度０　cosf0は１度
-    //    //９０sin1,cos0返ってくる横
-    //    //４５sin0.5,cos0.5斜め
-    //    // 360度を上手く表現出来る。2dでも行ける。
-
-
-    //    // 発射位置（プレイヤーの腰当たり)
-    //    DirectX::XMFLOAT3 pos;
-    //    pos.x = position.x;
-    //    pos.y = position.y + height * 0.5f;// 身長÷位置のｙ
-    //    pos.z = position.z;
-    //    //ターゲット（デフォルトではプレイヤーの前方）
-    //    DirectX::XMFLOAT3 target;
-    //    // 敵がいなかった時のために　1000先まで飛んでくれ
-    //    target.x = pos.x+dir.x * 1000.0f;
-    //    target.y = pos.y+dir.y * 1000.0f;
-    //    target.z = pos.z+dir.z * 1000.0f;
-
-    //    // 一番近くの敵をターゲットにする
-    //    float dist = FLT_MAX;// float の最大値float全体
-    //    EnemyManager& enemyManager = EnemyManager::Instance();
-    //    int enemyCount = enemyManager.GetEnemyCount();
-    //    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
-    //    {
-    //        // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
-    //        std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
-    //        DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-    //        // 敵の位置
-    //        DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
-    //        // 自分から敵までの位置を計測
-    //        DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
-    //        // ベクトルのながさを２乗する。√つけていない奴
-    //        DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
-    //        float d;
-    //        DirectX::XMStoreFloat(&d, D);
-    //        if (d < dist)
-    //        {
-    //            // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
-    //            dist = d;
-    //            target = enemy->GetComponent<Transform>()->GetPosition();// 位置を入れる
-    //            target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
-    //        }
-    //        
-    //        
-
-    //    }
+        //sinf0度０　cosf0は１度
+        //９０sin1,cos0返ってくる横
+        //４５sin0.5,cos0.5斜め
+        // 360度を上手く表現出来る。2dでも行ける。
 
 
-    //    // 発射　ストレート弾丸を用意
-    //    //ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
-    //    //projectile->Lanch(dir, pos,target);
+        // 発射位置（プレイヤーの腰当たり)
+        DirectX::XMFLOAT3 pos;
+        pos.x = position.x;
+        pos.y = position.y + height * 0.5f;// 身長÷位置のｙ
+        pos.z = position.z;
+        //ターゲット（デフォルトではプレイヤーの前方）
+        DirectX::XMFLOAT3 target;
+        // 敵がいなかった時のために　1000先まで飛んでくれ
+        target.x = pos.x+dir.x * 1000.0f;
+        target.y = pos.y+dir.y * 1000.0f;
+        target.z = pos.z+dir.z * 1000.0f;
 
-    //    // 弾丸初期化
-    //    const char* filename = "Data/Model/Sword/Sword.mdl";
+        // 一番近くの敵をターゲットにする
+        float dist = FLT_MAX;// float の最大値float全体
+        EnemyManager& enemyManager = EnemyManager::Instance();
+        int enemyCount = enemyManager.GetEnemyCount();
+        for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+        {
+            // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
+            std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+            DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
+            // 敵の位置
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
+            // 自分から敵までの位置を計測
+            DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
+            // ベクトルのながさを２乗する。√つけていない奴
+            DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
+            float d;
+            DirectX::XMStoreFloat(&d, D);
+            if (d < dist)
+            {
+                // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
+                dist = d;
+                target = enemy->GetComponent<Transform>()->GetPosition();// 位置を入れる
+                target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
+            }
+            
+            
 
-    //    std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-    //    actor->AddComponent<ModelControll>();
-    //    actor->GetComponent<ModelControll>()->LoadModel(filename);
-    //    actor->SetName("ProjectileHoming");
-    //    actor->AddComponent<Transform>();
-    //    actor->GetComponent<Transform>()->SetPosition(position);
-    //    actor->GetComponent<Transform>()->SetAngle(angle);
-    //    actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f,3.0f,3.0f));
-    //    actor->AddComponent<BulletFiring>();
-    //    actor->AddComponent<ProjectileHoming>();
-    //    //actor->AddComponent<Collision>();
-    //    ProjectileManager::Instance().Register(actor);
-    //    //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-    //    std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
-
-    //    // 発射
-    //    projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
-    //    projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+        }
 
 
-    //    return true;
+        // 発射　ストレート弾丸を用意
+        //ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
+        //projectile->Lanch(dir, pos,target);
 
-    //}
+        // 弾丸初期化
+        const char* filename = "Data/Model/Sword/Sword.mdl";
+
+        std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+        actor->AddComponent<ModelControll>();
+        actor->GetComponent<ModelControll>()->LoadModel(filename);
+        actor->SetName("ProjectileHoming");
+        actor->AddComponent<Transform>();
+        actor->GetComponent<Transform>()->SetPosition(position);
+        actor->GetComponent<Transform>()->SetAngle(angle);
+        actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f,3.0f,3.0f));
+        actor->AddComponent<BulletFiring>();
+        actor->AddComponent<ProjectileHoming>();
+        //actor->AddComponent<Collision>();
+        ProjectileManager::Instance().Register(actor);
+        //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
+        std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+
+        // 発射
+        projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+
+        
+        return true;
+
+    }
     return false;
 }
 // 回避入力
@@ -1163,7 +1192,7 @@ void Player::UpdateIdleState(float elapsedTime)
 
     InputSelectCheck();
 
-    if (InputAttack() && selectCheck == 0)
+    if (InputAttack() && selectCheck == (int)CommandAttack::Attack)
     {
         //stated = state;
         TransitionAttackState();
@@ -1174,7 +1203,7 @@ void Player::UpdateIdleState(float elapsedTime)
 
 
     // 弾丸入力処理
-    else if (selectCheck == 1)
+    else if (selectCheck == (int)CommandAttack::MagicFire)
     {
         InputProjectile();
         //TransitionAttackState();
@@ -1243,7 +1272,7 @@ void Player::UpdateMoveState(float elapsedTime)
 
     InputSelectCheck();
 
-    if (InputAttack() && selectCheck == 0)
+    if (InputAttack() && selectCheck == (int)CommandAttack::Attack)
     {
         //stated = state;
         TransitionAttackState();
@@ -1252,7 +1281,7 @@ void Player::UpdateMoveState(float elapsedTime)
 
 
     // 弾丸入力処理
-    else if (selectCheck == 1)
+    else if (selectCheck == (int)CommandAttack::MagicFire)
     {
         InputProjectile();
     }

@@ -160,8 +160,7 @@ void GamePad::Update()
 		if (newButtonState & BTN_LEFT)  lx = -1.0f;
 #endif
 
-		// コマンド記録用
-		SetInputKey(newButtonState);
+
 
 
 		if (lx >= 1.0f || lx <= -1.0f || ly >= 1.0f || ly <= -1.0)
@@ -183,25 +182,31 @@ void GamePad::Update()
 
 	// ボタン情報の更新
 	{
-		buttonState[1] = buttonState[0];	// スイッチ履歴
-		buttonState[0] = newButtonState;
+		// スイッチ履歴
+		SetInputKey(newButtonState);
 
-		buttonDown = ~buttonState[1] & newButtonState;	// 押した瞬間
-		buttonUp = ~newButtonState & buttonState[1];	// 離した瞬間
+		//buttonState[1] = buttonState[0];	// スイッチ履歴
+		//buttonState[0] = newButtonState;
+
+		//buttonDown = ~buttonState[1] & newButtonState;	// 押した瞬間
+		//buttonUp = ~newButtonState & buttonState[1];	// 離した瞬間
+
+		buttonDown = ~inputKeys[1] & newButtonState;	// 押した瞬間
+		buttonUp = ~newButtonState & inputKeys[1];	// 離した瞬間
 	}
 }
 
 // コマンド記録
 void GamePad::SetInputKey(GamePadButton newButtonState)
 {
-
+	// 入力されたら
 	for (int i = MAX_INPUT_KEY - 1; i > 0; --i)
 	{
 
 		inputKeys[i] = inputKeys[i - 1];
 	}
 	inputKeys[0] = newButtonState;
-
+	
 	
 }
 
