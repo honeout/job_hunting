@@ -43,6 +43,10 @@ public:
 	// ボタン押下状態の取得
 	GamePadButton GetButtonDown() const { return buttonDown; }
 
+	// ボタン押下状態を連続防止策
+	bool GetButtonDownCountinue() const { return buttonDownCountinue; }
+	void SetButtonDownCountinue(bool buttonDownCountinue)  { this->buttonDownCountinue = buttonDownCountinue; }
+
 	// ボタン押上状態の取得
 	GamePadButton GetButtonUp() const { return buttonUp; }
 
@@ -90,4 +94,7 @@ private:
 	// 確認用ボタン
 	int                                     inputButton;
 
+	// 押し込み続ける確認
+	bool									buttonDownCountinue = false;
+	
 };

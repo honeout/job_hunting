@@ -41,28 +41,34 @@ static const UINT SHADOWMAP_SIZE = 2048;
 // 初期化
 void SceneGame::Initialize()
 {
-	
+
+
 	// ステージ初期化
 	{
 		const char* filename = "Data/Model/ExampleStage/ExampleStage.mdl";
+		//const char* filename = "Data/Model/ExampleStage/M_stage (1).mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("StageMain");
 		actor->AddComponent<Transform>();
-		
-		actor->GetComponent<Transform>()->
-			SetPosition(DirectX::XMFLOAT3(0, 0, 0));
 
 		actor->GetComponent<Transform>()->
-			SetAngle(DirectX::XMFLOAT3( 0, 0, 0));
+			SetPosition(DirectX::XMFLOAT3(0, -15, 0));
+
+		actor->GetComponent<Transform>()->
+			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
 
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
 		actor->AddComponent<StageMain>();
+
+		// これが２Dかの確認
+		bool check2d = false;
+		actor->SetCheck2d(check2d);
+
 		StageManager::Instance().Register(actor);
-		
 
 	}
 
@@ -70,8 +76,10 @@ void SceneGame::Initialize()
 	//player = new Player;
 	{
 		// プレイヤー初期化
-		const char* filename = "Data/Model/Jammo/Jammo.mdl";
-		
+		//const char* filename = "Data/Model/Jammo/Jammo.mdl";
+		const char* filename = "Data/Model/Player/dualsword_player.mdl";
+		//const char* filename = "Data/Model/Player/test.mdl";
+
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
@@ -89,16 +97,24 @@ void SceneGame::Initialize()
 		actor->AddComponent<Movement>();
 		actor->AddComponent<HP>();
 		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
-		int life = 2;
+		int life = 0;
 		hp->SetLife(life);
 
 		actor->AddComponent<Player>();
 		actor->AddComponent<Collision>();
+
+		// これが２Dかの確認
+		bool check2d = false;
+		actor->SetCheck2d(check2d);
+
 		//actor->AddComponent<StageMain>();
 		//actor->AddComponent<ProjectileStraight>();
 		PlayerManager::Instance().Register(actor);
-		
+
+
+
 	}
+
 	// 敵
 	{
 		// 重い
@@ -106,6 +122,7 @@ void SceneGame::Initialize()
 		//{
 		// 敵初期化
 		const char* filename = "Data/Model/Slime/Slime.mdl";
+		//const char* filename = "Data/Model/Boss/BossAnim8.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
@@ -128,8 +145,13 @@ void SceneGame::Initialize()
 		actor->AddComponent<Collision>();
 		//actor->AddComponent<StageMain>();
 		actor->AddComponent<EnemySlime>();
+
+		// これが２Dかの確認
+		bool check2d = false;
+		actor->SetCheck2d(check2d);
+
 		EnemyManager::Instance().Register(actor);
-		
+
 		//
 
 	}
@@ -144,11 +166,11 @@ void SceneGame::Initialize()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = {932, 421};
+		DirectX::XMFLOAT2 pos = { 932, 421 };
 		transform2D->SetPosition(pos);
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = {358,310};
+		DirectX::XMFLOAT2 scale = { 358,310 };
 		transform2D->SetScale(scale);
 
 		// UI揺らす範囲を指定揺らす場合
@@ -166,6 +188,10 @@ void SceneGame::Initialize()
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -190,6 +216,10 @@ void SceneGame::Initialize()
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -217,6 +247,10 @@ void SceneGame::Initialize()
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -241,6 +275,10 @@ void SceneGame::Initialize()
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -268,6 +306,10 @@ void SceneGame::Initialize()
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(false);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -292,6 +334,10 @@ void SceneGame::Initialize()
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(false);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -318,6 +364,10 @@ void SceneGame::Initialize()
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -343,6 +393,10 @@ void SceneGame::Initialize()
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(false);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 	// UI PlayerCommandRigtning
@@ -366,6 +420,10 @@ void SceneGame::Initialize()
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -392,6 +450,10 @@ void SceneGame::Initialize()
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(false);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -416,6 +478,10 @@ void SceneGame::Initialize()
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -442,6 +508,10 @@ void SceneGame::Initialize()
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		bool drawCheck = true;
 		ui->SetDrawCheck(drawCheck);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -470,6 +540,10 @@ void SceneGame::Initialize()
 		bool drawCheck = false;
 		ui->SetDrawCheck(drawCheck);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -495,6 +569,10 @@ void SceneGame::Initialize()
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		bool drawCheck = false;
 		ui->SetDrawCheck(drawCheck);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -522,6 +600,10 @@ void SceneGame::Initialize()
 		bool drawCheck = false;
 		ui->SetDrawCheck(drawCheck);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -546,6 +628,10 @@ void SceneGame::Initialize()
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		bool drawCheck = false;
 		ui->SetDrawCheck(drawCheck);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -572,6 +658,10 @@ void SceneGame::Initialize()
 		bool drawCheck = false;
 		ui->SetDrawCheck(drawCheck);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -597,6 +687,10 @@ void SceneGame::Initialize()
 		bool drawCheck = false;
 		ui->SetDrawCheck(drawCheck);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -621,6 +715,10 @@ void SceneGame::Initialize()
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		bool drawCheck = false;
 		ui->SetDrawCheck(drawCheck);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -659,6 +757,10 @@ void SceneGame::Initialize()
 		bool drawCheck = true;
 		ui->SetDrawCheck(drawCheck);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -673,12 +775,12 @@ void SceneGame::Initialize()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		
+
 		DirectX::XMFLOAT2 pos = { 916, 31 };
 		transform2D->SetPosition(pos);
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		
+
 		DirectX::XMFLOAT2 scale = { 303,30 };
 		transform2D->SetScale(scale);
 
@@ -698,6 +800,11 @@ void SceneGame::Initialize()
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		bool drawCheck = true;
 		ui->SetDrawCheck(drawCheck);
+
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -739,6 +846,10 @@ void SceneGame::Initialize()
 		bool drawCheck = true;
 		ui->SetDrawCheck(drawCheck);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -759,7 +870,7 @@ void SceneGame::Initialize()
 		float angle = 0;
 		transform2D->SetAngle(angle);
 
-		DirectX::XMFLOAT2 scale = {  27,17 };
+		DirectX::XMFLOAT2 scale = { 27,17 };
 		transform2D->SetScale(scale);
 
 		// UI揺らす範囲を指定揺らす場合
@@ -779,6 +890,10 @@ void SceneGame::Initialize()
 		bool drawCheck = true;
 		ui->SetDrawCheck(drawCheck);
 
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -792,7 +907,7 @@ void SceneGame::Initialize()
 		DirectX::XMFLOAT3(0, 0, 0),
 		DirectX::XMFLOAT3(0, 1, 0)
 
-		);
+	);
 	// どの範囲をどれだけ見るか奥行含め
 	camera.SetPerspedtiveFov(
 		DirectX::XMConvertToRadians(45),
@@ -835,7 +950,7 @@ void SceneGame::Initialize()
 		renderTarget = std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth())
 			, static_cast<UINT>(graphics.GetScreenHeight())
 			, DXGI_FORMAT_R8G8B8A8_UNORM);
-		
+
 
 	}
 
@@ -859,6 +974,7 @@ void SceneGame::Initialize()
 	// ゲージスプライト
 	gauge = new Sprite();
 }
+
 
 // 終了化
 void SceneGame::Finalize()
@@ -1078,6 +1194,10 @@ void SceneGame::Render()
 	// 2Dスプライト描画
 	{
 		//RenderEnemyGauge(dc, rc.view, rc.projection);
+
+		SpriteShader* shader = graphics.GetShader(SpriteShaderId::Default);
+
+		ActorManager::Instance().Render2D(rc, shader);
 	}
 
 	// 2DデバッグGUI描画
@@ -1266,6 +1386,7 @@ void SceneGame::RenderShadowmap()
 	}
 	//ActorManager::Instance().RenderShadowmap(rc.view, rc.projection);
 }
+
 
 // エネミーHPゲージ描画
 void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc,

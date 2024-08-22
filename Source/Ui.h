@@ -20,7 +20,7 @@ public:
     void Update(float elapsedTime) override;
 
     // •`‰æˆ—
-    void Render(RenderContext& rc, ModelShader& shader) override;
+    void Render2D(RenderContext& rc, SpriteShader& shader) override;
 
     // GUI•`‰æ
     void OnGUI() override;

@@ -376,26 +376,35 @@ bool Player::InputSelectCheck()
     {
         --selectCheck;
     }
-
-    if (gamePad.GetButtonDown() & GamePad::BTN_B && selectCheck == (int)CommandAttack::Magic)
+    // コマンド操作階層下げ
+    if (gamePad.GetButtonDown() & GamePad::BTN_B && selectCheck == (int)CommandAttack::Magic && !magicAction)
     {
         magicAction = true;
+
+        gamePad.SetButtonDownCountinue(true);
     }
+    // 一度離すまでボタン効かない
+    if (gamePad.GetButtonUp() & GamePad::BTN_B)
+    {
+        gamePad.SetButtonDownCountinue(false);
+    }
+    // コマンド操作階層下げ
     if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT && selectCheck == (int)CommandAttack::Magic)
     {
         magicAction = true;
     }
-
+    // ループ操作
     if (selectCheck > (int)CommandAttack::Magic)
     {
         selectCheck = (int)CommandAttack::Attack;
     }
-
+    // ループ操作
     if (selectCheck < (int)CommandAttack::Attack)
     {
         selectCheck = (int)CommandAttack::Magic;
     }
-    // UI設定
+    // UI設定 階層下がる前 選ぶ
+    // 攻撃選ぶ
     if (selectCheck == (int)CommandAttack::Attack)
     {
         std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
@@ -405,6 +414,7 @@ bool Player::InputSelectCheck()
         uiIdAttack->SetDrawCheck(false);
         uiIdAttackCheck->SetDrawCheck(true);
     }
+    // 魔法選んだ時
     else
     {
         std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
@@ -414,6 +424,7 @@ bool Player::InputSelectCheck()
         uiIdAttack->SetDrawCheck(true);
         uiIdAttackCheck->SetDrawCheck(false);
     }
+    // 魔法選んだ時
     if (selectCheck == (int)CommandAttack::Magic)
     {
         std::shared_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
@@ -423,6 +434,7 @@ bool Player::InputSelectCheck()
         uiIdMagick->SetDrawCheck(false);
         uiIdMagickCheck->SetDrawCheck(true);
     }
+    // 攻撃選ぶ
     else
     {
         std::shared_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
@@ -1492,6 +1504,7 @@ bool Player::InputProjectile()
         return true;
     }
 
+
     // 追尾弾丸発射
     if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttackTime)
     {
@@ -2073,7 +2086,7 @@ void Player::UpdateReviveState(float elapsedTime)
 bool Player::InputMagicframe()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_B&& magicAction)
+    if (gamePad.GetButtonDown() & GamePad::BTN_B&& magicAction && !gamePad.GetButtonDownCountinue())
     {
 
         // 前方向 sinの計算
@@ -2155,6 +2168,10 @@ bool Player::InputMagicframe()
         selectMagicCheck = (int)CommandMagic::Normal;
      
         return true;
+    }
+    else if (gamePad.GetButtonUp() & GamePad::BTN_B)
+    {
+        gamePad.SetButtonDownCountinue(false);
     }
     return false;
 }

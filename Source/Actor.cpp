@@ -38,6 +38,16 @@ void Actor::Render(RenderContext rc, ModelShader* shader)
 	}
 }
 
+void Actor::Render2D(RenderContext rc, SpriteShader* shader)
+{
+	for (std::shared_ptr<Component>& component : components)
+	{
+
+
+		component->Render2D(rc, *shader);
+	}
+}
+
 void Actor::RenderShadwomap(RenderContext rc)
 {
 	for (std::shared_ptr<Component>& component : components)
@@ -195,12 +205,15 @@ void ActorManager::Render(RenderContext rc, ModelShader* shader)
 
 	//shader->End(dc);
 	
-
+	// 3D
     for (std::shared_ptr<Actor>& actor : updateActors)
 	{
+		if (!actor->GetCheck2d())
 		// モデルがあれば描画
 		actor->Render(rc, shader);
 	}
+
+
 
 	//shader->Begin(rc);// シェーダーにカメラの情報を渡す
 
@@ -224,6 +237,19 @@ void ActorManager::Render(RenderContext rc, ModelShader* shader)
 	// 詳細描画
 	DrawDetail();
 
+}
+
+void ActorManager::Render2D(RenderContext rc, SpriteShader* shader)
+{
+	Graphics& graphics = Graphics::Instance();
+
+
+	for (std::shared_ptr<Actor>& actor : updateActors)
+	{
+		if (actor->GetCheck2d())
+		// モデルがあれば描画
+		actor->Render2D(rc, shader);
+	}
 }
 
 void ActorManager::RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)

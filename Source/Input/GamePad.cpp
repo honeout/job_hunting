@@ -193,6 +193,9 @@ void GamePad::Update()
 
 		buttonDown = ~inputKeys[1] & newButtonState;	// âüÇµÇΩèuä‘
 		buttonUp = ~newButtonState & inputKeys[1];	// ó£ÇµÇΩèuä‘
+		
+		
+
 	}
 }
 

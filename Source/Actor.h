@@ -27,6 +27,7 @@ public:
 
 	// 描画
 	virtual void Render(RenderContext rc, ModelShader* shader);
+	virtual void Render2D(RenderContext rc, SpriteShader* shader);
 
 	// シャドウマップ描画
 	virtual void RenderShadwomap(RenderContext rc);
@@ -40,6 +41,10 @@ public:
 
 	// 名前の取得
 	const char* GetName() const { return name.c_str(); }
+
+	// ２Dチェック
+	bool GetCheck2d() { return check2d; }
+	void SetCheck2d(bool check2d) { this->check2d = check2d; }
 
 	// コンポーネント追加
 	template<class T, class... Args>
@@ -69,6 +74,8 @@ private:
 	std::vector<std::shared_ptr<Component>>	components;
 	std::string			name;
 	
+	// ２D判定
+	bool                    check2d;
 };
 
 // アクターマネージャー
@@ -101,6 +108,8 @@ public:
 	// 描画
 	void Render(RenderContext rc, ModelShader* shader);
 
+	void Render2D(RenderContext rc, SpriteShader* shader);
+
 	void RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
 
 	void Clear();
@@ -115,6 +124,8 @@ private:
 	std::vector<std::shared_ptr<Actor>>		updateActors;
 	std::set<std::shared_ptr<Actor>>		selectionActors;
 	std::set<std::shared_ptr<Actor>>		removeActors;
+
+
 
 	bool					hiddenLister = false;
 	bool					hiddenDetail = false;

@@ -17,7 +17,7 @@ void Ui::Update(float elapsedTime)
 {
 }
 
-void Ui::Render(RenderContext& rc, ModelShader& shader)
+void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
 {
 	// ビューポート 画面のサイズ等
     // ビューポートとは2Dの画面に描画範囲の指定(クリッピング指定も出来る)位置を指定
