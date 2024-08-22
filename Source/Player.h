@@ -94,6 +94,8 @@ public:
     // 破棄
     void Destroy();
 
+    // HP管理
+
 protected:
     //// 着地した時に呼ばれる
     //void OnLanding() override;
@@ -122,6 +124,12 @@ public:
     // 攻撃方法選択
     bool InputSelectCheck();
 
+    // 魔法選択
+    bool InputSelectMagicCheck();
+
+    // ショートカットキー
+    bool InputShortCutkeyMagic();
+
     // 特殊攻撃選択
     bool InputSpecialAttackCharge();
     bool InputSpecialShotCharge();
@@ -145,7 +153,7 @@ public:
     // 弾丸入力
     bool InputProjectile();
 
-    // 回避入力
+    // 回避orカウンター入力
     bool InputAvoidance();
 
     // 攻撃入力
@@ -210,6 +218,9 @@ public:
     // 復活ステート更新処理
     void UpdateReviveState(float elapsedTime);
 
+    // 魔法入力
+    bool InputMagicframe();
+
    // void Update();
 
     void inFloat3(DirectX::XMFLOAT3 value, DirectX::XMFLOAT3& inValue);
@@ -223,6 +234,11 @@ public:
     void SetSelectCheck(bool selectCheck) { this->selectCheck = selectCheck; }
     // 攻撃方法変更
     bool GetSelectCheck() const { return selectCheck; }
+
+    // 魔法変更
+    void SetSelectMagicCheck(bool selectMagicCheck) { this->selectMagicCheck = selectMagicCheck; }
+    // 魔法変更
+    bool GetSelectMagicCheck() const { return selectMagicCheck; }
 
     // 特殊魔法発動ため
     void SetSpecialAttackCharge(float specialAttackCharge) { this->specialAttackCharge = specialAttackCharge; }
@@ -250,6 +266,9 @@ public:
     // 自分の当たり判定有無
     void DmageInvalidJudment(bool invalidJudgment);
 
+    //  UI操作
+    void UiControlle(float elapsedTime);
+
 public:
     // ステート
     enum class State
@@ -271,7 +290,15 @@ public:
     enum class CommandAttack
     {
         Attack,
-        MagicFire
+        Magic
+    };
+
+    enum class CommandMagic
+    {
+        Normal = -2,
+        Fire = 0,
+        Thander,
+        Ice
     };
 
     enum class SpecialAttack
@@ -308,6 +335,9 @@ public:
     UpAnim  GetUpdateAnim() const  { return this->updateanim; }
 
     float GetMoveSpeedAnimation() const { return moveSpeedAnimation; }
+
+    // UI揺らし状態
+    void SetShakeMode(bool shakeMode) { this->shakeMode = shakeMode;   }
 
 private:
     std::shared_ptr<Movement>	movement;
@@ -382,10 +412,10 @@ private:
     float radius = 0.5f;
 
     // Hp
-    int health = 5;
+    int health = 50;
 
     // 最大HP
-    int maxHealth = 5;
+    int maxHealth = 50;
 
 
 
@@ -410,6 +440,9 @@ private:
     // 攻撃方法の選択
     int selectCheck = false;
 
+    // 魔法選択
+    int selectMagicCheck = false;
+
     // 特殊攻撃出るまで
     float specialAttackCharge = 0.0f;
     float specialShotCharge = 0.0f;
@@ -428,6 +461,13 @@ private:
 
     // 特殊アクション確認
     bool specialAttackTime;
+
+    // 魔法攻撃を打つショートカット用
+    bool magicAction = false;
+
+    // 揺れ
+    bool shakeMode = false;
+
 };
 
 // プレイヤーマネージャー

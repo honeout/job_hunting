@@ -30,9 +30,10 @@ void Ui::Render(RenderContext& rc, ModelShader& shader)
     DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
     DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
     // ローカルからワールドに行くときにいる奴相手のポジションを渡す。
-    DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
+    //DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
 
     // 2D
+    if (drawCheck)
     {
         		// 描画
         sprite->Render(rc.deviceContext,
@@ -41,8 +42,8 @@ void Ui::Render(RenderContext& rc, ModelShader& shader)
 			, transForm2D->GetScale().x
 			, transForm2D->GetScale().y,
 			0, 0,
-			static_cast<float> (sprite->GetTextureWidth()),
-			static_cast<float> (sprite->GetTextureHeight()),
+            static_cast<float> (sprite->GetTextureWidth()),
+            static_cast<float> (sprite->GetTextureHeight()),
             transForm2D->GetAngle(),
 			1, 1, 1, 1);
     }

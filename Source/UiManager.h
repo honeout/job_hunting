@@ -40,6 +40,34 @@ public:
 
     // uiçÌèú
     void Remove(std::shared_ptr<Actor> ui);
+public:
+    enum class UiCount
+    {
+        PlayerHp = 0,
+        EnemyHp,
+        PlayerCommandAttack,
+        PlayerCommandMagick,
+        PlayerCommandAttackCheck,
+        PlayerCommandMagickCheck,
+        PlayerCommandFire,
+        PlayerCommandFireCheck,
+        PlayerCommandRigtning,
+        PlayerCommandRigtningCheck,
+        PlayerCommandIce,
+        PlayerCommandIceCheck,
+        PlayerCommandSpeciulCharge01,
+        PlayerCommandSpeciulCharge02,
+        PlayerCommandSpeciulCharge03,
+        PlayerCommandSpeciulShurashu,
+        PlayerCommandSpeciulShurashuPushu,
+        PlayerCommandSpeciulFrame,
+        PlayerCommandSpeciulFramePushu,
+        PlayerHPBar,
+        EnemyHPBar,
+        EnemyHPLife01,
+        EnemyHPLife02,
+
+    };
 
 private:
     // uiéÊìæ

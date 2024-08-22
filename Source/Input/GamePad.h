@@ -70,7 +70,6 @@ public:
 	// コマンド入力確認
 	bool ConfirmCommand(const std::vector<GamePadButton>& command, int frame);
 
-
 private:
 	GamePadButton		buttonState[2] = { 0 };
 	GamePadButton		buttonDown = 0;
@@ -87,5 +86,8 @@ private:
 	static const int MAX_INPUT_KEY = 60;
 	// コマンド操作用
 	GamePadButton							inputKeys[MAX_INPUT_KEY];
+
+	// 確認用ボタン
+	int                                     inputButton;
 
 };

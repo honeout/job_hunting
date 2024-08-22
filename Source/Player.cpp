@@ -14,6 +14,10 @@
 
 #include "AfterimageManager.h"
 
+#include "TransForm2D.h"
+
+#include "UiManager.h"
+#include "Ui.h"
 
 //static Player* instance = nullptr;
 //
@@ -104,6 +108,9 @@ void Player::Start()
     // コマンド操作用
     selectCheck = (int)CommandAttack::Attack;
 
+    // 魔法選択用
+    selectMagicCheck = (int)CommandMagic::Normal;
+
     // 特殊攻撃ため初期値
     specialAttackCharge = 0.0f;
 
@@ -135,6 +142,10 @@ void Player::Start()
 
     // 特殊アクション発動不
     specialAttackTime = false;
+
+    // 揺れモード
+    shakeMode = false;
+
 
 }
 
@@ -170,32 +181,32 @@ void Player::Update(float elapsedTime)
 
         cameraControlle->SetTarget(position);
 
+ //       cameraControlle->RockUpdate(elapsedTime);
+
+ //       DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&position);
+
+ //       DirectX::XMVECTOR EPosition =  DirectX::XMLoadFloat3(&EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>()->GetPosition());
+
+ //       DirectX::XMVECTOR Pos = DirectX::XMVectorSubtract(EPosition, Position);
+
+ //     
+
+ //       Pos = DirectX::XMVector3Normalize(Pos);
+
+ ///*       Pos = DirectX::XMVectorScale(Pos, 5.0f);
+
+ //       Pos = DirectX::XMVectorAdd(Position, Pos);*/
+
+ //       DirectX::XMFLOAT3 pos;
+
+ //       DirectX::XMStoreFloat3(&pos, Pos);
+
+ //     
+ //       
+ //       pos = { position.x /2, 0, position.z /2};
 
 
-        //DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&position);
-
-        //DirectX::XMVECTOR EPosition =  DirectX::XMLoadFloat3(&EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>()->GetPosition());
-
-        //DirectX::XMVECTOR Pos = DirectX::XMVectorSubtract(Position,EPosition);
-
-      
-
-        //Pos = DirectX::XMVector3Normalize(Pos);
-
-        //Pos = DirectX::XMVectorScale(Pos, 5.0f);
-
-        //Pos = DirectX::XMVectorAdd(Position, Pos);
-
-        //DirectX::XMFLOAT3 pos;
-
-        //DirectX::XMStoreFloat3(&pos, Pos);
-
-      
-        //
-        //pos = { position.x /2, 0, position.z /2};
-
-
-        //cameraControlle->SetTarget(pos);
+ //       cameraControlle->SetTarget(pos);
     }
 
     hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
@@ -207,6 +218,8 @@ void Player::Update(float elapsedTime)
     // 弾丸当たり判定
     CollisionProjectilesVsEnemies();
     
+    // ゲージ管理
+    UiControlle(elapsedTime);
 
 
     //model->Update_blend_animations(0.675f, frontVec.x,1.582f);
@@ -326,12 +339,15 @@ void Player::OnGUI()
     ImGui::InputFloat("Move Speed", &moveSpeed);
     ImGui::InputInt("Jump max", &jumpCount);
     ImGui::InputInt("selectCheck", &selectCheck);
+    ImGui::InputInt("selectMagicCheck", &selectMagicCheck);
     ImGui::InputInt("specialAttack.top", &specialAttack.top());
     //ImGui::InputInt("specialAttack.0", &specialAttack.);
     ImGui::SliderFloat("specialAttackCharge", &specialAttackCharge,0,1.5f);
     ImGui::SliderFloat("specialShotCharge", &specialShotCharge,0,1.5f);
 
     ImGui::SliderFloat("blend", &moveSpeedAnimation, 0.0f, 1.0f);
+
+
 
 }
 
@@ -352,14 +368,223 @@ bool Player::InputMove(float elapsedTime)
 bool Player::InputSelectCheck()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_B)
+    if (gamePad.GetButtonDown() & GamePad::BTN_UP && !magicAction)
     {
         ++selectCheck;
     }
+    if (gamePad.GetButtonDown() & GamePad::BTN_DOWN && !magicAction)
+    {
+        --selectCheck;
+    }
 
-    if (selectCheck >= 2)
+    if (gamePad.GetButtonDown() & GamePad::BTN_B && selectCheck == (int)CommandAttack::Magic)
+    {
+        magicAction = true;
+    }
+    if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT && selectCheck == (int)CommandAttack::Magic)
+    {
+        magicAction = true;
+    }
+
+    if (selectCheck > (int)CommandAttack::Magic)
     {
         selectCheck = (int)CommandAttack::Attack;
+    }
+
+    if (selectCheck < (int)CommandAttack::Attack)
+    {
+        selectCheck = (int)CommandAttack::Magic;
+    }
+    // UI設定
+    if (selectCheck == (int)CommandAttack::Attack)
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttackCheck)->GetComponent<Ui>();
+
+        
+        uiIdAttack->SetDrawCheck(false);
+        uiIdAttackCheck->SetDrawCheck(true);
+    }
+    else
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttackCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack->SetDrawCheck(true);
+        uiIdAttackCheck->SetDrawCheck(false);
+    }
+    if (selectCheck == (int)CommandAttack::Magic)
+    {
+        std::shared_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdMagickCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagickCheck)->GetComponent<Ui>();
+
+
+        uiIdMagick->SetDrawCheck(false);
+        uiIdMagickCheck->SetDrawCheck(true);
+    }
+    else
+    {
+        std::shared_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdMagickCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagickCheck)->GetComponent<Ui>();
+
+
+        uiIdMagick->SetDrawCheck(true);
+        uiIdMagickCheck->SetDrawCheck(false);
+    }
+
+
+    return false;
+}
+
+// 魔法のコマンド
+bool Player::InputSelectMagicCheck()
+{
+
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    if (gamePad.GetButtonDown() & GamePad::BTN_UP && magicAction)
+    {
+        --selectMagicCheck;
+    }
+    if (gamePad.GetButtonDown() & GamePad::BTN_DOWN && magicAction)
+    {
+        ++selectMagicCheck;
+    }
+
+    if (gamePad.GetButtonDown() & GamePad::BTN_LEFT && magicAction)
+    {
+        magicAction = false;
+        
+    }
+    if (selectMagicCheck <= (int)CommandMagic::Normal && magicAction)
+    {
+        selectMagicCheck = (int)CommandMagic::Fire;
+    }
+
+    if (selectMagicCheck > (int)CommandMagic::Ice && magicAction)
+    {
+        selectMagicCheck = (int)CommandMagic::Fire;
+    }
+
+    if (selectMagicCheck < (int)CommandMagic::Fire && magicAction)
+    {
+        selectMagicCheck = (int)CommandMagic::Ice;
+    }
+
+    if (!magicAction)
+    {
+        selectMagicCheck = (int)CommandMagic::Normal;
+    }
+
+    // UI設定 炎
+    if (selectMagicCheck == (int)CommandMagic::Fire && magicAction)
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack->SetDrawCheck(false);
+        uiIdAttackCheck->SetDrawCheck(true);
+    }
+    else
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack->SetDrawCheck(true);
+        uiIdAttackCheck->SetDrawCheck(false);
+    }
+    if (!magicAction)
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack->SetDrawCheck(false);
+        uiIdAttackCheck->SetDrawCheck(false);
+    }
+
+
+    // UI設定 雷
+    if (selectMagicCheck == (int)CommandMagic::Thander && magicAction)
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack->SetDrawCheck(false);
+        uiIdAttackCheck->SetDrawCheck(true);
+    }
+    else
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack->SetDrawCheck(true);
+        uiIdAttackCheck->SetDrawCheck(false);
+    }
+    if (!magicAction)
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack->SetDrawCheck(false);
+        uiIdAttackCheck->SetDrawCheck(false);
+    }
+
+
+    // UI設定 氷
+    if (selectMagicCheck == (int)CommandMagic::Ice && magicAction)
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack->SetDrawCheck(false);
+        uiIdAttackCheck->SetDrawCheck(true);
+    }
+    else
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack->SetDrawCheck(true);
+        uiIdAttackCheck->SetDrawCheck(false);
+    }
+    if (!magicAction)
+    {
+        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack->SetDrawCheck(false);
+        uiIdAttackCheck->SetDrawCheck(false);
+    }
+
+
+    return false;
+}
+
+// L1
+bool Player::InputShortCutkeyMagic()
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    // L1
+    if (gamePad.GetButtonDown() & GamePad::BTN_LEFT_SHOULDER)
+    {
+        selectCheck = (int)CommandAttack::Magic;
+        selectMagicCheck = (int)CommandMagic::Fire;
+        magicAction = true;
+    }
+
+    if (gamePad.GetButtonUp() & GamePad::BTN_LEFT_SHOULDER)
+    {
+        selectMagicCheck = (int)CommandMagic::Normal;
+        magicAction = false;
     }
     return false;
 }
@@ -371,18 +596,134 @@ bool Player::InputSpecialAttackCharge()
 
     if (specialAttackCharge >= 1.5f)
     {
+        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
+
+        // 技確定
+        std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+        std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
+
+
         // 一度発動すると初期化
         specialAttackCharge = 0.0f;
         specialAttack.push((int)SpecialAttack::Attack);
+
+        bool drawCheck = false;
+        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+
+        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+
+        uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
+
+        drawCheck = true;
+        uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+        
+        DirectX::XMFLOAT2 pos;
+        pos = {94,240 };
+        float add = 30;
+        if (1 > (int)specialAttack.size())
+        pos.y = pos.y - (add * (float)specialAttack.size());
+        uiIdSpecialShurashuTransForm2D->SetPosition(pos);
+
     }
 
     if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::Attack && !specialAttackTime)
     {
+        // 技確定
+        std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
+        std::shared_ptr<TransForm2D> uiIdSpecialShurashuPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<TransForm2D>();
+
+        bool drawCheck = false;
+        uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+        drawCheck = true;
+        uiIdSpecialShurashuPush->SetDrawCheck(drawCheck);
+
+        DirectX::XMFLOAT2 pos;
+        pos = { 94,240 };
+        float add = 30;
+        if (1 > (int)specialAttack.size())
+            pos.y = pos.y - (add * (float)specialAttack.size());
+        uiIdSpecialShurashuPushTransForm2D->SetPosition(pos);
+
         // 一度発動すると初期化
         if (specialAttack.top() != (int)SpecialAttack::Normal)
             specialAttack.pop();
         specialAttackTime = true;
         return true;
+    }
+    else
+    {
+        // 技確定
+        std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
+
+        bool drawCheck = false;
+        uiIdSpecialShurashuPush->SetDrawCheck(drawCheck);
+    }
+
+    // チャージを見やすく
+    if (specialAttackCharge >= 0.4f && specialAttackCharge < 0.8f)
+    {
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialCharge = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+
+        bool drawCheck = true;
+        uiIdSpecialCharge->SetDrawCheck(drawCheck);
+
+        DirectX::XMFLOAT2 pos = {110,250 };
+        uiIdSpecialTransForm2D->SetPosition(pos);
+    }
+
+
+    // チャージを見やすく
+    if (specialAttackCharge >= 0.8f && specialAttackCharge < 1.2f)
+    {
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+
+        bool drawCheck = true;
+        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+
+        DirectX::XMFLOAT2 pos = { 47,250 };
+        uiIdSpecialTransForm2DFurst->SetPosition(pos);
+
+        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+
+        pos = { 158,250 };
+        uiIdSpecialTransForm2DSecond->SetPosition(pos);
+    }
+
+    // チャージを見やすく
+    if (specialAttackCharge >= 1.2f && specialAttackCharge < 1.5f)
+    {
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
+
+        bool drawCheck = true;
+        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+
+        DirectX::XMFLOAT2 pos = { 0,250 };
+        uiIdSpecialTransForm2DFurst->SetPosition(pos);
+
+        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+
+        pos = { 94,250 };
+        uiIdSpecialTransForm2DSecond->SetPosition(pos);
+
+        uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
+
+        pos = { 205,250 };
+        uiIdSpecialTransForm2DSerde->SetPosition(pos);
     }
 
     return false;
@@ -394,18 +735,137 @@ bool Player::InputSpecialShotCharge()
 
     if (specialShotCharge >= 1.5f)
     {
+        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
+
+        // 技確定
+        std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+        std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
+
+
         // 一度発動すると初期化
         specialShotCharge = 0.0f;
         specialAttack.push((int)SpecialAttack::MagicFire);
+
+        bool drawCheck = false;
+        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+
+        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+
+        uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
+
+        drawCheck = true;
+        uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+
+        DirectX::XMFLOAT2 pos;
+        pos = { 94,240 };
+        float add = 30;
+        if (1 > (int)specialAttack.size())
+            pos.y = pos.y - (add * (float)specialAttack.size());
+        uiIdSpecialShurashuTransForm2D->SetPosition(pos);
+
+
     }
 
-    if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::MagicFire && !specialAttackTime)
+
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::Attack && !specialAttackTime)
     {
+        // 技確定
+        std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+        std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
+        std::shared_ptr<TransForm2D> uiIdSpecialShurashuPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<TransForm2D>();
+
+        bool drawCheck = false;
+        uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+        drawCheck = true;
+        uiIdSpecialShurashuPush->SetDrawCheck(drawCheck);
+
+        DirectX::XMFLOAT2 pos;
+        pos = { 94,240 };
+        float add = 30;
+        if (1 > (int)specialAttack.size())
+            pos.y = pos.y - (add * (float)specialAttack.size());
+        uiIdSpecialShurashuPushTransForm2D->SetPosition(pos);
+
         // 一度発動すると初期化
         if (specialAttack.top() != (int)SpecialAttack::Normal)
             specialAttack.pop();
         specialAttackTime = true;
         return true;
+    }
+
+    //if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::MagicFire && !specialAttackTime)
+    //{
+    //    // 一度発動すると初期化
+    //    if (specialAttack.top() != (int)SpecialAttack::Normal)
+    //        specialAttack.pop();
+    //    specialAttackTime = true;
+    //    return true;
+    //}
+
+    // チャージを見やすく
+    if (specialShotCharge >= 0.4f && specialShotCharge < 0.8f)
+    {
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialCharge = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+
+        bool drawCheck = true;
+        uiIdSpecialCharge->SetDrawCheck(drawCheck);
+
+        DirectX::XMFLOAT2 pos = { 110,250 };
+        uiIdSpecialTransForm2D->SetPosition(pos);
+    }
+
+
+    // チャージを見やすく
+    if (specialShotCharge >= 0.8f && specialShotCharge < 1.2f)
+    {
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+
+        bool drawCheck = true;
+        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+
+        DirectX::XMFLOAT2 pos = { 47,250 };
+        uiIdSpecialTransForm2DFurst->SetPosition(pos);
+
+        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+
+        pos = { 158,250 };
+        uiIdSpecialTransForm2DSecond->SetPosition(pos);
+    }
+
+    // チャージを見やすく
+    if (specialShotCharge >= 1.2f && specialShotCharge < 1.5f)
+    {
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+
+        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<TransForm2D>();
+        std::shared_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
+
+        bool drawCheck = true;
+        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+
+        DirectX::XMFLOAT2 pos = { 0,250 };
+        uiIdSpecialTransForm2DFurst->SetPosition(pos);
+
+        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+
+        pos = { 94,250 };
+        uiIdSpecialTransForm2DSecond->SetPosition(pos);
+
+        uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
+
+        pos = { 205,250 };
+        uiIdSpecialTransForm2DSerde->SetPosition(pos);
     }
 
     return false;
@@ -993,7 +1453,7 @@ bool Player::InputProjectile()
 
 
     // 直進弾丸発射　cボタンを押したら
-    if (gamePad.GetButtonDown() & GamePad::BTN_X)
+    if (gamePad.GetButtonDown() & GamePad::BTN_B)
     {
         // 前方向 sinの計算 角度の計算
         DirectX::XMFLOAT3 dir;
@@ -1033,7 +1493,7 @@ bool Player::InputProjectile()
     }
 
     // 追尾弾丸発射
-    if (gamePad.GetButtonDown() & GamePad::BTN_Y)
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttackTime)
     {
         // 前方向 sinの計算
         DirectX::XMFLOAT3 dir;
@@ -1117,20 +1577,21 @@ bool Player::InputProjectile()
         projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
 
-        
+        // 特殊攻撃の発生条件
+        specialAttackTime = false;
         return true;
 
     }
     return false;
 }
-// 回避入力
+// 回避入力orカウンター
 bool Player::InputAvoidance()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
 
     // 直進弾丸発射　rボタンを押したら
     //if (gamePad.GetButtonDown() & GamePad::BTN_B)
-    if (gamePad.GetButtonDown() & GamePad::BTN_Y)
+    if (gamePad.GetButtonDown() & GamePad::BTN_X)
     {
 
         return true;
@@ -1148,7 +1609,7 @@ bool Player::InputAttack()
 
     // 直進弾丸発射　ｃボタンを押したら
     //if (gamePad.GetButtonDown() & GamePad::BTN_B)
-    if (gamePad.GetButtonDown() & GamePad::BTN_X)
+    if (gamePad.GetButtonDown() & GamePad::BTN_B)
     {
   
         return true;
@@ -1203,9 +1664,10 @@ void Player::UpdateIdleState(float elapsedTime)
 
 
     // 弾丸入力処理
-    else if (selectCheck == (int)CommandAttack::MagicFire)
+    else if (InputMagicframe() && selectCheck == (int)CommandAttack::Magic && selectMagicCheck == (int)CommandMagic::Fire)
     {
-        InputProjectile();
+        InputMagicframe();
+        //InputProjectile();
         //TransitionAttackState();
     }
 
@@ -1281,7 +1743,7 @@ void Player::UpdateMoveState(float elapsedTime)
 
 
     // 弾丸入力処理
-    else if (selectCheck == (int)CommandAttack::MagicFire)
+    else if (selectCheck == (int)CommandAttack::Magic)
     {
         InputProjectile();
     }
@@ -1608,6 +2070,106 @@ void Player::UpdateReviveState(float elapsedTime)
     }
 }
 
+bool Player::InputMagicframe()
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    if (gamePad.GetButtonDown() & GamePad::BTN_B&& magicAction)
+    {
+
+        // 前方向 sinの計算
+        DirectX::XMFLOAT3 dir;
+
+        dir = GetForwerd(angle);
+
+        //sinf0度０　cosf0は１度
+        //９０sin1,cos0返ってくる横
+        //４５sin0.5,cos0.5斜め
+        // 360度を上手く表現出来る。2dでも行ける。
+
+
+        // 発射位置（プレイヤーの腰当たり)
+        DirectX::XMFLOAT3 pos;
+        pos.x = position.x;
+        pos.y = position.y + height * 0.5f;// 身長÷位置のｙ
+        pos.z = position.z;
+        //ターゲット（デフォルトではプレイヤーの前方）
+        DirectX::XMFLOAT3 target;
+        // 敵がいなかった時のために　1000先まで飛んでくれ
+        target.x = pos.x + dir.x * 1000.0f;
+        target.y = pos.y + dir.y * 1000.0f;
+        target.z = pos.z + dir.z * 1000.0f;
+
+        // 一番近くの敵をターゲットにする
+        float dist = FLT_MAX;// float の最大値float全体
+        EnemyManager& enemyManager = EnemyManager::Instance();
+        int enemyCount = enemyManager.GetEnemyCount();
+        for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+        {
+            // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
+            std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+            DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
+            // 敵の位置
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
+            // 自分から敵までの位置を計測
+            DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
+            // ベクトルのながさを２乗する。√つけていない奴
+            DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
+            float d;
+            DirectX::XMStoreFloat(&d, D);
+            if (d < dist)
+            {
+                // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
+                dist = d;
+                target = enemy->GetComponent<Transform>()->GetPosition();// 位置を入れる
+                target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
+            }
+
+
+
+        }
+
+        // 弾丸初期化
+        const char* filename = "Data/Model/Sword/Sword.mdl";
+
+        std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+        actor->AddComponent<ModelControll>();
+        actor->GetComponent<ModelControll>()->LoadModel(filename);
+        actor->SetName("ProjectileHoming");
+        actor->AddComponent<Transform>();
+        actor->GetComponent<Transform>()->SetPosition(position);
+        actor->GetComponent<Transform>()->SetAngle(angle);
+        actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+        actor->AddComponent<BulletFiring>();
+        actor->AddComponent<ProjectileHoming>();
+        //actor->AddComponent<Collision>();
+        ProjectileManager::Instance().Register(actor);
+        //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
+        std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+
+        // 発射
+        projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+
+        // 攻撃解除
+        magicAction = false;
+        selectMagicCheck = (int)CommandMagic::Normal;
+     
+        return true;
+    }
+    return false;
+}
+
+//bool Player::InputMagic()
+//{
+//    GamePad& gamePad = Input::Instance().GetGamePad();
+//    if (gamePad.GetButtonDown() & GamePad::BTN_B)
+//    {
+//
+//        return true;
+//    }
+//    return false;
+//}
+
 //void Player::UpdateTransform()
 //{
 //    // 位置情報
@@ -1655,6 +2217,41 @@ void Player::DmageInvalidJudment(bool invalidJudgment)
         std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
 
         enemy->GetComponent<EnemySlime>()->SetInvalidJudgment(invalidJudgment);
+    }
+}
+
+void Player::UiControlle(float elapsedTime)
+{
+
+    float gaugeWidth = hp->GetMaxHealth() * hp->GetHealth() * 0.1f;
+    // hpゲージ
+    std::shared_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
+    std::shared_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
+    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
+
+    uiHp->SetScale(scale);
+
+    
+    // 揺れ
+    if (shakeMode)
+    {
+        
+        uiHp->Shake();
+        uiHpBar->Shake();
+
+        
+
+    }
+    //　初期化
+    if (uiHp->GetShakeEnd())
+    {
+        float positionStandardBar = 593;
+        float positionStandard = 421;
+        shakeMode = false;
+        uiHp->SetShakeTime(0);
+        uiHpBar->SetShakeTime(0);
+        uiHp->SetPosition({ uiHp->GetPosition().x ,positionStandardBar });
+        uiHpBar->SetPosition({ uiHpBar->GetPosition().x ,positionStandard });
     }
 }
 

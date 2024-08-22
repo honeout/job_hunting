@@ -61,7 +61,7 @@ void GamePad::Update()
 	}
 	else
 	{
-#if 0
+#if 1
 		// XInputで入力情報が取得出来なかった場合はWindowsAPIで取得する
 		JOYINFOEX joyInfo;
 		joyInfo.dwSize = sizeof(JOYINFOEX);
@@ -148,12 +148,12 @@ void GamePad::Update()
 		if (GetAsyncKeyState('X') & 0x8000) newButtonState |= BTN_B;
 		if (GetAsyncKeyState('C') & 0x8000) newButtonState |= BTN_X;
 		if (GetAsyncKeyState('V') & 0x8000) newButtonState |= BTN_Y;
-		if (GetAsyncKeyState(VK_UP) & 0x8000)	newButtonState |= BTN_UP;
-		if (GetAsyncKeyState(VK_RIGHT) & 0x8000)	newButtonState |= BTN_RIGHT;
-		if (GetAsyncKeyState(VK_DOWN) & 0x8000)	newButtonState |= BTN_DOWN;
-		if (GetAsyncKeyState(VK_LEFT) & 0x8000)	newButtonState |= BTN_LEFT;
+		//if (GetAsyncKeyState(VK_UP) & 0x8000)	newButtonState |= BTN_UP;
+		//if (GetAsyncKeyState(VK_RIGHT) & 0x8000)	newButtonState |= BTN_RIGHT;
+		//if (GetAsyncKeyState(VK_DOWN) & 0x8000)	newButtonState |= BTN_DOWN;
+		//if (GetAsyncKeyState(VK_LEFT) & 0x8000)	newButtonState |= BTN_LEFT;
 
-#if 1
+#if 0
 		if (newButtonState & BTN_UP)    ly = 1.0f;
 		if (newButtonState & BTN_RIGHT) lx = 1.0f;
 		if (newButtonState & BTN_DOWN)  ly = -1.0f;
@@ -215,11 +215,9 @@ bool GamePad::ConfirmCommand(const std::vector<GamePadButton>& command, int fram
 {
 
 	//　コマンド確認用
-	int number = 3;
+	int number = command.size() - 1;
 	// P以外ははじく 2進数　で００００１とか１の位置を見る
-	if (inputKeys[0] & command.at(3))
-	{
-		--number;
+
 		for (int i = 0; i < frame; i++)
 		{
 			if (number == 0 && inputKeys[i] & command.at(number))
@@ -227,6 +225,6 @@ bool GamePad::ConfirmCommand(const std::vector<GamePadButton>& command, int fram
 			if (inputKeys[i] & command.at(number))
 				--number;
 		}
-	}
+	
 	return false;
 }

@@ -88,6 +88,10 @@ void SceneGame::Initialize()
 			SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
 		actor->AddComponent<Movement>();
 		actor->AddComponent<HP>();
+		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
+		int life = 2;
+		hp->SetLife(life);
+
 		actor->AddComponent<Player>();
 		actor->AddComponent<Collision>();
 		//actor->AddComponent<StageMain>();
@@ -118,6 +122,9 @@ void SceneGame::Initialize()
 			SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
 		actor->AddComponent<Movement>();
 		actor->AddComponent<HP>();
+		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
+		int life = 2;
+		hp->SetLife(life);
 		actor->AddComponent<Collision>();
 		//actor->AddComponent<StageMain>();
 		actor->AddComponent<EnemySlime>();
@@ -127,15 +134,651 @@ void SceneGame::Initialize()
 
 	}
 
-	// UI
+	// UI PlayerHP
 	{
-		const char* filename = "Data/Sprite/Title.png";
+		const char* filename = "Data/Sprite/HP.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->SetName("UI");
+		actor->SetName("PlayerHP");
 		actor->AddComponent<SpriteControll>();
 		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = {932, 421};
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = {358,310};
+		transform2D->SetScale(scale);
+
+		// UI揺らす範囲を指定揺らす場合
+		int max = pos.y + 3;
+		int min = pos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
 		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI EnemyHP
+	{
+		const char* filename = "Data/Sprite/enemyHPber.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("EnemyHP");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 900, -100 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 376,329 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
+	// UI PlayerCommandAttack
+	{
+		//const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
+		const char* filename = "Data/Sprite/コマンド　非選択攻撃.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandAttack");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 0, 310 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 358,310 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandMagick
+	{
+		//const char* filename = "Data/Sprite/コマンド　選択魔法.png";
+		const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandMagick");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 0, 390 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 358,310 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
+	// UI PlayerCommandAttackCheck
+	{
+		const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
+		//const char* filename = "Data/Sprite/コマンド　非選択攻撃.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandAttackCheck");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 0, 310 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 358,310 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(false);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandMagickCheck
+	{
+		const char* filename = "Data/Sprite/コマンド　選択魔法.png";
+		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandMagickCheck");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 0, 390 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 358,310 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(false);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandFire
+	{
+		const char* filename = "Data/Sprite/コマンド　非選択ファイアー.png";
+		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandFire");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 370 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 358,310 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandFireCheck
+	{
+		const char* filename = "Data/Sprite/コマンド　選択ファイアー.png";
+		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandFireCheck");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 370 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 358,310 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(false);
+
+		UiManager::Instance().Register(actor);
+	}
+	// UI PlayerCommandRigtning
+	{
+		const char* filename = "Data/Sprite/コマンド　非選択ファイアー.png";
+		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandRigtning");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 455 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 358,310 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandRigtningCheck
+	{
+		const char* filename = "Data/Sprite/コマンド　選択ファイアー.png";
+		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandRigtningCheck");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 455 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 358,310 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(false);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandIce
+	{
+		const char* filename = "Data/Sprite/コマンド　非選択ファイアー.png";
+		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandIce");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 540 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 358,310 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandIceCheck
+	{
+		const char* filename = "Data/Sprite/コマンド　選択ファイアー.png";
+		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandIceCheck");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 540 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 358,310 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = true;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
+	// UI PlayerCommandSpeciulCharge01
+	{
+		//const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
+		const char* filename = "Data/Sprite/矢印.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandSpeciulCharge");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 110, 250 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 160,170 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = false;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandSpeciulCharge02
+	{
+		//const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
+		const char* filename = "Data/Sprite/矢印.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandSpeciulCharge");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 158, 250 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 160,170 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = false;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandSpeciulCharge03
+	{
+		//const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
+		const char* filename = "Data/Sprite/矢印.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandSpeciulCharge");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 205, 200 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 160,170 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = false;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandSpeciulShurashu
+	{
+		const char* filename = "Data/Sprite/特殊技スラッシュ.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandSpeciulShurashu");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 0, 200 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 160,170 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = false;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandSpeciulShurashuPushu
+	{
+		const char* filename = "Data/Sprite/特殊技スラッシュ押し込み.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandSpeciulShurashuPushu");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 0, 200 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 160,170 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = false;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandSpeciulFrame
+	{
+		const char* filename = "Data/Sprite/特殊技フレイム.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandSpeciulFrame");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 0, 200 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 160,170 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = false;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandSpeciulFramePushu
+	{
+		const char* filename = "Data/Sprite/特殊技フレイム押し込み.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandSpeciulFramePushu");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 0, 250 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 160,170 };
+		transform2D->SetScale(scale);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = false;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerHP
+	{
+		const char* filename = "Data/Sprite/player_status.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerHP");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 979, 593 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 243,30 };
+		transform2D->SetScale(scale);
+
+		// UI揺らす範囲を指定揺らす場合
+		int max = pos.y + 3;
+		int min = pos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = true;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
+	// UI EnemyHP
+	{
+		const char* filename = "Data/Sprite/enemy_status.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("EnemyHP");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		
+		DirectX::XMFLOAT2 pos = { 916, 31 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		
+		DirectX::XMFLOAT2 scale = { 303,30 };
+		transform2D->SetScale(scale);
+
+		// UI揺らす範囲を指定揺らす場合
+		int max = pos.y + 3;
+		int min = pos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = true;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
+	// UI EnemyHP 残機１
+	{
+		const char* filename = "Data/Sprite/enemy_status.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("EnemyHPLife1");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+
+		DirectX::XMFLOAT2 pos = { 1142, 79 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+
+		DirectX::XMFLOAT2 scale = { 27,17 };
+		transform2D->SetScale(scale);
+
+		// UI揺らす範囲を指定揺らす場合
+		int max = pos.y + 3;
+		int min = pos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = true;
+		ui->SetDrawCheck(drawCheck);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
+	// UI EnemyHP 残機2
+	{
+		const char* filename = "Data/Sprite/enemy_status.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("EnemyHPLife2");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+
+		DirectX::XMFLOAT2 pos = { 1185, 79 };
+		transform2D->SetPosition(pos);
+		float angle = 0;
+		transform2D->SetAngle(angle);
+
+		DirectX::XMFLOAT2 scale = {  27,17 };
+		transform2D->SetScale(scale);
+
+		// UI揺らす範囲を指定揺らす場合
+		int max = pos.y + 3;
+		int min = pos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = true;
+		ui->SetDrawCheck(drawCheck);
+
 		UiManager::Instance().Register(actor);
 	}
 
@@ -310,13 +953,22 @@ void SceneGame::Update(float elapsedTime)
 
 		for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
 		{
-			if (EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>()->GetDead())
+			std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
+			if (hp->GetDead())
 			{
-				EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>()->SetDead(false);
+				hp->SetDead(false);
 				ActorManager::Instance().Clear();
 				//// プレイヤー更新処理
 				//ActorManager::Instance().Update(elapsedTime);
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameClear));
+			}
+			if (hp->GetHealth() <= 0 && hp->GetLife() > 0)
+			{
+				// hpを回復
+				hp->SetHealth(hp->GetMaxHealth());
+
+				// 残機を減らす
+				hp->SetLife(hp->GetLife() - 1);
 			}
 		}
 	}

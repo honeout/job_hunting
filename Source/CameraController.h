@@ -12,7 +12,7 @@ public:
     // 更新処理
     void Update(float elasedTime);
 
-
+    void RockUpdate(float elapsedTime);
 
     // ターゲット位置設定 ちゃんと変数を入れる
     void SetTarget(const DirectX::XMFLOAT3& target) { this->target = target; }

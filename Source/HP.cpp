@@ -51,7 +51,7 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
 
 
     // Ž€–S’Ê’m
-    if (health <= 0)
+    if (health <= 0 && life <= 0)
     {
         OnDead();
         dead = true;

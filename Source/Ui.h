@@ -24,9 +24,20 @@ public:
 
     // GUI•`‰æ
     void OnGUI() override;
+
+    // •`‰æŠm”F
+    void SetDrawCheck(bool drawCheck) { this->drawCheck = drawCheck; }
+
+    // •`‰æŠm”F
+    bool GetDrawCheck() const { return drawCheck; }
+
 private:
     Sprite* sprite = nullptr;
 
     // ˆÊ’u‚â“®‚«
     std::shared_ptr<TransForm2D> transForm2D;
+
+
+    // •`‰æ‚ÌØ‚è‘Ö‚¦‚æ‚¤
+    bool       drawCheck = false;
 };

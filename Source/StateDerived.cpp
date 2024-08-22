@@ -3,6 +3,7 @@
 #include "Input\GamePad.h"
 #include "Player.h"
 #include "Mathf.h"
+#include "Input/Input.h"
 
 
 
@@ -215,6 +216,8 @@ void PlayerIdleState::Enter()
 
 void PlayerIdleState::Execute(float elapsedTime)
 {
+	
+
 	// 移動入力処理
 	if (owner->GetComponent<Player>()->InputMove(elapsedTime))
 	{
@@ -222,12 +225,13 @@ void PlayerIdleState::Execute(float elapsedTime)
 		//TransitionMoveState();
 	}
 
-	//// 反射入力処理
-	//if (owner->GetComponent<Player>()->InputAvoidance())
-	//{
-	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Reflection));
+	// 反射入力処理
+	if (owner->GetComponent<Player>()->InputAvoidance())
+	{
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Reflection));
 
-	//}
+	}
+
 
 	// ジャンプ入力処理
 	if (owner->GetComponent<Player>()->InputJump())
@@ -239,21 +243,21 @@ void PlayerIdleState::Execute(float elapsedTime)
 
 	owner->GetComponent<Player>()->InputSelectCheck();
 
-	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::SpecialAttack::Attack)
+	owner->GetComponent<Player>()->InputShortCutkeyMagic();
+
+	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Attack)
 	{
 		//stated = state;
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
 		//TransitionAttackState();
 	}
 
-
-
-
+	owner->GetComponent<Player>()->InputSelectMagicCheck();
 
 	// 弾丸入力処理
-	else if (owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::SpecialAttack::MagicFire)
+    if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int) Player::CommandMagic::Fire && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
 	{
-		owner->GetComponent<Player>()->InputProjectile();
+		owner->GetComponent<Player>()->InputMagicframe();
 		//TransitionAttackState();
 	}
 
@@ -322,18 +326,21 @@ void PlayerMovestate::Execute(float elapsedTime)
 
 	owner->GetComponent<Player>()->InputSelectCheck();
 
-	// 通常攻撃
-	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::SpecialAttack::Attack)
+	owner->GetComponent<Player>()->InputShortCutkeyMagic();
+
+	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Attack)
 	{
+		//stated = state;
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+		//TransitionAttackState();
 	}
-
-
+	owner->GetComponent<Player>()->InputSelectMagicCheck();
 
 	// 弾丸入力処理
-	else if (owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::SpecialAttack::MagicFire)
+	if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Fire &&owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
 	{
-		owner->GetComponent<Player>()->InputProjectile();
+		owner->GetComponent<Player>()->InputMagicframe();
+		//TransitionAttackState();
 	}
 
 	// 特殊攻撃
@@ -378,13 +385,36 @@ void PlayerJumpState::Execute(float elapsedTime)
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
 	}
 
-	// 弾丸入力処理
-	if (owner->GetComponent<Player>()->InputProjectile())
+	owner->GetComponent<Player>()->InputSelectCheck();
+
+	owner->GetComponent<Player>()->InputShortCutkeyMagic();
+
+	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Attack)
 	{
+		//stated = state;
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
 		//TransitionAttackState();
 	}
+	owner->GetComponent<Player>()->InputSelectMagicCheck();
 
+	// 弾丸入力処理
+	if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Fire && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+	{
+		owner->GetComponent<Player>()->InputMagicframe();
+		//TransitionAttackState();
+	}
+
+	// 特殊攻撃
+	if (owner->GetComponent<Player>()->InputSpecialAttackCharge())
+	{
+		//TransitionAttackState();
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+	}
+	// 特殊魔法
+	if (owner->GetComponent<Player>()->InputSpecialShotCharge())
+	{
+		owner->GetComponent<Player>()->InputProjectile();
+	}
 
 	// 落下着地
 	if (owner->GetComponent<Player>()->Ground())
@@ -479,10 +509,26 @@ void PlayerAttackState::Enter()
 
 void PlayerAttackState::Execute(float elapsedTime)
 {
+	GamePad& gamePad = Input::Instance().GetGamePad();
+
+	// 攻撃複数
 	if (owner->GetComponent<Player>()->InputAttack())
 	{
 		button = true;
 	}
+	// コマンド確認
+	std::vector<GamePadButton> command;
+	command.push_back(GamePad::BTN_X);
+	command.push_back(GamePad::BTN_X);
+	command.push_back(GamePad::BTN_A);
+	int frame = 60;
+	// コマンド確認
+	if (gamePad.ConfirmCommand(command, frame))
+	{
+		button = false;
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
+	}
+
 	// もし終わったら待機に変更
 	if (owner->GetComponent<Player>()->GetUpdateAnim() == UpAnim::Doble && !owner->GetComponent<ModelControll>()->GetModel()->IsPlayUpeerBodyAnimation())
 	{

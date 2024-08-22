@@ -7,6 +7,11 @@
 //#include "Collision.h"
 #include "StateDerived.h"
 
+#include "TransForm2D.h"
+
+#include "UiManager.h"
+#include "Ui.h"
+
 
 // デストラクタ
 EnemySlime::~EnemySlime()
@@ -132,6 +137,9 @@ void EnemySlime::Update(float elapsedTime)
 
     //// モデル行列更新
     //model->UpdateTransform(transform);
+
+    // ゲージ管理
+    UiControlle(elapsedTime);
 }
 
 // 描画処理
@@ -194,6 +202,38 @@ void EnemySlime::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
 {
     territoryOrigin = origin;
     territoryRange = range;
+
+}
+
+void EnemySlime::UiControlle(float elapsedTime)
+{
+    float gaugeWidth = hp->GetMaxHealth() * hp->GetHealth() * 0.12f;
+    std::shared_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
+    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
+
+    uiHp->SetScale(scale);
+
+    std::shared_ptr<Ui> uiHpLife1 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife01)->GetComponent<Ui>();
+    std::shared_ptr<Ui> uiHpLife2 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife02)->GetComponent<Ui>();
+
+    bool checkDraw = false;
+    switch (hp->GetLife())
+    {
+    case 1:
+    {
+        uiHpLife2->SetDrawCheck(checkDraw);
+        break;
+    }
+    case 0:
+    {
+        uiHpLife1->SetDrawCheck(checkDraw);
+        break;
+    }
+    default:
+        break;
+    }
+    
+    
 
 }
 
@@ -329,6 +369,9 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
 
                     // 吹っ飛ばす
                     playerid->GetComponent<Movement>()->AddImpulse(impulse);
+
+                    // Ui 揺らし開始
+                    playerid->GetComponent<Player>()->SetShakeMode(true);
                 }
             }
         }

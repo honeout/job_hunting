@@ -13,6 +13,13 @@ public:
     // GUI•`‰æ
     void OnGUI() override;
 
+    // —h‚ê
+    void Shake();
+    // —h‚ç‚·”ÍˆÍÅ‘å
+    void SetUiMax(int max) { this->max = max; }
+    // —h‚ç‚·”ÍˆÍÅ¬
+    void SetUiMin(int min) { this->min = min; }
+
     // ˆÊ’u‚Ìİ’è
     void SetPosition(const DirectX::XMFLOAT2& position) { this->position = position; }
 
@@ -31,6 +38,15 @@ public:
     // ƒXƒP[ƒ‹‚Ìæ“¾
     const DirectX::XMFLOAT2& GetScale() const { return scale; }
 
+    // —h‚êŠÔÅ‘å
+    void SetShakeTimeMax(int shakeTimeUiMax) { this->shakeTimeUiMax = shakeTimeUiMax; }
+   
+    // —h‚êŒo‰ßŠÔ•ÏX
+    void SetShakeTime(int shakeTimeUi) { this->shakeTimeUi = shakeTimeUi; }
+
+    // ŠÔI—¹‚©‚Ç‚¤‚©
+    bool GetShakeEnd() { return shakeTimeUi >= shakeTimeUiMax ? true : false; }
+
 private:
 
     // ‰æ‘œ‚ÌˆÊ’u
@@ -40,6 +56,17 @@ private:
     // ‰æ‘œ‚Ì‘å‚«‚³
     DirectX::XMFLOAT2 scale = {0,0};
 
+    bool checkPositionY = false;
 
+    // UI—h‚ç‚·”ÍˆÍ
+    int max = 0;
+    int min = 0;
+
+    // UI‚ğ—h‚ç‚·‚½‚ß‚ÌŠÔ
+    int shakeTimeUi = 0;
+    // UI‚ğ—h‚ç‚·ŠÔÅ‘å
+    int shakeTimeUiMax = 0;
+
+    
 
 };

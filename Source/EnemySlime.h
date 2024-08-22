@@ -79,6 +79,9 @@ public:
     // セットカウンター
     void SetCounterJudgment(bool counterJudgment) { this->counterJudgment = counterJudgment; }
 
+    //  UI操作
+    void UiControlle(float elapsedTime);
+
 //private:
     // ターゲット位置をランダム設定
     void SetRandomTargetPosition();
@@ -233,10 +236,10 @@ private:
 
 
     // Hp
-    int health = 5;
+    int health = 50;
 
     // 最大HP
-    int maxHealth = 5;
+    int maxHealth = 50;
 
     // 半径
     float radius = 0.5f;

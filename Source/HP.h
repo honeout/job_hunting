@@ -49,6 +49,11 @@ public:
 
 	void SetDead(bool dead) { this->dead = dead; }
 
+	// 残機
+	void SetLife(int life) { this->life = life; }
+	// 残機
+	int GetLife() const { return life; }
+
 private:
 	// 最大値HP
 	int          maxHealth = 5;
@@ -61,6 +66,9 @@ private:
 
 	// 判定
 	bool dead = false;
+
+	// 残機
+	int life = 0;
 
 	
 };
