@@ -1,7 +1,8 @@
-#include "ProjectileHoming.h"
+#include "ProjectileImpact.h"
+#include "ProjectileManager.h"
 #include "Graphics/Graphics.h"
 // コンストラクタ
-ProjectileHoming::ProjectileHoming()
+ProjectileImpact::ProjectileImpact()
 {
     //model = new Model("Data/Model/Sword/Sword.mdl");
 
@@ -9,7 +10,7 @@ ProjectileHoming::ProjectileHoming()
     //scale.x = scale.y = scale.z = 3.0f;
 }
 // デストラクタ
-ProjectileHoming::~ProjectileHoming()
+ProjectileImpact::~ProjectileImpact()
 {
     //delete model;
 
@@ -30,42 +31,62 @@ ProjectileHoming::~ProjectileHoming()
     }
 }
 
-void ProjectileHoming::Start()
+void ProjectileImpact::Start()
 {
     // モデル一様
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
-    // 当たり判定を共有
-    GetActor()->GetComponent<Transform>()->SetRadius(radius);
 
     // 銃移動のコンポーネント
-    bulletFiring = GetActor()->GetComponent<BulletFiring>();
+    //bulletFiring = GetActor()->GetComponent<BulletFiring>();
 
     // トランスフォーム取得
     transform = GetActor()->GetComponent<Transform>();
+    
+    // 円の当たり判定内側
+    radiusInSide = 0.1f;
+
+    // 円の当たり判定外側
+    radiusOutSide = 1.0f;
+
+    // 当たり判定を共有
+    //transform->SetRadius(radius);
 
     // 動き反映
-    //movementCheck = true;
+    movementCheck = true;
 
     if (effectProgress)
-        effectProgress->Play(transform->GetPosition(),1);
+        effectProgress->Play(transform->GetPosition(), 10.0f);
+
+
 }
 
 // 更新処理
-void ProjectileHoming::Update(float elapsedTime)
+void ProjectileImpact::Update(float elapsedTime)
 {
-    if (movementCheck)
-    bulletFiring->MoveHoming(moveSpeed, turnSpeed, target, elapsedTime);
+    if (lifeTimer <= 0)
+    {
+        Destoroy();
+    }
 
+    if (movementCheck)
+    {
+        //bulletFiring->MoveHoming(moveSpeed, turnSpeed, target, elapsedTime);
+        ImpactUpdate();
+    }
     transform->UpdateTransformProjectile();
 
     model->UpdateTransform(transform->GetTransform());
 
     if (effectProgress)
-        effectProgress->SetPosition(effectProgress->GetEfeHandle(),transform->GetPosition());
+        effectProgress->SetPosition(effectProgress->GetEfeHandle(), transform->GetPosition());
 
     if (effectHit)
         effectHit->SetPosition(effectHit->GetEfeHandle(), transform->GetPosition());
+
+    DrawDebugPrimitive();
+
+    --lifeTimer;
 
     //// 寿命処理
     //lifeTimer -= elapsedTime;
@@ -101,7 +122,7 @@ void ProjectileHoming::Update(float elapsedTime)
     //   
     //    if (lengthSq > 0.00001f)
     //    {
- 
+
     //        // ターゲットまでのベクトルを単位ベクトル化
     //        Vec = DirectX::XMVector3Normalize(Vec);
 
@@ -162,75 +183,73 @@ void ProjectileHoming::Update(float elapsedTime)
 
     //        
 
-    
+
 }
 
 // 描画処理
-void ProjectileHoming::Render(RenderContext& rc, ModelShader& shader)
+void ProjectileImpact::Render(RenderContext& rc, ModelShader& shader)
 {
-    Graphics& graphics = Graphics::Instance();
-    //Shader* shader = graphics.GetShader();
-    //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-    shader = *graphics.GetShader(ModelShaderId::Lanbert);
-    shader.Begin(rc);// シェーダーにカメラの情報を渡す
+    //Graphics& graphics = Graphics::Instance();
+    ////Shader* shader = graphics.GetShader();
+    ////ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    //shader = *graphics.GetShader(ModelShaderId::Lanbert);
+    //shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
 
-    shader.Draw(rc, model);
+    //shader.Draw(rc, model);
 
-    shader.End(rc);
+    //shader.End(rc);
 }
 
-void ProjectileHoming::DrawDebugPrimitive()
+void ProjectileImpact::DrawDebugPrimitive()
 {
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
 
     // 今は何も表示しない
         //// 衝突判定用のデバッグ球を描画
-    debugRenderer->DrawSphere(transform->GetPosition(), radius, DirectX::XMFLOAT4(0, 0, 1, 1));
+    debugRenderer->DrawSphere(transform->GetPosition(), radiusInSide, DirectX::XMFLOAT4(0, 0, 1, 1));
+    debugRenderer->DrawSphere(transform->GetPosition(), radiusOutSide, DirectX::XMFLOAT4(0, 1, 0, 1));
+
+    debugRenderer->DrawCylinder(transform->GetPosition(), 15, transform->GetHeight(), DirectX::XMFLOAT4(0, 1, 1, 1));
 }
 
-void ProjectileHoming::EffectProgressPlay()
+void ProjectileImpact::Destoroy()
+{
+    ActorManager::Instance().Remove(GetActor());
+    ProjectileManager::Instance().Remove(GetActor());
+}
+
+void ProjectileImpact::ImpactUpdate()
+{
+
+
+    // 当たり判定増大
+    radiusInSide += 0.3f;
+    
+    // 当たり判定増大
+    radiusOutSide += 0.3f;
+
+
+}
+
+void ProjectileImpact::EffectProgressPlay()
 {
     effectProgress->Play(transform->GetPosition(), scale);
 }
 
-void ProjectileHoming::EffectHitPlay(float elapsedTime)
+void ProjectileImpact::EffectHitPlay(float elapsedTime)
 {
     effectHit->Play(transform->GetPosition(), scale);
 }
 
-void ProjectileHoming::EffectProgressUpdate(float elapsedTime)
+void ProjectileImpact::EffectProgressUpdate(float elapsedTime)
 {
     effectProgress->SetPosition(effectProgress->GetEfeHandle(),
         transform->GetPosition());
 }
 
-void ProjectileHoming::EffectHitUpdate(float elapsedTime)
+void ProjectileImpact::EffectHitUpdate(float elapsedTime)
 {
     effectHit->SetPosition(effectHit->GetEfeHandle(),
         transform->GetPosition());
 }
-
-//void ProjectileHoming::SetEffectProgress(const char * storageLocation)
-//{
-//    
-//}
-
-//// 描画処理
-//void ProjectileHoming::Render(const RenderContext& rc, ModelShader* shader)
-//{
-//    shader->Draw(rc, model);
-//}
-//
-//
-//
-//void ProjectileHoming::Lanch(const DirectX::XMFLOAT3& direction,
-//    const DirectX::XMFLOAT3& position,
-//    const DirectX::XMFLOAT3& target)
-//{
-//    this->direction = direction;
-//    this->position = position;
-//    this->target = target;
-//
-//    UpdateTransform();
-//}

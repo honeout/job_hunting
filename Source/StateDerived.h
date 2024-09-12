@@ -71,6 +71,28 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	// 攻撃回数
+	int					attackMemory = 0;
+	int					attackMemoryMax = 3;
+};
+
+// 射撃ステートオブジェクト
+class AttackShotState : public State
+{
+public:
+	// コンストラクタ
+	AttackShotState(Actor* enemy) :State(enemy) {};
+	// デストラクタ
+	~AttackShotState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	float				stateTimer = 0.0f;
 };
 
 // ダメージステートオブジェクト
@@ -153,6 +175,9 @@ public:
 private:
 	float				stateTimer = 0.0f;
 	float				attackRange = 1.5f;
+
+	bool                jumpCheck = false;
+	bool				loop = false;
 };
 
 // 着地ステートオブジェクト
@@ -209,6 +234,8 @@ public:
 private:
 	float				stateTimer = 0.0f;
 	bool				button = false;
+
+	float				turnSpeed = 10;
 };
 
 // よろけステートオブジェクト

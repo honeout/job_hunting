@@ -164,6 +164,32 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
           
 }
 
+void BulletFiring::JumpOut(float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime)
+{
+    //　寿命処理 
+    lifeTimer -= elapsedTime;
+    if (lifeTimer <= 0.0f)// 寿命が尽きたら自害
+    {
+        // 自分を削除
+        Destroy();
+
+
+    }
+
+    ProjectileManager::Instance().DeleteUpdate(elapsedTime);
+    // 移動　　秒じゃなくとフレームに
+    float bulletspeed = speed * elapsedTime;
+
+    // 　だからかけ算で向きにこれだけ進だから位置に入れた
+    //position.x += bulletspeed * direction.x;
+    position.y += bulletspeed * direction.y;
+    //position.z += bulletspeed * direction.z;
+
+
+    if (position.y <= -3.5f)
+    transformid->SetPosition(position);
+}
+
 void BulletFiring::Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position, float   lifeTimer)
 {
     // direction 方向　正規化して入れる差もなきゃスピード変わる

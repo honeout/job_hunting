@@ -8,11 +8,11 @@
 #include "Transform.h"
 #include "Effect.h"
 // 追尾弾丸
-class ProjectileHoming :public Component
+class ProjectileRuby :public Component
 {
 public:
-    ProjectileHoming();
-    ~ProjectileHoming() override;
+    ProjectileRuby();
+    ~ProjectileRuby() override;
 
     // 名前取得
     const char* GetName() const override { return "ProjectileHoming"; }
@@ -62,9 +62,11 @@ public:
     // エフェクト終了更新
     void EffectHitUpdate(float elapsedTime);
 
-    void SetMovementCheck(bool movementCheck) 
-    { this->movementCheck = movementCheck; };
-  
+    void SetMovementCheck(bool movementCheck)
+    {
+        this->movementCheck = movementCheck;
+    };
+
 private:
     Model* model = nullptr;
     Effect* effectProgress = nullptr;
@@ -81,12 +83,15 @@ private:
     std::shared_ptr<BulletFiring> bulletFiring;
     std::shared_ptr<Transform> transform;
 
-    float radius = 0.3f;
+    float radius = 1.0f;
 
     float scale = 1.0f;
 
     bool movementCheck = true;
 
-    
+    // 高さ
+    float height;
+
+
 
 };

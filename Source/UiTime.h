@@ -1,17 +1,21 @@
 #pragma once
 
+
 #include "Component.h"
 #include "SpriteControll.h"
 #include "TransForm2D.h"
 
-class Ui : public Component
+#define NUMBER_WIDTH    (64)
+#define NUMBER_HEIGHT   (96)
+
+class UiTime : public Component
 {
 public:
-    Ui() {};
-    ~Ui() override;
+    UiTime() {};
+    ~UiTime() override;
 
     // 名前取得
-    const char* GetName() const override { return "Ui"; }
+    const char* GetName() const override { return "UiTime"; }
 
     // 開始処理
     void Start() override;
@@ -24,9 +28,6 @@ public:
 
     // GUI描画
     void OnGUI() override;
-
-    // 時間
-    void UiTimeUpdate();
 
     // 描画確認
     void SetDrawCheck(bool drawCheck) { this->drawCheck = drawCheck; }
@@ -45,11 +46,20 @@ public:
 
     void SetCountDown(int countDown) { this->countDown = countDown; }
 
+    void SetDigit(int digit) { this->digit = digit; }
+
+    void SetScore(int score) { this->score = score; }
+
+    void SetTimeUp(bool timeUp) { this->timeUp = timeUp; }
+
+    bool GetTimeUp() { return this->timeUp; }
+
 private:
     Sprite* sprite = nullptr;
 
     // 位置や動き
     std::shared_ptr<TransForm2D> transForm2D;
+
 
 
     // 描画の切り替えよう
@@ -63,6 +73,13 @@ private:
     // カウントダウン
     int        countDown = 0;
 
+    // 桁
+    int        digit = 0;
 
+    // 数字
+    int        score = 0;
+
+    // 終了タイミング
+    bool       timeUp = false;
 
 };

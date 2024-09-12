@@ -20,6 +20,18 @@ public:
     // デバッグ用GUI描画
     void DrawDebugGUI();
 
+    // 角度セット
+    void SetAngle(DirectX::XMFLOAT3 angle) 
+    {
+        this->angle = angle;
+    }
+
+    // 角度Y軸セット
+    void SetAngleY(float angleY)
+    {
+        this->angle.y = angleY;
+    }
+
 
 private:
     DirectX::XMFLOAT3       target = { 0, 0, 0 };
@@ -27,7 +39,7 @@ private:
     float                   rollSpeed = DirectX::XMConvertToRadians(90);
     // 範囲
     float                   range = 10.0f;
-    float                   maxAngleX = DirectX::XMConvertToRadians(45);
-    float                   minAngleX = DirectX::XMConvertToRadians(-45);
+    float                   maxAngleX = DirectX::XMConvertToRadians(35);
+    float                   minAngleX = DirectX::XMConvertToRadians(5);
 };
 

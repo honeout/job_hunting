@@ -41,6 +41,17 @@ public:
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
 
+    // 当たり判定衝撃波
+    void CollisionImpactVsPlayer();
+
+    // 当たり判定ルビー
+    void CollisionRubyVsPlayer();
+
+    void InputImpact(DirectX::XMFLOAT3 pos);
+
+    // 弾丸発射
+    void InputProjectile();
+
     // 縄張り設定
     void SetTerritory(const DirectX::XMFLOAT3& origin, float range);
 
@@ -56,11 +67,11 @@ public:
 
 
     // アニメーション　ゲット
-    int GetAnimationStateNormal() { return Animation::Anim_IdleNormal; }
-    int GetAnimationStateAttack() { return Animation::Anim_Attack1; }
-    int GetAnimationStateWalk() { return Animation::Anim_WalkFWD; }
-    int GetAnimationStateHit() { return Animation::Anim_GetHit; }
-    int GetAnimationStateDie() { return Animation::Anim_Die; }
+    //int GetAnimationStateNormal() { return Animation::Anim_Standby; }
+    //int GetAnimationStateAttack() { return Animation::Anim_Attack; }
+    //int GetAnimationStateWalk() { return Animation::Anim_Walk; }
+    ////int GetAnimationStateHit() { return Animation::Anim_GetHit; }
+    //int GetAnimationStateDie() { return Animation::Anim_Die; }
 
     // ステートタイマー設定
     void SetStateTimer(float timer) {
@@ -156,32 +167,43 @@ public:
             Idle,
             Pursuit,
             Attack,
+            Shot,
             Damage,
             Death,
             IdleBattle,
         };
 
-private:
+
 
     // アニメーション
     enum Animation
     {
-        Anim_IdleNormal,       
-        Anim_IdleBattle,       
-        Anim_Attack1,
-        Anim_Attack2,
-        Anim_WalkFWD,
-        Anim_WalkBWD,
-        Anim_WalkLeft,
-        Anim_WalkRight,
-        Anim_RunFWD,
-        Anim_SceneSomthinST,
-        Anim_SceneSomthinPRT,
-        Anim_Taunt,
-        Anim_Victory,
-        Anim_GetHit,
-        Anim_Dizzy,
+        // slime
+        //Anim_IdleNormal,       
+        //Anim_IdleBattle,       
+        //Anim_Attack1,
+        //Anim_Attack2,
+        //Anim_WalkFWD,
+        //Anim_WalkBWD,
+        //Anim_WalkLeft,
+        //Anim_WalkRight,
+        //Anim_RunFWD,
+        //Anim_SceneSomthinST,
+        //Anim_SceneSomthinPRT,
+        //Anim_Taunt,
+        //Anim_Victory,
+        //Anim_GetHit,
+        //Anim_Dizzy,
+        //Anim_Die,
+
+        Anim_Walk,
+        Anim_Standby,
+        Anim_jewelattack,
+        Anim_Attack,
+        Anim_CloseEye,
+        Anim_Shot,
         Anim_Die,
+        Anim_Movie
     };
 
 

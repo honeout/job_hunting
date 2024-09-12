@@ -282,6 +282,15 @@
     <ClInclude Include="Source\SceneGameOver.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\UiTime.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ProjectileImpact.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ProjectileRuby.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -501,6 +510,15 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\SceneGameOver.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UiTime.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ProjectileImpact.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ProjectileRuby.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

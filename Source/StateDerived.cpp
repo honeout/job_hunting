@@ -4,6 +4,9 @@
 #include "Player.h"
 #include "Mathf.h"
 #include "Input/Input.h"
+#include "ProjectileHoming.h"
+#include "ProjectileRuby.h"
+#include "ProjectileManager.h"
 
 
 
@@ -20,12 +23,14 @@ void WanderState::Enter()
 	owner->GetComponent<EnemySlime>()->SetRandomTargetPosition();
 
 	// アニメーション再生
-	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(owner->GetComponent<EnemySlime>()->GetAnimationStateWalk(), true);
+	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Walk, true);
+	//owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(owner->GetComponent<EnemySlime>()->GetAnimationStateWalk(), true);
 }
 
 // 徘徊ステートで実行するメソッド
 void WanderState::Execute(float elapsedTime)
 {
+	
 	// 目的地点までのXZ平面での距離判定
 	float vx = owner->GetComponent<EnemySlime>()->GetTargetPosition().x - owner->GetComponent<EnemySlime>()->GetPosition().x;
 	float vz = owner->GetComponent<EnemySlime>()->GetTargetPosition().z - owner->GetComponent<EnemySlime>()->GetPosition().z;
@@ -60,7 +65,8 @@ void WanderState::Exit()
 // 初期化
 void IdleState::Enter()
 {
-	owner->GetComponent<EnemySlime>()->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(owner->GetComponent<EnemySlime>()->GetAnimationStateNormal(), true);
+	owner->GetComponent<EnemySlime>()->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Anim_Standby, true);
+	//owner->GetComponent<EnemySlime>()->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(owner->GetComponent<EnemySlime>()->GetAnimationStateNormal(), true);
 	// タイマーをランダム設定
 	//stateTimer = Mathf::RandomRange(3.0f, 5.0f);
 	owner->GetComponent<EnemySlime>()->SetStateTimer(Mathf::RandomRange(3.0f, 5.0f));
@@ -92,7 +98,8 @@ void IdleState::Exit()
 void PursuitState::Enter()
 {
 	
-	owner->GetComponent<EnemySlime>()->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(owner->GetComponent<EnemySlime>()->GetAnimationStateWalk(), true);
+	owner->GetComponent<EnemySlime>()->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Walk, true);
+	//owner->GetComponent<EnemySlime>()->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(owner->GetComponent<EnemySlime>()->GetAnimationStateWalk(), true);
 
 	// 数秒間追跡するタイマーをランダム設定
 	stateTimer = Mathf::RandomRange(3.0f, 5.0f);
@@ -144,7 +151,8 @@ void PursuitState::Exit()
 void AttackState::Enter()
 {
 
-	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(owner->GetComponent<EnemySlime>()->GetAnimationStateAttack(), false);
+	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Attack, false);
+	//owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(owner->GetComponent<EnemySlime>()->GetAnimationStateAttack(), false);
 }
 // update
 void AttackState::Execute(float elapsedTime)
@@ -152,28 +160,107 @@ void AttackState::Execute(float elapsedTime)
 
 
 	// 攻撃モーションが終了したとき追跡ステートへ移行
-	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
+	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation() && attackMemory < attackMemoryMax)
 	{
 		owner->GetComponent<EnemySlime>()->SetCounterJudgment(false);
+		//owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Attack));
 		owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
+		++attackMemory;
+	}
+	else if (attackMemory == attackMemoryMax)
+	{
+		owner->GetComponent<EnemySlime>()->SetCounterJudgment(false);
+		owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Idle));
+		
+		int attackMemoryStart = 0;
+		attackMemory = attackMemoryStart;
 	}
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
-	if (animationTime >= 0.2f && animationTime <= 0.35f)
+	if (animationTime >= 1.0f && animationTime <= 2.0f)
 	{
-		// 目玉ノードとプレイヤーの衝突処理
-		owner->GetComponent<EnemySlime>()->CollisitionNodeVsPlayer("EyeBall", 0.2f);
+		// 左足ノードとプレイヤーの衝突処理
+		owner->GetComponent<EnemySlime>()->CollisitionNodeVsPlayer("boss_left_foot1", 2);
 	}
-	if (animationTime >= 0.2f && animationTime <= 0.5f)
+	// パリィ
+	if (animationTime >= 0.8f && animationTime <= 1.5f)
 	{
 		owner->GetComponent<EnemySlime>()->SetCounterJudgment(true);
+	}
+
+	if (animationTime >= 1.30f && animationTime <= 1.33f)
+	{
+		Model::Node* node = owner->GetComponent<ModelControll>()->GetModel()->FindNode("boss_left_foot1");
+		DirectX::XMFLOAT3 pos(
+			node->worldTransform._41,
+			node->worldTransform._42,
+			node->worldTransform._43
+		);
+		owner->GetComponent<EnemySlime>()->InputImpact(pos);
 	}
 
 
 }
 // 最後にやりたい処理全般
 void AttackState::Exit()
+{
+}
+
+// 初期設定
+void AttackShotState::Enter()
+{
+	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Shot, false);
+}
+// 更新処理
+void AttackShotState::Execute(float elapsedTime)
+{
+
+	// 攻撃モーションが終了したとき追跡ステートへ移行
+	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
+	{
+		owner->GetComponent<EnemySlime>()->SetCounterJudgment(false);
+		//owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Shot));
+		owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
+	}
+
+	// 任意のアニメーション再生区間でのみ衝突判定処理をする
+	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	// efekt設定
+	if (animationTime >= 0.1f && animationTime <= 0.13f)
+	{
+		//Model::Node* node = owner->GetComponent<ModelControll>()->GetModel()->FindNode("boss_right_hand1");
+		//DirectX::XMFLOAT3 pos(
+		//	node->worldTransform._41,
+		//	node->worldTransform._42,
+		//	node->worldTransform._43
+		//);
+		////for (int i = 0; i < 5; ++i)
+		////{
+		//	// 左足ノードとプレイヤーの衝突処理
+		owner->GetComponent<EnemySlime>()->InputProjectile();
+
+	}
+	//// 弾丸出現
+	//if (animationTime >= 0.7f && animationTime <= 0.8f)
+	//{
+
+	//}
+	// 弾丸発射
+	if (animationTime >= 1.0f && animationTime <= 1.1f)
+	{
+
+
+		bool movementCheck = true;
+		for (int i = 0; i < ProjectileManager::Instance().GetProjectileCount(); ++i)
+		{
+			if (owner->GetComponent<ProjectileRuby>())
+			owner->GetComponent<ProjectileRuby>()->SetMovementCheck(movementCheck);
+		}
+	}
+}
+// 終了処理
+void AttackShotState::Exit()
 {
 }
 
@@ -184,7 +271,10 @@ void DamageState::Enter()
 
 	owner->GetComponent<ModelControll>()->GetModel()->
 		PlayAnimation(
-			owner->GetComponent<EnemySlime>()->GetAnimationStateDie(), loop);
+			EnemySlime::Animation::Anim_Die, loop);
+		//owner->GetComponent<ModelControll>()->GetModel()->
+		//PlayAnimation(
+		//	owner->GetComponent<EnemySlime>()->GetAnimationStateDie(), loop);
 
 
 }
@@ -241,37 +331,52 @@ void PlayerIdleState::Execute(float elapsedTime)
 	}
 
 
-	owner->GetComponent<Player>()->InputSelectCheck();
+	//owner->GetComponent<Player>()->InputSelectCheck();
 
-	owner->GetComponent<Player>()->InputShortCutkeyMagic();
+	//owner->GetComponent<Player>()->InputShortCutkeyMagic();
 
-	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Attack)
-	{
-		//stated = state;
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-		//TransitionAttackState();
-	}
+	//if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Attack)
+	//{
+	//	//stated = state;
+	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+	//	//TransitionAttackState();
+	//}
 
-	owner->GetComponent<Player>()->InputSelectMagicCheck();
+	//owner->GetComponent<Player>()->InputSelectMagicCheck();
 
-	// 弾丸入力処理
-    if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int) Player::CommandMagic::Fire && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
-	{
-		owner->GetComponent<Player>()->InputMagicframe();
-		//TransitionAttackState();
-	}
+	//// 弾丸入力処理
+	//// 炎
+	//if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Fire && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+	//{
+	//	owner->GetComponent<Player>()->InputMagicframe();
+	//	//TransitionAttackState();
+	//}
+	//// 雷
+	//if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Thander && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+	//{
+	//	owner->GetComponent<Player>()->InputMagicLightning();
+	//	//TransitionAttackState();
+	//}
+	//// 氷
+	//if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Ice && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+	//{
+	//	owner->GetComponent<Player>()->InputMagicIce();
+	//	//TransitionAttackState();
+	//}
 
-	// 特殊攻撃
-	if (owner->GetComponent<Player>()->InputSpecialAttackCharge())
-	{
-		//TransitionAttackState();
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-	}
-	// 特殊魔法
-	if (owner->GetComponent<Player>()->InputSpecialShotCharge())
-	{
-		owner->GetComponent<Player>()->InputProjectile();
-	}
+
+	//// 特殊攻撃
+	//if (owner->GetComponent<Player>()->InputSpecialAttackCharge())
+	//{
+	//	//TransitionAttackState();
+	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+	//}
+	//// 特殊魔法
+	//if (owner->GetComponent<Player>()->InputSpecialShotCharge())
+	//{
+	//	owner->GetComponent<Player>()->InputProjectile();
+	//}
+
 }
 
 void PlayerIdleState::Exit()
@@ -324,38 +429,53 @@ void PlayerMovestate::Execute(float elapsedTime)
 		//TransitionJumpState();
 	}
 
-	owner->GetComponent<Player>()->InputSelectCheck();
+	//owner->GetComponent<Player>()->InputSelectCheck();
 
-	owner->GetComponent<Player>()->InputShortCutkeyMagic();
+	//owner->GetComponent<Player>()->InputShortCutkeyMagic();
 
-	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Attack)
-	{
-		//stated = state;
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-		//TransitionAttackState();
-	}
-	owner->GetComponent<Player>()->InputSelectMagicCheck();
+	//if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Attack)
+	//{
+	//	//stated = state;
+	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+	//	//TransitionAttackState();
+	//}
+	//owner->GetComponent<Player>()->InputSelectMagicCheck();
 
-	// 弾丸入力処理
-	if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Fire &&owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
-	{
-		owner->GetComponent<Player>()->InputMagicframe();
-		//TransitionAttackState();
-	}
+	//// 弾丸入力処理
+	//// 炎
+	//if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Fire &&owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+	//{
+	//	owner->GetComponent<Player>()->InputMagicframe();
+	//	//TransitionAttackState();
+	//}
+	//// 雷
+	//if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Thander && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+	//{
+	//	owner->GetComponent<Player>()->InputMagicLightning();
+	//	//TransitionAttackState();
+	//}
+	//// 氷
+	//if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Ice && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+	//{
+	//	owner->GetComponent<Player>()->InputMagicIce();
+	//	//TransitionAttackState();
+	//}
 
-	// 特殊攻撃
-	if (owner->GetComponent<Player>()->InputSpecialAttackCharge())
-	{
-		//TransitionAttackState();
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-	}
-	// 特殊魔法
-	if (owner->GetComponent<Player>()->InputSpecialShotCharge())
-	{
-		owner->GetComponent<Player>()->InputProjectile();
-	}
+
+
+	//// 特殊攻撃
+	//if (owner->GetComponent<Player>()->InputSpecialAttackCharge())
+	//{
+	//	//TransitionAttackState();
+	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+	//}
+	//// 特殊魔法
+	//if (owner->GetComponent<Player>()->InputSpecialShotCharge())
+	//{
+	//	owner->GetComponent<Player>()->InputProjectile();
+	//}
 	// 落下着地
-	owner->GetComponent<Player>()->Ground();
+	//owner->GetComponent<Player>()->Ground();
 
 
 }
@@ -366,7 +486,7 @@ void PlayerMovestate::Exit()
 
 void PlayerJumpState::Enter()
 {
-	bool loop = false;
+	loop = false;
 
 	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
 		owner->GetComponent<Player>()->Anim_Jump, loop);
@@ -385,42 +505,62 @@ void PlayerJumpState::Execute(float elapsedTime)
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
 	}
 
-	owner->GetComponent<Player>()->InputSelectCheck();
+	//owner->GetComponent<Player>()->InputSelectCheck();
 
-	owner->GetComponent<Player>()->InputShortCutkeyMagic();
+	//owner->GetComponent<Player>()->InputShortCutkeyMagic();
 
-	if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Attack)
-	{
-		//stated = state;
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-		//TransitionAttackState();
-	}
-	owner->GetComponent<Player>()->InputSelectMagicCheck();
+	//if (owner->GetComponent<Player>()->InputAttack() && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Attack)
+	//{
+	//	//stated = state;
+	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+	//	//TransitionAttackState();
+	//}
+	//owner->GetComponent<Player>()->InputSelectMagicCheck();
 
-	// 弾丸入力処理
-	if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Fire && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
-	{
-		owner->GetComponent<Player>()->InputMagicframe();
-		//TransitionAttackState();
-	}
+	//// 弾丸入力処理
+	//// 炎
+	//if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Fire && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+	//{
+	//	owner->GetComponent<Player>()->InputMagicframe();
+	//	//TransitionAttackState();
+	//}
+	//// 雷
+	//if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Thander && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+	//{
+	//	owner->GetComponent<Player>()->InputMagicLightning();
+	//	//TransitionAttackState();
+	//}
+	//// 氷
+	//if (owner->GetComponent<Player>()->GetSelectMagicCheck() == (int)Player::CommandMagic::Ice && owner->GetComponent<Player>()->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+	//{
+	//	owner->GetComponent<Player>()->InputMagicIce();
+	//	//TransitionAttackState();
+	//}
 
-	// 特殊攻撃
-	if (owner->GetComponent<Player>()->InputSpecialAttackCharge())
+
+	//// 特殊攻撃
+	//if (owner->GetComponent<Player>()->InputSpecialAttackCharge())
+	//{
+	//	//TransitionAttackState();
+	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+	//}
+	//// 特殊魔法
+	//if (owner->GetComponent<Player>()->InputSpecialShotCharge())
+	//{
+	//	owner->GetComponent<Player>()->InputProjectile();
+	//}
+
+	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
 	{
-		//TransitionAttackState();
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-	}
-	// 特殊魔法
-	if (owner->GetComponent<Player>()->InputSpecialShotCharge())
-	{
-		owner->GetComponent<Player>()->InputProjectile();
+		owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+			owner->GetComponent<Player>()->Anim_Falling, loop);
 	}
 
 	// 落下着地
 	if (owner->GetComponent<Player>()->Ground())
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Land));
 
-	
+
 }
 
 void PlayerJumpState::Exit()
@@ -505,6 +645,11 @@ void PlayerAttackState::Enter()
 	// アニメーションルール
 	owner->GetComponent<Player>()->SetUpdateAnim(UpAnim::Doble);
 
+
+	std::shared_ptr<Player> playerId = owner->GetComponent<Player>();
+
+	
+
 }
 
 void PlayerAttackState::Execute(float elapsedTime)
@@ -512,7 +657,9 @@ void PlayerAttackState::Execute(float elapsedTime)
 	GamePad& gamePad = Input::Instance().GetGamePad();
 
 	// 攻撃複数
-	if (owner->GetComponent<Player>()->InputAttack())
+	if (owner->GetComponent<Player>()->InputAttack()&&
+		owner->GetComponent<Player>()->GetSelectCheck() == 
+		(int)Player::CommandAttack::Attack)
 	{
 		button = true;
 	}
@@ -529,24 +676,29 @@ void PlayerAttackState::Execute(float elapsedTime)
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
 	}
 
-	// もし終わったら待機に変更
+	
+	// 部分再生
 	if (owner->GetComponent<Player>()->GetUpdateAnim() == UpAnim::Doble && !owner->GetComponent<ModelControll>()->GetModel()->IsPlayUpeerBodyAnimation())
 	{
 		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button ? Player::State::Attack : Player::State::Move));
 		button = false;
 		owner->GetComponent<Player>()->SetSpecialAttackTime(false);
+
+
 		//attackCollisionFlag = false;
 		//TransitionMoveState();
-
+		//owner->GetComponent<Player>()->SetAngleCheck(false);
 
 	}
-	// 部分再生
+	// もし終わったら待機に変更
 	else if (owner->GetComponent<Player>()->GetUpdateAnim() == UpAnim::Normal && !owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
 	{
 		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 		owner->GetComponent<Player>()->SetSpecialAttackTime(false);
+
+		//owner->GetComponent<Player>()->SetAngleCheck(false);
 	}
 	// もし移動中に手を離したら
 	if (owner->GetComponent<Player>()->GetUpdateAnim() == UpAnim::Doble && !owner->GetComponent<Player>()->InputMove(elapsedTime))
@@ -565,7 +717,7 @@ void PlayerAttackState::Execute(float elapsedTime)
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 	bool CollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
 
-	owner->GetComponent<Player>()->SetAttackCollisionFlag(CollisionFlag);
+	/*owner->GetComponent<Player>()->SetAttackCollisionFlag(CollisionFlag);*/
 
 	//if (updateanim == UpAnim::Doble)
 	//{
@@ -574,13 +726,13 @@ void PlayerAttackState::Execute(float elapsedTime)
 	//	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 	//	attackCollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
 	//}
-	if (owner->GetComponent<Player>()->GetAttackCollisionFlag())
+	if (CollisionFlag)
 	{
 		// 左手ノードとエネミーの衝突処理
 		owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius());
 	}
 
-	owner->GetComponent<Player>()->Ground();
+	//owner->GetComponent<Player>()->Ground();
 }
 
 void PlayerAttackState::Exit()
@@ -705,7 +857,7 @@ void PlayerReflectionState::Execute(float elapsedTime)
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
-	bool CollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
+	bool CollisionFlag = animationTime >= 0.3f && animationTime <= 1.0f;
 
 	//owner->GetComponent<Player>()->SetAttackCollisionFlag(CollisionFlag);
 
@@ -720,5 +872,4 @@ void PlayerReflectionState::Execute(float elapsedTime)
 void PlayerReflectionState::Exit()
 {
 }
-
 

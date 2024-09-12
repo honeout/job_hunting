@@ -11,6 +11,10 @@ public:
 
     // 追跡移動
     void MoveHoming(float speed,float turnSpeed,DirectX::XMFLOAT3 target, float elapsedTime);
+    
+    // ルビー下から飛び出し
+    void JumpOut(float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime);
+    
     // 発射    (  どっちからはっしゃ向き、位置何処から)
     void Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position, float   lifeTimer);
 

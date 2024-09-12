@@ -15,16 +15,17 @@ void Ui::Start()
 
 void Ui::Update(float elapsedTime)
 {
+    UiTimeUpdate();
 }
 
 void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
 {
 	// ビューポート 画面のサイズ等
     // ビューポートとは2Dの画面に描画範囲の指定(クリッピング指定も出来る)位置を指定
-    D3D11_VIEWPORT viewport;
-    UINT numViewports = 1;
-    //// ラスタライザーステートにバインドされているビューポート配列を取得
-    rc.deviceContext->RSGetViewports(&numViewports, &viewport);
+    //D3D11_VIEWPORT viewport;
+    //UINT numViewports = 1;
+    ////// ラスタライザーステートにバインドされているビューポート配列を取得
+    //rc.deviceContext->RSGetViewports(&numViewports, &viewport);
     
     // 変換行列
     DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
@@ -41,9 +42,9 @@ void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
             transForm2D->GetPosition().y
 			, transForm2D->GetScale().x
 			, transForm2D->GetScale().y,
-			0, 0,
-            static_cast<float> (sprite->GetTextureWidth()),
-            static_cast<float> (sprite->GetTextureHeight()),
+            transForm2D->GetTexPosition().x, transForm2D->GetTexPosition().y,
+            transForm2D->GetTexScale().x > 0 ?  transForm2D->GetTexScale().x : static_cast<float> (sprite->GetTextureWidth()),
+            transForm2D->GetTexScale().y > 0 ?  transForm2D->GetTexScale().y : static_cast<float> (sprite->GetTextureHeight()),
             transForm2D->GetAngle(),
 			1, 1, 1, 1);
     }
@@ -51,4 +52,10 @@ void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
 
 void Ui::OnGUI()
 {
+}
+
+void Ui::UiTimeUpdate()
+{
+    if (timeMax > 0)
+    --countDown;
 }

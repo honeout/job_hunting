@@ -127,7 +127,8 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapse
     DirectX::XMFLOAT3 angle = GetActor()->GetComponent<Transform>()->GetAngle();
 
     // 進行ベクトルが0ベクトルの場合は処理する必要なし
-    if (direction.x == 0 && direction.z == 0)return;
+    if (direction.x == 0 && direction.z == 0)
+        return;
 
     float vx = direction.x;
     float vz = direction.z;
@@ -551,6 +552,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
     {
         position.y += my;
         isGround = false;
+        onLadius = false;
     }
 
     // 地面の向きに沿うようにXZ軸回転

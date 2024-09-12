@@ -8,8 +8,10 @@ TransForm2D::~TransForm2D()
 void TransForm2D::OnGUI()
 {
     ImGui::SliderFloat2("Position", &position.x,0,1280);
+    ImGui::SliderFloat2("TexPosition", &texPosition.x,0,1280);
     ImGui::SliderFloat("Angle", &angle,0,180);
     ImGui::SliderFloat2("Scale", &scale.x,0,500);
+    ImGui::SliderFloat2("TexScale", &texScale.x,0,500);
 }
 
 void TransForm2D::Shake()

@@ -66,6 +66,7 @@ public:
         EnemyHPBar,
         EnemyHPLife01,
         EnemyHPLife02,
+        Time,
 
     };
 

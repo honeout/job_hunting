@@ -220,6 +220,8 @@ public:
 
     // 魔法入力
     bool InputMagicframe();
+    bool InputMagicIce();
+    bool InputMagicLightning();
 
    // void Update();
 
@@ -339,6 +341,9 @@ public:
     // UI揺らし状態
     void SetShakeMode(bool shakeMode) { this->shakeMode = shakeMode;   }
 
+    // 回転確認
+    void SetAngleCheck(bool angleCheck) { this->angleCheck = angleCheck; }
+
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
@@ -362,7 +367,10 @@ private:
 
     float          moveSpeed = 5.0f;
 
-    float         turnSpeed = DirectX::XMConvertToRadians(720);
+    float          turnSpeed = DirectX::XMConvertToRadians(720);
+
+    // 回転速度　攻撃時
+    float          turnSpeedAttack = DirectX::XMConvertToRadians(2600);
 
     float          jumpSpeed = 20.0f;
     int                     jumpCount = 0;
@@ -373,6 +381,8 @@ private:
     Effect* hitEffect = nullptr;
     Effect* desEffect = nullptr;
 
+    Effect* fire = nullptr;
+
     State                   state = State::Idle;
     State                   stated;
     
@@ -381,7 +391,7 @@ private:
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
     float jumpfliptime = gravity * 5;
 
-    float            leftHandRadius = 0.4f;
+    float            leftHandRadius = 0.8f;
 
     bool             attackCollisionFlag = false;
   
@@ -467,6 +477,12 @@ private:
 
     // 揺れ
     bool shakeMode = false;
+
+    // 回転確認
+    bool angleCheck = false;
+
+    // 角度確認
+    float dotfake = 0.0f;
 
 };
 

@@ -211,6 +211,8 @@ void ActorManager::Render(RenderContext rc, ModelShader* shader)
 		if (!actor->GetCheck2d())
 		// ƒ‚ƒfƒ‹‚ª‚ ‚ê‚Î•`‰æ
 		actor->Render(rc, shader);
+
+
 	}
 
 

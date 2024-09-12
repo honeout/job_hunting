@@ -8,11 +8,11 @@
 #include "Transform.h"
 #include "Effect.h"
 // 追尾弾丸
-class ProjectileHoming :public Component
+class ProjectileImpact :public Component
 {
 public:
-    ProjectileHoming();
-    ~ProjectileHoming() override;
+    ProjectileImpact();
+    ~ProjectileImpact() override;
 
     // 名前取得
     const char* GetName() const override { return "ProjectileHoming"; }
@@ -28,6 +28,11 @@ public:
 
     void DrawDebugPrimitive();
 
+    void Destoroy();
+
+    // 当たり判定衝撃波
+    void ImpactUpdate();
+
     // 描画処理
     //virtual void Render(const RenderContext& rc, ModelShader* shader) override;
 
@@ -37,6 +42,8 @@ public:
     //           const DirectX::XMFLOAT3& target);
 
     void SetTarget(DirectX::XMFLOAT3 target) { this->target = target; }
+
+    void SetLifeTimer(float lifeTimer) { this->lifeTimer = lifeTimer; }
 
     // エフェクト更新
     void SetEffectProgress(const char* storageLocation)
@@ -62,9 +69,14 @@ public:
     // エフェクト終了更新
     void EffectHitUpdate(float elapsedTime);
 
-    void SetMovementCheck(bool movementCheck) 
-    { this->movementCheck = movementCheck; };
-  
+    void SetMovementCheck(bool movementCheck)
+    {
+        this->movementCheck = movementCheck;
+    };
+
+    float GetRadiusOutSide() const { return radiusOutSide; }
+    float GetRadiusInSide() const { return radiusInSide; }
+
 private:
     Model* model = nullptr;
     Effect* effectProgress = nullptr;
@@ -81,12 +93,17 @@ private:
     std::shared_ptr<BulletFiring> bulletFiring;
     std::shared_ptr<Transform> transform;
 
-    float radius = 0.3f;
+    // 衝撃波起こる範囲外側
+    float radiusOutSide = 0.3f;
+
+    // 衝撃波起こる範囲内側
+    float radiusInSide = 0.3f;
+
 
     float scale = 1.0f;
 
-    bool movementCheck = true;
+    bool movementCheck = false;
 
-    
+
 
 };

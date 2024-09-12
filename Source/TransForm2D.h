@@ -23,8 +23,14 @@ public:
     // 位置の設定
     void SetPosition(const DirectX::XMFLOAT2& position) { this->position = position; }
 
+    // 元位置の設定
+    void SetTexPosition(const DirectX::XMFLOAT2& texPosition) { this->texPosition = texPosition; }
+
     // 位置の取得
     const DirectX::XMFLOAT2& GetPosition() const { return position; }
+
+    // 元位置の取得
+    const DirectX::XMFLOAT2& GetTexPosition() const { return texPosition; }
 
     // 角度の設定
     void SetAngle(const float& angle) {  this->angle = angle; }
@@ -35,8 +41,14 @@ public:
     // スケールの設定
     void SetScale(const DirectX::XMFLOAT2& scale) { this->scale = scale; }
 
+    // 元スケールの設定
+    void SetTexScale(const DirectX::XMFLOAT2& texScale) { this->texScale = texScale; }
+
     // スケールの取得
     const DirectX::XMFLOAT2& GetScale() const { return scale; }
+
+    // 元スケールの取得
+    const DirectX::XMFLOAT2& GetTexScale() const { return texScale; }
 
     // 揺れ時間最大
     void SetShakeTimeMax(int shakeTimeUiMax) { this->shakeTimeUiMax = shakeTimeUiMax; }
@@ -51,10 +63,17 @@ private:
 
     // 画像の位置
     DirectX::XMFLOAT2 position = {0,0};
+
+    // 画像の元位置
+    DirectX::XMFLOAT2 texPosition = { 0,0 };
+
     // 角度
     float angle = 0;
     // 画像の大きさ
     DirectX::XMFLOAT2 scale = {0,0};
+
+    // 画像の元の大きさ
+    DirectX::XMFLOAT2 texScale = { 0,0 };
 
     bool checkPositionY = false;
 
