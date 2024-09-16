@@ -253,7 +253,7 @@ void Movement::JumpVelocity( float speed)
 
 
 
-    
+    ++jumpCount;
 
 
     velocity.y = speed;
@@ -533,6 +533,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
                 OnLanding();
             }
             isGround = true;
+            onLadius = true;
             velocity.y = 0.0f;
             
             //jumpSpeed = 0.0f;
@@ -582,16 +583,39 @@ void Movement::UpdateVelocity( float elapsedTime)
 
     // 経過フレーム
     float elapsedFrame = 60.0f * elapsedTime;
+    //if (!stopFall)
+    //{
+    //    //// 垂直速力更新処理
+    //    //UpdateVerticalVelocity(elapsedFrame);
+    //}
+    if (!stopMove)
+    {
+        // 水平速力更新処理
+        UpdateHorizontalVelocity(elapsedFrame);
 
-    // 垂直速力更新処理
-    UpdateVerticalVelocity(elapsedFrame);
+        // 水平移動更新処理
+        UpdateHorizontalMove(elapsedTime);
+    }
+    else
+    {
+        // 移動停止時後に移動を防ぐため
+        velocity.x = 0;
+        velocity.z = 0;
+        // 落下をゆったりさせるため
+        velocity.y = 0;
+    }
+    if (!stopFall)
+    {
+        // 垂直速力更新処理
+        UpdateVerticalVelocity(elapsedFrame);
 
-    // 水平速力更新処理
-    UpdateHorizontalVelocity( elapsedFrame);
-     
-    // 水平移動更新処理
-    UpdateHorizontalMove(elapsedTime);
+        // 垂直移動更新処理
+        UpdateVerticalMove(elapsedTime);
+    }
+    else
+    {
+        // 落下をゆったりさせるため
+        velocity.y = 0;
+    }
 
-    // 垂直移動更新処理
-    UpdateVerticalMove(elapsedTime);
 }

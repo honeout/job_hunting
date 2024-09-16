@@ -85,6 +85,48 @@ bool Collision::IntersectCylinderVsCylinder(
     return true;
 }
 
+bool Collision::IntersectCylinderWidthVsCylinderWidth(const DirectX::XMFLOAT3& positionA, float radiusA, float widthA, const DirectX::XMFLOAT3& positionB, float radiusB, float widthB, DirectX::XMFLOAT3& outPositionB)
+{
+    // Aの足元がBの頭よりうえなら当たっていない
+    if (positionA.y > widthB + positionB.y)
+    {
+        return false;
+    }
+    // Aの頭がBの足元よりしたなら当たっていない
+    if (positionA.y + widthA < positionB.y)
+    {
+        return false;
+    }
+
+    // XZ平面での範囲チェック
+
+    float vx = positionB.x - positionA.x;//B-Aであa->B
+    float vz = positionB.z + widthB - positionA.z + widthA;// ÷単位ベクトル
+    float range = radiusA + radiusB;// どれだけ押し出す
+    float distXZ = sqrtf(vx * vx + vz * vz); // 
+    if (distXZ > range)
+    {
+        return false;
+    }
+
+    // ｂの端っこがaより小さかったらアウト
+    vz = positionB.z - widthB > positionA.z - widthA;
+    distXZ = sqrtf(vx * vx + vz * vz);
+    if (distXZ > range)
+    {
+        return false;
+    }
+
+    //AがBを押し出す
+    vx /= distXZ;
+    vz /= distXZ;
+    outPositionB.x = positionA.x + (vx * range);
+    outPositionB.y = positionB.y;
+    outPositionB.z = positionA.z + (vz * range);
+
+    return true;
+}
+
 
 
 

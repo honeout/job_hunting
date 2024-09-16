@@ -348,6 +348,7 @@ void Model::ReverseplaybackAnimation(float elapsedTime, bool blend)
 	{
 		animationEndFlag = false;
 		currentAnimationIndex = -1;
+		
 		anim = true;
 		return;
 	}
@@ -656,7 +657,7 @@ void Model::Update_blend_animations(float elapsedTime,   bool blend)
 
 
 // 上半身用アニメーション
-void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, const char* end, bool blend)
+void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool blend)
 {
 	//int nodeIndexStart = GetNodeIndex(start);
 	//int nodeIndexEnd = GetNodeIndex(end);
@@ -1217,13 +1218,13 @@ void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,boo
 	animationBlendSeconds = blendSeconds;
 }
 
-void Model::PlayReverseAnimation(int index, bool loop, float blendSeconds)
+void Model::PlayReverseAnimation(int index, bool loop,float currentanimationseconds,bool end, float blendSeconds)
 {
+	//currentAnimationIndex = index;
 	currentAnimationIndex = index;
-	currentAnimationIndex = index;
-	currentAnimationSeconds = 0.0f;
+	currentAnimationSeconds = currentanimationseconds;
 	animationLoopFlag = loop;
-	animationEndFlag = false;
+	animationEndFlag = end;
 	animationBlendTime = 0.0f;
 	animationBlendSeconds = blendSeconds;
 }

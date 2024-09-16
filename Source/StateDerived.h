@@ -2,6 +2,14 @@
 #include "StateBase.h"
 #include "Actor.h"
 
+
+enum AttackChange
+{
+	Round1 = 2,
+	Round2 = 1,
+	ROund3 = 0,
+};
+
 // 徘徊ステートオブジェクト
 class WanderState : public State
 {
@@ -16,6 +24,12 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+private:
+	float				stateTimer = 0.0f;
+
+
+	// 着地瞬間
+	bool                upOnLading = false;
 };
 
 // 待機ステートオブジェクト
@@ -52,7 +66,12 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
-	float				attackRange = 1.5f;
+	float				attackRange = 0;
+
+	int                 attackRound;
+	int                 attackCountMax;
+
+	int                 attackType = 0;
 };
 
 // 攻撃ステートオブジェクト
@@ -75,6 +94,7 @@ private:
 	// 攻撃回数
 	int					attackMemory = 0;
 	int					attackMemoryMax = 3;
+
 };
 
 // 射撃ステートオブジェクト
@@ -93,6 +113,33 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	int                 attackCount = 0;
+	int                 attackCountMax = 0;
+
+};
+// 射撃弧ステートオブジェクト
+class AttackShotThrowingState : public State
+{
+public:
+	// コンストラクタ
+	AttackShotThrowingState(Actor* enemy) :State(enemy) {};
+	// デストラクタ
+	~AttackShotThrowingState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	float				stateTimer = 0.0f;
+
+	int                 attackCount = 0;
+	int                 attackCountMax = 0;
+	bool				turnPermission = false;
+
+	float               turnSpeed = 20.0f;
 };
 
 // ダメージステートオブジェクト
@@ -103,6 +150,25 @@ public:
 	DamageState(Actor* enemy) :State(enemy) {};
 	// デストラクタ
 	~DamageState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	float				stateTimer = 0.0f;
+
+};
+
+// 混乱ステートオブジェクト
+class ConfusionState : public State
+{
+public:
+	// コンストラクタ
+	ConfusionState(Actor* enemy) :State(enemy) {};
+	// デストラクタ
+	~ConfusionState() {}
 	// ステートに入った時のメソッド
 	void Enter()override;
 	// ステートで実行するメソッド
@@ -272,6 +338,8 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	float               moveSpeed = 2.0f;
 };
 
 // 反射ステートオブジェクト

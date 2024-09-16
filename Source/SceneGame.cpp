@@ -143,7 +143,7 @@ void SceneGame::Initialize()
 		actor->AddComponent<Movement>();
 		actor->AddComponent<HP>();
 		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
-		int life = 2;
+		int life = 0;
 		hp->SetLife(life);
 		actor->AddComponent<Collision>();
 		//actor->AddComponent<StageMain>();
@@ -1439,6 +1439,7 @@ void SceneGame::Update(float elapsedTime)
 				ActorManager::Instance().Clear();
 				//// プレイヤー更新処理
 				//ActorManager::Instance().Update(elapsedTime);
+				// ゲームオーバー
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
 			}
 		}
@@ -1454,13 +1455,13 @@ void SceneGame::Update(float elapsedTime)
 				//ActorManager::Instance().Update(elapsedTime);
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameClear));
 			}
-			if (hp->GetHealth() <= 0 && hp->GetLife() > 0)
+			if (hp->GetHealth() <= 0 && hp->GetLife() >= 0)
 			{
 				// hpを回復
 				hp->SetHealth(hp->GetMaxHealth());
 
 				// 残機を減らす
-				hp->SetLife(hp->GetLife() - 1);
+				//hp->SetLife(hp->GetLife() - 1);
 			}
 		}
 		// ゲームオーバー

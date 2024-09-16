@@ -20,6 +20,7 @@
 
 enum class UpAnim
 {
+    Stop = -1,
     Normal,
     Doble,
     Blend,
@@ -85,8 +86,13 @@ public:
     // 弾丸と敵の衝突処理
     void CollisionProjectilesVsEnemies();
 
+    void CollisionRubyVsEnemies();
+
     // プレイヤーとエネミーとの衝突処理
     void CollisionPlayerVsEnemies();
+
+    // ボーンと攻撃の衝突判定
+    void CollisionBornVsProjectile(char bornname);
 
     // デバッグ用GUI描画
     void DrawDebugGUI();
@@ -143,9 +149,14 @@ public:
     // ノードとエネミーの衝突処理
     void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius);
 
-    // ノードとエネミーの衝突処理
+    // ノードと弾丸の衝突処理
     void CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius);
+    
+    // ノードとルビー反射
+    void CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius);
 
+    // ノードとルビー反射返し
+   void CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float nodeRadius);
 
     // ジャンプ入力処理
     bool InputJump();
@@ -248,9 +259,6 @@ public:
     // 特殊アクション発動ため
     float GetSpecialAttackCharge() const { return specialAttackCharge; }
 
-    // ジャンプの最大値
-    int GetJumpCount() { return jumpCount; }
-
     // 攻撃開始
     void SetAttackCollisionFlag(bool attackCollisionFlag) { this->attackCollisionFlag = attackCollisionFlag; }
 
@@ -344,6 +352,12 @@ public:
     // 回転確認
     void SetAngleCheck(bool angleCheck) { this->angleCheck = angleCheck; }
 
+    //// 反射後の当たり判定敵に反映
+    //void SetCounterCheck(bool counterCheck) { this->counterCheck = counterCheck; }
+
+    //// 反射後の当たり判定敵に反映
+    //bool GetCounterCheck() const { return counterCheck; }
+
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
@@ -373,12 +387,13 @@ private:
     float          turnSpeedAttack = DirectX::XMConvertToRadians(2600);
 
     float          jumpSpeed = 20.0f;
-    int                     jumpCount = 0;
+    
     int                     jumpLimit = 2;
 
     ProjectileManager projectileManager;
 
     Effect* hitEffect = nullptr;
+    Effect* ImpactEffect = nullptr;
     Effect* desEffect = nullptr;
 
     Effect* fire = nullptr;
@@ -402,7 +417,7 @@ private:
 
     bool blend = false;
 
-    // アップデート再生上半身下半身別
+    // アップデート再生種類
     UpAnim  updateanim ;
 
     DirectX::XMFLOAT3 moveVec;
@@ -484,6 +499,8 @@ private:
     // 角度確認
     float dotfake = 0.0f;
 
+    // 反射後の当たり判定敵に反映
+    //bool counterCheck = false;
 };
 
 // プレイヤーマネージャー

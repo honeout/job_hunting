@@ -56,7 +56,7 @@ public:
 
 
 	//上半身アニメーション更新処理
-	void UpdateUpeerBodyAnimation(float elapsedTime, const char* start,const char* end, bool blend = false);
+	void UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool blend = false);
 
 	// 上半身用アニメーション更新
 	void ReverseplaybackUpeerBodyAnimation(float elapsedTime, const char* start, bool blend = false);
@@ -77,7 +77,7 @@ public:
 	void PlayAnimation(int index, bool loop,float currentanimationseconds = 0.0f,bool end = false, float blendSeconds = 0.2f);
 
 	//逆再生アニメーション
-	void PlayReverseAnimation(int index, bool loop, float blendSeconds = 0.2f);
+	void PlayReverseAnimation(int index, bool loop, float currentanimationseconds = 0.0f,bool end = false, float blendSeconds = 0.2f);
 
 	// 二つのアニメーションブレンド
 	void PlayAnimationBlend(int index,int index2, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);
@@ -100,6 +100,8 @@ public:
 	float GetCurrentAnimationSecondsUpeer()const { return currentAnimationSecondsUpeer; }
 
 	int GetNodeIndex(const char* name)const;
+
+	void SetAnimationEndFlag(bool end) { this->animationEndFlag = end; }
 
 private:
 	std::shared_ptr<ModelResource>	resource;

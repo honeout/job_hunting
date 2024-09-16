@@ -47,10 +47,17 @@ public:
     // 当たり判定ルビー
     void CollisionRubyVsPlayer();
 
+    // 当たり判定ルビー横
+    void CollisionRubyWidthVsPlayer();
+
     void InputImpact(DirectX::XMFLOAT3 pos);
 
-    // 弾丸発射
+    // 宝石飛び出し
     void InputProjectile();
+
+    // 宝石弧のじで飛ぶ
+    void InputThrowingRuby(DirectX::XMFLOAT3 target);
+    //void InputThrowingRuby(DirectX::XMFLOAT3 dir);
 
     // 縄張り設定
     void SetTerritory(const DirectX::XMFLOAT3& origin, float range);
@@ -65,6 +72,66 @@ public:
     // ステートマシーン取得
     StateMachine* GetStateMachine() { return stateMachine; }
 
+
+
+public:
+    enum class State
+    {
+        Wander,
+        Idle,
+        Pursuit,
+        Attack,
+        Shot,
+        ShotThrowing,
+        IdleBattle,
+        Damage,
+        Death,
+    };
+
+
+
+    // アニメーション
+    enum Animation
+    {
+        // slime
+        //Anim_IdleNormal,       
+        //Anim_IdleBattle,       
+        //Anim_Attack1,
+        //Anim_Attack2,
+        //Anim_WalkFWD,
+        //Anim_WalkBWD,
+        //Anim_WalkLeft,
+        //Anim_WalkRight,
+        //Anim_RunFWD,
+        //Anim_SceneSomthinST,
+        //Anim_SceneSomthinPRT,
+        //Anim_Taunt,
+        //Anim_Victory,
+        //Anim_GetHit,
+        //Anim_Dizzy,
+        //Anim_Die,
+
+        Anim_Walk,
+        Anim_Standby,
+        Anim_jewelattack,
+        Anim_Attack,
+        Anim_CloseEye,
+        Anim_Shot,
+        Anim_Die,
+        Anim_Movie
+    };
+
+    // アニメーション再生の種類
+    enum class UpAnim
+    {
+        Stop = -1,
+        Normal,
+        Doble,
+        Blend,
+        Reverseplayback,
+
+    };
+public:
 
     // アニメーション　ゲット
     //int GetAnimationStateNormal() { return Animation::Anim_Standby; }
@@ -99,6 +166,10 @@ public:
 
     // 目標地点へ移動
     void MoveToTarget(float elapsedTime, float speedRate);
+    // 目的方向への回転
+    void TurnToTarget(float elapsedTime, float speedRate);
+
+    void InputJump();
 
     // 徘徊ステートへ遷移
     void TransitionWanderState();
@@ -160,51 +231,17 @@ public:
     // 半径
     float GetRadius() { return radius; }
 
-public:
-        enum class State
-        {
-            Wander,
-            Idle,
-            Pursuit,
-            Attack,
-            Shot,
-            Damage,
-            Death,
-            IdleBattle,
-        };
+    // 近距離攻撃時の当たり判定
+    void SetAttackRightFootRange(float attackRightFootRange) { this->attackRightFootRange = attackRightFootRange; }
 
+    // 近距離攻撃時の当たり判定
+    float GetAttackRightFootRange() const { return attackRightFootRange; }
 
+    // 再生方法
+    void  SetUpdateAnim(UpAnim  updateanim) { this->updateanim = updateanim; }
 
-    // アニメーション
-    enum Animation
-    {
-        // slime
-        //Anim_IdleNormal,       
-        //Anim_IdleBattle,       
-        //Anim_Attack1,
-        //Anim_Attack2,
-        //Anim_WalkFWD,
-        //Anim_WalkBWD,
-        //Anim_WalkLeft,
-        //Anim_WalkRight,
-        //Anim_RunFWD,
-        //Anim_SceneSomthinST,
-        //Anim_SceneSomthinPRT,
-        //Anim_Taunt,
-        //Anim_Victory,
-        //Anim_GetHit,
-        //Anim_Dizzy,
-        //Anim_Die,
+    UpAnim  GetUpdateAnim() const { return this->updateanim; }
 
-        Anim_Walk,
-        Anim_Standby,
-        Anim_jewelattack,
-        Anim_Attack,
-        Anim_CloseEye,
-        Anim_Shot,
-        Anim_Die,
-        Anim_Movie
-    };
 
 
 
@@ -241,12 +278,29 @@ private:
     DirectX::XMFLOAT3 targetPosition = { 0,0,0 };
     // 縄張り
     DirectX::XMFLOAT3 territoryOrigin = { 0,0,0 };
+
+    // アップデート再生上半身下半身別
+    UpAnim  updateanim;
+
+    // 上半身更新開始位置
+    char* bornUpStartPoint;
+
+    // 下半身更新終了位置
+    char* bornDownerEndPoint = "";
+
     // 縄張り半径
     float territoryRange = 10.0f;
     // 動く速度
     float moveSpeed = 3.0f;
     // 回転速度
     float turnSpeed = DirectX::XMConvertToRadians(360);
+
+    // ジャンプの値
+    float jumpSpeed = 0;
+
+    // ジャンプのプラス分
+    float jumpSpeedMin = 20.0f;
+
     // 追跡時間
     float stateTimer = 0.0f;
 
@@ -264,10 +318,10 @@ private:
     int maxHealth = 50;
 
     // 半径
-    float radius = 0.5f;
+    float radius = 5.0f;
 
     // 高さ
-    float height = 1.0f;
+    float height = 10.0f;
 
     float territoryarea = 10.0f;
 
@@ -279,6 +333,9 @@ private:
 
     // playerカウンター用
     bool counterJudgment = false;
+
+    // 近距離攻撃時の当たり判定
+    float attackRightFootRange = 0;
 
     // ステート切り替え時間管理
    // float				stateTimer = 0.0f;

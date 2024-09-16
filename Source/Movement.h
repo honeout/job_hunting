@@ -69,6 +69,16 @@ public:
 
     void SetVelocity(DirectX::XMFLOAT3 velocity) {  this->velocity = velocity; }
 
+	void SetJumpCount(int jumpCount) { this->jumpCount = jumpCount; }
+
+	int GetJumpCount() const { return jumpCount; }
+
+	// —Ž‚¿‚é‚Ì’âŽ~
+	void SetStopFall(bool stopFall) { this->stopFall = stopFall; }
+	
+	// ˆÚ“®‚Ì’âŽ~
+	void SetStopMove(bool stopMove) { this->stopMove = stopMove; }
+
 private:
 	float		moveSpeed = 5.0f;
 	float		turnSpeed = 6.28f;
@@ -121,4 +131,10 @@ private:
 	DirectX::XMFLOAT3 positionX = { 0,0,0 };
 
 	int butten = 0;
+
+	// —Ž‚¿‚é‚Ì’âŽ~
+	bool stopFall = false;
+
+	// ˆÚ“®‚Ì’âŽ~
+	bool stopMove = false;
 };

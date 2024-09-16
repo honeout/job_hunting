@@ -51,6 +51,17 @@ public:
         DirectX::XMFLOAT3& outPositionB// 押された相手が変える
     );
 
+    // 円柱横と円柱横の交差判定　うその
+    static bool IntersectCylinderWidthVsCylinderWidth(
+        const DirectX::XMFLOAT3& positionA,//player
+        float radiusA,
+        float widthA,
+        const DirectX::XMFLOAT3& positionB,//スライム
+        float radiusB,
+        float widthB,
+        DirectX::XMFLOAT3& outPositionB// 押された相手が変える
+    );
+
     // 球と円柱の交差判定　うその
     static bool IntersectSphereVsCylinder(
         const DirectX::XMFLOAT3& spherePosition,

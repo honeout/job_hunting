@@ -11,6 +11,7 @@
 
 #include "ProjectileImpact.h"
 #include "ProjectileRuby.h"
+#include "ProjectileThrowing.h"
 
 #include "UiManager.h"
 #include "Ui.h"
@@ -64,16 +65,30 @@ void EnemySlime::Start()
     stateMachine->RegisterState(new PursuitState(GetActor().get()));
     stateMachine->RegisterState(new AttackState(GetActor().get()));
     stateMachine->RegisterState(new AttackShotState(GetActor().get()));
+    stateMachine->RegisterState(new AttackShotThrowingState(GetActor().get()));
+    stateMachine->RegisterState(new ConfusionState(GetActor().get()));
     stateMachine->RegisterState(new DamageState(GetActor().get()));
 
     // ステートセット
-    stateMachine->SetState(static_cast<int>(State::Attack));
+    stateMachine->SetState(static_cast<int>(State::Idle));
+
+    // アニメーションルール
+    updateanim = UpAnim::Normal;
+
+    // 上半身
+    bornUpStartPoint = "mixamorig:Spine";
+    // 下半身
+    bornDownerEndPoint = "mixamorig:Spine";
+
 
     // 当たり判定無効判定
     invalidJudgment = true;
 
     // playerカウンター用
     counterJudgment = false;
+
+    // 攻撃右足するかどうか
+    attackRightFootRange = 10.5f;
 }
 
 // 更新処理
@@ -127,12 +142,50 @@ void EnemySlime::Update(float elapsedTime)
     // 当たり判定ルビーとプレイヤー
     CollisionRubyVsPlayer();
 
+    // 当たり判定横
+    CollisionRubyWidthVsPlayer();
+
     // 削除
     ProjectileManager::Instance().DeleteUpdate(elapsedTime);
 
     transform->UpdateTransform();
 
-    model->UpdateAnimation(elapsedTime,true);
+
+    // モーション更新処理
+    switch (updateanim)
+    {
+        // 通常アニメーション
+    case UpAnim::Normal:
+    {
+        // アニメーション再生
+        model->UpdateAnimation(elapsedTime, true);
+        break;
+    }
+    // 部分再生
+    case UpAnim::Doble:
+    {
+        // モデル部分アニメーション更新処理
+        model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, true);
+        model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
+        break;
+    }
+    // 複数ブレンド再生
+    case UpAnim::Blend:
+    {
+        // モデル複数ブレンドアニメーション更新処理
+        model->Update_blend_animations(elapsedTime, true);
+        break;
+    }
+    // 逆再生
+    case UpAnim::Reverseplayback:
+    {
+        model->ReverseplaybackAnimation(elapsedTime, true);
+        break;
+    }
+    }
+
+
+    //model->UpdateAnimation(elapsedTime,true);
 
     //model->UpdateAnimation(elapsedTime, true);
 
@@ -200,8 +253,23 @@ void EnemySlime::DrawDebugPrimitive()
     debugRenderer->DrawCylinder(territoryOrigin, territoryRange, 1.0f,
         DirectX::XMFLOAT4(0, 1, 0, 1));
 
+    // 背確認
+    //debugRenderer->DrawCylinder(position, 1.0f, height,
+    //    DirectX::XMFLOAT4(1, 1, 0, 1));
+
+    debugRenderer->DrawCylinder(
+        {
+            position.x,
+            position.y + height / 2,
+            position.z,
+        }, radius, height / 2, DirectX::XMFLOAT4(1, 0, 0, 1));
+
+
     // ターゲット位置をデバッグ球描画
     debugRenderer->DrawSphere(targetPosition, radius, DirectX::XMFLOAT4(1, 1, 0, 1));
+    
+    // 攻撃右足するかどうか
+    debugRenderer->DrawSphere(position, attackRightFootRange, DirectX::XMFLOAT4(1, 0, 1, 1));
     
     // 索敵範囲をデバッグ円柱描画
     debugRenderer->DrawCylinder(position, searchRange, 1.0f, DirectX::XMFLOAT4(0, 0, 1, 1));
@@ -453,65 +521,113 @@ void EnemySlime::CollisionRubyVsPlayer()
         }
     }
 }
+// ルビーとプレイヤーの当たり判定
+void EnemySlime::CollisionRubyWidthVsPlayer()
+{
+    PlayerManager& playerManager = PlayerManager::Instance();
+
+    ProjectileManager& projectileManager = ProjectileManager::Instance();
+
+    // 全ての敵と総当たりで衝突処理
+    int projectileCount = projectileManager.GetProjectileCount();
+
+    for (int i = 0; i < projectileCount; ++i)
+    {
+        int playerCount = PlayerManager::Instance().GetPlayerCount();
+        std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        for (int j = 0; j < playerCount; ++j)
+        {
+            std::shared_ptr<Actor> player = playerManager.GetPlayer(j);
+            if (!projectile->GetComponent<ProjectileThrowing>())return;
+
+
+            DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
+            float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
+            float projectileHeight = projectile->GetComponent<Transform>()->GetHeight();
+
+            DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
+            float playerRadius = player->GetComponent<Transform>()->GetRadius();
+            float playerHeight = player->GetComponent<Transform>()->GetHeight();
+
+            bool counterCheck = projectile->GetComponent<ProjectileThrowing>()->GetCounterCheck();
+
+            // 衝突処理
+            DirectX::XMFLOAT3 outPositon;
+            // 球と球
+            if (Collision::IntersectSpherVsSphere(
+                projectilePosition,
+                projectileRadius,
+                playerPosition,
+                playerRadius,
+                outPositon) && !counterCheck)
+
+            {
+                // ダメージを与える。
+                if (player->GetComponent<HP>()->ApplyDamage(3, 0.5f))
+                {
+
+                    DirectX::XMVECTOR ProjectileP = DirectX::XMLoadFloat3(&projectilePosition);
+                    DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
+                    DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, ProjectileP);
+                    DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
+                    DirectX::XMFLOAT3 normal;
+                    DirectX::XMStoreFloat3(&normal, N);
+
+                    if (normal.y > 0.8f)
+                    {
+                        float jumpSpeed = 5.0f;
+                        // 衝撃
+                        const float power = 10.0f;
+                        DirectX::XMFLOAT3 impulse;
+                        impulse.y = power * 0.5f;
+                        player->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
+
+                    }
+                    //// 吹き飛ばす
+                    else
+                    {
+                        // 衝動
+                        DirectX::XMFLOAT3 impulse;
+                        // 衝撃
+                        const float power = 5.0f;
+
+                        float vx = playerPosition.x - projectilePosition.x;
+                        float vz = playerPosition.z - projectilePosition.z;
+                        float lengthXZ = sqrtf(vx * vx + vz * vz);
+                        vx /= lengthXZ;
+                        vz /= lengthXZ;
+
+                        impulse.x = vx * power;
+                        impulse.y = power * 0.5f;
+                        impulse.z = vz * power;
+
+                        player->GetComponent<Movement>()->AddImpulse(impulse);
+                        // ヒットエフェクト再生
+
+                        playerPosition.y += playerHeight * 0.5f;
+
+                        //hitEffect->Play(e);
+
+                    }
+
+
+
+
+                    // 弾丸破棄
+                    //projectile->GetComponent<ProjectileImpact>()->Destoroy();
+
+                }
+
+
+            }
+        }
+    }
+}
 
 void EnemySlime::InputImpact(DirectX::XMFLOAT3 pos)
 {
     {
 
-        //// 前方向 sinの計算
-        //DirectX::XMFLOAT3 dir;
-
-
-        //dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
-        //dir.y = 0;
-        //dir.z = cosf(angle.y);
-
-        ////sinf0度０　cosf0は１度
-        ////９０sin1,cos0返ってくる横
-        ////４５sin0.5,cos0.5斜め
-        //// 360度を上手く表現出来る。2dでも行ける。
-
-
-        //// 発射位置（プレイヤーの腰当たり)
-        //DirectX::XMFLOAT3 pos;
-        //pos.x = position.x;
-        //pos.y = position.y + height * 0.5f;// 身長÷位置のｙ
-        //pos.z = position.z;
-        ////ターゲット（デフォルトではプレイヤーの前方）
-        //DirectX::XMFLOAT3 target;
-        //// 敵がいなかった時のために　1000先まで飛んでくれ
-        //target.x = pos.x + dir.x * 1000.0f;
-        //target.y = pos.y + dir.y * 1000.0f;
-        //target.z = pos.z + dir.z * 1000.0f;
-
-        //// 一番近くの敵をターゲットにする
-        //float dist = FLT_MAX;// float の最大値float全体
-        //PlayerManager& playerManager = PlayerManager::Instance();
-        //int playerCount = playerManager.GetPlayerCount();
-        //for (int i = 0; i < playerCount; ++i)//float 最大値ないにいる敵に向かう
-        //{
-        //    // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
-        //    std::shared_ptr<Actor> player = PlayerManager::Instance().GetPlayer(i);
-        //    DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-        //    // 敵の位置
-        //    DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&player->GetComponent<Transform>()->GetPosition());
-        //    // 自分から敵までの位置を計測
-        //    DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
-        //    // ベクトルのながさを２乗する。√つけていない奴
-        //    DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
-        //    float d;
-        //    DirectX::XMStoreFloat(&d, D);
-        //    if (d < dist)
-        //    {
-        //        // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
-        //        dist = d;
-        //        target = player->GetComponent<Transform>()->GetPosition();// 位置を入れる
-        //        target.y += player->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
-        //    }
-
-
-
-        //}
 
         // 弾丸初期化
         const char* filename = "Data/Model/Sword/Sword.mdl";
@@ -571,16 +687,16 @@ void EnemySlime::InputProjectile()
 
     DirectX::XMFLOAT3 pos;
     PlayerManager& playerManager = PlayerManager::Instance();
-int playerCount = playerManager.GetPlayerCount();
-for (int i = 0; i < playerCount; ++i)//float 最大値ないにいる敵に向かう
-{
-    std::shared_ptr<Actor> player = PlayerManager::Instance().GetPlayer(i);
-    // 位置
+    int playerCount = playerManager.GetPlayerCount();
+    for (int i = 0; i < playerCount; ++i)//float 最大値ないにいる敵に向かう
+    {
+        std::shared_ptr<Actor> player = PlayerManager::Instance().GetPlayer(i);
+        // 位置
 
-    pos = player->GetComponent<Transform>()->GetPosition();
-    pos.y -= 15;
+        pos = player->GetComponent<Transform>()->GetPosition();
+        pos.y -= 15;
 
-}
+    }
 
     // 弾丸初期化
     const char* filename = "Data/Model/Bullet/Bullet.mdl";
@@ -594,13 +710,13 @@ for (int i = 0; i < playerCount; ++i)//float 最大値ないにいる敵に向かう
     actor->GetComponent<Transform>()->SetPosition(pos);
     actor->GetComponent<Transform>()->SetAngle(angle);
     actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
-    
+
     float height = 5;
     actor->GetComponent<Transform>()->SetHeight(height);
     float lifetimer = 3;
-    
+
     actor->AddComponent<BulletFiring>();
-    actor->GetComponent<BulletFiring>()->Lanch(dir,pos, lifetimer);
+    actor->GetComponent<BulletFiring>()->Lanch(dir, pos, lifetimer);
 
 
     actor->AddComponent<ProjectileRuby>();
@@ -630,6 +746,95 @@ for (int i = 0; i < playerCount; ++i)//float 最大値ないにいる敵に向かう
     //magicAction = false;
     //selectMagicCheck = (int)CommandMagic::Normal;
 
+
+
+}
+
+void EnemySlime::InputThrowingRuby(DirectX::XMFLOAT3 target)
+{
+    //// 前方向 sinの計算
+    DirectX::XMFLOAT3 direction;
+
+
+    direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
+    direction.y = cosf(angle.x);
+    direction.z = cosf(angle.y);
+
+    DirectX::XMFLOAT3 pos;
+    //PlayerManager& playerManager = PlayerManager::Instance();
+    //int playerCount = playerManager.GetPlayerCount();
+    //for (int i = 0; i < playerCount; ++i)//float 最大値ないにいる敵に向かう
+    //{
+    //    std::shared_ptr<Actor> player = PlayerManager::Instance().GetPlayer(i);
+    //    // 位置
+
+    //    pos = player->GetComponent<Transform>()->GetPosition();
+    //    pos.y -= 15;
+
+    //}
+
+
+    pos = position;
+    pos.y = 0;
+
+    // 弾丸初期化
+    const char* filename = "Data/Model/Bullet/Bullet.mdl";
+    //const char* filename = "Data/Model/Sword/Sword.mdl";
+
+    std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+    actor->AddComponent<ModelControll>();
+    actor->GetComponent<ModelControll>()->LoadModel(filename);
+    actor->SetName("ProjectileRubyThrowing");
+    actor->AddComponent<Transform>();
+    actor->GetComponent<Transform>()->SetPosition(pos);
+    actor->GetComponent<Transform>()->SetAngle(angle);
+    actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+
+
+    float height = 5;
+    actor->GetComponent<Transform>()->SetHeight(height);
+
+    float radius = 5;
+    actor->GetComponent<Transform>()->SetRadius(radius);
+
+    float lifetimer = 10;
+
+    actor->AddComponent<BulletFiring>();
+    actor->GetComponent<BulletFiring>()->Lanch(direction, pos, lifetimer);
+
+    
+
+
+    actor->AddComponent<ProjectileThrowing>();
+    const char* effectFilename = "Data/Effect/smorker.efk";
+    actor->GetComponent<ProjectileThrowing>()->SetEffectProgress(effectFilename);
+
+    actor->GetComponent<ProjectileThrowing>()->SetTarget(target);
+    //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
+    // これが２Dかの確認
+    bool check2d = false;
+    actor->SetCheck2d(check2d);
+    // 移動処理の有無
+    bool movementCheck = false;
+    actor->GetComponent<ProjectileThrowing>()->SetMovementCheck(movementCheck);
+
+
+    // 生存時間
+    //float lifeTimer = 50.0f;
+    //actor->GetComponent<ProjectileHoming>()->SetLifeTimer(lifeTimer);
+
+    //actor->AddComponent<Collision>();
+    ProjectileManager::Instance().Register(actor);
+    //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
+    //std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+
+    // 発射
+    //projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+    //projectile->GetComponent<ProjectileImpact>()->SetTarget(target);
+
+    // 攻撃解除
+    //magicAction = false;
+    //selectMagicCheck = (int)CommandMagic::Normal;
 
 
 }
@@ -699,6 +904,38 @@ void EnemySlime::MoveToTarget(float elapsedTime, float speedRate)
    // Move( vx,vz  ,moveSpeed * speedRate);
     //Turn(elapsedTime, vx, vz ,turnSpeed * speedRate);
     //movement->Turn({ vx,0.0f ,vz } ,turnSpeed * speedRate,elapsedTime);
+}
+// 目的方向への回転
+void EnemySlime::TurnToTarget(float elapsedTime, float speedRate)
+{
+
+    float vx = targetPosition.x - position.x;
+    float vz = targetPosition.z - position.z;
+    float dist = sqrtf(vx * vx + vz * vz);
+    vx /= dist;
+    vz /= dist;
+    // 回転
+    movement->Turn({ vx,0.0f ,vz }, turnSpeed, elapsedTime);
+}
+
+void EnemySlime::InputJump()
+{
+
+    //jumpSpeed += jumpSpeedMin;
+
+    // 強制停止
+    if (position.y >= 1)
+    {
+        jumpSpeed = 0;
+        movement->JumpVelocity(jumpSpeed);
+    }
+
+
+    if (movement->GetOnLadius())
+    {
+        movement->JumpVelocity(jumpSpeedMin);
+    }
+
 }
 
 // 徘徊ステートへ遷移

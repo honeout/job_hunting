@@ -50,8 +50,14 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     health -= damage;
 
 
+
+    // ライフ最大値から一つ減る。
+    if (health <= 0)
+    {
+        --life;
+    }
     // 死亡通知
-    if (health <= 0 && life <= 0)
+    if (life <= -1)
     {
         OnDead();
         dead = true;
