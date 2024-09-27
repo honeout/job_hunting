@@ -1186,10 +1186,10 @@ void Model::ReverseplaybackLowerBodyAnimation(float elapsedTime, const char* end
 	}
 }
 
-void Model::PlayUpeerBodyAnimation(int index, bool loop, float blendSeconds)
+void Model::PlayUpeerBodyAnimation(int index, bool loop, float currentanimationseconds, float blendSeconds)
 {
 	currentAnimationIndexUpeer = index;
-	currentAnimationSecondsUpeer = 0.0f;
+	currentAnimationSecondsUpeer = currentanimationseconds;
 	animationLoopFlagUpeer = loop;
 	animationEndFlagUpeer = false;
 	animationBlendTimeUpeer = 0.0f;
@@ -1207,24 +1207,24 @@ void Model::PlayLowerBodyAnimation(int index, bool loop, float blendSeconds)
 }
 
 // アニメーション再生
-void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,bool end, float blendSeconds)
+void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,float blendSeconds)
 {
 	currentAnimationIndex = index;
 	currentAnimationSeconds = currentanimationseconds;
 	animationLoopFlag = loop;
-	animationEndFlag = end;
+	animationEndFlag = false;
 
 	animationBlendTime = 0.0f;
 	animationBlendSeconds = blendSeconds;
 }
 
-void Model::PlayReverseAnimation(int index, bool loop,float currentanimationseconds,bool end, float blendSeconds)
+void Model::PlayReverseAnimation(int index, bool loop,float currentanimationseconds, float blendSeconds)
 {
 	//currentAnimationIndex = index;
 	currentAnimationIndex = index;
 	currentAnimationSeconds = currentanimationseconds;
 	animationLoopFlag = loop;
-	animationEndFlag = end;
+	animationEndFlag = false;
 	animationBlendTime = 0.0f;
 	animationBlendSeconds = blendSeconds;
 }

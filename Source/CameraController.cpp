@@ -80,21 +80,21 @@ void CameraController::RockUpdate(float elapsedTime)
     //angle.y += ax * speed;// 左右は自分の周りだからｙ
 
     // カメラ回転値を回転行列に変換
-    DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
+    //DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(frontAngle.x, frontAngle.y, frontAngle.z);
 
-    // 回転行列から前方向ベクトルを取り出す
-    DirectX::XMVECTOR Front = Transform.r[2];// rowのこと
-    DirectX::XMFLOAT3 front;
-    DirectX::XMStoreFloat3(&front, Front);
+    // //回転行列から前方向ベクトルを取り出す
+    //DirectX::XMVECTOR Front = Transform.r[2];// rowのこと
+    //DirectX::XMFLOAT3 front;
+    //DirectX::XMStoreFloat3(&front, Front);
 
     // 注視点から後ろベクトル方向に一定距離れたカメラ視点を求める
     DirectX::XMFLOAT3 eye;
 
     // 向きに長さで矢印を伸ばせる、
     // 矢印を出して　伸ばす
-    eye.x = target.x - front.x * range;
-    eye.y = target.y - front.y * range;
-    eye.z = target.z - front.z * range;
+    eye.x = target.x - frontAngle.x;
+    eye.y = target.y - frontAngle.y;
+    eye.z = target.z - frontAngle.z - range;
 
 
 
@@ -114,17 +114,75 @@ void CameraController::RockUpdate(float elapsedTime)
         angle.x = maxAngleX;
     }
 
-    // Y軸の回転値を-3.14～3.13におさまるようにする
-    if (angle.y < -2)
-    {
-        angle.y += 2;
-    }
+    //// Y軸の回転値を-3.14～3.13におさまるようにする
+    //if (angle.y < -DirectX::XM_PI)
+    //{
+    //    angle.y += DirectX::XM_2PI;
+    //}
 
 
-    if (angle.y > 2)
-    {
-        angle.y -= 2;
-    }
+    //if (angle.y > DirectX::XM_PI)
+    //{
+    //    angle.y -= DirectX::XM_2PI;
+    //}
+
+    //GamePad& gamePad = Input::Instance().GetGamePad();
+    //float ax = gamePad.GetAxisRX();
+    //float ay = gamePad.GetAxisRY();
+    //// カメラの回転速度
+    //float speed = rollSpeed * elapsedTime;
+
+    //// スティックの入力値にあわせてX軸とY軸を回転
+
+    //angle.x += ay * speed;// 上に倒すと上下
+    //angle.y += ax * speed;// 左右は自分の周りだからｙ
+
+    //// カメラ回転値を回転行列に変換
+    //DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
+
+    //// 回転行列から前方向ベクトルを取り出す
+    //DirectX::XMVECTOR Front = Transform.r[2];// rowのこと
+    //DirectX::XMFLOAT3 front;
+    //DirectX::XMStoreFloat3(&front, Front);
+
+    //// 注視点から後ろベクトル方向に一定距離れたカメラ視点を求める
+    //DirectX::XMFLOAT3 eye;
+
+    //// 向きに長さで矢印を伸ばせる、
+    //// 矢印を出して　伸ばす
+    //eye.x = target.x - front.x * range;
+    //eye.y = target.y - front.y * range;
+    //eye.z = target.z - front.z * range;
+
+
+
+
+    //// カメラの視点と注視点を設定
+    //Camera::Instance().SetLookAt(eye, target, DirectX::XMFLOAT3(0, 1, 0));
+    //// X 軸のカメラ回転を制限
+
+    //if (angle.x < minAngleX)
+    //{
+    //    angle.x = minAngleX;
+    //}
+
+
+    //if (angle.x > maxAngleX)
+    //{
+    //    angle.x = maxAngleX;
+    //}
+
+    //// Y軸の回転値を-3.14～3.13におさまるようにする
+    //if (angle.y < -2)
+    //{
+    //    angle.y += 2;
+    //}
+
+
+    //if (angle.y > 2)
+    //{
+    //    angle.y -= 2;
+    //}
 }
 
 void CameraController::DrawDebugGUI()

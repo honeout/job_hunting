@@ -9,6 +9,7 @@
 #include "Transform.h"
 
 #include "StateMachine.h"
+#include "StageMain.h"
 // ステート
 
 
@@ -49,6 +50,9 @@ public:
 
     // 当たり判定ルビー横
     void CollisionRubyWidthVsPlayer();
+
+    // 当たり判定宝石と地面
+    void CollisionRubyWidthVsOnGraound();
 
     void InputImpact(DirectX::XMFLOAT3 pos);
 
@@ -243,7 +247,9 @@ public:
     UpAnim  GetUpdateAnim() const { return this->updateanim; }
 
 
+    void SetPushuThrow(bool pushuThrow) { this->pushuThrow = pushuThrow; }
 
+    bool GetPushuThrow() const { return pushuThrow; }
 
 
 protected:
@@ -318,7 +324,7 @@ private:
     int maxHealth = 50;
 
     // 半径
-    float radius = 5.0f;
+    float radius = 3.0f;
 
     // 高さ
     float height = 10.0f;
@@ -336,6 +342,8 @@ private:
 
     // 近距離攻撃時の当たり判定
     float attackRightFootRange = 0;
+
+    bool pushuThrow = false;
 
     // ステート切り替え時間管理
    // float				stateTimer = 0.0f;

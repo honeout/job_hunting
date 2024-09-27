@@ -233,6 +233,31 @@ void BulletFiring::PushDown(float speed, float turnSpeed,  float elapsedTime)
             Destroy();
 }
 
+void BulletFiring::Sunder(DirectX::XMFLOAT3 target,  float elapsedTime)
+{
+    //Å@éıñΩèàóù 
+lifeTimer -= elapsedTime;
+if (lifeTimer <= 0.0f)// éıñΩÇ™êsÇ´ÇΩÇÁé©äQ
+{
+    // é©ï™ÇçÌèú
+    Destroy();
+
+
+}
+
+DirectX::XMFLOAT3 pos;
+pos =
+{
+    target.x,
+    target.y,
+    target.z
+
+};
+transformid->SetPosition(pos);
+//float bulletspeed = speed * elapsedTime;
+
+}
+
 
 void BulletFiring::Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 target, bool turnPermission,float elapsedTime)
 {

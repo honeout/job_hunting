@@ -67,17 +67,17 @@ public:
 	void ReverseplaybackLowerBodyAnimation(float elapsedTime, const char* end, bool blend = false);
 
 	//アニメーション再生
-	void PlayUpeerBodyAnimation(int index, bool loop, float blendSeconds = 0.2f);
+	void PlayUpeerBodyAnimation(int index, bool loop, float currentanimationseconds, float blendSeconds = 0.2f);
 
 	//アニメーション再生
 	void PlayLowerBodyAnimation(int index, bool loop, float blendSeconds = 0.2f);
 
 
 	// アニメーション再生
-	void PlayAnimation(int index, bool loop,float currentanimationseconds = 0.0f,bool end = false, float blendSeconds = 0.2f);
+	void PlayAnimation(int index, bool loop,float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);
 
 	//逆再生アニメーション
-	void PlayReverseAnimation(int index, bool loop, float currentanimationseconds = 0.0f,bool end = false, float blendSeconds = 0.2f);
+	void PlayReverseAnimation(int index, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);
 
 	// 二つのアニメーションブレンド
 	void PlayAnimationBlend(int index,int index2, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);

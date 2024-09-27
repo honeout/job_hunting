@@ -30,6 +30,15 @@ private:
 
 	// 着地瞬間
 	bool                upOnLading = false;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
 };
 
 // 待機ステートオブジェクト
@@ -48,6 +57,15 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = true;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
 };
 
 // 追跡ステートオブジェクト
@@ -72,6 +90,15 @@ private:
 	int                 attackCountMax;
 
 	int                 attackType = 0;
+
+	// 再生ループ
+	bool  loop = true;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
 };
 
 // 攻撃ステートオブジェクト
@@ -94,6 +121,15 @@ private:
 	// 攻撃回数
 	int					attackMemory = 0;
 	int					attackMemoryMax = 3;
+	
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
 
 };
 
@@ -117,6 +153,14 @@ private:
 	int                 attackCount = 0;
 	int                 attackCountMax = 0;
 
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
 };
 // 射撃弧ステートオブジェクト
 class AttackShotThrowingState : public State
@@ -140,6 +184,15 @@ private:
 	bool				turnPermission = false;
 
 	float               turnSpeed = 20.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSecondsf;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
 };
 
 // ダメージステートオブジェクト
@@ -159,6 +212,15 @@ public:
 private:
 	float				stateTimer = 0.0f;
 
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
 };
 
 // 混乱ステートオブジェクト
@@ -178,6 +240,14 @@ public:
 private:
 	float				stateTimer = 0.0f;
 
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 
@@ -205,6 +275,15 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = true;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 // 徘徊ステートオブジェクト
@@ -221,6 +300,16 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+private:
+
+	// 再生ループ
+	bool  loop = true;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 
@@ -243,7 +332,16 @@ private:
 	float				attackRange = 1.5f;
 
 	bool                jumpCheck = false;
-	bool				loop = false;
+	//bool				loop = false;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 // 着地ステートオブジェクト
@@ -262,6 +360,15 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 // ジャンプ中ステートオブジェクト
@@ -280,6 +387,15 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 
@@ -302,6 +418,15 @@ private:
 	bool				button = false;
 
 	float				turnSpeed = 10;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 // よろけステートオブジェクト
@@ -320,6 +445,15 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 // 回避ステートオブジェクト
@@ -340,6 +474,15 @@ private:
 	float				stateTimer = 0.0f;
 
 	float               moveSpeed = 2.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.3f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 // 反射ステートオブジェクト
@@ -358,6 +501,15 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 // 死亡ステートオブジェクト
@@ -376,6 +528,15 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };
 
 // 復活ステートオブジェクト
@@ -394,4 +555,13 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 1.0f;
 };

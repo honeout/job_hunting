@@ -32,6 +32,10 @@ public:
         this->angle.y = angleY;
     }
 
+    void SetFrontAngle(DirectX::XMFLOAT3 frontAngle)
+    {
+        this->frontAngle = frontAngle;
+    }
 
 private:
     DirectX::XMFLOAT3       target = { 0, 0, 0 };
@@ -40,6 +44,8 @@ private:
     // ”ÍˆÍ
     float                   range = 10.0f;
     float                   maxAngleX = DirectX::XMConvertToRadians(35);
-    float                   minAngleX = DirectX::XMConvertToRadians(5);
+    float                   minAngleX = DirectX::XMConvertToRadians(6);
+
+    DirectX::XMFLOAT3 frontAngle;
 };
 

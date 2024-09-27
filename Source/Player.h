@@ -92,7 +92,7 @@ public:
     void CollisionPlayerVsEnemies();
 
     // ボーンと攻撃の衝突判定
-    void CollisionBornVsProjectile(char bornname);
+    void CollisionBornVsProjectile(const char* bornname);
 
     // デバッグ用GUI描画
     void DrawDebugGUI();
@@ -126,6 +126,8 @@ public:
 
     // 移動入力処理
     bool InputMove(float elapsedTime);
+
+    bool InputRockOn();
 
     // 攻撃方法選択
     bool InputSelectCheck();
@@ -383,6 +385,8 @@ private:
 
     float          turnSpeed = DirectX::XMConvertToRadians(720);
 
+    float          turnSpeedAdd;
+
     // 回転速度　攻撃時
     float          turnSpeedAttack = DirectX::XMConvertToRadians(2600);
 
@@ -406,7 +410,7 @@ private:
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
     float jumpfliptime = gravity * 5;
 
-    float            leftHandRadius = 0.8f;
+    float            leftHandRadius = 0.9f;
 
     bool             attackCollisionFlag = false;
   
@@ -434,7 +438,7 @@ private:
     char* bornDownerEndPoint = "";
 
     // 当たり判定半径
-    float radius = 0.5f;
+    float radius = 0.7f;
 
     // Hp
     int health = 50;
@@ -449,7 +453,7 @@ private:
 
 
     // 弾丸生命時間
-    float   lifeTimer = 3.0f;
+    //float   lifeTimer = 3.0f;
 
     /////////////////// カメラ関係
 
@@ -498,6 +502,9 @@ private:
 
     // 角度確認
     float dotfake = 0.0f;
+
+    // ロックオンチェック
+    bool rockCheck = false;
 
     // 反射後の当たり判定敵に反映
     //bool counterCheck = false;

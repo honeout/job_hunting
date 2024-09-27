@@ -13,6 +13,7 @@
 #include "ProjectileRuby.h"
 #include "ProjectileThrowing.h"
 
+
 #include "UiManager.h"
 #include "Ui.h"
 
@@ -145,8 +146,14 @@ void EnemySlime::Update(float elapsedTime)
     // 当たり判定横
     CollisionRubyWidthVsPlayer();
 
+    // 地面と弾丸の当たり判定
+    if (pushuThrow)
+    {
+        CollisionRubyWidthVsOnGraound();
+    }
+
     // 削除
-    ProjectileManager::Instance().DeleteUpdate(elapsedTime);
+    ProjectileManager::Instance().DeleteUpdate(elapsedTime);//todo いるの？
 
     transform->UpdateTransform();
 
@@ -154,34 +161,34 @@ void EnemySlime::Update(float elapsedTime)
     // モーション更新処理
     switch (updateanim)
     {
-        // 通常アニメーション
-    case UpAnim::Normal:
-    {
-        // アニメーション再生
-        model->UpdateAnimation(elapsedTime, true);
-        break;
-    }
-    // 部分再生
-    case UpAnim::Doble:
-    {
-        // モデル部分アニメーション更新処理
-        model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, true);
-        model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
-        break;
-    }
-    // 複数ブレンド再生
-    case UpAnim::Blend:
-    {
-        // モデル複数ブレンドアニメーション更新処理
-        model->Update_blend_animations(elapsedTime, true);
-        break;
-    }
-    // 逆再生
-    case UpAnim::Reverseplayback:
-    {
-        model->ReverseplaybackAnimation(elapsedTime, true);
-        break;
-    }
+            // 通常アニメーション
+        case UpAnim::Normal:
+        {
+            // アニメーション再生
+            model->UpdateAnimation(elapsedTime, true);
+            break;
+        }
+        // 部分再生
+        case UpAnim::Doble:
+        {
+            // モデル部分アニメーション更新処理
+            model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, true);
+            model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
+            break;
+        }
+        // 複数ブレンド再生
+        case UpAnim::Blend:
+        {
+            // モデル複数ブレンドアニメーション更新処理
+            model->Update_blend_animations(elapsedTime, true);
+            break;
+        }
+        // 逆再生
+        case UpAnim::Reverseplayback:
+        {
+            model->ReverseplaybackAnimation(elapsedTime, true);
+            break;
+        }
     }
 
 
@@ -286,17 +293,18 @@ void EnemySlime::CollisionImpactVsPlayer()
     ProjectileManager& projectileManager = ProjectileManager::Instance();
 
     // 全ての敵と総当たりで衝突処理
+    int playerCount = PlayerManager::Instance().GetPlayerCount();//todo 外
     int projectileCount = projectileManager.GetProjectileCount();
+    for (int j = 0; j < playerCount; ++j)
+    {
+        std::shared_ptr<Actor> player = playerManager.GetPlayer(j);//外ループの方が軽い
 
     for (int i = 0; i < projectileCount; ++i)
     {
-        int playerCount = PlayerManager::Instance().GetPlayerCount();
         std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
-        for (int j = 0; j < playerCount; ++j)
-        {
+
             if (projectile->GetComponent<ProjectileImpact>())
             {
-                std::shared_ptr<Actor> player = playerManager.GetPlayer(j);
 
                 DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
                 
@@ -612,14 +620,67 @@ void EnemySlime::CollisionRubyWidthVsPlayer()
 
 
 
-
+                    // 地面判定一度消す
+                    pushuThrow = false;
                     // 弾丸破棄
-                    //projectile->GetComponent<ProjectileImpact>()->Destoroy();
+                    projectile->GetComponent<BulletFiring>()->Destroy();
 
                 }
 
 
             }
+        }
+    }
+}
+
+// ルビィと地面
+void EnemySlime::CollisionRubyWidthVsOnGraound()
+{
+    ProjectileManager& projectileManager = ProjectileManager::Instance();
+
+    // 全ての敵と総当たりで衝突処理
+    int projectileCount = projectileManager.GetProjectileCount();
+
+    // モデルデータ
+    Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetComponent<ModelControll>()->GetModel();
+
+    // レイキャストによる壁判定
+    HitResult hit;
+
+    for (int i = 0; i < projectileCount; ++i)
+    {
+        int playerCount = PlayerManager::Instance().GetPlayerCount();
+        std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        for (int j = 0; j < playerCount; ++j)
+        {
+            if (!projectile->GetComponent<ProjectileThrowing>())return;
+
+
+            DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
+            float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
+            float projectileHeight = projectile->GetComponent<Transform>()->GetHeight();
+
+            bool counterCheck = projectile->GetComponent<ProjectileThrowing>()->GetCounterCheck();
+
+
+
+            // 衝突処理
+            DirectX::XMFLOAT3 outPositon;
+            if (Collision::IntersectRayVsModel(
+                { projectilePosition.x, projectilePosition.y + projectileRadius ,projectilePosition.z },
+                { projectilePosition.x, projectilePosition.y - projectileRadius ,projectilePosition.z },
+                stagemodel,
+                hit))
+            {
+                projectile->GetComponent<BulletFiring>()->Destroy();
+                // 当たり判定消す。
+                pushuThrow = false;
+            }
+
+
+
+
+
         }
     }
 }

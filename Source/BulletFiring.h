@@ -17,6 +17,8 @@ public:
     
     // ƒ‹ƒr[‹t‚É‚¢‚­
     void PushDown(float speed, float turnSpeed, float elapsedTime);
+
+    void Sunder(DirectX::XMFLOAT3 target,float elapsedTime);
     
     
     void Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 target, bool turnPermission, float elapsedTime);

@@ -294,6 +294,9 @@
     <ClInclude Include="Source\ProjectileThrowing.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ProjectileSunder.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -525,6 +528,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\ProjectileThrowing.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ProjectileSunder.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
