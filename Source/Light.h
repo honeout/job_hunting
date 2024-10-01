@@ -62,7 +62,7 @@ private:
     DirectX::XMFLOAT3 direction = DirectX::XMFLOAT3(0, -1, -1);// ライトの向き
     DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1); // ライトの色
     // UNIT04
-    float range = 20.0f; // 範囲
+    float range = 35.0f; // 範囲
     float innerCorn = 0.99f; // インナー
     float outerCorn = 0.9f; // アウター
 

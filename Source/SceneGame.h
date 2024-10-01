@@ -81,6 +81,7 @@ private:
 
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;
+	std::unique_ptr<Sprite>	sprite;
 
 	float dissolveThreshold;
 	float edgeThreshold; // 緑の閾値

@@ -247,11 +247,11 @@ void PhonShader::Begin(const RenderContext& rc)
         sizeof(rc.pointLightData));
     cbScene.pointLightCount = rc.pointLightCount;
 
-    //memcpy_s(cbScene.spotLightData,
-    //    sizeof(cbScene.spotLightData),
-    //    rc.spotLightData,
-    //    sizeof(rc.spotLightData));
-    //cbScene.spotLightCount = rc.spotLightCount;
+    memcpy_s(cbScene.spotLightData,
+        sizeof(cbScene.spotLightData),
+        rc.spotLightData,
+        sizeof(rc.spotLightData));
+    cbScene.spotLightCount = rc.spotLightCount;
 
     rc.deviceContext->UpdateSubresource(sceneConstantBuffer.Get(), 0, 0, &cbScene, 0, 0);
 
@@ -316,7 +316,8 @@ void PhonShader::Draw(const RenderContext& rc, const Model* model)
             //rc.deviceContext->PSSetShaderResources(0, 1, subset.material->diffuse_map.GetAddressOf());
             ID3D11ShaderResourceView* srvs[] =
             {
-                subset.material->diffuse_map.Get(),
+                subset.material->shaderResourceView.Get(),
+                //subset.material->diffuse_map.Get(),
                 subset.material->normal_map.Get(),
             };
             rc.deviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
