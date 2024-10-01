@@ -66,7 +66,7 @@ void CameraController::Update(float elasedTime)
     
 }
 
-void CameraController::RockUpdate(float elapsedTime)
+void CameraController::RockUpdate(float elapsedTime, const DirectX::XMFLOAT3& cameraPosition)
 {
     //GamePad& gamePad = Input::Instance().GetGamePad();
     //float ax = gamePad.GetAxisRX();
@@ -87,14 +87,29 @@ void CameraController::RockUpdate(float elapsedTime)
     //DirectX::XMFLOAT3 front;
     //DirectX::XMStoreFloat3(&front, Front);
 
+    // y座標はいらないので消します。
+    frontAngle.y = 0;
+    
+    DirectX::XMVECTOR FrontDirection = DirectX::XMLoadFloat3(&frontAngle);
+    // 方向だけ欲しいので
+    DirectX::XMVector3Normalize(FrontDirection);
+
+    DirectX::XMStoreFloat3(&frontAngle, FrontDirection);
+
     // 注視点から後ろベクトル方向に一定距離れたカメラ視点を求める
     DirectX::XMFLOAT3 eye;
+    //frontAngle.z *= range;
 
     // 向きに長さで矢印を伸ばせる、
     // 矢印を出して　伸ばす
-    eye.x = target.x - frontAngle.x;
-    eye.y = target.y - frontAngle.y;
-    eye.z = target.z - frontAngle.z - range;
+    eye.x = cameraPosition.x + frontAngle.x;
+    eye.y = cameraPosition.y + frontAngle.y + range;
+    //eye.y = target.y - frontAngle.y * range;
+    eye.z = cameraPosition.z + frontAngle.z;
+    //eye.x = target.x - frontAngle.x + range;
+    //eye.y = target.y;
+    ////eye.y = target.y - frontAngle.y * range;
+    //eye.z = target.z - frontAngle.z + range;
 
 
 

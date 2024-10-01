@@ -451,12 +451,17 @@ void Player::Update(float elapsedTime)
     // ƒJƒƒ‰Ý’è
     if (rockCheck)
     {
-        cameraControlle->RockUpdate(elapsedTime);
+        cameraControlle->RockUpdate(elapsedTime, position);
 
     }
     else
     {
-        cameraControlle->SetTarget(position);
+        cameraControlle->SetTarget(
+            { 
+                position.x,
+                position.y + height,
+                position.z
+            });
 
         cameraControlle->Update(elapsedTime);
     }
@@ -684,18 +689,18 @@ bool Player::InputRockOn()
         DirectX::XMFLOAT3 pos;
         pos =
         {
-           epos.x - position.x,
-           epos.y - position.y,
-           epos.z - position.z,
+            position.x - epos.x,
+            position.y - epos.y,
+            position.z - epos.z
         };
         //{
-        //    position.x - epos.x,
-        //    position.y - epos.y,
-        //    position.z - epos.z
+        //   epos.x - position.x,
+        //   epos.y - position.y,
+        //   epos.z - position.z,
         //};
 
-        //cameraControlle->SetTarget(pos);
-        cameraControlle->SetTarget(position);
+        cameraControlle->SetTarget(epos);
+        //cameraControlle->SetTarget(position);
         cameraControlle->SetFrontAngle(
             //{
             //position.x,
