@@ -83,7 +83,7 @@ void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 }
 //
 // 旋回
-void Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime)
+bool Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime)
 {/*
 
 	std::shared_ptr<Actor> actor = GetActor();
@@ -128,13 +128,13 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapse
 
     // 進行ベクトルが0ベクトルの場合は処理する必要なし
     if (direction.x == 0 && direction.z == 0)
-        return;
+        return true;
 
     float vx = direction.x;
     float vz = direction.z;
 
     float length = sqrtf(direction.x * direction.x + direction.z * direction.z);
-    if (length < 0.001f) return;
+    if (length < 0.001f) return true;
 
     vx /= length;
     vz /= length;
@@ -167,7 +167,17 @@ void Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapse
     }
 
     GetActor()->GetComponent<Transform>()->SetAngle(angle);
-    
+
+    if (dot >= 0.93f)
+    {
+        return true;
+    }
+
+    else if (dot <= 0.1f)
+    {
+        return true;
+    }
+    return false;
 }
 //
 ////旋回処理

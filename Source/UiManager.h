@@ -67,6 +67,8 @@ public:
         EnemyHPLife01,
         EnemyHPLife02,
         Time,
+        Sight,
+        SightCheck,
 
     };
 

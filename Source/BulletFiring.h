@@ -45,4 +45,8 @@ private:
     float   lifeTimer = 3.0f;
 
     Model* model;
+
+    float rangeMin = 0.01f;
+
+    float rangeMax = 30;
 };

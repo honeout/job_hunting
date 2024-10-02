@@ -19,7 +19,7 @@ HP::~HP()
 // GUI•`‰æ
 void HP::OnGUI()
 {
-	ImGui::InputInt("Hp", &health);
+	ImGui::SliderInt("Hp", &health,1,maxHealth);
 }
 
 void HP::UpdateInbincibleTimer(float elapsedTime)

@@ -236,6 +236,8 @@ public:
     bool InputMagicIce();
     bool InputMagicLightning();
 
+    void AttackCheckUI();
+
    // void Update();
 
     void inFloat3(DirectX::XMFLOAT3 value, DirectX::XMFLOAT3& inValue);
@@ -378,6 +380,8 @@ private:
 
     // 身長
     float height = 1.0f;
+
+    
     
     
 
@@ -508,6 +512,12 @@ private:
 
     // 反射後の当たり判定敵に反映
     //bool counterCheck = false;
+
+    // 魔法の射程当たる距離
+    float magicRangeLength = 470;
+
+
+
 };
 
 // プレイヤーマネージャー

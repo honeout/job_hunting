@@ -1112,11 +1112,11 @@ void PlayerJumpFlipState::Execute(float elapsedTime)
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Jump));
 	}
 
-	// 回避
-	if (owner->GetComponent<Player>()->InputAvoidance())
-	{
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
-	}
+	//// 回避
+	//if (owner->GetComponent<Player>()->InputAvoidance())
+	//{
+	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+	//}
 
 
 	//// 落下着地
@@ -1138,13 +1138,9 @@ void PlayerAttackState::Enter()
 	//owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
 	//	owner->GetComponent<Player>()->Anim_Attack, loop);
 
-	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
-		owner->GetComponent<Player>()->Anim_Attack, loop,
-		currentAnimationStartSeconds, blendSeconds
-	);
 
-	// アニメーションルール
-	owner->GetComponent<Player>()->SetUpdateAnim(UpAnim::Normal);
+
+
 
 
 	std::shared_ptr<Player> playerId = owner->GetComponent<Player>();
@@ -1156,6 +1152,18 @@ void PlayerAttackState::Enter()
 	// 移動の停止
 	bool stopMove = true;
 	owner->GetComponent<Movement>()->SetStopMove(stopMove);
+
+	//owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+	//	owner->GetComponent<Player>()->Anim_Attack, loop,
+	//	currentAnimationStartSeconds, blendSeconds
+	//);
+
+	//// アニメーションルール
+	//owner->GetComponent<Player>()->SetUpdateAnim(UpAnim::Normal);
+
+
+	// 回転するかチェック
+	rotateCheck = false;
 
 }
 
@@ -1182,6 +1190,42 @@ void PlayerAttackState::Execute(float elapsedTime)
 		button = false;
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
 	}
+
+	// 回転
+	if (!rotateCheck)
+	{
+		
+		DirectX::XMFLOAT3 playerPosition = owner->GetComponent<Transform>()->GetPosition();
+		EnemyManager& enemyManager = EnemyManager::Instance();
+		int enemyCount = enemyManager.GetEnemyCount();
+		for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+		{
+			DirectX::XMFLOAT3 enemyPosition = enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition();
+
+			DirectX::XMFLOAT3 Direction =
+			{
+				enemyPosition.x - playerPosition.x,
+				enemyPosition.y - playerPosition.y,
+				enemyPosition.z - playerPosition.z
+			};
+
+			// 正面
+			if (owner->GetComponent<Movement>()->Turn(Direction, turnSpeed, elapsedTime))
+			{
+				rotateCheck = true;
+
+				owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+					owner->GetComponent<Player>()->Anim_Attack, loop,
+					currentAnimationStartSeconds, blendSeconds
+				);
+
+				// アニメーションルール
+				owner->GetComponent<Player>()->SetUpdateAnim(UpAnim::Normal);
+			}
+		}
+
+	}
+
 
 	
 	//// 部分再生

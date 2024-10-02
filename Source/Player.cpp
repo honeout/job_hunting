@@ -226,143 +226,144 @@ void Player::Update(float elapsedTime)
       
             //CameraControl(elapsedTime);
             //stated = state;
-            //GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
             //TransitionAttackState();
-            angleCheck = true;
+            //angleCheck = true;
 
         }
 
         // 回転
-        if (angleCheck)
-        {
+        //if (angleCheck)
+        //{
 
-            DirectX::XMFLOAT3 direction = GetForwerd(angle);
-            // 旋回
-            EnemyManager& enemyManager = EnemyManager::Instance();
-            int enemyCount = enemyManager.GetEnemyCount();
-            for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
-            {
+        //    DirectX::XMFLOAT3 direction = GetForwerd(angle);
+        //    // 旋回
+        //    EnemyManager& enemyManager = EnemyManager::Instance();
+        //    int enemyCount = enemyManager.GetEnemyCount();
+        //    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+        //    {
 
-                turnSpeedAdd += turnSpeed * elapsedTime;
+        //        turnSpeedAdd += turnSpeed * elapsedTime;
 
-                // ターゲットまでのベクトルを算出
-                DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&position);
+        //        // ターゲットまでのベクトルを算出
+        //        DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&position);
 
-                DirectX::XMVECTOR Target = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
-                DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(Target, Position);
+        //        DirectX::XMVECTOR Target = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
+        //        DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(Target, Position);
 
-                // ゼロベクトルでないなら回転処理　ピッタリ同じなら回転できるから確認
-                DirectX::XMVECTOR LengthSq = DirectX::XMVector3LengthSq(Vec);
-                float lengthSq;
-                DirectX::XMStoreFloat(&lengthSq, LengthSq);
-
-
-
-                //if (lengthSq > 0.00001f)
-                //{
-
-
-                    // ターゲットまでのベクトルを単位ベクトル化
-                Vec = DirectX::XMVector3Normalize(Vec);
-
-                // 向いてる方向ベクトルを算出　direction単位ベクトル前提
-                DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-
-
-                // 前方方向ベクトルとターゲットまでのベクトルの内積（角度）を算出
-                DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Direction, Vec);
+        //        // ゼロベクトルでないなら回転処理　ピッタリ同じなら回転できるから確認
+        //        DirectX::XMVECTOR LengthSq = DirectX::XMVector3LengthSq(Vec);
+        //        float lengthSq;
+        //        DirectX::XMStoreFloat(&lengthSq, LengthSq);
 
 
 
-                float dot;
-                DirectX::XMStoreFloat(&dot, Dot);
+        //        //if (lengthSq > 0.00001f)
+        //        //{
 
-                // 回転速度調整最後の微調整行き過ぎないように少しずつ小さく出来る。
-                // アークコサインでも出来るしかも一瞬でその値を入れる。
-                // 2つの単位ベクトルの角度が小さい程
-                // 1.0に近づくという性質を利用して回転速度を調整する
-                //if (dot )
-                float rot;
-                // 1.0f　dotは０に近づく程１になるからーくとこっちも０になる
-                rot = 1.0f - dot;
-                // だから１のほうがでかければスピードを入れる
-                // ターンスピードよりロットの方が小さい時に
-                if (rot > turnSpeedAdd)
-                {
-                    rot = turnSpeedAdd;
-                }
-                dotfake = dot;
-                // 角度制限
-                //if (dot <= 0.3f && )
-                //{
-                //    //GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-                //    angleCheck = false;
-                //}
-                // 回転角度があるなら回転処理する　ここで０を取ってないと外積が全く同じになって計算出来ない
-                if (fabsf(rot) >= 0.0001)
-                {
-                    // 回転軸を算出  外積  向かせたい方を先に 
-                    DirectX::XMVECTOR Axis = DirectX::XMVector3Cross(Direction, Vec);
-                    // 誤差防止の為に単位ベクトルした方が安全
-                    Axis = DirectX::XMVector3Normalize(Axis);
-                    // 回転軸と回転量から回転行列を算出 回転量を求めている。
-                    DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationAxis(Axis, rot);
+
+        //            // ターゲットまでのベクトルを単位ベクトル化
+        //        Vec = DirectX::XMVector3Normalize(Vec);
+
+        //        // 向いてる方向ベクトルを算出　direction単位ベクトル前提
+        //        DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
+
+
+        //        // 前方方向ベクトルとターゲットまでのベクトルの内積（角度）を算出
+        //        DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Direction, Vec);
 
 
 
+        //        float dot;
+        //        DirectX::XMStoreFloat(&dot, Dot);
 
-                    // 現在の行列を回転させる　自分自身の姿勢
-                    DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transform->GetTransform());
-                    Transform = DirectX::XMMatrixMultiply(Transform, Rotation); // 同じだからただ×だけ  Transform*Rotation
-                    // DirectX::XMMatrixMultrixMultiply
-                    // 回転後の前方方向を取り出し、単位ベクトル化する
-                    Direction = DirectX::XMVector3Normalize(Transform.r[2]);// row
-
-                    DirectX::XMStoreFloat3(&direction, Direction);
-
-
-                    movement->Turn(direction, turnSpeedAttack, elapsedTime);
-                    
-
-
-                    //DirectX::XMStoreFloat4x4(&transform, Transform);
-
-                }
-                if (dot >= 0.93f)
-                {
-                    turnSpeedAdd = 0;
-                    angleCheck = false;
-                    GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-                }
-                if (dot <= 0.1f)
-                {
-                    turnSpeedAdd = 0;
-                    angleCheck = false;
-                    GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-                }
-                //else
-                //{
-                //    angleCheck = false;
-                //    GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-                //
-
-                //if (dot <= 0.1f && dot >= -0.1f)
-                //    movement->Turn(direction, rot, elapsedTime);
-                //if (dot <= 0.00001f && dot >= -0.00001f)
-                //{
-                //    angleCheck = false;
-                //    GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-                //}
+        //        // 回転速度調整最後の微調整行き過ぎないように少しずつ小さく出来る。
+        //        // アークコサインでも出来るしかも一瞬でその値を入れる。
+        //        // 2つの単位ベクトルの角度が小さい程
+        //        // 1.0に近づくという性質を利用して回転速度を調整する
+        //        //if (dot )
+        //        float rot;
+        //        // 1.0f　dotは０に近づく程１になるからーくとこっちも０になる
+        //        rot = 1.0f - dot;
+        //        // だから１のほうがでかければスピードを入れる
+        //        // ターンスピードよりロットの方が小さい時に
+        //        if (rot > turnSpeedAdd)
+        //        {
+        //            rot = turnSpeedAdd;
+        //        }
+        //        dotfake = dot;
+        //        // 角度制限
+        //        //if (dot <= 0.3f && )
+        //        //{
+        //        //    //GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+        //        //    angleCheck = false;
+        //        //}
+        //        // 回転角度があるなら回転処理する　ここで０を取ってないと外積が全く同じになって計算出来ない
+        //        if (fabsf(rot) >= 0.0001)
+        //        {
+        //            // 回転軸を算出  外積  向かせたい方を先に 
+        //            DirectX::XMVECTOR Axis = DirectX::XMVector3Cross(Direction, Vec);
+        //            // 誤差防止の為に単位ベクトルした方が安全
+        //            Axis = DirectX::XMVector3Normalize(Axis);
+        //            // 回転軸と回転量から回転行列を算出 回転量を求めている。
+        //            DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationAxis(Axis, rot);
 
 
 
-            }
-           
-            
-            //transform->SetDirection(direction);
-            //transform->SetPosition(position);
 
-        }
+        //            // 現在の行列を回転させる　自分自身の姿勢
+        //            DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transform->GetTransform());
+        //            Transform = DirectX::XMMatrixMultiply(Transform, Rotation); // 同じだからただ×だけ  Transform*Rotation
+        //            // DirectX::XMMatrixMultrixMultiply
+        //            // 回転後の前方方向を取り出し、単位ベクトル化する
+        //            Direction = DirectX::XMVector3Normalize(Transform.r[2]);// row
+
+        //            DirectX::XMStoreFloat3(&direction, Direction);
+
+
+        //            movement->Turn(direction, turnSpeedAttack, elapsedTime);
+        //            
+
+
+        //            //DirectX::XMStoreFloat4x4(&transform, Transform);
+
+        //        }
+        //        if (dot >= 0.93f)
+        //        {
+        //            turnSpeedAdd = 0;
+        //            angleCheck = false;
+        //            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+        //            
+        //        }
+        //        if (dot <= 0.1f)
+        //        {
+        //            turnSpeedAdd = 0;
+        //            angleCheck = false;
+        //            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+        //        }
+        //        //else
+        //        //{
+        //        //    angleCheck = false;
+        //        //    GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+        //        //
+
+        //        //if (dot <= 0.1f && dot >= -0.1f)
+        //        //    movement->Turn(direction, rot, elapsedTime);
+        //        //if (dot <= 0.00001f && dot >= -0.00001f)
+        //        //{
+        //        //    angleCheck = false;
+        //        //    GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+        //        //}
+
+
+
+        //    }
+        //   
+        //    
+        //    //transform->SetDirection(direction);
+        //    //transform->SetPosition(position);
+
+        //}
 
 
         // 弾丸入力処理
@@ -510,6 +511,9 @@ void Player::Update(float elapsedTime)
     CollisionProjectilesVsEnemies();
     // ルビー当たり判定
     CollisionRubyVsEnemies();
+
+    // 攻撃範囲内なのでUI描画
+    AttackCheckUI();
     
 
     // ゲージ管理
@@ -684,6 +688,7 @@ bool Player::InputRockOn()
         EnemyManager& enemyManager = EnemyManager::Instance();
         int enemyCount = enemyManager.GetEnemyCount();
         DirectX::XMFLOAT3 epos = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetPosition();
+        float eheight = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetHeight();
 
 
         DirectX::XMFLOAT3 pos;
@@ -699,19 +704,24 @@ bool Player::InputRockOn()
         //   epos.z - position.z,
         //};
 
-        cameraControlle->SetTarget(epos);
+        cameraControlle->SetTarget(
+            {
+                epos.x, 
+                epos.y + eheight, 
+                epos.z 
+            });
         //cameraControlle->SetTarget(position);
         cameraControlle->SetFrontAngle(
-            //{
-            //position.x,
-            //-position.y,
-            //position.z
-            //}
             { 
                 pos.x,
                 pos.y,
                 pos.z
             }
+            //{
+            //position.x,
+            //-position.y,
+            //position.z
+            //}
         );
     }
 
@@ -1857,25 +1867,25 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
             if (enemy->GetComponent<HP>()->ApplyDamage(1, 0.5f))
             {
 
-                // 吹き飛ばす
-                {
-                    // 衝動
-                    DirectX::XMFLOAT3 impulse;
-                    const float power = 10.0f;
-                    const DirectX::XMFLOAT3& e = enemyPosition;
-                    const DirectX::XMFLOAT3& p = nodePosition;
-                    float vx = e.x - p.x;
-                    float vz = e.z - p.z;
-                    float lengthXZ = sqrtf(vx * vx + vz * vz);
-                    vx /= lengthXZ;
-                    vz /= lengthXZ;
+                //// 吹き飛ばす
+                //{
+                //    // 衝動
+                //    DirectX::XMFLOAT3 impulse;
+                //    const float power = 10.0f;
+                //    const DirectX::XMFLOAT3& e = enemyPosition;
+                //    const DirectX::XMFLOAT3& p = nodePosition;
+                //    float vx = e.x - p.x;
+                //    float vz = e.z - p.z;
+                //    float lengthXZ = sqrtf(vx * vx + vz * vz);
+                //    vx /= lengthXZ;
+                //    vz /= lengthXZ;
 
-                    impulse.x = vx * power;
-                    impulse.y = power * 0.5f;
-                    impulse.z = vz * power;
+                //    impulse.x = vx * power;
+                //    impulse.y = power * 0.5f;
+                //    impulse.z = vz * power;
 
-                    enemy->GetComponent<Movement>()->AddImpulse(impulse);
-                }
+                //    enemy->GetComponent<Movement>()->AddImpulse(impulse);
+                //}
                 // ヒットエフェクト再生
                 {
                     DirectX::XMFLOAT3 e = enemyPosition;
@@ -2100,11 +2110,12 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
     int enemyCount = enemyManager.GetEnemyCount();
     int projectileCount = projectileManager.GetProjectileCount();
     // 指定のノードと全ての敵を総当たりで衝突処理
+    for (int j = 0; j < enemyCount; ++j)
+    {
+            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(j);
     for (int i = 0; i < projectileCount; ++i)
     {
-        for (int j = 0; j < enemyCount; ++j)
-        {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(j);
+      
             std::shared_ptr<Actor> projectille = projectileManager.GetProjectile(i);
 
             if (!projectille->GetComponent<ProjectileThrowing>()) return;
@@ -2149,15 +2160,15 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
 
                     //projectille->GetComponent<BulletFiring>()->Destroy();
                     projectille->GetComponent<ProjectileThrowing>()->SetTarget(
-                        { 
+                        {
                             enemy->GetComponent<Transform>()->GetPosition().x,
                             enemy->GetComponent<Transform>()->GetPosition().y + enemy->GetComponent<Transform>()->GetHeight(),
                             enemy->GetComponent<Transform>()->GetPosition().z,
                         }
                     );
-                    
+
                     DirectX::XMFLOAT3 direction = GetForwerd(angle);
-                    
+
                     float lifeTimerCounter = 5.0f;
                     projectille->GetComponent<BulletFiring>()->Lanch(direction, projectilePosition, lifeTimerCounter);
 
@@ -3228,6 +3239,156 @@ bool Player::InputMagicLightning()
         gamePad.SetButtonDownCountinue(false);
     }
     return false;
+}
+
+void Player::AttackCheckUI()
+{
+    // UIカーソル
+    //std::shared_ptr<Ui> uiSight = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<Ui>();
+    
+
+    EnemyManager& enemyManager = EnemyManager::Instance();
+
+    int enemyCount = enemyManager.GetEnemyCount();
+    switch (selectCheck)
+    {
+    case (int)CommandAttack::Attack:
+    {
+        for (int i = 0; i < enemyCount; ++i)
+        {
+            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+            ////// 衝突処理
+            //DirectX::XMFLOAT3 outPositon;
+
+            //DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+            //float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
+
+
+            DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+            float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
+            float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+
+            //// 衝突処理
+            DirectX::XMFLOAT3 outPositon;
+
+            // 円柱と円
+            if (Collision::IntersectSphereVsCylinder(
+                position,
+                radius,
+                {
+                enemyPosition.x,
+                enemyPosition.y + enemyHeight / 2,
+                enemyPosition.z
+                },
+                enemyRudius,
+                enemyHeight / 2,
+                outPositon))
+
+            {
+                std::shared_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+
+                bool drawCheck = true;
+                uiSightAttackCheck->SetDrawCheck(drawCheck);
+            }
+            else
+            {
+                std::shared_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+
+                bool drawCheck = false;
+                uiSightAttackCheck->SetDrawCheck(drawCheck);
+            }
+
+
+            //if (Collision::IntersectSpherVsSphere(
+            //    position, radius,
+            //    enemyPosition,
+            //    enemyRadius,
+            //    outPositon))
+
+            //{
+            //    std::shared_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+
+            //    bool drawCheck = true;
+            //    uiSightAttackCheck->SetDrawCheck(drawCheck);
+            //}
+            //else
+            //{
+            //    std::shared_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+
+            //    bool drawCheck = false;
+            //    uiSightAttackCheck->SetDrawCheck(drawCheck);
+            //}
+
+        }
+
+
+        break;
+    }
+    case (int)CommandAttack::Magic:
+    {
+        for (int i = 0; i < enemyCount; ++i)
+        {
+            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+
+
+            DirectX::XMVECTOR playerPosition =
+                DirectX::XMLoadFloat3(&position);
+            DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+
+            DirectX::XMVECTOR enemyPositionXM =
+                DirectX::XMLoadFloat3(&enemyPosition);
+
+            DirectX::XMVECTOR LengthSq =
+                DirectX::XMVectorSubtract(playerPosition,enemyPositionXM);
+            LengthSq = DirectX::XMVector3LengthSq(LengthSq);
+            
+            float lengthSq;
+            DirectX::XMStoreFloat(&lengthSq, LengthSq);
+           
+
+            if (lengthSq < magicRangeLength)
+            {
+                std::shared_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+
+                bool drawCheck = true;
+                uiSightAttackCheck->SetDrawCheck(drawCheck);
+            }
+            else
+            {
+                std::shared_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+
+                bool drawCheck = false;
+                uiSightAttackCheck->SetDrawCheck(drawCheck);
+            }
+        }
+        break;
+    }
+    default:
+        break;
+    }
+   
+
+    //    DirectX::XMFLOAT3 eposition;
+    //    eposition = enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition();
+
+    //    DirectX::XMFLOAT3 dir =
+    //    {
+    //    eposition.x - position.x,
+    //    eposition.y - position.y,
+    //    eposition.z - position.z
+    //    };
+
+    //    DirectX::XMVECTOR Length;
+    //    float length;
+
+    //    DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&dir);
+    //    Length = DirectX::XMVector3LengthSq(Direction);
+    //    DirectX::XMStoreFloat(&length, Length);
+
+    //    length
+
+    //}
+
 }
 
 //bool Player::InputMagic()

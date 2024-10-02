@@ -395,7 +395,12 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
+
+	// 回転スピード
+	float turnSpeed = DirectX::XMConvertToRadians(720);
+
+
 };
 
 
@@ -427,6 +432,9 @@ private:
 
 	// アニメーションブレンド
 	float blendSeconds = 1.0f;
+
+	// 回転許可
+	bool rotateCheck;
 };
 
 // よろけステートオブジェクト

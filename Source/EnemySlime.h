@@ -33,6 +33,9 @@ public:
     // 描画処理
     void Render(RenderContext& rc, ModelShader& shader) override;
 
+    // GUI描画
+    void OnGUI() override;
+
     // シャドウマップ処理
     void RenderShadowmap(RenderContext& rc) override;
 
@@ -344,6 +347,8 @@ private:
     float attackRightFootRange = 0;
 
     bool pushuThrow = false;
+
+   
 
     // ステート切り替え時間管理
    // float				stateTimer = 0.0f;

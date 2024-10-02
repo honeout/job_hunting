@@ -23,7 +23,7 @@ public:
 
 	// ù‰ñ
 	//void Turn(float elapsedTime, float vx, float vz, float speed);
-	void Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime);
+	bool Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime);
 
 	// ’…’n‚µ‚½‚ÉŒÄ‚×‚ê‚é
 	void OnLanding();

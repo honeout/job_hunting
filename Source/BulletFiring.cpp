@@ -81,7 +81,7 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
 
       
 
-        if (lengthSq > 0.00001f)
+        if (lengthSq > rangeMin && lengthSq <= rangeMax)
         {
 
             // ターゲットまでのベクトルを単位ベクトル化

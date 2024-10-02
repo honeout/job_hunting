@@ -1151,6 +1151,111 @@ void SceneGame::Initialize()
 		UiManager::Instance().Register(actor);
 	}
 
+
+	// UI sight
+	{
+		const char* filename = "Data/Sprite/Loading.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("sight");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+
+		DirectX::XMFLOAT2 pos = { 640, 360 };
+		transform2D->SetPosition(pos);
+
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+
+		DirectX::XMFLOAT2 scale = { 50,50 };
+		transform2D->SetScale(scale);
+
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		// UI揺らす範囲を指定揺らす場合
+		int max = pos.y + 3;
+		int min = pos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = true;
+		ui->SetDrawCheck(drawCheck);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI sightCheck
+	{
+		const char* filename = "Data/Sprite/Loading_move.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("sightCheck");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+
+		DirectX::XMFLOAT2 pos = { 616, 335 };
+		transform2D->SetPosition(pos);
+
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+
+		DirectX::XMFLOAT2 scale = { 100,100 };
+		transform2D->SetScale(scale);
+
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		// UI揺らす範囲を指定揺らす場合
+		int max = pos.y + 3;
+		int min = pos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = false;
+		ui->SetDrawCheck(drawCheck);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
 	//// UI UiTime 制限時間２桁
 	//{
 	//	const char* filename = "Data\\Font\\fonts\\font4.png";
@@ -1307,15 +1412,15 @@ void SceneGame::Initialize()
 		LightManager::Instanes().Register(light);
 	}
 
-	// スポットライトを追加
-	{
-		Light* light = new Light(LightType::Spot);
-		light->SetPosition(DirectX::XMFLOAT3(-30, 20, 0));
-		light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
-		light->SetDirection(DirectX::XMFLOAT3(+1, -1, 0));
-		light->SetRange(40.0f);
-		LightManager::Instanes().Register(light);
-	}
+	//// スポットライトを追加
+	//{
+	//	Light* light = new Light(LightType::Spot);
+	//	light->SetPosition(DirectX::XMFLOAT3(-30, 20, 0));
+	//	light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+	//	light->SetDirection(DirectX::XMFLOAT3(+1, -1, 0));
+	//	light->SetRange(40.0f);
+	//	LightManager::Instanes().Register(light);
+	//}
 
 	// 新しい描画ターゲットの生成
 	{

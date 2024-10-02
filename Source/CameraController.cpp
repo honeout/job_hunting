@@ -102,10 +102,12 @@ void CameraController::RockUpdate(float elapsedTime, const DirectX::XMFLOAT3& ca
 
     // Œü‚«‚É’·‚³‚Å–îˆó‚ğL‚Î‚¹‚éA
     // –îˆó‚ğo‚µ‚Ä@L‚Î‚·
-    eye.x = cameraPosition.x + frontAngle.x;
-    eye.y = cameraPosition.y + frontAngle.y + range;
+    eye.x = cameraPosition.x + frontAngle.x + 0.5f;
+    eye.y = cameraPosition.y + frontAngle.y + 1;
     //eye.y = target.y - frontAngle.y * range;
-    eye.z = cameraPosition.z + frontAngle.z;
+    //if (frontAngle.z)
+    
+    eye.z = cameraPosition.z + frontAngle.z - 0.5f;
     //eye.x = target.x - frontAngle.x + range;
     //eye.y = target.y;
     ////eye.y = target.y - frontAngle.y * range;
