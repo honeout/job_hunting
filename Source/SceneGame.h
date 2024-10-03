@@ -56,7 +56,7 @@ private:
 	Player* player = nullptr;
 	CameraController* cameraController = nullptr;
 
-	Sprite* gauge = nullptr;
+	//Sprite* gauge = nullptr;
 
 	AfterimageManager* afterimageManager;
 
@@ -89,6 +89,7 @@ private:
 
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源
+	//std::unique_ptr <Light> mainDirectionalLight; // シャドウマップを生成する平行光源
 	std::unique_ptr<DepthStencil> shadowmapDepthStencil; // シャドウマップ用深度ステンシルバッファ
 	float shadowDrawRect = 500.0f;// シャドウマップに描画する範囲
 	DirectX::XMFLOAT4X4 lightViewProjeciton; // ライトビュープロジェクション行列

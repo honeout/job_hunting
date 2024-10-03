@@ -1399,6 +1399,7 @@ void SceneGame::Initialize()
 	// 平行光源を追加
 	{
 		mainDirectionalLight = new Light(LightType::Directional);
+		//mainDirectionalLight = std::make_unique<Light>(LightType::Directional);
 		mainDirectionalLight->SetDirection({ 1,-3,-1 });
 		//ambientLightColor = { 0.2f,0.2f,0.2f,0.2f };
 		LightManager::Instanes().Register(mainDirectionalLight);
@@ -1455,19 +1456,20 @@ void SceneGame::Initialize()
 
 
 	// ゲージスプライト
-	gauge = new Sprite();
+	//gauge = new Sprite();
 }
 
 
 // 終了化
 void SceneGame::Finalize()
 {
-	// ゲージスプライト
-	if (this->gauge)
-	{
-		delete gauge;
-		gauge = nullptr;
-	}
+	//// ゲージスプライト
+	//if (this->gauge)
+	//{
+	//	delete gauge;
+	//	gauge = nullptr;
+	//}
+
 
 
 	// エネミー終了化
@@ -1529,7 +1531,7 @@ void SceneGame::Update(float elapsedTime)
 	
 
 	// 残像ステート更新
-	AfterimageManager::Instance().Update(elapsedTime);
+	//AfterimageManager::Instance().Update(elapsedTime);
 
 
 
@@ -1610,14 +1612,14 @@ void SceneGame::Render()
 
 		// 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
 	{
-		ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
-		ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
+		Microsoft::WRL::ComPtr <ID3D11RenderTargetView> rtv = graphics.GetRenderTargetView();
+		Microsoft::WRL::ComPtr <ID3D11DepthStencilView> dsv = graphics.GetDepthStencilView();
 
 		// 画面クリア＆レンダーターゲット設定
 		FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
-		dc->ClearRenderTargetView(rtv, color);
-		dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		dc->OMSetRenderTargets(1, &rtv, dsv);
+		dc->ClearRenderTargetView(rtv.Get(), color);
+		dc->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		dc->OMSetRenderTargets(1, rtv.GetAddressOf(), dsv.Get());
 
 		// UINT11
 		// ビューポートの設定
@@ -1798,16 +1800,16 @@ void SceneGame::Render3DScene()
 {
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-	ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView().Get();
-	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
+	Microsoft::WRL::ComPtr <ID3D11RenderTargetView> rtv = renderTarget->GetRenderTargetView().Get();
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> dsv = graphics.GetDepthStencilView();
 
 	//RenderShadowmap();
 
 	// 画面クリア＆レンダーターゲット設定
 	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0～1.0)
-	dc->ClearRenderTargetView(rtv, color);
-	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	dc->OMSetRenderTargets(1, &rtv, dsv);
+	dc->ClearRenderTargetView(rtv.Get(), color);
+	dc->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	dc->OMSetRenderTargets(1, rtv.GetAddressOf(), dsv.Get());
 
 	// ビューポートの設定
 	D3D11_VIEWPORT vp = {};
@@ -1910,11 +1912,11 @@ void SceneGame::RenderShadowmap()
 {
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-	ID3D11RenderTargetView* rtv = nullptr;
-	ID3D11DepthStencilView* dsv = shadowmapDepthStencil->GetDepthStencilView().Get();
+	Microsoft::WRL::ComPtr <ID3D11RenderTargetView> rtv = nullptr;
+	Microsoft::WRL::ComPtr <ID3D11DepthStencilView> dsv = shadowmapDepthStencil->GetDepthStencilView().Get();
 
 	// 画面クリア
-	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	dc->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	if (!mainDirectionalLight)
 		return;
@@ -1924,7 +1926,7 @@ void SceneGame::RenderShadowmap()
 	//dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	// レンダーターゲット設定
 	//dc->OMSetRenderTargets(1, &rtv, dsv);
-	dc->OMSetRenderTargets(0, &rtv, dsv);
+	dc->OMSetRenderTargets(0, rtv.GetAddressOf(), dsv.Get());
 
 	// ビューポートの設定
 	D3D11_VIEWPORT vp = {};

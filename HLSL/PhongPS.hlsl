@@ -16,6 +16,8 @@ SamplerState shadowMapSamplerState : register(s1); // 法線マップ
 
 float4 main(VS_OUT pin) : SV_TARGET
 {
+
+
     float4 diffuseColor = diffuseMap.Sample(diffuseMapSamplerState, pin.texcoord) * pin.color;
 
     // UNIT06

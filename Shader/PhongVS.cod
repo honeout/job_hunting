@@ -156,16 +156,16 @@ dcl_temps 12
 //   o1.x <- <main return value>.world_position.x; o1.y <- <main return value>.world_position.y; o1.z <- <main return value>.world_position.z; 
 //   o0.x <- <main return value>.position.x; o0.y <- <main return value>.position.y; o0.z <- <main return value>.position.z; o0.w <- <main return value>.position.w
 //
-#line 13 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongVS.hlsl"
+#line 15 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongVS.hlsl"
 itof r0.xyz, l(0, 0, 0, 0)  // r0.x <- p.x; r0.y <- p.y; r0.z <- p.z
 
-#line 14
+#line 16
 itof r1.xyz, l(0, 0, 0, 0)  // r1.x <- n.x; r1.y <- n.y; r1.z <- n.z
 
-#line 15
+#line 17
 itof r2.xyz, l(0, 0, 0, 0)  // r2.x <- t.x; r2.y <- t.y; r2.z <- t.z
 
-#line 16
+#line 18
 mov r0.w, l(0)  // r0.w <- i
 mov r3.xyz, r1.xyzx  // r3.x <- n.x; r3.y <- n.y; r3.z <- n.z
 mov r4.xyz, r2.xyzx  // r4.x <- t.x; r4.y <- t.y; r4.z <- t.z
@@ -177,7 +177,7 @@ loop
   ilt r2.w, r1.w, l(4)
   breakc_z r2.w
 
-#line 18
+#line 20
   dp4 r2.w, v5.xyzw, icb[r1.w + 0].xyzw
   and r6.xyzw, v6.xyzw, icb[r1.w + 4].xyzw
   or r6.xy, r6.ywyy, r6.xzxx
@@ -193,7 +193,7 @@ loop
   mul r6.xyz, r2.wwww, r6.xyzx
   add r5.xyz, r6.xyzx, r5.xyzx
 
-#line 19
+#line 21
   dp4 r2.w, v5.xyzw, icb[r1.w + 0].xyzw
   itof r3.w, l(0)
   and r6.xyzw, v6.xyzw, icb[r1.w + 4].xyzw
@@ -210,7 +210,7 @@ loop
   mul r6.xyz, r2.wwww, r6.xyzx
   add r3.xyz, r3.xyzx, r6.xyzx
 
-#line 20
+#line 22
   dp4 r2.w, v5.xyzw, icb[r1.w + 0].xyzw
   itof r3.w, l(0)
   and r6.xyzw, v6.xyzw, icb[r1.w + 4].xyzw
@@ -227,11 +227,11 @@ loop
   mul r6.xyz, r2.wwww, r6.xyzx
   add r4.xyz, r4.xyzx, r6.xyzx
 
-#line 21
+#line 23
   iadd r1.w, r1.w, l(1)
 endloop 
 
-#line 24
+#line 26
 mul r0.xyzw, r5.xxxx, cb0[1].xyzw
 mul r1.xyzw, r5.yyyy, cb0[2].xyzw
 add r0.xyzw, r0.xyzw, r1.xyzw
@@ -240,25 +240,25 @@ add r0.xyzw, r0.xyzw, r1.xyzw
 mul r1.xyzw, cb0[4].xyzw, l(1.000000, 1.000000, 1.000000, 1.000000)
 add r0.xyzw, r0.xyzw, r1.xyzw  // r0.x <- vout.position.x; r0.y <- vout.position.y; r0.z <- vout.position.z; r0.w <- vout.position.w
 
-#line 25
+#line 27
 mov r5.x, r5.x  // r5.x <- vout.world_position.x
 mov r5.y, r5.y  // r5.y <- vout.world_position.y
 mov r5.z, r5.z  // r5.z <- vout.world_position.z
 
-#line 26
+#line 28
 dp3 r1.x, r3.xyzx, r3.xyzx
 rsq r1.x, r1.x
 mul r1.xyz, r1.xxxx, r3.xyzx  // r1.x <- vout.normal.x; r1.y <- vout.normal.y; r1.z <- vout.normal.z
 
-#line 27
+#line 29
 dp3 r1.w, r4.xyzx, r4.xyzx
 rsq r1.w, r1.w
 mul r2.xyz, r1.wwww, r4.xyzx  // r2.x <- vout.tangent.x; r2.y <- vout.tangent.y; r2.z <- vout.tangent.z
 
-#line 28
+#line 30
 mul r3.xyzw, v4.xyzw, cb2[0].xyzw  // r3.x <- vout.color.x; r3.y <- vout.color.y; r3.z <- vout.color.z; r3.w <- vout.color.w
 
-#line 30
+#line 32
 mul r4.xyz, r1.yzxy, r2.zxyz
 mul r6.xyz, r1.zxyz, r2.yzxy
 mov r6.xyz, -r6.xyzx
@@ -267,10 +267,10 @@ dp3 r1.w, r4.xyzx, r4.xyzx
 rsq r1.w, r1.w
 mul r4.xyz, r1.wwww, r4.xyzx  // r4.x <- vout.binormal.x; r4.y <- vout.binormal.y; r4.z <- vout.binormal.z
 
-#line 32
+#line 34
 mov r6.xy, v3.xyxx  // r6.x <- vout.texcoord.x; r6.y <- vout.texcoord.y
 
-#line 36
+#line 38
 nop 
 mov r5.x, r5.x
 mov r5.y, r5.y
@@ -314,10 +314,10 @@ add r7.xy, r6.zwzz, l(0.500000, 0.500000, 0.000000, 0.000000)  // r7.y <- worldV
 mov r7.xy, r7.xyxx  // r7.x <- <CalcShadowTexcoord return value>.x; r7.y <- <CalcShadowTexcoord return value>.y
 mov r7.z, r7.z  // r7.z <- <CalcShadowTexcoord return value>.z
 
-#line 36 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongVS.hlsl"
+#line 38 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongVS.hlsl"
 mov r7.xyz, r7.xyzx  // r7.x <- vout.shadowTexcoord.x; r7.y <- vout.shadowTexcoord.y; r7.z <- vout.shadowTexcoord.z
 
-#line 37
+#line 39
 mov o0.xyzw, r0.xyzw
 mov o6.xyzw, r3.xyzw
 mov o1.xyz, r5.xyzx

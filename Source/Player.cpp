@@ -954,14 +954,19 @@ bool Player::InputSelectMagicCheck()
 bool Player::InputShortCutkeyMagic()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    // L1
+    // L1 ショートカット魔法
     if (gamePad.GetButtonDown() & GamePad::BTN_LEFT_SHOULDER)
     {
         selectCheck = (int)CommandAttack::Magic;
         selectMagicCheck = (int)CommandMagic::Fire;
         magicAction = true;
     }
-
+    // 押してる間選択
+    if (gamePad.GetButton() & GamePad::BTN_LEFT_SHOULDER)
+    {
+        magicAction = true;
+    }
+    // 離したら
     if (gamePad.GetButtonUp() & GamePad::BTN_LEFT_SHOULDER)
     {
         selectMagicCheck = (int)CommandMagic::Normal;

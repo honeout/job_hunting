@@ -10,6 +10,8 @@ VS_OUT main(
     uint4 boneIndices : BONES
 )
 {
+
+
     float3 p = { 0,0,0 };
     float3 n = { 0,0,0 };
     float3 t = { 0,0,0 };

@@ -185,12 +185,10 @@ void BulletFiring::JumpOut(float speed, float turnSpeed, DirectX::XMFLOAT3 targe
 
 
         // @‚¾‚©‚ç‚©‚¯ŽZ‚ÅŒü‚«‚É‚±‚ê‚¾‚¯i‚¾‚©‚çˆÊ’u‚É“ü‚ê‚½
-        if (direction.x >= 0.4f)
-            position.x += bulletspeed * direction.x;
-        if (direction.y >= 0.4f)
-            position.y += bulletspeed * direction.y;
-        if (direction.z >= 0.4f)
-            position.z += bulletspeed * direction.z;
+        //if (direction.x >= 0.4f)
+        position.x += bulletspeed * direction.x;
+        position.y += bulletspeed * direction.y;
+        position.z += bulletspeed * direction.z;
 
 
         if (position.y <= -3.5f)
