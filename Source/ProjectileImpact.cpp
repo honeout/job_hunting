@@ -84,7 +84,7 @@ void ProjectileImpact::Update(float elapsedTime)
     if (effectHit)
         effectHit->SetPosition(effectHit->GetEfeHandle(), transform->GetPosition());
 
-    DrawDebugPrimitive();
+    //DrawDebugPrimitive();
 
     --lifeTimer;
 

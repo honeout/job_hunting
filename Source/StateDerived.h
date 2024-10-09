@@ -183,7 +183,7 @@ private:
 	int                 attackCountMax = 0;
 	bool				turnPermission = false;
 
-	float               turnSpeed = 20.0f;
+	float               turnSpeed = DirectX::XMConvertToRadians(720);
 
 	// 再生ループ
 	bool  loop = false;
@@ -424,6 +424,8 @@ private:
 
 	float				turnSpeed = 10;
 
+	float               speed = 10;
+
 	// 再生ループ
 	bool  loop = false;
 
@@ -435,6 +437,16 @@ private:
 
 	// 回転許可
 	bool rotateCheck;
+
+	// 距離
+	float length = 0;
+
+	DirectX::XMFLOAT3 vector;
+
+	// 攻撃サポート範囲
+	float attackCheckRange = 15;
+
+	float attackCheckRangeMin = 3;
 };
 
 // よろけステートオブジェクト

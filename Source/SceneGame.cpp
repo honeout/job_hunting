@@ -44,7 +44,7 @@ static const UINT SHADOWMAP_SIZE = 2048;
 void SceneGame::Initialize()
 {
 
-
+	
 	// ステージ初期化
 	{
 		//const char* filename = "Data/Model/ExampleStage/ExampleStage.mdl";
@@ -1256,124 +1256,124 @@ void SceneGame::Initialize()
 		UiManager::Instance().Register(actor);
 	}
 
-	//// UI UiTime 制限時間２桁
-	//{
-	//	const char* filename = "Data\\Font\\fonts\\font4.png";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->SetName("UiTime　2digit");
-	//	actor->AddComponent<SpriteControll>();
-	//	actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-	//	actor->AddComponent<TransForm2D>();
-	//	// 位置　角度　スケール情報
-	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+	// UI UiTime 制限時間２桁
+	{
+		const char* filename = "Data\\Font\\fonts\\font4.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("UiTime　2digit");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 
-	//	// 位置
-	//	DirectX::XMFLOAT2 pos = { 72, 31 };
-	//	transform2D->SetPosition(pos);
+		// 位置
+		DirectX::XMFLOAT2 pos = { 72, 31 };
+		transform2D->SetPosition(pos);
 
-	//	// 元の位置
-	//	DirectX::XMFLOAT2 texPos = { 0, 60 };
-	//	transform2D->SetTexPosition(texPos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 60 };
+		transform2D->SetTexPosition(texPos);
 
-	//	float angle = 0;
-	//	transform2D->SetAngle(angle);
+		float angle = 0;
+		transform2D->SetAngle(angle);
 
-	//	DirectX::XMFLOAT2 scale = { 43,49 };
-	//	transform2D->SetScale(scale);
+		DirectX::XMFLOAT2 scale = { 43,49 };
+		transform2D->SetScale(scale);
 
-	//	DirectX::XMFLOAT2 texScale = { 20,20 };
-	//	transform2D->SetTexScale(texScale);
+		DirectX::XMFLOAT2 texScale = { 20,20 };
+		transform2D->SetTexScale(texScale);
 
-	//	// UI揺らす範囲を指定揺らす場合
-	//	int max = pos.y + 3;
-	//	int min = pos.y - 3;
+		// UI揺らす範囲を指定揺らす場合
+		int max = pos.y + 3;
+		int min = pos.y - 3;
 
-	//	transform2D->SetUiMax(max);
-	//	transform2D->SetUiMin(min);
-	//	// UI揺らす時間
-	//	int MaxTime = 30;
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
 
-	//	transform2D->SetShakeTimeMax(MaxTime);
+		transform2D->SetShakeTimeMax(MaxTime);
 
-	//	actor->AddComponent<Ui>();
-	//	// 描画チェック
-	//	std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-	//	bool drawCheck = false;
-	//	ui->SetDrawCheck(drawCheck);
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = false;
+		ui->SetDrawCheck(drawCheck);
 
-	//	// これが２Dかの確認
-	//	bool check2d = true;
-	//	actor->SetCheck2d(check2d);
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
-	//	UiManager::Instance().Register(actor);
-	//}
+		UiManager::Instance().Register(actor);
+	}
 
-	//// UI UiTime 制限時間３ケタ
-	//{
-	//	const char* filename = "Data\\Font\\fonts\\font4.png";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->SetName("UiTime 3digit");
-	//	actor->AddComponent<SpriteControll>();
-	//	actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-	//	actor->AddComponent<TransForm2D>();
-	//	// 位置　角度　スケール情報
-	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+	// UI UiTime 制限時間３ケタ
+	{
+		const char* filename = "Data\\Font\\fonts\\font4.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("UiTime 3digit");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 
-	//	// 位置
-	//	DirectX::XMFLOAT2 pos = { 112, 31 };
-	//	transform2D->SetPosition(pos);
+		// 位置
+		DirectX::XMFLOAT2 pos = { 112, 31 };
+		transform2D->SetPosition(pos);
 
-	//	// 元の位置
-	//	DirectX::XMFLOAT2 texPos = { 0, 60 };
-	//	transform2D->SetTexPosition(texPos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 60 };
+		transform2D->SetTexPosition(texPos);
 
-	//	float angle = 0;
-	//	transform2D->SetAngle(angle);
+		float angle = 0;
+		transform2D->SetAngle(angle);
 
-	//	DirectX::XMFLOAT2 scale = { 43,49 };
-	//	transform2D->SetScale(scale);
+		DirectX::XMFLOAT2 scale = { 43,49 };
+		transform2D->SetScale(scale);
 
-	//	DirectX::XMFLOAT2 texScale = { 20,20 };
-	//	transform2D->SetTexScale(texScale);
+		DirectX::XMFLOAT2 texScale = { 20,20 };
+		transform2D->SetTexScale(texScale);
 
-	//	// UI揺らす範囲を指定揺らす場合
-	//	int max = pos.y + 3;
-	//	int min = pos.y - 3;
+		// UI揺らす範囲を指定揺らす場合
+		int max = pos.y + 3;
+		int min = pos.y - 3;
 
-	//	transform2D->SetUiMax(max);
-	//	transform2D->SetUiMin(min);
-	//	// UI揺らす時間
-	//	int MaxTime = 30;
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
 
-	//	transform2D->SetShakeTimeMax(MaxTime);
+		transform2D->SetShakeTimeMax(MaxTime);
 
-	//	actor->AddComponent<UiTime>();
-	//	// 描画チェック
-	//	std::shared_ptr<UiTime> ui = actor->GetComponent<UiTime>();
-	//	bool drawCheck = false;
-	//	ui->SetDrawCheck(drawCheck);
+		actor->AddComponent<UiTime>();
+		// 描画チェック
+		std::shared_ptr<UiTime> ui = actor->GetComponent<UiTime>();
+		bool drawCheck = false;
+		ui->SetDrawCheck(drawCheck);
 
-	//	// 桁
-	//	int digit = 3;
-	//	ui->SetDigit(digit);
+		// 桁
+		int digit = 3;
+		ui->SetDigit(digit);
 
-	//	// 時間数
+		// 時間数
 
-	//	//// 制限時間
-	//	//int timeMax = 180;
-	//	//ui->SetTimeMax(timeMax);
+		//// 制限時間
+		//int timeMax = 180;
+		//ui->SetTimeMax(timeMax);
 
-	//	//int countDown = ui->GetTime()* ui->GetTimeMax();
-	//	//ui->SetCountDown(countDown);
+		//int countDown = ui->GetTime()* ui->GetTimeMax();
+		//ui->SetCountDown(countDown);
 
-	//	// これが２Dかの確認
-	//	bool check2d = true;
-	//	actor->SetCheck2d(check2d);
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
 
 
 
-	//	UiManager::Instance().Register(actor);
-	//}
+		UiManager::Instance().Register(actor);
+	}
 
 	//player = new Player();
 
@@ -1494,6 +1494,8 @@ void SceneGame::Finalize()
 	// ステージ終了化
 	//StageManager::instance().Clear();
 
+	ActorManager::Instance().Clear();
+
 	LightManager::Instanes().Clear();
 
 	EnemyManager::Instance().Clear();
@@ -1504,7 +1506,6 @@ void SceneGame::Finalize()
 
 	UiManager::Instance().Clear();
 
-	ActorManager::Instance().Clear();
 
 }
 
@@ -1600,15 +1601,16 @@ void SceneGame::Update(float elapsedTime)
 // 描画処理
 void SceneGame::Render()
 {
+	
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	//ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 	//ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
 	//// シャドウマップの描画
-	RenderShadowmap();
+	//RenderShadowmap();
 
-	Render3DScene();
+	//Render3DScene();
 
 		// 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
 	{
@@ -1642,7 +1644,7 @@ void SceneGame::Render()
 
 		//shader->End(rc);
 		// ポストプロセスを処理を行う
-		postprocessingRenderer->Render(dc);
+		//postprocessingRenderer->Render(dc);
 	}
 
 
@@ -1890,19 +1892,19 @@ void SceneGame::Render3DScene()
 		// グリッド描画
 		//DrawGrid(dc, 20, 10.0f);
 
-		for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); i++)
-		{
-			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->DrawDebugPrimitive();
-		}
+		//for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); i++)
+		//{
+		//	EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->DrawDebugPrimitive();
+		//}
 
-		// ライトのデバッグプリミティブの描画
-		LightManager::Instanes().DrawDebugPrimitive();
+		//// ライトのデバッグプリミティブの描画
+		//LightManager::Instanes().DrawDebugPrimitive();
 
-		// ラインレンダラ描画実行
-		graphics.GetLineRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
+		//// ラインレンダラ描画実行
+		//graphics.GetLineRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
 
-		// デバッグレンダラ描画実行
-		graphics.GetDebugRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
+		//// デバッグレンダラ描画実行
+		//graphics.GetDebugRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
 	}
 
 

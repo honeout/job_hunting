@@ -9,6 +9,12 @@ public:
     // ˆÚ“®
     void Move(float speed, float elapsedTime);
 
+    // ‰ñ“]
+    bool Turn(float speed, DirectX::XMFLOAT3& target, float elapedTime);
+
+    // ‰¡‚¾‚¯
+    bool Turn2D(float speed, DirectX::XMFLOAT3& direction, float elapedTime);
+
     // ’ÇÕˆÚ“®
     void MoveHoming(float speed,float turnSpeed,DirectX::XMFLOAT3 target, float elapsedTime);
     

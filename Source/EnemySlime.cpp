@@ -27,6 +27,14 @@ EnemySlime::~EnemySlime()
         delete stateMachine;
         stateMachine = nullptr;
     }
+    if (movement)
+    movement.reset();
+    if (hp)
+    hp.reset();
+    if (transform)
+    transform.reset();
+
+
 }
 
 void EnemySlime::Start()
@@ -41,6 +49,7 @@ void EnemySlime::Start()
     transform = GetActor()->GetComponent<Transform>();
 
     // モデルデータを入れる。
+    //model = std::make_unique<Model>(GetActor()->GetComponent<ModelControll>()->GetModel());
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
     
 
@@ -135,7 +144,7 @@ void EnemySlime::Update(float elapsedTime)
     // 無敵時間更新
     hp->UpdateInbincibleTimer(elapsedTime);
 
-    DrawDebugPrimitive();
+    //DrawDebugPrimitive();
 
     // 当たり判定衝撃波とプレイヤー
     CollisionImpactVsPlayer();
@@ -287,6 +296,9 @@ void EnemySlime::DrawDebugPrimitive()
 
     // 攻撃範囲をデバッグ円柱描画
     debugRenderer->DrawCylinder(position, attackRange, 1.0f, DirectX::XMFLOAT4(1, 0, 0, 1));
+
+    debugRenderer->DrawSphere(position, 10, DirectX::XMFLOAT4(0, 1, 0, 1));
+    debugRenderer->DrawSphere(position, 3, DirectX::XMFLOAT4(0, 1, 0, 1));
 }
 
 // 足踏み(衝撃波)の当たり判定
@@ -668,18 +680,18 @@ void EnemySlime::CollisionRubyWidthVsOnGraound()
 
 
 
-            // 衝突処理
-            DirectX::XMFLOAT3 outPositon;
-            if (Collision::IntersectRayVsModel(
-                { projectilePosition.x, projectilePosition.y + projectileRadius ,projectilePosition.z },
-                { projectilePosition.x, projectilePosition.y - projectileRadius ,projectilePosition.z },
-                stagemodel,
-                hit))
-            {
-                projectile->GetComponent<BulletFiring>()->Destroy();
-                // 当たり判定消す。
-                pushuThrow = false;
-            }
+            //// 衝突処理
+            //DirectX::XMFLOAT3 outPositon;
+            //if (Collision::IntersectRayVsModel(
+            //    { projectilePosition.x, projectilePosition.y + projectileRadius ,projectilePosition.z },
+            //    { projectilePosition.x, projectilePosition.y - projectileRadius ,projectilePosition.z },
+            //    stagemodel,
+            //    hit))
+            //{
+            //    projectile->GetComponent<BulletFiring>()->Destroy();
+            //    // 当たり判定消す。
+            //    pushuThrow = false;
+            //}
 
 
 
@@ -1382,6 +1394,8 @@ void EnemyManager::Clear()
         actor.reset();
     }
     enemies.clear();
+
+   
 }
 
 void EnemyManager::Remove(std::shared_ptr<Actor> actor)

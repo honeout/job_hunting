@@ -58,8 +58,8 @@ void ProjectileThrowing::Start()
 void ProjectileThrowing::Update(float elapsedTime)
 {
     if (movementCheck)
-        //bulletFiring->Move(moveSpeed,elapsedTime);
-        bulletFiring->MoveHoming(moveSpeed, turnSpeed, target, elapsedTime);
+        bulletFiring->Move(moveSpeed,elapsedTime);
+        //bulletFiring->MoveHoming(moveSpeed, turnSpeed, target, elapsedTime);
 
     transform->UpdateTransformProjectile();
 
@@ -71,7 +71,7 @@ void ProjectileThrowing::Update(float elapsedTime)
     if (effectHit)
         effectHit->SetPosition(effectHit->GetEfeHandle(), transform->GetPosition());
 
-    DrawDebugPrimitive();
+    //DrawDebugPrimitive();
 }
 
 // •`‰æˆ—

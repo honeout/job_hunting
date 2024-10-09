@@ -3,6 +3,10 @@
 
 UiTime::~UiTime()
 {
+    if (transForm2D)
+        transForm2D.reset();
+
+
 }
 
 void UiTime::Start()

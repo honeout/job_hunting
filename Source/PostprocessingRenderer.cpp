@@ -67,6 +67,7 @@ void PostprocessingRenderer::Render(ID3D11DeviceContext* deviceContext)
     // 高輝度抽出用バッファに描画先を変更して高輝度抽出
     {
         //      描画先を変更
+        //Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv = luminanceExtractRenderTarget->GetRenderTargetView().Get();
         ID3D11RenderTargetView* rtv = luminanceExtractRenderTarget->GetRenderTargetView().Get();
         FLOAT color[] = { 0.0f,0.0f,0.0f,0.0f };
         rc.deviceContext->ClearRenderTargetView(rtv, color);
@@ -91,16 +92,17 @@ void PostprocessingRenderer::Render(ID3D11DeviceContext* deviceContext)
             1, 1, 1, 1);
         shader->Draw(rc, renderSprite.get());
         shader->End(rc);
+       
     }
 
     // 抽出した高輝描画対象を暈して書き込む
     {
         // 描画先を変更
-        ID3D11RenderTargetView* rtv = luminanceExtractBokehRenderTarget->GetRenderTargetView().Get();
+        Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv = luminanceExtractBokehRenderTarget->GetRenderTargetView().Get();
         FLOAT color[] = { 0.0f,0.0f,0.0f,0.0f };
         //      描画先を変更
-        rc.deviceContext->ClearRenderTargetView(rtv, color);
-        rc.deviceContext->OMSetRenderTargets(1, &rtv, nullptr);
+        rc.deviceContext->ClearRenderTargetView(rtv.Get(), color);
+        rc.deviceContext->OMSetRenderTargets(1, rtv.GetAddressOf(), nullptr);
         D3D11_VIEWPORT viewport{};
         viewport.Width = static_cast<float>(luminanceExtractBokehRenderTarget->GetWidth());
         viewport.Height = static_cast<float>(luminanceExtractBokehRenderTarget->GetHeight());

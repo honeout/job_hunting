@@ -369,7 +369,8 @@ private:
 
     
     DirectX::XMFLOAT3 velocity = { 0,0,0 };
- 
+
+    //std::unique_ptr<Model> model;
     Model* model = nullptr;
 
     GamePad        gamePad;
@@ -394,7 +395,7 @@ private:
     // 回転速度　攻撃時
     float          turnSpeedAttack = DirectX::XMConvertToRadians(2600);
 
-    float          jumpSpeed = 20.0f;
+    float          jumpSpeed = 15.0f;
     
     int                     jumpLimit = 2;
 
@@ -409,7 +410,8 @@ private:
     State                   state = State::Idle;
     State                   stated;
     
-    float gravity =-1.0f;
+    // 重力
+    float gravity =-0.5f;
 
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
     float jumpfliptime = gravity * 5;
@@ -509,6 +511,9 @@ private:
 
     // ロックオンチェック
     bool rockCheck = false;
+
+    // ボタン押したかのチェック
+    bool buttonRock = false;
 
     // 反射後の当たり判定敵に反映
     //bool counterCheck = false;

@@ -3,6 +3,10 @@
 
 Ui::~Ui()
 {
+    if (transForm2D)
+        transForm2D.reset();
+
+
 }
 
 void Ui::Start()

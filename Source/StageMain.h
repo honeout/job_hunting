@@ -44,7 +44,9 @@ public:
     //Model* GetModel() const { return model.get(); }
 
 private:
-    Model*	model;
+    //Model* model;
+    std::shared_ptr<ModelControll> model;
+    //std::unique_ptr<Model>	model;
 
     std::shared_ptr<Transform> transformid;
 };

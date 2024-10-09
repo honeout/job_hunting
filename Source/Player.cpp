@@ -47,6 +47,19 @@ Player::~Player()
     //if (model == nullptr)
     //delete model;
 
+    if (movement)
+        movement.reset();
+    if (hp)
+        hp.reset();
+    if (transform)
+        transform.reset();
+
+    if (stateMachine)
+    {
+        delete stateMachine;
+        stateMachine = nullptr;
+    }
+
     if (hitEffect != nullptr)
     {
         hitEffect->Stop(hitEffect->GetEfeHandle());
@@ -78,6 +91,10 @@ Player::~Player()
         delete cameraControlle;
         cameraControlle = nullptr;
     }
+
+
+
+
 
     ProjectileManager::Instance().Clear();
   
@@ -113,8 +130,11 @@ void Player::Start()
 
     scale = transform->GetScale();
 
+    // 重力設定
+    movement->SetGravity(gravity);
 
     // モデルデータを入れる。
+    //model = std::make_unique<Model>(GetActor()->GetComponent<ModelControll>()->GetModel());
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
     // カメラ初期化
     cameraControlle = new CameraController();
@@ -444,7 +464,7 @@ void Player::Update(float elapsedTime)
 
     hp->UpdateInbincibleTimer(elapsedTime);
 
-    DrawDebugPrimitive();
+    //DrawDebugPrimitive();
 
     // ロックオン
     InputRockOn();
@@ -673,16 +693,17 @@ bool Player::InputMove(float elapsedTime)
 }
 bool Player::InputRockOn()
 {
-
+   
 
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !rockCheck)
+    if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && !rockCheck)
     {
 
-
+        buttonRock = true;
         rockCheck = true;
         return true;
     }
+
     if (rockCheck)
     {
         EnemyManager& enemyManager = EnemyManager::Instance();
@@ -725,12 +746,18 @@ bool Player::InputRockOn()
         );
     }
 
-    //if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_TRIGGER && rockCheck)
-    //{
-    //    cameraControlle->SetTarget(position);
-    //    rockCheck = false;
-    //    return true;
-    //}
+    if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && rockCheck)
+    {
+        cameraControlle->SetTarget(position);
+        rockCheck = false;
+        buttonRock = true;
+        return true;
+    }
+
+
+    if (gamePad.GetButtonUp() & GamePad::BTN_RIGHT_SHOULDER)
+        buttonRock = false;
+
     return false;
 }
 // 攻撃方法選択
@@ -1504,12 +1531,12 @@ void Player::CollisionProjectilesVsEnemies()
             {
 
                 // ダメージを与える。
-                if (enemy->GetComponent<HP>()->ApplyDamage(1, 0.5f))
+                if (enemy->GetComponent<HP>()->ApplyDamage(3, 0.5f))
                 {
                     // 吹き飛ばす
                     {
                         // 衝動
-                        DirectX::XMFLOAT3 impulse;
+        /*                DirectX::XMFLOAT3 impulse;
                         const float power = 10.0f;
                         const DirectX::XMFLOAT3& e = enemyPosition;
                         const DirectX::XMFLOAT3& p = projectilePosition;
@@ -1517,13 +1544,13 @@ void Player::CollisionProjectilesVsEnemies()
                         float vz = e.z - p.z;
                         float lengthXZ = sqrtf(vx * vx + vz * vz);
                         vx /= lengthXZ;
-                        vz /= lengthXZ;
+                        vz /= lengthXZ;*/
 
-                        impulse.x = vx * power;
+                       /* impulse.x = vx * power;
                         impulse.y = power * 0.5f;
                         impulse.z = vz * power;
 
-                        enemy->GetComponent<Movement>()->AddImpulse(impulse);
+                        enemy->GetComponent<Movement>()->AddImpulse(impulse);*/
                     }
                     // ヒットエフェクト再生
                     {
@@ -1598,22 +1625,22 @@ void Player::CollisionRubyVsEnemies()
                 {
                     // 吹き飛ばす
                     {
-                        // 衝動
-                        DirectX::XMFLOAT3 impulse;
-                        const float power = 10.0f;
-                        const DirectX::XMFLOAT3& e = enemyPosition;
-                        const DirectX::XMFLOAT3& p = projectilePosition;
-                        float vx = e.x - p.x;
-                        float vz = e.z - p.z;
-                        float lengthXZ = sqrtf(vx * vx + vz * vz);
-                        vx /= lengthXZ;
-                        vz /= lengthXZ;
+                        //// 衝動
+                        //DirectX::XMFLOAT3 impulse;
+                        //const float power = 10.0f;
+                        //const DirectX::XMFLOAT3& e = enemyPosition;
+                        //const DirectX::XMFLOAT3& p = projectilePosition;
+                        //float vx = e.x - p.x;
+                        //float vz = e.z - p.z;
+                        //float lengthXZ = sqrtf(vx * vx + vz * vz);
+                        //vx /= lengthXZ;
+                        //vz /= lengthXZ;
 
-                        impulse.x = vx * power;
-                        impulse.y = power * 0.5f;
-                        impulse.z = vz * power;
+                        //impulse.x = vx * power;
+                        //impulse.y = power * 0.5f;
+                        //impulse.z = vz * power;
 
-                        enemy->GetComponent<Movement>()->AddImpulse(impulse);
+                        //enemy->GetComponent<Movement>()->AddImpulse(impulse);
                     }
                     // ヒットエフェクト再生
                     {
@@ -1869,7 +1896,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
             // ダメージを与える。
             //enemy->ApplyDamage(1);
         // ダメージが通ったら消える。TRUEになるから
-            if (enemy->GetComponent<HP>()->ApplyDamage(1, 0.5f))
+            if (enemy->GetComponent<HP>()->ApplyDamage(5, 0.5f))
             {
 
                 //// 吹き飛ばす

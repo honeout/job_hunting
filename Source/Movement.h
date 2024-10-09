@@ -79,6 +79,9 @@ public:
 	// ˆÚ“®‚Ì’âŽ~
 	void SetStopMove(bool stopMove) { this->stopMove = stopMove; }
 
+	// d—ÍÝ’è
+	void SetGravity(float gravity) { this->gravity = gravity; }
+
 private:
 	float		moveSpeed = 5.0f;
 	float		turnSpeed = 6.28f;

@@ -61,7 +61,7 @@ void ProjectileRuby::Update(float elapsedTime)
 
     model->UpdateTransform(transform->GetTransform());
 
-    DrawDebugPrimitive();
+    //DrawDebugPrimitive();
 
     if (effectProgress)
         effectProgress->SetPosition(effectProgress->GetEfeHandle(), transform->GetPosition());

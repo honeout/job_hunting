@@ -265,6 +265,7 @@ protected:
 private:
     // ƒ‚ƒfƒ‹î•ñ‚ğŠm•Û
     Model* model = nullptr;
+    //std::unique_ptr<Model> model;
 
     DirectX::XMFLOAT3 position = {};
     DirectX::XMFLOAT3 angle = {};

@@ -267,9 +267,10 @@ void PursuitState::Execute(float elapsedTime)
 	case AttackChange::Round1:
 	{
 		if (stateTimer < 0.0f)
-			owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Shot));
-		//owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::ShotThrowing));
-
+		{
+			//owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Shot));
+			owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::ShotThrowing));
+		}
 
 		break;
 	}
@@ -535,18 +536,59 @@ void AttackShotThrowingState::Enter()
 // 更新処理
 void AttackShotThrowingState::Execute(float elapsedTime)
 {
+	// 正面
+	DirectX::XMFLOAT3 direction;
+	DirectX::XMFLOAT3 angle = owner->GetComponent<Transform>()->GetAngle();
+	// プレイヤーid
+	std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+
+	for (int i = 0; i < ProjectileManager::Instance().GetProjectileCount(); ++i)
+	{
+
+		std::shared_ptr<Actor> projectileManager = ProjectileManager::Instance().GetProjectile(i);
+		if (projectileManager->GetComponent<ProjectileThrowing>())
+		{
+			// 球回転
+			{
+				DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid->GetComponent<Transform>()->GetPosition());
+				DirectX::XMVECTOR projectilePosition = DirectX::XMLoadFloat3(&projectileManager->GetComponent<Transform>()->GetPosition());
+				//DirectX::XMFLOAT3 projectileAngle = projectileManager->GetComponent<Transform>()->GetAngle();
+
+				DirectX::XMVECTOR vectorVec = DirectX::XMVectorSubtract(playerPosition, projectilePosition);
+				vectorVec = DirectX::XMVector3Normalize(vectorVec);
+				DirectX::XMFLOAT3 vector;
+				DirectX::XMStoreFloat3(&vector, vectorVec);
+
+
+
+
+				//projectileManager->GetComponent<Transform>()->SetPosition(owner->GetComponent<Transform>()->GetPosition());
+				//projectileManager->GetComponent<Transform>()->SetAngle(owner->GetComponent<Transform>()->GetAngle());
+
+				projectileManager->GetComponent<BulletFiring>()->Turn(turnSpeed, vector, elapsedTime);
+			}
+		}
+	}
+	
+
+
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
 	// 宝石取って設定
 	if (animationTime <= 3.9f && animationTime >= 3.89f && !turnPermission)
 	{
-		// プレイヤーid
-		std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
-		
+		//// 正面の向きベクトル
+         direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
+         //direction.y = sinf(angle.x);
+         direction.y = DirectX::XMConvertToRadians(0);
+         direction.z = cosf(angle.y);
 
+		//// プレイヤーid
+		//std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+		//
 		//	遠距離攻撃登録
-		owner->GetComponent<EnemySlime>()->InputThrowingRuby(playerid->GetComponent<Transform>()->GetPosition());
+		owner->GetComponent<EnemySlime>()->InputThrowingRuby(direction);
 
 		
 
@@ -555,25 +597,41 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 	if (animationTime <= 3.6f && animationTime >= 3.0f && !turnPermission)
 	{
 		// プレイヤーid
-		std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+		//std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
 
 		owner->GetComponent<EnemySlime>()->SetTargetPosition(playerid->GetComponent<Transform>()->GetPosition());
 		owner->GetComponent<EnemySlime>()->TurnToTarget(elapsedTime, turnSpeed);
 		//owner->GetComponent<Transform>()->SetAngle(playerid->GetComponent<Transform>()->GetAngle());
 
-		DirectX::XMFLOAT3 direction;
-		DirectX::XMFLOAT3 angle = owner->GetComponent<Transform>()->GetAngle();
 
-		direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
-		direction.y = cosf(angle.x);
-		direction.z = cosf(angle.y);
 
 		for (int i = 0; i < ProjectileManager::Instance().GetProjectileCount() ; ++i)
 		{
 
+			//// 正面の向きベクトル
+   //         direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
+   //         direction.y = cosf(angle.x);
+   //         direction.z = cosf(angle.y);
+
 			std::shared_ptr<Actor> projectileManager = ProjectileManager::Instance().GetProjectile(i);
 			if (projectileManager->GetComponent<ProjectileThrowing>())
 			{
+				//// 球回転
+				//{
+				//	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid->GetComponent<Transform>()->GetPosition());
+				//	DirectX::XMVECTOR projectilePosition = DirectX::XMLoadFloat3(&projectileManager->GetComponent<Transform>()->GetPosition());
+
+				//	DirectX::XMVECTOR vectorVec = DirectX::XMVectorSubtract(playerPosition, projectilePosition);
+				//	vectorVec = DirectX::XMVector3Normalize(vectorVec);
+				//	DirectX::XMFLOAT3 vector;
+				//	DirectX::XMStoreFloat3(&vector, vectorVec);
+
+
+				//	//projectileManager->GetComponent<Transform>()->SetPosition(owner->GetComponent<Transform>()->GetPosition());
+				//	//projectileManager->GetComponent<Transform>()->SetAngle(owner->GetComponent<Transform>()->GetAngle());
+
+				//	projectileManager->GetComponent<BulletFiring>()->Turn(turnSpeed, vector, elapsedTime);
+				//}
 				projectileManager->GetComponent<Transform>()->SetPosition(
 					{ 
 						owner->GetComponent<Transform>()->GetPosition().x,
@@ -581,8 +639,8 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 						owner->GetComponent<Transform>()->GetPosition().z
 
 					});
-				projectileManager->GetComponent<Transform>()->SetDirection(direction);
-				projectileManager->GetComponent<Transform>()->SetAngle(angle);
+				/*projectileManager->GetComponent<Transform>()->SetDirection(direction);
+				projectileManager->GetComponent<Transform>()->SetAngle(angle);*/
 			}
 		}
 
@@ -591,26 +649,37 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 	if (animationTime >= 3.89f && !turnPermission)
 	{
 
-		DirectX::XMFLOAT3 direction;
-		DirectX::XMFLOAT3 angle = owner->GetComponent<Transform>()->GetAngle();
+		//DirectX::XMFLOAT3 direction;
+		//DirectX::XMFLOAT3 angle = owner->GetComponent<Transform>()->GetAngle();
 
 		// プレイヤーid
-		std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+		//std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
 
 
-		direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
-		direction.y = cosf(angle.x);
-		direction.z = cosf(angle.y);
+		//direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
+		//direction.y = cosf(angle.x);
+		//direction.z = cosf(angle.y);
 		for (int i = 0; i < ProjectileManager::Instance().GetProjectileCount(); ++i)
 		{
 
 			std::shared_ptr<Actor> projectileManager = ProjectileManager::Instance().GetProjectile(i);
 			if (projectileManager->GetComponent<ProjectileThrowing>())
 			{
+				DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid->GetComponent<Transform>()->GetPosition());
+				DirectX::XMVECTOR projectilePosition = DirectX::XMLoadFloat3(&projectileManager->GetComponent<Transform>()->GetPosition());
+
+				DirectX::XMVECTOR vectorVec = DirectX::XMVectorSubtract(playerPosition, projectilePosition);
+				vectorVec = DirectX::XMVector3Normalize(vectorVec);
+				DirectX::XMFLOAT3 vector;
+				DirectX::XMStoreFloat3(&vector, vectorVec);
+
+
 				projectileManager->GetComponent<Transform>()->SetPosition(owner->GetComponent<Transform>()->GetPosition());
 				//projectileManager->GetComponent<Transform>()->SetAngle(owner->GetComponent<Transform>()->GetAngle());
 
-				projectileManager->GetComponent<Transform>()->SetDirection(direction);
+				//projectileManager->GetComponent<BulletFiring>()->Turn(turnSpeed,vector,elapsedTime);
+
+				//projectileManager->GetComponent<Transform>()->SetDirection(vector);
 			}
 		}
 	}
@@ -618,13 +687,14 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 	// アニメーション射撃発射
 	if (animationTime <= 0.8f && !turnPermission)
 	{
+		// 強制アニメーション終了
 		bool end = true;
 		owner->GetComponent<ModelControll>()->GetModel()->SetAnimationEndFlag(end);
 		//bool blend = false;
 
 		owner->GetComponent<ModelControll>()->GetModel()->ReverseplaybackAnimation(elapsedTime);
 		// アニメーション再生時間
-		currentAnimationStartSecondsf = 1.0f;
+		currentAnimationStartSecondsf = 0.7f;
 
 		owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Shot, loop, currentAnimationStartSecondsf, blendSeconds);
 		// アニメーションルール
@@ -639,12 +709,15 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 		// 地面判定発生
 		bool pushuThrow = true;
 		owner->GetComponent<EnemySlime>()->SetPushuThrow(pushuThrow);
+		// 球発射
 		bool movementCheck = true;
 		for (int i = 0; i < ProjectileManager::Instance().GetProjectileCount(); ++i)
 		{
 			std::shared_ptr<Actor> projectileManager = ProjectileManager::Instance().GetProjectile(i);
 			if (projectileManager->GetComponent<ProjectileThrowing>())
+			{
 				projectileManager->GetComponent<ProjectileThrowing>()->SetMovementCheck(movementCheck);
+			}
 		}
 		
 		// 終了アニメーション
@@ -1162,9 +1235,39 @@ void PlayerAttackState::Enter()
 	//owner->GetComponent<Player>()->SetUpdateAnim(UpAnim::Normal);
 
 
+
+
+
+
+	//DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(
+	//	&owner->GetComponent<Transform>()->GetPosition());
+
+	//DirectX::XMVECTOR Vector;
+	//DirectX::XMVECTOR LengthSq;
+
+	//int enemyCount = EnemyManager::Instance().GetEnemyCount();
+	//for (int i = 0; i < enemyCount; ++i)
+	//{
+	//	std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+
+	//	DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(
+	//		&enemy->GetComponent<Transform>()->GetPosition());
+
+	//	Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+
+	//	LengthSq = DirectX::XMVector3LengthSq(Vector);
+
+	//}
+
+	//DirectX::XMStoreFloat(&length, LengthSq);
+	//DirectX::XMStoreFloat3(&vector, Vector);
+
+	//if (length < attackCheckRange)
+	//{
+	//}
+
 	// 回転するかチェック
 	rotateCheck = false;
-
 }
 
 void PlayerAttackState::Execute(float elapsedTime)
@@ -1191,26 +1294,52 @@ void PlayerAttackState::Execute(float elapsedTime)
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
 	}
 
+
+
 	// 回転
 	if (!rotateCheck)
 	{
-		
-		DirectX::XMFLOAT3 playerPosition = owner->GetComponent<Transform>()->GetPosition();
+		DirectX::XMVECTOR Vector;
+		DirectX::XMVECTOR LengthSq;
+
+		DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner->GetComponent<Transform>()->GetPosition());
 		EnemyManager& enemyManager = EnemyManager::Instance();
 		int enemyCount = enemyManager.GetEnemyCount();
 		for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
 		{
-			DirectX::XMFLOAT3 enemyPosition = enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition();
+			DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
 
-			DirectX::XMFLOAT3 Direction =
+			/*DirectX::XMFLOAT3 Direction =
 			{
 				enemyPosition.x - playerPosition.x,
 				enemyPosition.y - playerPosition.y,
 				enemyPosition.z - playerPosition.z
-			};
+			};*/
+
+			Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+
+			LengthSq = DirectX::XMVector3Length(Vector);
+
+			DirectX::XMStoreFloat3(&vector, Vector);
+
+			DirectX::XMStoreFloat(&length, LengthSq);
+			// 距離
+			if (length < attackCheckRange && length > attackCheckRangeMin)
+			{
+				bool stop = false;
+				owner->GetComponent<Movement>()->SetStopMove(stop);
+				owner->GetComponent<Movement>()->Move(vector, speed, elapsedTime);
+			}
+			else
+			{
+				/*DirectX::XMFLOAT3 velocity = {0,0,0};
+				owner->GetComponent<Movement>()->SetVelocity(velocity);*/
+				bool stop = true;
+				owner->GetComponent<Movement>()->SetStopMove(stop);
+			}
 
 			// 正面
-			if (owner->GetComponent<Movement>()->Turn(Direction, turnSpeed, elapsedTime))
+			if (owner->GetComponent<Movement>()->Turn(vector, turnSpeed, elapsedTime) )
 			{
 				rotateCheck = true;
 
