@@ -1397,21 +1397,21 @@ void SceneGame::Initialize()
 
 
 	// 平行光源を追加
-	{
-		mainDirectionalLight = new Light(LightType::Directional);
-		//mainDirectionalLight = std::make_unique<Light>(LightType::Directional);
-		mainDirectionalLight->SetDirection({ 1,-3,-1 });
-		//ambientLightColor = { 0.2f,0.2f,0.2f,0.2f };
-		LightManager::Instanes().Register(mainDirectionalLight);
-	}
+	//{
+	//	mainDirectionalLight = new Light(LightType::Directional);
+	//	//mainDirectionalLight = std::make_unique<Light>(LightType::Directional);
+	//	mainDirectionalLight->SetDirection({ 1,-3,-1 });
+	//	//ambientLightColor = { 0.2f,0.2f,0.2f,0.2f };
+	//	LightManager::Instanes().Register(mainDirectionalLight);
+	//}
 
-	// 点光源を追加
-	{
-		Light* light = new Light(LightType::Point);
-		light->SetPosition(DirectX::XMFLOAT3(0, 1, 0));
-		light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
-		LightManager::Instanes().Register(light);
-	}
+	//// 点光源を追加
+	//{
+	//	Light* light = new Light(LightType::Point);
+	//	light->SetPosition(DirectX::XMFLOAT3(0, 1, 0));
+	//	light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+	//	LightManager::Instanes().Register(light);
+	//}
 
 	//// スポットライトを追加
 	//{
@@ -1425,10 +1425,10 @@ void SceneGame::Initialize()
 
 	// 新しい描画ターゲットの生成
 	{
-		Graphics& graphics = Graphics::Instance();
-		renderTarget = std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth())
-			, static_cast<UINT>(graphics.GetScreenHeight())
-			, DXGI_FORMAT_R8G8B8A8_UNORM);
+		//Graphics& graphics = Graphics::Instance();
+		//renderTarget = std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth())
+		//	, static_cast<UINT>(graphics.GetScreenHeight())
+		//	, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 		//sprite = std::make_unique<Sprite>();
 		//sprite->SetShaderResourceView(renderTarget->GetShaderResourceView()
@@ -1440,18 +1440,18 @@ void SceneGame::Initialize()
 
 	// シャドウマップ用に深度ステンシルの生成
 	{
-		shadowmapDepthStencil = std::make_unique<DepthStencil>(SHADOWMAP_SIZE, SHADOWMAP_SIZE);
+		//shadowmapDepthStencil = std::make_unique<DepthStencil>(SHADOWMAP_SIZE, SHADOWMAP_SIZE);
 	}
 
 	// ポストプロセス描画クラス生成
 	{
-		postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
-		// シーンテクスチャを設定しておく
-		ShaderResourceViewData srvData;
-		srvData.srv = renderTarget->GetShaderResourceView();
-		srvData.width = renderTarget->GetWidth();
-		srvData.height = renderTarget->GetHeight();
-		postprocessingRenderer->SetSceneData(srvData);
+		//postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
+		//// シーンテクスチャを設定しておく
+		//ShaderResourceViewData srvData;
+		//srvData.srv = renderTarget->GetShaderResourceView();
+		//srvData.width = renderTarget->GetWidth();
+		//srvData.height = renderTarget->GetHeight();
+		//postprocessingRenderer->SetSceneData(srvData);
 	}
 
 
@@ -1475,7 +1475,7 @@ void SceneGame::Finalize()
 	// エネミー終了化
 	//EnemyManager::Instance().Clear();
 
-	AfterimageManager::Instance().Clear();
+	//AfterimageManager::Instance().Clear();
 
 
 	//// カメラコントーラー終了化
@@ -1604,8 +1604,8 @@ void SceneGame::Render()
 	
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-	//ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
-	//ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
+	ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
+	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
 	//// シャドウマップの描画
 	//RenderShadowmap();
@@ -1614,23 +1614,23 @@ void SceneGame::Render()
 
 		// 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
 	{
-		Microsoft::WRL::ComPtr <ID3D11RenderTargetView> rtv = graphics.GetRenderTargetView();
-		Microsoft::WRL::ComPtr <ID3D11DepthStencilView> dsv = graphics.GetDepthStencilView();
+		//Microsoft::WRL::ComPtr <ID3D11RenderTargetView> rtv = graphics.GetRenderTargetView();
+		//Microsoft::WRL::ComPtr <ID3D11DepthStencilView> dsv = graphics.GetDepthStencilView();
 
-		// 画面クリア＆レンダーターゲット設定
-		FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
-		dc->ClearRenderTargetView(rtv.Get(), color);
-		dc->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		dc->OMSetRenderTargets(1, rtv.GetAddressOf(), dsv.Get());
+		//// 画面クリア＆レンダーターゲット設定
+		//FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
+		//dc->ClearRenderTargetView(rtv.Get(), color);
+		//dc->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		//dc->OMSetRenderTargets(1, rtv.GetAddressOf(), dsv.Get());
 
-		// UINT11
-		// ビューポートの設定
-		D3D11_VIEWPORT vp = {};
-		vp.Width = graphics.GetScreenWidth();
-		vp.Height = graphics.GetScreenHeight();
-		vp.MinDepth = 0.0f;
-		vp.MaxDepth = 1.0f;
-		dc->RSSetViewports(1, &vp);
+		//// UINT11
+		//// ビューポートの設定
+		//D3D11_VIEWPORT vp = {};
+		//vp.Width = graphics.GetScreenWidth();
+		//vp.Height = graphics.GetScreenHeight();
+		//vp.MinDepth = 0.0f;
+		//vp.MaxDepth = 1.0f;
+		//dc->RSSetViewports(1, &vp);
 
 		// unit09
 		//RenderContext rc;
@@ -1648,30 +1648,30 @@ void SceneGame::Render()
 	}
 
 
-	//FLOAT color[] = {0.0f, 0.0f, 0.5f, 1.0f};// RGBA
-	//dc->ClearRenderTargetView(rtv, color);
-	//dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	//dc->OMSetRenderTargets(1, &rtv, dsv);
+	FLOAT color[] = {0.0f, 0.0f, 0.5f, 1.0f};// RGBA
+	dc->ClearRenderTargetView(rtv, color);
+	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	dc->OMSetRenderTargets(1, &rtv, dsv);
 
-	//// UINT11
- //   // ビューポートの設定
-	//D3D11_VIEWPORT vp = {};
-	//vp.Width = graphics.GetScreenWidth();
-	//vp.Height = graphics.GetScreenHeight();
-	//vp.MinDepth = 0.0f;
-	//vp.MaxDepth = 1.0f;
-	////dc->RSSetViewports(1, &vp);
+	// UINT11
+    // ビューポートの設定
+	D3D11_VIEWPORT vp = {};
+	vp.Width = graphics.GetScreenWidth();
+	vp.Height = graphics.GetScreenHeight();
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	//dc->RSSetViewports(1, &vp);
 
 
-	//RenderContext rc;
-	//rc.lightDirection = { 0.0f,-1.0f, 0.0f, 0.0f };
+	RenderContext rc;
+	rc.lightDirection = { 0.0f,-1.0f, 0.0f, 0.0f };
 
-	//// カメラ情報
-	//Camera& camera = Camera::Instance();
-	//rc.view = camera.GetView();
-	//rc.projection = camera.GetProjection();
+	// カメラ情報
+	Camera& camera = Camera::Instance();
+	rc.view = camera.GetView();
+	rc.projection = camera.GetProjection();
 
-	//rc.deviceContext = dc;
+	rc.deviceContext = dc;
 
 
 	//// UNIT11
@@ -1692,9 +1692,9 @@ void SceneGame::Render()
 		//ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
 
 		//ActorManager::Instance().Render(rc, shader);
-	//ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+	ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
 
-	//ActorManager::Instance().Render(rc, shader);
+	ActorManager::Instance().Render(rc, shader);
 
 
 
@@ -1712,23 +1712,23 @@ void SceneGame::Render()
 	// 2Dスプライト描画
 	{
 		// 描画処理
-		RenderContext rc;
-		rc.deviceContext = dc;
+		//RenderContext rc;
+		//rc.deviceContext = dc;
 
-		// カメラパラメータ設定
-		Camera& camera = Camera::Instance();
-		rc.viewPosition.x = camera.GetEye().x;
-		rc.viewPosition.y = camera.GetEye().y;
-		rc.viewPosition.z = camera.GetEye().z;
-		rc.viewPosition.w = 1;
-		rc.view = camera.GetView();
-		rc.projection = camera.GetProjection();
-		//RenderEnemyGauge(dc, rc.view, rc.projection);
+		//// カメラパラメータ設定
+		//Camera& camera = Camera::Instance();
+		//rc.viewPosition.x = camera.GetEye().x;
+		//rc.viewPosition.y = camera.GetEye().y;
+		//rc.viewPosition.z = camera.GetEye().z;
+		//rc.viewPosition.w = 1;
+		//rc.view = camera.GetView();
+		//rc.projection = camera.GetProjection();
+		////RenderEnemyGauge(dc, rc.view, rc.projection);
 
 
-		SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
+		//SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
 
-		ActorManager::Instance().Render2D(rc, shaderUi);
+		//ActorManager::Instance().Render2D(rc, shaderUi);
 	}
 
 
@@ -1825,15 +1825,15 @@ void SceneGame::Render3DScene()
 	RenderContext rc;
 	rc.deviceContext = dc;
 
-	// ライトの情報を詰め込む
-	LightManager::Instanes().PushRenderContext(rc);
+	//// ライトの情報を詰め込む
+	//LightManager::Instanes().PushRenderContext(rc);
 
-	// UNIT11
-	// ライトの情報をつめこむ 
-	rc.shadowMapData.shadowMap = shadowmapDepthStencil->GetShaderResourceView().Get();
-	rc.shadowMapData.lightViewProjection = lightViewProjeciton;
-	rc.shadowMapData.shadowColor = shadowColor;
-	rc.shadowMapData.shadowBias = shadowBias;
+	//// UNIT11
+	//// ライトの情報をつめこむ 
+	//rc.shadowMapData.shadowMap = shadowmapDepthStencil->GetShaderResourceView().Get();
+	//rc.shadowMapData.lightViewProjection = lightViewProjeciton;
+	//rc.shadowMapData.shadowColor = shadowColor;
+	//rc.shadowMapData.shadowBias = shadowBias;
 
 	//dissolveThreshold = 0.0f;
 	//edgeThreshold = 0.2f; // 緑の閾値
