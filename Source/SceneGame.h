@@ -53,12 +53,12 @@ private:
 
 
 private:
-	Player* player = nullptr;
-	CameraController* cameraController = nullptr;
+	//Player* player = nullptr;
+	//CameraController* cameraController = nullptr;
 
 	//Sprite* gauge = nullptr;
 
-	AfterimageManager* afterimageManager;
+	//AfterimageManager* afterimageManager;
 
 	// c‘œo‚·ŠÔŠuÅ‘å’l
 	float spawnafterimagetimemax = 0.1f;

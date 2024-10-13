@@ -225,12 +225,6 @@
     <ClInclude Include="Source\Graphics\DepthStencil.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\FinalpassShader.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Graphics\LuminanceExtractionShader.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\ModelControll.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -296,6 +290,12 @@
     </ClInclude>
     <ClInclude Include="Source\ProjectileSunder.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\LuminanceExtractionShader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\FinalpassShader.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -494,12 +494,6 @@
     <ClCompile Include="Source\PostprocessingRenderer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\FinalpassShader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\LuminanceExtractionShader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Graphics\PhongShader.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
@@ -532,6 +526,12 @@
     </ClCompile>
     <ClCompile Include="Source\ProjectileSunder.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\LuminanceExtractionShader.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\FinalpassShader.cpp">
+      <Filter>Source\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

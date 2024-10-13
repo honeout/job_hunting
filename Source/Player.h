@@ -149,7 +149,7 @@ public:
     //void CollisionPlayerVsEnemies();
 
     // ノードとエネミーの衝突処理
-    void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius);
+    void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, const char* nodeNameSeconds);
 
     // ノードと弾丸の衝突処理
     void CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius);
@@ -356,6 +356,9 @@ public:
     // 回転確認
     void SetAngleCheck(bool angleCheck) { this->angleCheck = angleCheck; }
 
+    // 重力ゲット
+    float GetGravity() const { return gravity; }
+
     //// 反射後の当たり判定敵に反映
     //void SetCounterCheck(bool counterCheck) { this->counterCheck = counterCheck; }
 
@@ -363,10 +366,11 @@ public:
     //bool GetCounterCheck() const { return counterCheck; }
 
 private:
-    std::shared_ptr<Movement>	movement;
-    std::shared_ptr<HP>	hp;
-    std::shared_ptr<Transform> transform;
-
+    std::weak_ptr<Movement>	movement;
+    std::weak_ptr<HP>	hp;
+    std::weak_ptr<Transform> transform;
+    std::weak_ptr<Collision> collisionGet;
+ 
     
     DirectX::XMFLOAT3 velocity = { 0,0,0 };
 
@@ -416,7 +420,7 @@ private:
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
     float jumpfliptime = gravity * 5;
 
-    float            leftHandRadius = 0.9f;
+    float            leftHandRadius = 0.2f;
 
     bool             attackCollisionFlag = false;
   

@@ -57,7 +57,14 @@ void EnemySlime::Start()
 
     hp->SetMaxHealth(maxHealth);
 
+    // ”¼Œa
     transform->SetRadius(radius);
+
+    // ”íƒ_ƒ[ƒW
+    transform->SetDamageRadius(damageRadius);
+
+    // —^ƒ_ƒ[ƒW
+    transform->SetAttackRadius(attackRange);
 
     transform->SetHeight(height);
 
@@ -144,7 +151,7 @@ void EnemySlime::Update(float elapsedTime)
     // –³“GŽžŠÔXV
     hp->UpdateInbincibleTimer(elapsedTime);
 
-    //DrawDebugPrimitive();
+    DrawDebugPrimitive();
 
     // “–‚½‚è”»’èÕŒ‚”g‚ÆƒvƒŒƒCƒ„[
     CollisionImpactVsPlayer();
@@ -277,12 +284,20 @@ void EnemySlime::DrawDebugPrimitive()
     //debugRenderer->DrawCylinder(position, 1.0f, height,
     //    DirectX::XMFLOAT4(1, 1, 0, 1));
 
+    // ‚ß‚èž‚Ü‚È‚¢‚æ‚¤‚É
     debugRenderer->DrawCylinder(
         {
             position.x,
             position.y + height / 2,
             position.z,
         }, radius, height / 2, DirectX::XMFLOAT4(1, 0, 0, 1));
+
+    // ”íƒ_ƒ[ƒW
+    debugRenderer->DrawSphere({
+            position.x,
+            position.y + height / 2,
+            position.z,
+        }, damageRadius,DirectX::XMFLOAT4(1,0,1,1));
 
 
     // ƒ^[ƒQƒbƒgˆÊ’u‚ðƒfƒoƒbƒO‹…•`‰æ
@@ -297,8 +312,8 @@ void EnemySlime::DrawDebugPrimitive()
     // UŒ‚”ÍˆÍ‚ðƒfƒoƒbƒO‰~’Œ•`‰æ
     debugRenderer->DrawCylinder(position, attackRange, 1.0f, DirectX::XMFLOAT4(1, 0, 0, 1));
 
-    debugRenderer->DrawSphere(position, 10, DirectX::XMFLOAT4(0, 1, 0, 1));
-    debugRenderer->DrawSphere(position, 3, DirectX::XMFLOAT4(0, 1, 0, 1));
+    //debugRenderer->DrawSphere(position, 10, DirectX::XMFLOAT4(0, 1, 0, 1));
+    //debugRenderer->DrawSphere(position, 3, DirectX::XMFLOAT4(0, 1, 0, 1));
 }
 
 // ‘«“¥‚Ý(ÕŒ‚”g)‚Ì“–‚½‚è”»’è
@@ -335,18 +350,18 @@ void EnemySlime::CollisionImpactVsPlayer()
                 DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
                 float playerRadius = player->GetComponent<Transform>()->GetRadius();
                 float playerHeight = player->GetComponent<Transform>()->GetHeight();
-
+                
                 // Õ“Ëˆ—
                 DirectX::XMFLOAT3 outPositon;
                 // ‰~’Œ‚Æ‰~
-                if (Collision::IntersectSphereVsCylinder(
+                if (collisionGet->IntersectSphereVsCylinder(
                     projectilePosition,
                     projectileRadiusOutLine,
                     playerPosition,
                     playerRadius,
                     playerHeight,
                     outPositon) &&
-                    !Collision::IntersectSphereVsCylinder(
+                    !collisionGet->IntersectSphereVsCylinder(
                         projectilePosition,
                         projectileRadiusInLine,
                         playerPosition,
@@ -386,6 +401,8 @@ void EnemySlime::CollisionImpactVsPlayer()
 
                             //hitEffect->Play(e);
                         }
+                        // Ui —h‚ç‚µŠJŽn
+                        player->GetComponent<Player>()->SetShakeMode(true);
 
                         // ’eŠÛ”jŠü
                         //projectile->GetComponent<ProjectileImpact>()->Destoroy();
@@ -428,7 +445,7 @@ void EnemySlime::CollisionRubyVsPlayer()
                 // Õ“Ëˆ—
                 DirectX::XMFLOAT3 outPositon;
                 // ‰~’Œ‚Æ‰~’Œ
-                if (Collision::IntersectCylinderVsCylinder(
+                if (collisionGet->IntersectCylinderVsCylinder(
                     projectilePosition,
                     projectileRadius,
                     projectileHeight,
@@ -487,7 +504,8 @@ void EnemySlime::CollisionRubyVsPlayer()
                         }
                       
 
-
+                        // Ui —h‚ç‚µŠJŽn
+                        player->GetComponent<Player>()->SetShakeMode(true);
 
                         // ’eŠÛ”jŠü
                         //projectile->GetComponent<ProjectileImpact>()->Destoroy();
@@ -578,7 +596,7 @@ void EnemySlime::CollisionRubyWidthVsPlayer()
             // Õ“Ëˆ—
             DirectX::XMFLOAT3 outPositon;
             // ‹…‚Æ‹…
-            if (Collision::IntersectSpherVsSphere(
+            if (collisionGet->IntersectSpherVsSphere(
                 projectilePosition,
                 projectileRadius,
                 playerPosition,
@@ -641,6 +659,8 @@ void EnemySlime::CollisionRubyWidthVsPlayer()
                     // ’eŠÛ”jŠü
                     projectile->GetComponent<BulletFiring>()->Destroy();
 
+                    // Ui —h‚ç‚µŠJŽn
+                    player->GetComponent<Player>()->SetShakeMode(true);
                 }
 
 
@@ -1089,7 +1109,7 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
 
 
             DirectX::XMFLOAT3 outPosition;
-            if (Collision::IntersectSphereVsCylinder(
+            if (collisionGet->IntersectSphereVsCylinder(
                 nodePosition,
                 nodeRadius,
                 playerPosition,

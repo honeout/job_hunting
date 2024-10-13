@@ -47,12 +47,12 @@ Player::~Player()
     //if (model == nullptr)
     //delete model;
 
-    if (movement)
-        movement.reset();
-    if (hp)
-        hp.reset();
-    if (transform)
-        transform.reset();
+    //if (movement)
+    //    movement.reset();
+    //if (hp)
+    //    hp.reset();
+    //if (transform)
+    //    transform.reset();
 
     if (stateMachine)
     {
@@ -108,30 +108,33 @@ void Player::Start()
 
     // ムーブメント関数を使えるように
     movement = GetActor()->GetComponent<Movement>();
-
+    
     // 落下停止
     bool stopFall = false;
-    movement->SetStopFall(stopFall);
-
+    movement.lock()->SetStopFall(stopFall);
+    
     // 移動の停止
     bool stopMove = false;
-    movement->SetStopMove(stopMove);
+    movement.lock()->SetStopMove(stopMove);
 
     // hp関数を使えるように
     hp = GetActor()->GetComponent<HP>();
+
+    // collistionを使えるように
+    collisionGet = GetActor()->GetComponent<Collision>();
 
     // トランスフォーム関数を呼び出し
     transform = GetActor()->GetComponent<Transform>();
     
     // 位置等
-    position = transform->GetPosition();
+    position = transform.lock()->GetPosition();
 
-    angle = transform->GetAngle();
+    angle = transform.lock()->GetAngle();
 
-    scale = transform->GetScale();
+    scale = transform.lock()->GetScale();
 
     // 重力設定
-    movement->SetGravity(gravity);
+    movement.lock()->SetGravity(gravity);
 
     // モデルデータを入れる。
     //model = std::make_unique<Model>(GetActor()->GetComponent<ModelControll>()->GetModel());
@@ -154,13 +157,13 @@ void Player::Start()
 
    
     // hp設定
-    hp->SetHealth(health);
+    hp.lock()->SetHealth(health);
     // hp最大値の設定
-    hp->SetMaxHealth(maxHealth);
+    hp.lock()->SetMaxHealth(maxHealth);
     // 半径
-    transform->SetRadius(radius);
+    transform.lock()->SetRadius(radius);
     // 身長
-    transform->SetHeight(height);
+    transform.lock()->SetHeight(height);
     // 待機ステートへ遷移
     /*TransitionIdleState();*/
 
@@ -450,11 +453,11 @@ void Player::Update(float elapsedTime)
     // 速力処理更新
 
 
-    position = transform->GetPosition();
+    position = transform.lock()->GetPosition();
 
-    angle = transform->GetAngle();
+    angle = transform.lock()->GetAngle();
 
-    scale = transform->GetScale();
+    scale = transform.lock()->GetScale();
 
     //velocity = movement->GetVelocity();
 
@@ -462,7 +465,7 @@ void Player::Update(float elapsedTime)
 
     //velocity = movement->GetVelocity();
 
-    hp->UpdateInbincibleTimer(elapsedTime);
+    hp.lock()->UpdateInbincibleTimer(elapsedTime);
 
     //DrawDebugPrimitive();
 
@@ -521,7 +524,7 @@ void Player::Update(float elapsedTime)
 
     hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
     // 加速度等
-    movement->UpdateVelocity(elapsedTime);
+    movement.lock()->UpdateVelocity(elapsedTime);
     
 
     // プレイヤーと敵との衝突処理
@@ -544,7 +547,7 @@ void Player::Update(float elapsedTime)
     //model->Update_blend_animations(elapsedTime, frontVec.x,36,60, true);
     //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
     // 位置更新
-    transform->UpdateTransform();
+    transform.lock()->UpdateTransform();
 
 
 
@@ -582,7 +585,7 @@ void Player::Update(float elapsedTime)
 
 
     // 位置更新
-    model->UpdateTransform(transform->GetTransform());
+    model->UpdateTransform(transform.lock()->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 
     // モデル行列更新
@@ -1427,8 +1430,8 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
     if (vec.x != 0 || vec.y != 0 || vec.z != 0)
     {
-        movement->Move(vec,moveSpeed, elapsedTime);
-        movement->Turn( vec ,turnSpeed, elapsedTime);
+        movement.lock()->Move(vec,moveSpeed, elapsedTime);
+        movement.lock()->Turn( vec ,turnSpeed, elapsedTime);
     }
 
    
@@ -1507,7 +1510,7 @@ void Player::CollisionProjectilesVsEnemies()
             float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
             
             DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-            float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
+            float enemyRadius = enemy->GetComponent<Transform>()->GetDamageRadius();
             float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
 
             // 衝突処理
@@ -1516,7 +1519,7 @@ void Player::CollisionProjectilesVsEnemies()
             if (!projectile->GetComponent<ProjectileHoming>() && !projectile->GetComponent<ProjectileSunder>())return;
 
             // 円柱と円
-            if (Collision::IntersectSphereVsCylinder(
+            if (collisionGet.lock()->IntersectSphereVsCylinder(
                 projectilePosition,
                 projectileRadius,
                 {
@@ -1594,7 +1597,7 @@ void Player::CollisionRubyVsEnemies()
             float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
 
             DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-            float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
+            float enemyRadius = enemy->GetComponent<Transform>()->GetDamageRadius();
             float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
 
             // 衝突処理
@@ -1606,7 +1609,7 @@ void Player::CollisionRubyVsEnemies()
             counterCheck = projectile->GetComponent<ProjectileThrowing>()->GetCounterCheck();
 
             // 円柱と円
-            if (Collision::IntersectSphereVsCylinder(
+            if (collisionGet.lock()->IntersectSphereVsCylinder(
                 projectilePosition,
                 projectileRadius,
                 {
@@ -1691,7 +1694,7 @@ void Player::CollisionPlayerVsEnemies()
             float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
 
 
-            if (Collision::IntersectCylinderVsCylinder(
+            if (collisionGet.lock()->IntersectCylinderVsCylinder(
                 position, radius, height,
                 enemyPosition,
                 enemyRadius,
@@ -1730,7 +1733,7 @@ void Player::CollisionPlayerVsEnemies()
 
                         //小ジャンプ
                         //Jump(jumpSpeed * 0.5f);
-                        movement->JumpVelocity(jumpSpeed * 0.5f);
+                        movement.lock()->JumpVelocity(jumpSpeed * 0.5f);
 
 
                     }
@@ -1747,7 +1750,7 @@ void Player::CollisionPlayerVsEnemies()
                         impulse.y = power * normal.y;
                         impulse.z = normal.z * power;
 
-                        movement->AddImpulse(impulse);
+                        movement.lock()->AddImpulse(impulse);
                     }
                 
             }
@@ -1764,7 +1767,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 {
 
     // ノード取得
-    Model::Node* nodehand = model->FindNode(bornname);
+    //Model::Node* nodehand = model->FindNode(bornname);
 
     EnemyManager& enemyManager = EnemyManager::Instance();
 
@@ -1791,23 +1794,23 @@ void Player::CollisionBornVsProjectile(const char* bornname)
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
 
-        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+        //DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
         float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
-        float enemyHeight = enemy->GetComponent<Transform>()->GetRadius();
+        float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
 
-
-        if (Collision::IntersectCylinderVsCylinder(
+        
+        if (collisionGet.lock()->IntersectCylinderVsCylinder(
             position, radius, height,
             nodePosition,
             enemyRadius,
-            enemyHeight,
+            enemyHeight / 2,
             outPositon))
 
         {
             
 
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemyPosition);
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&nodePosition);
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
             DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
             DirectX::XMFLOAT3 normal;
@@ -1818,7 +1821,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 
                 //小ジャンプ
                 //Jump(jumpSpeed * 0.5f);
-                movement->JumpVelocity(jumpSpeed * 0.5f);
+                movement.lock()->JumpVelocity(jumpSpeed * 0.1f);
 
 
             }
@@ -1827,7 +1830,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
                 // 押し出し後の位置設定　
                 //enemy->GetComponent<Transform>()->SetPosition(outPositon);
                 
-                const float power = 2.3f;
+                const float power = 2.0f;
 
                 float velocityMax = 2;
 
@@ -1835,8 +1838,8 @@ void Player::CollisionBornVsProjectile(const char* bornname)
                 impulse.x = normal.x * power;
                 impulse.y = power * normal.y;
                 impulse.z = normal.z * power;
-                if(movement->GetVelocity().x <= velocityMax)
-                movement->AddImpulse(impulse);
+                if(movement.lock()->GetVelocity().x <= velocityMax)
+                movement.lock()->AddImpulse(impulse);
 
 
             }
@@ -1848,7 +1851,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 }
 
 // ノードと敵の衝突判定
-void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
+void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, const char* nodeNameSeconds)
 {
 
     // ノード取得
@@ -1871,24 +1874,34 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
     {
         std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
-        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-        float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
+        // ノード取得
+        Model::Node* nodeEnemySholder = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(nodeNameSeconds);
+        //worldTransform
+        //localTransform
+        // ノード位置取得
+        DirectX::XMFLOAT3 nodeEnemySholderPosition;
+        nodeEnemySholderPosition = {
+            nodeEnemySholder->worldTransform._41,
+            nodeEnemySholder->worldTransform._42,
+            nodeEnemySholder->worldTransform._43
+        };
+
+
+
+        /*DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();*/
+        float enemyRudius = enemy->GetComponent<Transform>()->GetDamageRadius();
         float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
 
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
 
         // 円柱と円
-        if (Collision::IntersectSphereVsCylinder(
+        if (collisionGet.lock()->IntersectSphereVsCylinder(
             nodePosition,
             nodeRadius, 
-            {
-            enemyPosition.x,
-            enemyPosition.y + enemyHeight / 2,
-            enemyPosition.z 
-            },
+            nodeEnemySholderPosition,
             enemyRudius,
-            enemyHeight / 2,
+            enemyHeight,
             outPositon))
 
         {
@@ -1920,7 +1933,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
                 //}
                 // ヒットエフェクト再生
                 {
-                    DirectX::XMFLOAT3 e = enemyPosition;
+                    DirectX::XMFLOAT3 e = nodeEnemySholderPosition;
                     e.y += enemyHeight * 0.5f;
 
 
@@ -1993,13 +2006,13 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
 
 
             // 球と球
-            if (Collision::IntersectSpherVsSphere(
+            if (collisionGet.lock()->IntersectSpherVsSphere(
                 nodePosition,
                 nodeRadius,
                 projectilePosition,
                 projectileOutRudius,
                 outPositon) && 
-                !Collision::IntersectSpherVsSphere(
+                !collisionGet.lock()->IntersectSpherVsSphere(
                     nodePosition,
                     nodeRadius,
                     projectilePosition,
@@ -2085,7 +2098,7 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
 
 
             // 球と球
-            if (Collision::IntersectSpherVsSphere(
+            if (collisionGet.lock()->IntersectSpherVsSphere(
                 nodePosition,
                 nodeRadius,
                 projectilePosition,
@@ -2172,7 +2185,7 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
 
 
             // 球と球
-            if (Collision::IntersectSpherVsSphere(
+            if (collisionGet.lock()->IntersectSpherVsSphere(
                 nodePosition,
                 nodeRadius,
                 projectilePosition,
@@ -2313,10 +2326,10 @@ bool Player::InputJump()
     if (gamePad.GetButtonDown() & GamePad::BTN_A)
     {
         // 値を小さくする
-        if (movement->GetJumpCount() < jumpLimit) {
+        if (movement.lock()->GetJumpCount() < jumpLimit) {
            
             
-            movement->JumpVelocity(jumpSpeed);
+            movement.lock()->JumpVelocity(jumpSpeed);
 
             // ジャンプ入力した
            return true;
@@ -2687,7 +2700,7 @@ void Player::UpdateJumpState(float elapsedTime)
 
 
     // ジャンプ入力処理
-    if (InputJump()&&movement->GetJumpCount() >= 1)
+    if (InputJump()&&movement.lock()->GetJumpCount() >= 1)
     {
         TransitionJumpFlipState();
     }
@@ -2723,7 +2736,7 @@ void Player::TransitionLandState()
     // 着地アニメーション再生
     model->PlayAnimation(Anim_Landing, false);
 
-    movement->SetOnLadius(false);
+    movement.lock()->SetOnLadius(false);
 
     //movement->SetStepOffSet(false);
     
@@ -2736,7 +2749,7 @@ void Player::UpdateLandState(float elapsedTime)
     // もし終わったら待機に変更
     if (!model->IsPlayAnimation())
     {
-        movement->SetOnLadius(false);
+        movement.lock()->SetOnLadius(false);
         TransitionIdleState();
     }
 
@@ -2842,11 +2855,11 @@ void Player::UpdateAttackState(float elapsedTime)
             // 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
             attackCollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
         }
-    if (attackCollisionFlag)
-    {
-        // 左手ノードとエネミーの衝突処理
-        CollisionNodeVsEnemies("mixamorig:LeftHand", leftHandRadius);
-    }
+    //if (attackCollisionFlag)
+    //{
+    //    // 左手ノードとエネミーの衝突処理
+    //    CollisionNodeVsEnemies("mixamorig:LeftHand", leftHandRadius);
+    //}
 
     Ground();
     
@@ -3304,7 +3317,7 @@ void Player::AttackCheckUI()
             DirectX::XMFLOAT3 outPositon;
 
             // 円柱と円
-            if (Collision::IntersectSphereVsCylinder(
+            if (collisionGet.lock()->IntersectSphereVsCylinder(
                 position,
                 radius,
                 {
@@ -3487,7 +3500,7 @@ void Player::DmageInvalidJudment(bool invalidJudgment)
 void Player::UiControlle(float elapsedTime)
 {
 
-    float gaugeWidth = hp->GetMaxHealth() * hp->GetHealth() * 0.1f;
+    float gaugeWidth = hp.lock()->GetMaxHealth() * hp.lock()->GetHealth() * 0.1f;
     // hpゲージ
     std::shared_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
     std::shared_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
@@ -3522,7 +3535,7 @@ void Player::UiControlle(float elapsedTime)
 
 bool Player::Ground()
 {
-    if (movement->GetOnLadius())
+    if (movement.lock()->GetOnLadius())
     {
         //jumpCount = 0;
         //TransitionLandState();

@@ -287,8 +287,6 @@ void ActorManager::Clear()
 		
 	}
 	updateActors.clear();
-
-
     
 	
 }
