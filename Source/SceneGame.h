@@ -42,23 +42,17 @@ private:
 	void RenderShadowmap();
 
 
-	// エネミーHPゲージ描画
-	void RenderEnemyGauge(
-	ID3D11DeviceContext* dc,
-		const DirectX::XMFLOAT4X4& view,
-		const DirectX::XMFLOAT4X4& projection
-	);
+	//// エネミーHPゲージ描画
+	//void RenderEnemyGauge(
+	//ID3D11DeviceContext* dc,
+	//	const DirectX::XMFLOAT4X4& view,
+	//	const DirectX::XMFLOAT4X4& projection
+	//);
 
-	void AfterimageTime(float elapsedTime);
+	//void AfterimageTime(float elapsedTime);
 
 
 private:
-	//Player* player = nullptr;
-	//CameraController* cameraController = nullptr;
-
-	//Sprite* gauge = nullptr;
-
-	//AfterimageManager* afterimageManager;
 
 	// 残像出す間隔最大値
 	float spawnafterimagetimemax = 0.1f;
@@ -93,7 +87,7 @@ private:
 	std::unique_ptr<DepthStencil> shadowmapDepthStencil; // シャドウマップ用深度ステンシルバッファ
 	float shadowDrawRect = 500.0f;// シャドウマップに描画する範囲
 	DirectX::XMFLOAT4X4 lightViewProjeciton; // ライトビュープロジェクション行列
-	DirectX::XMFLOAT3 shadowColor = { 0.2,0.2f,0.2f };// 影の色
+	DirectX::XMFLOAT3 shadowColor = { 0.2f,0.2f,0.2f };// 影の色
 	float shadowBias = 0.001f;// 深度比較用のオフセット値
 
 	// ポストプロセス

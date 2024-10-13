@@ -18,12 +18,12 @@ void TransForm2D::Shake()
 {
     if (!GetShakeEnd())
     {
-        if (position.y > max)
+        if (position.y > max + position.y)
         {
 
             checkPositionY = true;
         }
-        if (position.y < min)
+        if (position.y < min - position.y)
         {
 
             checkPositionY = false;

@@ -55,7 +55,7 @@ public:
     bool GetTimeUp() { return this->timeUp; }
 
 private:
-    Sprite* sprite = nullptr;
+    std::unique_ptr<Sprite> sprite;
 
     // ˆÊ’u‚â“®‚«
     std::shared_ptr<TransForm2D> transForm2D;

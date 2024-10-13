@@ -3,9 +3,8 @@
 
 #include "Graphics/Model.h"
 
-#include "Stage.h"
-
 #include "Component.h"
+#include "Collision.h"
 #include "ModelControll.h"
 #include "Transform.h"
 
