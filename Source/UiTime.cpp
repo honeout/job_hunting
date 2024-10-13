@@ -12,7 +12,7 @@ UiTime::~UiTime()
 void UiTime::Start()
 {
     // ‰æ‘œ
-    sprite = std::make_unique<Sprite>(GetActor()->GetComponent<SpriteControll>()->GetSprite());
+    //sprite = std::make_unique<Sprite>(GetActor()->GetComponent<SpriteControll>()->GetSprite());
     // ˆÊ’u“™
     transForm2D = GetActor()->GetComponent<TransForm2D>();
 }

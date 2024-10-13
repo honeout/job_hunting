@@ -51,14 +51,6 @@ public:
     float GetRadius() { return radius; }
     void  SetRadius(float radius) { this->radius = radius; }
 
-    // 被ダメージエリア
-    float GetDamageRadius() { return damageRadius; }
-    void  SetDamageRadius(float damageRadius) { this->damageRadius = damageRadius; }
-
-    // 与ダメージエリア
-    float GetAttackRadius() { return attackRadius; }
-    void  SetAttackRadius(float attackRadius) { this->attackRadius = attackRadius; }
-
     // 高さ
     float GetHeight() { return height; }
     void  SetHeight(float height) { this->height = height; }
@@ -77,12 +69,6 @@ private:
 
     // 半径05 
     float radius = 0.5f;
-
-    // 被ダメージエリア
-    float damageRadius = 0.8f;
-
-    // 与ダメージエリア
-    float attackRadius = 0.5f;
 
     // 高さ
     float height = 1;

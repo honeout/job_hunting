@@ -54,6 +54,7 @@ private:
 
 private:
 
+
 	// c‘œo‚·ŠÔŠuÅ‘å’l
 	float spawnafterimagetimemax = 0.1f;
 

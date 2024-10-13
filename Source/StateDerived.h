@@ -35,7 +35,7 @@ private:
 	bool  loop = false;
 
 	// 再生開始時間 
-	float currentAnimationStartSeconds = 2.9f;
+	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
@@ -84,7 +84,7 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
-	float				attackRange = 13;
+	float				attackRange = 0;
 
 	int                 attackRound;
 	int                 attackCountMax;
@@ -161,8 +161,6 @@ private:
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
-
-
 };
 // 射撃弧ステートオブジェクト
 class AttackShotThrowingState : public State
@@ -448,10 +446,7 @@ private:
 	// 攻撃サポート範囲
 	float attackCheckRange = 15;
 
-	float attackCheckRangeMin = 4;
-
-	// 重力確認
-	float gravity = -0.2f;
+	float attackCheckRangeMin = 3;
 };
 
 // よろけステートオブジェクト

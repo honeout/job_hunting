@@ -19,6 +19,6 @@ public:
     void Render() override;
 
 private:
-    //std::unique_ptr<Sprite> sprite;
-    Sprite* sprite = nullptr;
+    std::unique_ptr<Sprite> sprite;
+    //Sprite* sprite = nullptr;
 };
