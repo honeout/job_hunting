@@ -254,9 +254,6 @@ public:
 
     bool GetPushuThrow() const { return pushuThrow; }
 
-    // ゲット被ダメージ範囲
-    float GetDamageRadius() const { return damageRadius; }
-
 
 protected:
     //// 死亡した時に呼ばれる
@@ -277,8 +274,6 @@ private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
     std::shared_ptr<Transform>	transform;
-
-    std::shared_ptr<Collision> collisionGet;
 
     //std::unique_ptr<Model> model;
     // Model* model;
@@ -325,9 +320,6 @@ private:
     // 攻撃半径
     float attackRange = 1.5f;
 
-    // 被ダメージ範囲
-    float damageRadius = 3.5f;
-
 
     // Hp
     int health = 50;
@@ -336,7 +328,7 @@ private:
     int maxHealth = 50;
 
     // 半径
-    float radius = 2.0f;
+    float radius = 3.0f;
 
     // 高さ
     float height = 10.0f;
@@ -357,10 +349,7 @@ private:
 
     bool pushuThrow = false;
 
-
-
    
-
 
     // ステート切り替え時間管理
    // float				stateTimer = 0.0f;

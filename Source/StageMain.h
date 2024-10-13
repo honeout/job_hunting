@@ -44,10 +44,10 @@ public:
 
 private:
     //Model* model;
-    std::weak_ptr<ModelControll> model;
+    std::shared_ptr<ModelControll> model;
     //std::unique_ptr<Model>	model;
 
-    std::weak_ptr<Transform> transformid;
+    std::shared_ptr<Transform> transformid;
 };
 
 // ステージマネージャー

@@ -206,8 +206,8 @@ void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
 		hr = LoadTexture(device, filename, nullptr, true, material.shaderResourceView.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
-		//hr = LoadTexture(device, filename, nullptr, true, material.normal_map.GetAddressOf());
-		//_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+		hr = LoadTexture(device, filename, nullptr, true, material.normal_map.GetAddressOf());
+		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
 		//hr = LoadTexture(device, filename, nullptr, true, material.diffuse_map.GetAddressOf());
 		//_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));

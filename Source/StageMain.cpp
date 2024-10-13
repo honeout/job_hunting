@@ -15,11 +15,9 @@ StageMain::~StageMain()
     // ステージモデルを破棄
     //delete model;
 
- /*   if (transformid)
-        transformid.reset();*/
-    model.reset();
-
-    transformid.reset();
+    if (transformid)
+        transformid.reset();
+    
 
 }
 
@@ -38,9 +36,9 @@ void StageMain::Start()
 void StageMain::Update(float elasedTime)
 {
     // 今は特にやることなし
-    transformid.lock()->UpdateTransform();
+    transformid->UpdateTransform();
 
-    model.lock()->GetModel()->UpdateTransform(transformid.lock()->GetTransform());
+    model->GetModel()->UpdateTransform(transformid->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
 }
 
@@ -54,7 +52,7 @@ void StageMain::Render(RenderContext& rc, ModelShader& shader)
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
 
-    shader.Draw(rc, model.lock()->GetModel());
+    shader.Draw(rc, model->GetModel());
 
     shader.End(rc);
 
@@ -71,7 +69,7 @@ void StageMain::RenderShadowmap(RenderContext& rc)
     shader->Begin(rc);// シェーダーにカメラの情報を渡す
 
 
-    shader->Draw(rc, model.lock()->GetModel());
+    shader->Draw(rc, model->GetModel());
 
     shader->End(rc);
 
@@ -80,7 +78,7 @@ void StageMain::RenderShadowmap(RenderContext& rc)
 bool StageMain::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end,
     HitResult& hit)
 {
-    return Collision::IntersectRayVsModel(start, end, model.lock()->GetModel(), hit);
+    return Collision::IntersectRayVsModel(start, end, model->GetModel(), hit);
 }
 
 void StageManager::Register(std::shared_ptr <Actor> actor)
