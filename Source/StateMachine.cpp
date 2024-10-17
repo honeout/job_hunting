@@ -28,6 +28,8 @@ void StateMachine::ChangeState(int newState)
 	if (!currentState)
 	currentState->Exit();
 	SetState(newState);
+	//	currentState = statePool.at(newState);
+	//  currentState->Enter();
 	
 }
 // ステート登録

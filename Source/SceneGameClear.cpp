@@ -6,14 +6,18 @@
 #include "SceneLoading.h"
 void SceneGameClear::Initialize()
 {
-    //const char* filename = "Data/Sprite/LoadingIcon.png";
     // スプライト初期化
-    sprite = std::make_unique<Sprite>("Data/Sprite/LoadingIcon.png");
-    //sprite = new Sprite(filename);
+    sprite = new Sprite("Data/Sprite/LoadingIcon.png");
 }
 
 void SceneGameClear::Finalize()
 {
+    // スプライト終了化
+    if (this->sprite)
+    {
+        delete sprite;
+        sprite = nullptr;
+    }
 }
 
 void SceneGameClear::Update(float elapsedTime)

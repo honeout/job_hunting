@@ -422,7 +422,7 @@ private:
 	float				stateTimer = 0.0f;
 	bool				button = false;
 
-	float				turnSpeed = 10;
+	float				turnSpeed = DirectX::XMConvertToRadians(90);
 
 	float               speed = 10;
 

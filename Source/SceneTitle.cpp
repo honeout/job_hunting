@@ -10,12 +10,23 @@
 void SceneTitle::Initialize()
 {
     // スプライト初期化
+
     sprite = std::make_unique<Sprite>("Data/Sprite/Title.png");
     //sprite new Sprite("Data/Sprite/Title.png");
+
+    //sprite = new Sprite("Data/Sprite/Title.png");
+
+
 }
 // 終了化
 void SceneTitle::Finalize()
 {
+    // スプライト終了化
+    //if (this->sprite)
+    //{
+    //    delete sprite;
+    //    sprite = nullptr;
+    //}
 }
 // 更新処理
 void SceneTitle::Update(float elapsedTime)

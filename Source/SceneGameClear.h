@@ -1,7 +1,6 @@
 #pragma once
 #include "Graphics/Sprite.h"
 #include "Scene.h"
-#include <memory>
 class SceneGameClear : public Scene
 {
 public:
@@ -19,8 +18,6 @@ public:
     void Render() override;
 
 private:
-    //Sprite* sprite;
-    std::unique_ptr<Sprite>	sprite;
-    
+    Sprite* sprite = nullptr;
 
 };
