@@ -1218,9 +1218,20 @@ void PlayerAttackState::Enter()
 
 	std::shared_ptr<Player> playerId = owner->GetComponent<Player>();
 
-	// 落ちるの停止
-	bool stopFall = true;
-	owner->GetComponent<Movement>()->SetStopFall(stopFall);
+	// アニメーション再生
+	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+		owner->GetComponent<Player>()->Anim_Attack, loop,
+		currentAnimationStartSeconds, blendSeconds
+	);
+	// アニメーション再生
+	owner->GetComponent<Player>()->SetUpdateAnim(UpAnim::Normal);
+
+	
+	owner->GetComponent<Movement>()->SetGravity(gravity);
+
+	//// 落ちるの停止
+	//bool stopFall = true;
+	//owner->GetComponent<Movement>()->SetStopFall(stopFall);
 
 	// 移動の停止
 	bool stopMove = true;
@@ -1328,7 +1339,23 @@ void PlayerAttackState::Execute(float elapsedTime)
 			{
 				bool stop = false;
 				owner->GetComponent<Movement>()->SetStopMove(stop);
-				owner->GetComponent<Movement>()->Move(vector, speed, elapsedTime);
+				//owner->GetComponent<Movement>()->Move(vector, speed, elapsedTime);
+				
+				// 正面
+				if (owner->GetComponent<Movement>()->Turn(vector, turnSpeed, elapsedTime))
+				{
+					rotateCheck = true;
+					owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+						owner->GetComponent<Player>()->Anim_Attack, loop,
+						currentAnimationStartSeconds, blendSeconds
+					);
+					// アニメーション再生
+					owner->GetComponent<Player>()->SetUpdateAnim(UpAnim::Normal);
+
+					owner->GetComponent<Movement>()->Move(vector, speed, elapsedTime);
+					
+				}
+
 			}
 			else
 			{
@@ -1336,21 +1363,12 @@ void PlayerAttackState::Execute(float elapsedTime)
 				owner->GetComponent<Movement>()->SetVelocity(velocity);*/
 				bool stop = true;
 				owner->GetComponent<Movement>()->SetStopMove(stop);
+
+				
+				owner->GetComponent<Movement>()->Move(vector, speed, elapsedTime);
 			}
 
-			// 正面
-			if (owner->GetComponent<Movement>()->Turn(vector, turnSpeed, elapsedTime) )
-			{
-				rotateCheck = true;
 
-				owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
-					owner->GetComponent<Player>()->Anim_Attack, loop,
-					currentAnimationStartSeconds, blendSeconds
-				);
-
-				// アニメーションルール
-				owner->GetComponent<Player>()->SetUpdateAnim(UpAnim::Normal);
-			}
 		}
 
 	}
@@ -1379,17 +1397,18 @@ void PlayerAttackState::Execute(float elapsedTime)
 		// 入力確認でステート変更
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button ? Player::State::Attack : Player::State::Move));
 
-		// 落ちるの再開
-		bool stopFallFalse = false;
-		bool stopFallTrue = true;
-		owner->GetComponent<Movement>()->SetStopFall(button ? stopFallTrue : stopFallFalse);
-
+		//// 落ちるの再開
+		//bool stopFallFalse = false;
+		//bool stopFallTrue = true;
+		//owner->GetComponent<Movement>()->SetStopFall(button ? stopFallTrue : stopFallFalse);
+		
+	
 		// 移動の停止
 		bool stopMoveFalse = false;
 		bool stopMoveTrue = false;
-		owner->GetComponent<Movement>()->SetStopMove(button ? stopMoveTrue : stopMoveFalse);
-
-
+		owner->GetComponent<Movement>()->SetGravity(button ?
+			gravity :
+			owner->GetComponent<Player>()->GetGravity());
 		button = false;
 		//owner->GetComponent<Player>()->SetSpecialAttackTime(false);
 
@@ -1425,7 +1444,7 @@ void PlayerAttackState::Execute(float elapsedTime)
 	if (CollisionFlag)
 	{
 		// 左手ノードとエネミーの衝突処理
-		owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius());
+		owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(),"shoulder");
 	}
 
 	//owner->GetComponent<Player>()->Ground();

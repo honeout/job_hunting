@@ -446,7 +446,9 @@ private:
 	// 攻撃サポート範囲
 	float attackCheckRange = 15;
 
-	float attackCheckRangeMin = 3;
+	float attackCheckRangeMin = 4;
+
+	float gravity = -0.2f;
 };
 
 // よろけステートオブジェクト

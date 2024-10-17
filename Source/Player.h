@@ -149,7 +149,7 @@ public:
     //void CollisionPlayerVsEnemies();
 
     // ノードとエネミーの衝突処理
-    void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius);
+    void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, const char* nodeNameSeconds);
 
     // ノードと弾丸の衝突処理
     void CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius);
@@ -362,6 +362,8 @@ public:
     //// 反射後の当たり判定敵に反映
     //bool GetCounterCheck() const { return counterCheck; }
 
+    float GetGravity() const { return gravity; }
+
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
@@ -416,7 +418,7 @@ private:
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
     float jumpfliptime = gravity * 5;
 
-    float            leftHandRadius = 0.9f;
+    float            leftHandRadius = 0.2f;
 
     bool             attackCollisionFlag = false;
   

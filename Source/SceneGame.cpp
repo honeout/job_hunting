@@ -1577,14 +1577,14 @@ void SceneGame::Render()
 	//dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	//dc->OMSetRenderTargets(1, &rtv, dsv);
 
-	//// UINT11
- //   // ビューポートの設定
+	// UINT11
+    // ビューポートの設定
 	//D3D11_VIEWPORT vp = {};
 	//vp.Width = graphics.GetScreenWidth();
 	//vp.Height = graphics.GetScreenHeight();
 	//vp.MinDepth = 0.0f;
 	//vp.MaxDepth = 1.0f;
-	////dc->RSSetViewports(1, &vp);
+	//dc->RSSetViewports(1, &vp);
 
 
 	//RenderContext rc;
@@ -1636,23 +1636,23 @@ void SceneGame::Render()
 	// 2Dスプライト描画
 	{
 		// 描画処理
-		//RenderContext rc;
-		//rc.deviceContext = dc;
+		RenderContext rc;
+		rc.deviceContext = dc;
 
-		//// カメラパラメータ設定
-		//Camera& camera = Camera::Instance();
-		//rc.viewPosition.x = camera.GetEye().x;
-		//rc.viewPosition.y = camera.GetEye().y;
-		//rc.viewPosition.z = camera.GetEye().z;
-		//rc.viewPosition.w = 1;
-		//rc.view = camera.GetView();
-		//rc.projection = camera.GetProjection();
-		////RenderEnemyGauge(dc, rc.view, rc.projection);
+		// カメラパラメータ設定
+		Camera& camera = Camera::Instance();
+		rc.viewPosition.x = camera.GetEye().x;
+		rc.viewPosition.y = camera.GetEye().y;
+		rc.viewPosition.z = camera.GetEye().z;
+		rc.viewPosition.w = 1;
+		rc.view = camera.GetView();
+		rc.projection = camera.GetProjection();
+		//RenderEnemyGauge(dc, rc.view, rc.projection);
 
 
-		//SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
+		SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
 
-		//ActorManager::Instance().Render2D(rc, shaderUi);
+		ActorManager::Instance().Render2D(rc, shaderUi);
 	}
 
 
@@ -1678,14 +1678,14 @@ void SceneGame::Render()
 	
 
 	//// 2Dスプライト描画
-	//{
+	{
 	//	//RenderEnemyGauge(dc, rc.view, rc.projection);
 
 
-	//	SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
+		//SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
 
-	//	ActorManager::Instance().Render2D(rc, shaderUi);
-	//}
+		//ActorManager::Instance().Render2D(rc, shaderUi);
+	}
 
 	// 2DデバッグGUI描画
 	{

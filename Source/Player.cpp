@@ -1848,7 +1848,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 }
 
 // ノードと敵の衝突判定
-void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
+void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, const char* nodeNameSeconds)
 {
 
     // ノード取得
@@ -2845,7 +2845,7 @@ void Player::UpdateAttackState(float elapsedTime)
     if (attackCollisionFlag)
     {
         // 左手ノードとエネミーの衝突処理
-        CollisionNodeVsEnemies("mixamorig:LeftHand", leftHandRadius);
+        CollisionNodeVsEnemies("mixamorig:LeftHand", leftHandRadius, "shoulder");
     }
 
     Ground();
