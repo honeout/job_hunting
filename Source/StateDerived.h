@@ -84,10 +84,10 @@ public:
 	void Exit()override;
 private:
 	float				stateTimer = 0.0f;
-	float				attackRange = 0;
+	float				attackRange = 0.0f;
 
-	int                 attackRound;
-	int                 attackCountMax;
+	int                 attackRound = 0;
+	int                 attackCountMax = 0;
 
 	int                 attackType = 0;
 
@@ -95,7 +95,7 @@ private:
 	bool  loop = true;
 
 	// 再生開始時間 
-	float currentAnimationStartSeconds;
+	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
@@ -157,7 +157,7 @@ private:
 	bool  loop = false;
 
 	// 再生開始時間 
-	float currentAnimationStartSeconds;
+	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
@@ -189,7 +189,7 @@ private:
 	bool  loop = false;
 
 	// 再生開始時間 
-	float currentAnimationStartSecondsf;
+	float currentAnimationStartSecondsf = 0.0f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
@@ -436,12 +436,12 @@ private:
 	float blendSeconds = 1.0f;
 
 	// 回転許可
-	bool rotateCheck;
+	bool rotateCheck = false;
 
 	// 距離
 	float length = 0;
 
-	DirectX::XMFLOAT3 vector;
+	DirectX::XMFLOAT3 vector = {0,0,0};
 
 	// 攻撃サポート範囲
 	float attackCheckRange = 15;
