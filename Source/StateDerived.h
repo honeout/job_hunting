@@ -449,6 +449,9 @@ private:
 	float attackCheckRangeMin = 4;
 
 	float gravity = -0.2f;
+
+	// 加速度
+	DirectX::XMFLOAT3 velocity = { 0,0,0 };
 };
 
 // よろけステートオブジェクト

@@ -47,7 +47,6 @@ void SceneGame::Initialize()
 	
 	// ステージ初期化
 	{
-		//const char* filename = "Data/Model/ExampleStage/ExampleStage.mdl";
 		const char* filename = "Data/Model/ExampleStage/M_stage .mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
@@ -79,8 +78,6 @@ void SceneGame::Initialize()
 	{
 		// プレイヤー初期化
 		const char* filename = "Data/Model/Jammo/Jammo.mdl";
-		//const char* filename = "Data/Model/Player/dualsword_player.mdl";
-		//const char* filename = "Data/Model/Player/test.mdl";
 
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
@@ -109,8 +106,6 @@ void SceneGame::Initialize()
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
 
-		//actor->AddComponent<StageMain>();
-		//actor->AddComponent<ProjectileStraight>();
 		PlayerManager::Instance().Register(actor);
 
 
@@ -119,16 +114,11 @@ void SceneGame::Initialize()
 
 	// 敵
 	{
-		// 重い
-		//for (int i = 0; i < 10; ++i)
-		//{
-		// 敵初期化
-		//const char* filename = "Data/Model/Slime/Slime.mdl";
+
 		const char* filename = "Data/Model/Boss/BossAnim8.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
-		//actor->SetName("EnemySlime");
 		actor->SetName("ClestaleBoss");
 		actor->AddComponent<Transform>();
 
@@ -146,7 +136,6 @@ void SceneGame::Initialize()
 		int life = 2;
 		hp->SetLife(life);
 		actor->AddComponent<Collision>();
-		//actor->AddComponent<StageMain>();
 		actor->AddComponent<EnemySlime>();
 
 		// これが２Dかの確認
@@ -210,7 +199,6 @@ void SceneGame::Initialize()
 	// UI EnemyHP
 	{
 		const char* filename = "Data/Sprite/enemyHPber.png";
-		//const char* filename = "Data/Sprite/HP.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("EnemyHPSet");
 		actor->AddComponent<SpriteControll>();
@@ -247,7 +235,6 @@ void SceneGame::Initialize()
 
 	// UI PlayerCommandAttack
 	{
-		//const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
 		const char* filename = "Data/Sprite/コマンド　非選択攻撃.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandAttack");
@@ -284,7 +271,6 @@ void SceneGame::Initialize()
 
 	// UI PlayerCommandMagick
 	{
-		//const char* filename = "Data/Sprite/コマンド　選択魔法.png";
 		const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandMagick");
@@ -323,7 +309,6 @@ void SceneGame::Initialize()
 	// UI PlayerCommandAttackCheck
 	{
 		const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
-		//const char* filename = "Data/Sprite/コマンド　非選択攻撃.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandAttackCheck");
 		actor->AddComponent<SpriteControll>();
@@ -360,7 +345,6 @@ void SceneGame::Initialize()
 	// UI PlayerCommandMagickCheck
 	{
 		const char* filename = "Data/Sprite/コマンド　選択魔法.png";
-		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandMagickCheck");
 		actor->AddComponent<SpriteControll>();
@@ -397,7 +381,6 @@ void SceneGame::Initialize()
 	// UI PlayerCommandFire
 	{
 		const char* filename = "Data/Sprite/コマンド　非選択ファイアー.png";
-		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandFire");
 		actor->AddComponent<SpriteControll>();
@@ -434,7 +417,6 @@ void SceneGame::Initialize()
 	// UI PlayerCommandFireCheck
 	{
 		const char* filename = "Data/Sprite/コマンド　選択ファイアー.png";
-		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandFireCheck");
 		actor->AddComponent<SpriteControll>();
@@ -470,7 +452,6 @@ void SceneGame::Initialize()
 	// UI PlayerCommandRigtning
 	{
 		const char* filename = "Data/Sprite/サンダラ　押し込み.png";
-		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandRigtning");
 		actor->AddComponent<SpriteControll>();
@@ -507,7 +488,6 @@ void SceneGame::Initialize()
 	// UI PlayerCommandRigtningCheck
 	{
 		const char* filename = "Data/Sprite/サンダラ.png";
-		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandRigtningCheck");
 		actor->AddComponent<SpriteControll>();
@@ -544,7 +524,6 @@ void SceneGame::Initialize()
 	// UI PlayerCommandIce
 	{
 		const char* filename = "Data/Sprite/ブリザラ　押し込み.png";
-		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandIce");
 		actor->AddComponent<SpriteControll>();
@@ -581,7 +560,6 @@ void SceneGame::Initialize()
 	// UI PlayerCommandIceCheck
 	{
 		const char* filename = "Data/Sprite/ブリザラ.png";
-		//const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandIceCheck");
 		actor->AddComponent<SpriteControll>();
@@ -619,7 +597,6 @@ void SceneGame::Initialize()
 
 	// UI PlayerCommandSpeciulCharge01
 	{
-		//const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
 		const char* filename = "Data/Sprite/矢印.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulCharge");
@@ -657,7 +634,6 @@ void SceneGame::Initialize()
 
 	// UI PlayerCommandSpeciulCharge02
 	{
-		//const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
 		const char* filename = "Data/Sprite/矢印.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulCharge");
@@ -695,7 +671,6 @@ void SceneGame::Initialize()
 
 	// UI PlayerCommandSpeciulCharge03
 	{
-		//const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
 		const char* filename = "Data/Sprite/矢印.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulCharge");
@@ -1292,29 +1267,12 @@ void SceneGame::Initialize()
 		LightManager::Instanes().Register(light);
 	}
 
-	//// スポットライトを追加
-	//{
-	//	Light* light = new Light(LightType::Spot);
-	//	light->SetPosition(DirectX::XMFLOAT3(-30, 20, 0));
-	//	light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
-	//	light->SetDirection(DirectX::XMFLOAT3(+1, -1, 0));
-	//	light->SetRange(40.0f);
-	//	LightManager::Instanes().Register(light);
-	//}
-
 	// 新しい描画ターゲットの生成
 	{
 		Graphics& graphics = Graphics::Instance();
 		renderTarget = std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth())
 			, static_cast<UINT>(graphics.GetScreenHeight())
 			, DXGI_FORMAT_R8G8B8A8_UNORM);
-
-		//sprite = std::make_unique<Sprite>();
-		//sprite->SetShaderResourceView(renderTarget->GetShaderResourceView()
-		//	, renderTarget->GetWidth()
-		//	, renderTarget->GetHeight());
-
-
 	}
 
 	// シャドウマップ用に深度ステンシルの生成
@@ -1332,46 +1290,12 @@ void SceneGame::Initialize()
 		srvData.height = renderTarget->GetHeight();
 		postprocessingRenderer->SetSceneData(srvData);
 	}
-
-
-	// ゲージスプライト
-	//gauge = new Sprite();
 }
 
 
 // 終了化
 void SceneGame::Finalize()
 {
-	//// ゲージスプライト
-	//if (this->gauge)
-	//{
-	//	delete gauge;
-	//	gauge = nullptr;
-	//}
-
-
-
-	// エネミー終了化
-	//EnemyManager::Instance().Clear();
-
-	//AfterimageManager::Instance().Clear();
-
-
-	//// カメラコントーラー終了化
-	//if (this->cameraController)
-	//{
-	//	delete cameraController;
-	//	cameraController = nullptr;
-	//}
-
-	// プレイヤー終了化
-	//if (this->player)
-	//{
-	//	delete player;
-	//	player = nullptr;
-	//}
-	// ステージ終了化
-	//StageManager::instance().Clear();
 
 	ActorManager::Instance().Clear();
 
@@ -1392,31 +1316,7 @@ void SceneGame::Finalize()
 void SceneGame::Update(float elapsedTime)
 {
 	
-	// カメラコントローラー更新処理
-	//DirectX::XMFLOAT3 target = player->GetPosition();
-	//target.y += 0.5f;// 足元から５０センチぐらい
-	//cameraController->SetTarget();// プレイヤーの腰当たり
-	//cameraController->Update(elapsedTime);
-
-	// ステージ更新処理
-	//StageManager::instance().Update(elapsedTime);
-	
-	// プレイヤー更新処理
-	//player->Update(elapsedTime);
 	ActorManager::Instance().Update(elapsedTime);
-
-	// 残像経過時間
-	//AfterimageTime(elapsedTime);
-
-	
-
-	// 残像ステート更新
-	//AfterimageManager::Instance().Update(elapsedTime);
-
-
-
-	// エネミー更新処理
-	//EnemyManager::Instance().Update(elapsedTime);
 
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
@@ -1429,8 +1329,7 @@ void SceneGame::Update(float elapsedTime)
 			{
 				PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->SetDead(false);
 				ActorManager::Instance().Clear();
-				//// プレイヤー更新処理
-				//ActorManager::Instance().Update(elapsedTime);
+
 				// ゲームオーバー
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
 			}
@@ -1458,7 +1357,7 @@ void SceneGame::Update(float elapsedTime)
 		}
 		for (int i = 0; i < UiManager::Instance().GetUiesCount(); ++i)
 		{
-			// ゲームオーバー
+			// ゲームオーバー時間制限
 			std::shared_ptr<UiTime> uiTime = UiManager::Instance().GetUies((int)UiManager::UiCount::Time)->GetComponent<UiTime>();
 			if (uiTime->GetTimeUp())
 			{
@@ -1468,13 +1367,6 @@ void SceneGame::Update(float elapsedTime)
 		}
 
 	}
-
-	//sprite->Update(0.0f, 0.0f,
-	//	Graphics::Instance().GetScreenWidth(), Graphics::Instance().GetScreenHeight(),
-	//	0.0f, 0.0f,
-	//	static_cast<float>(renderTarget->GetWidth()), static_cast<float>(renderTarget->GetHeight()),
-	//	0.0f,
-	//	1.0f, 1.0f, 1.0f, 1.0f);
 
 }
 
@@ -1486,8 +1378,6 @@ void SceneGame::Render()
 
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-	//ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
-	//ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
 	//// シャドウマップの描画
 	RenderShadowmap();
@@ -1514,82 +1404,10 @@ void SceneGame::Render()
 		vp.MaxDepth = 1.0f;
 		dc->RSSetViewports(1, &vp);
 
-		// unit09
-		//RenderContext rc;
-		//rc.deviceContext = dc;
-
-		//SpriteShader* shader = graphics.GetShader(SpriteShaderId::ColorGrading);
-		//shader->Begin(rc);
-
-		////rc.colorGradingData = colorGradingData;
-		//shader->Draw(rc, sprite.get());
-
-		//shader->End(rc);
 		// ポストプロセスを処理を行う
 		postprocessingRenderer->Render(dc);
 	}
 
-
-	//FLOAT color[] = {0.0f, 0.0f, 0.5f, 1.0f};// RGBA
-	//dc->ClearRenderTargetView(rtv, color);
-	//dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	//dc->OMSetRenderTargets(1, &rtv, dsv);
-
-	// UINT11
-	// ビューポートの設定
-	//D3D11_VIEWPORT vp = {};
-	//vp.Width = graphics.GetScreenWidth();
-	//vp.Height = graphics.GetScreenHeight();
-	//vp.MinDepth = 0.0f;
-	//vp.MaxDepth = 1.0f;
-	//dc->RSSetViewports(1, &vp);
-
-
-	//RenderContext rc;
-	//rc.lightDirection = { 0.0f,-1.0f, 0.0f, 0.0f };
-
-	//// カメラ情報
-	//Camera& camera = Camera::Instance();
-	//rc.view = camera.GetView();
-	//rc.projection = camera.GetProjection();
-
-	//rc.deviceContext = dc;
-
-
-	//// UNIT11
- //   // ライトの情報をつめこむ 
-	//rc.shadowMapData.shadowMap = shadowmapDepthStencil->GetShaderResourceView().Get();
-	//rc.shadowMapData.lightViewProjection = lightViewProjeciton;
-	//rc.shadowMapData.shadowColor = shadowColor;
-	//rc.shadowMapData.shadowBias = shadowBias;
-
-	////ポストプロセスを処理を行う
-	//postprocessingRenderer->Render(dc);
-
-	//// ライトの情報を詰め込む
-	//LightManager::Instanes().PushRenderContext(rc);
-
-	// 3Dモデル描画
-	{
-		//ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
-
-		//ActorManager::Instance().Render(rc, shader);
-	//ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-
-	//ActorManager::Instance().Render(rc, shader);
-
-
-
-
-	}
-
-	// 3Dエフェクト描画
-	{
-		//EffectManager::Instance().Render(rc.view, rc.projection);
-
-
-
-	}
 
 	// 2Dスプライト描画
 	{
@@ -1614,50 +1432,9 @@ void SceneGame::Render()
 	}
 
 
-	// 3Dデバッグ描画
-	{
-		// 当たり判定の形をうつ
-		// プレイヤーデバッグプリミティブ描画
-		//player->DrawDebugPrimitive();
-
-		// エネミーデバッグプリミティブ描画
-		//EnemyManager::Instance().DrawDebugPrimitive();
-
-
-
-		//for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); i++)
-		//{
-		//	EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->DrawDebugPrimitive();
-		//}
-
-		//// ライトのデバッグプリミティブの描画
-		//LightManager::Instanes().DrawDebugPrimitive();
-
-		//// ラインレンダラ描画実行
-		//graphics.GetLineRenderer()->Render(dc, rc.view, rc.projection);
-
-		//// 実際の当たり判定描画
-		//// デバッグレンダラ描画実行
-		//graphics.GetDebugRenderer()->Render(dc, rc.view, rc.projection);
-
-
-	//// 2Dスプライト描画
-		{
-			//	//RenderEnemyGauge(dc, rc.view, rc.projection);
-
-
-				//SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
-
-				//ActorManager::Instance().Render2D(rc, shaderUi);
-		}
 
 		// 2DデバッグGUI描画
 		{
-			// プレイヤーデバッグ描画
-			//player->DrawDebugGUI();
-			//cameraController->DrawDebugGUI();
-
-			//EnemyManager::Instance().DrawDebugGUI();
 			ImGui::Separator();
 			// UNIT11
 			if (ImGui::TreeNode("shadowmap"))
@@ -1678,7 +1455,7 @@ void SceneGame::Render()
 		}
 
 
-	}
+	
 }
 
 void SceneGame::Render3DScene()
@@ -1687,8 +1464,6 @@ void SceneGame::Render3DScene()
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView().Get();
 	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
-
-	//RenderShadowmap();
 
 	// 画面クリア＆レンダーターゲット設定
 	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0～1.0)
@@ -1718,9 +1493,6 @@ void SceneGame::Render3DScene()
 	rc.shadowMapData.shadowColor = shadowColor;
 	rc.shadowMapData.shadowBias = shadowBias;
 
-	//dissolveThreshold = 0.0f;
-	//edgeThreshold = 0.2f; // 緑の閾値
-	//edgeColor = { 1,0,0,1 }; // 緑の色
 
 
 	// カメラパラメータ設定
@@ -1732,34 +1504,13 @@ void SceneGame::Render3DScene()
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
-	//// 2Dスプライト描画
-	//{
-	//	SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
-
-	//	ActorManager::Instance().Render2D(rc, shaderUi);
-	//}
 
 	// 3Dモデル描画
 	{
-		//ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
-		////ModelShader* shader = graphics.GetShader(ModelShaderId::Toon);
-		//shader->Begin(rc);
 
-		//shader->Draw(rc, stage.get());
-		//shader->Draw(rc, jummo.get());
-		//shader->Draw(rc, uncle.get());
-		////shader->Draw(rc, earth.get());
-
-		//shader->End(rc);]
 		ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
 
 		ActorManager::Instance().Render(rc, shader);
-
-
-
-
-		//shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
-		//ActorManager::Instance().Render(rc, shader);
 
 	}
 
@@ -1775,19 +1526,19 @@ void SceneGame::Render3DScene()
 		// グリッド描画
 		//DrawGrid(dc, 20, 10.0f);
 
-		//for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); i++)
-		//{
-		//	EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->DrawDebugPrimitive();
-		//}
+		for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); i++)
+		{
+			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->DrawDebugPrimitive();
+		}
 
-		//// ライトのデバッグプリミティブの描画
-		//LightManager::Instanes().DrawDebugPrimitive();
+		// ライトのデバッグプリミティブの描画
+		LightManager::Instanes().DrawDebugPrimitive();
 
-		//// ラインレンダラ描画実行
-		//graphics.GetLineRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
+		// ラインレンダラ描画実行
+		graphics.GetLineRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
 
-		//// デバッグレンダラ描画実行
-		//graphics.GetDebugRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
+		// デバッグレンダラ描画実行
+		graphics.GetDebugRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
 	}
 
 
@@ -1797,8 +1548,6 @@ void SceneGame::RenderShadowmap()
 {
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-	//Microsoft::WRL::ComPtr <ID3D11RenderTargetView> rtv = nullptr;
-	//Microsoft::WRL::ComPtr <ID3D11DepthStencilView> dsv = shadowmapDepthStencil->GetDepthStencilView().Get();
 	ID3D11RenderTargetView* rtv = nullptr;
 	ID3D11DepthStencilView* dsv = shadowmapDepthStencil->GetDepthStencilView().Get();
 
@@ -1807,12 +1556,7 @@ void SceneGame::RenderShadowmap()
 
 	if (!mainDirectionalLight)
 		return;
-	//// 画面クリア＆レンダーターゲット設定
-	//FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0～1.0)
-	//dc->ClearRenderTargetView(rtv, color);
-	//dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	// レンダーターゲット設定
-	//dc->OMSetRenderTargets(1, &rtv, dsv);
+
 	dc->OMSetRenderTargets(1, &rtv, dsv);
 
 	// ビューポートの設定

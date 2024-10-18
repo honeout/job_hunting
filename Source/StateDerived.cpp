@@ -1341,6 +1341,8 @@ void PlayerAttackState::Execute(float elapsedTime)
 				owner->GetComponent<Movement>()->SetStopMove(stop);
 				//owner->GetComponent<Movement>()->Move(vector, speed, elapsedTime);
 				
+				
+				
 				// 正面
 				if (owner->GetComponent<Movement>()->Turn(vector, turnSpeed, elapsedTime))
 				{
@@ -1365,7 +1367,9 @@ void PlayerAttackState::Execute(float elapsedTime)
 				owner->GetComponent<Movement>()->SetStopMove(stop);
 
 				
-				owner->GetComponent<Movement>()->Move(vector, speed, elapsedTime);
+				//owner->GetComponent<Movement>()->Move(vector, speed, elapsedTime);
+				//// 速度をゼロベクトルに
+				//owner->GetComponent<Movement>()->SetVelocity(velocity);
 			}
 
 
@@ -1404,11 +1408,16 @@ void PlayerAttackState::Execute(float elapsedTime)
 		
 	
 		// 移動の停止
-		bool stopMoveFalse = false;
-		bool stopMoveTrue = false;
 		owner->GetComponent<Movement>()->SetGravity(button ?
 			gravity :
 			owner->GetComponent<Player>()->GetGravity());
+
+		bool stop = false;
+		owner->GetComponent<Movement>()->SetStopMove(stop);
+
+		//// 速度をゼロベクトルに
+		//owner->GetComponent<Movement>()->SetVelocity(velocity);
+
 		button = false;
 		//owner->GetComponent<Player>()->SetSpecialAttackTime(false);
 
