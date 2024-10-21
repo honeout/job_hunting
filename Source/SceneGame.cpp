@@ -1395,6 +1395,14 @@ void SceneGame::Render()
 		dc->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		dc->OMSetRenderTargets(1, rtv.GetAddressOf(), dsv.Get());
 
+		//RenderContext rc;
+		//rc.deviceContext = dc;
+
+		//SpriteShader* shader = graphics.GetShader(SpriteShaderId::ColorGrading);
+		//shader->Begin(rc);
+		//rc.colorGradingData = ColorGradingData;
+		//shader->Draw(rc.s)
+
 		// UINT11
 		// ビューポートの設定
 		D3D11_VIEWPORT vp = {};

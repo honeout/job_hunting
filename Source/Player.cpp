@@ -25,13 +25,7 @@
 #include "UiManager.h"
 #include "Ui.h"
 
-//static Player* instance = nullptr;
-//
-//// インスタンス取得
-//Player& Player::Instance()
-//{
-//    return *instance;
-//}
+
 
 
 
@@ -40,12 +34,6 @@
 // デストラクタ
 Player::~Player()
 {
-    //if (hitEffect == nullptr)
-    //delete hitEffect;
-    //if (desEffect == nullptr)
-    //delete desEffect;
-    //if (model == nullptr)
-    //delete model;
 
     if (movement)
         movement.reset();
@@ -134,7 +122,6 @@ void Player::Start()
     movement->SetGravity(gravity);
 
     // モデルデータを入れる。
-    //model = std::make_unique<Model>(GetActor()->GetComponent<ModelControll>()->GetModel());
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
     // カメラ初期化
     cameraControlle = new CameraController();
@@ -161,8 +148,6 @@ void Player::Start()
     transform->SetRadius(radius);
     // 身長
     transform->SetHeight(height);
-    // 待機ステートへ遷移
-    /*TransitionIdleState();*/
 
     // コマンド操作用
     selectCheck = (int)CommandAttack::Attack;
@@ -208,9 +193,6 @@ void Player::Start()
     // 回転確認
     angleCheck = false;
 
-    //// カウンターチェック
-    //counterCheck = false;
-
     // 曲がる速度
     turnSpeedAdd = 0;
 }
@@ -243,148 +225,9 @@ void Player::Update(float elapsedTime)
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Attack)
             )
         {
-      
-            //CameraControl(elapsedTime);
-            //stated = state;
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-            //TransitionAttackState();
-            //angleCheck = true;
 
         }
-
-        // 回転
-        //if (angleCheck)
-        //{
-
-        //    DirectX::XMFLOAT3 direction = GetForwerd(angle);
-        //    // 旋回
-        //    EnemyManager& enemyManager = EnemyManager::Instance();
-        //    int enemyCount = enemyManager.GetEnemyCount();
-        //    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
-        //    {
-
-        //        turnSpeedAdd += turnSpeed * elapsedTime;
-
-        //        // ターゲットまでのベクトルを算出
-        //        DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&position);
-
-        //        DirectX::XMVECTOR Target = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
-        //        DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(Target, Position);
-
-        //        // ゼロベクトルでないなら回転処理　ピッタリ同じなら回転できるから確認
-        //        DirectX::XMVECTOR LengthSq = DirectX::XMVector3LengthSq(Vec);
-        //        float lengthSq;
-        //        DirectX::XMStoreFloat(&lengthSq, LengthSq);
-
-
-
-        //        //if (lengthSq > 0.00001f)
-        //        //{
-
-
-        //            // ターゲットまでのベクトルを単位ベクトル化
-        //        Vec = DirectX::XMVector3Normalize(Vec);
-
-        //        // 向いてる方向ベクトルを算出　direction単位ベクトル前提
-        //        DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-
-
-        //        // 前方方向ベクトルとターゲットまでのベクトルの内積（角度）を算出
-        //        DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Direction, Vec);
-
-
-
-        //        float dot;
-        //        DirectX::XMStoreFloat(&dot, Dot);
-
-        //        // 回転速度調整最後の微調整行き過ぎないように少しずつ小さく出来る。
-        //        // アークコサインでも出来るしかも一瞬でその値を入れる。
-        //        // 2つの単位ベクトルの角度が小さい程
-        //        // 1.0に近づくという性質を利用して回転速度を調整する
-        //        //if (dot )
-        //        float rot;
-        //        // 1.0f　dotは０に近づく程１になるからーくとこっちも０になる
-        //        rot = 1.0f - dot;
-        //        // だから１のほうがでかければスピードを入れる
-        //        // ターンスピードよりロットの方が小さい時に
-        //        if (rot > turnSpeedAdd)
-        //        {
-        //            rot = turnSpeedAdd;
-        //        }
-        //        dotfake = dot;
-        //        // 角度制限
-        //        //if (dot <= 0.3f && )
-        //        //{
-        //        //    //GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-        //        //    angleCheck = false;
-        //        //}
-        //        // 回転角度があるなら回転処理する　ここで０を取ってないと外積が全く同じになって計算出来ない
-        //        if (fabsf(rot) >= 0.0001)
-        //        {
-        //            // 回転軸を算出  外積  向かせたい方を先に 
-        //            DirectX::XMVECTOR Axis = DirectX::XMVector3Cross(Direction, Vec);
-        //            // 誤差防止の為に単位ベクトルした方が安全
-        //            Axis = DirectX::XMVector3Normalize(Axis);
-        //            // 回転軸と回転量から回転行列を算出 回転量を求めている。
-        //            DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationAxis(Axis, rot);
-
-
-
-
-        //            // 現在の行列を回転させる　自分自身の姿勢
-        //            DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transform->GetTransform());
-        //            Transform = DirectX::XMMatrixMultiply(Transform, Rotation); // 同じだからただ×だけ  Transform*Rotation
-        //            // DirectX::XMMatrixMultrixMultiply
-        //            // 回転後の前方方向を取り出し、単位ベクトル化する
-        //            Direction = DirectX::XMVector3Normalize(Transform.r[2]);// row
-
-        //            DirectX::XMStoreFloat3(&direction, Direction);
-
-
-        //            movement->Turn(direction, turnSpeedAttack, elapsedTime);
-        //            
-
-
-        //            //DirectX::XMStoreFloat4x4(&transform, Transform);
-
-        //        }
-        //        if (dot >= 0.93f)
-        //        {
-        //            turnSpeedAdd = 0;
-        //            angleCheck = false;
-        //            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-        //            
-        //        }
-        //        if (dot <= 0.1f)
-        //        {
-        //            turnSpeedAdd = 0;
-        //            angleCheck = false;
-        //            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-        //        }
-        //        //else
-        //        //{
-        //        //    angleCheck = false;
-        //        //    GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-        //        //
-
-        //        //if (dot <= 0.1f && dot >= -0.1f)
-        //        //    movement->Turn(direction, rot, elapsedTime);
-        //        //if (dot <= 0.00001f && dot >= -0.00001f)
-        //        //{
-        //        //    angleCheck = false;
-        //        //    GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
-        //        //}
-
-
-
-        //    }
-        //   
-        //    
-        //    //transform->SetDirection(direction);
-        //    //transform->SetPosition(position);
-
-        //}
-
 
         // 弾丸入力処理
         // 炎発射
@@ -408,24 +251,6 @@ void Player::Update(float elapsedTime)
             InputMagicIce();
             //TransitionAttackState();
         }
- /*       switch (GetSelectMagicCheck())
-        {
-        case (int)Player::CommandMagic::Fire:
-        {
-            InputMagicframe();
-        }
-
-        case (int)Player::CommandMagic::Thander:
-        {
-            InputMagicframe();
-        }
-
-        case (int)Player::CommandMagic::Ice:
-        {
-            InputMagicframe();
-        }
-        }*/
-
 
         // 特殊攻撃
         if (InputSpecialAttackCharge())
@@ -456,15 +281,7 @@ void Player::Update(float elapsedTime)
 
     scale = transform->GetScale();
 
-    //velocity = movement->GetVelocity();
-
-    //movement->SetVelocity(velocity);
-
-    //velocity = movement->GetVelocity();
-
     hp->UpdateInbincibleTimer(elapsedTime);
-
-    //DrawDebugPrimitive();
 
     // ロックオン
     InputRockOn();
@@ -539,10 +356,6 @@ void Player::Update(float elapsedTime)
     // ゲージ管理
     UiControlle(elapsedTime);
 
-
-    //model->Update_blend_animations(0.675f, frontVec.x,1.582f);
-    //model->Update_blend_animations(elapsedTime, frontVec.x,36,60, true);
-    //model->Update_blend_animations(elapsedTime, frontVec.y,40,80, true);
     // 位置更新
     transform->UpdateTransform();
 
@@ -592,8 +405,7 @@ void Player::Update(float elapsedTime)
 void Player::Render(RenderContext& rc, ModelShader& shader)
 {
     Graphics& graphics = Graphics::Instance();
-    //Shader* shader = graphics.GetShader();
-    //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
 
@@ -634,7 +446,7 @@ void Player::DrawDebugPrimitive()
             position, radius, height, DirectX::XMFLOAT4(0, 0, 1, 1));
 
 
-    // 弾丸デバッグプリミティブ描画
+    //// 弾丸デバッグプリミティブ描画
     //projectileManager.DrawDebugPrimitive();
     //for (int i = 0; i < projectileManager.GetProjectileCount(); ++i)
     //{
@@ -662,11 +474,9 @@ void Player::DrawDebugPrimitive()
 void Player::OnGUI()
 {
     ImGui::InputFloat("Move Speed", &moveSpeed);
-    //ImGui::InputInt("Jump max", &jumpCount);
     ImGui::InputInt("selectCheck", &selectCheck);
     ImGui::InputInt("selectMagicCheck", &selectMagicCheck);
     ImGui::InputInt("specialAttack.top", &specialAttack.top());
-    //ImGui::InputInt("specialAttack.0", &specialAttack.);
     ImGui::SliderFloat("specialAttackCharge", &specialAttackCharge,0,1.5f);
     ImGui::SliderFloat("specialShotCharge", &specialShotCharge,0,1.5f);
 
