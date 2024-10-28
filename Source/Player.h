@@ -91,6 +91,8 @@ public:
     // シャドウマップ処理
     void RenderShadowmap(RenderContext& rc) override;
 
+    // カメラ切り替え処理
+    void UpdateCameraState(float elapsedTime);
 
     // 弾丸と敵の衝突処理
     void CollisionProjectilesVsEnemies();
@@ -310,6 +312,15 @@ public:
         Reflection,
     };
 
+    // カメラステート
+    enum class CameraState
+    {
+        Normal,
+        NotLockOn,
+        LockOn,
+        AttackLock
+    };
+
     // アニメ
     enum Animation
     {
@@ -452,6 +463,15 @@ private:
     State                   state = State::Idle;
     State                   stated;
     
+    CameraState            cameraState = CameraState::Normal;
+    CameraState			lockonState = CameraState::NotLockOn;
+
+    std::shared_ptr<Transform> lockonCharactor;
+
+
+    float				lockonTargetChangeTime = 0;
+    float				lockonTargetChangeTimeMax = 8;
+
     // 重力
     float gravity =-0.5f;
 

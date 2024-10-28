@@ -207,7 +207,11 @@ void Player::Update(float elapsedTime)
     //// ステート毎の処理
     stateMachine->Update(elapsedTime);
 
+    // カメラコントローラー更新処理
+    cameraControlle->Update(elapsedTime);
 
+    // ロックオン処理
+    UpdateCameraState(elapsedTime);
 
     // コマンド操作
     {
@@ -286,26 +290,26 @@ void Player::Update(float elapsedTime)
 
     hp->UpdateInbincibleTimer(elapsedTime);
 
-    // ロックオン
-    InputRockOn();
+    //// ロックオン
+    //InputRockOn();
 
-    // カメラ設定
-    if (rockCheck)
-    {
-        cameraControlle->RockUpdate(elapsedTime, position);
+    //// カメラ設定
+    //if (rockCheck)
+    //{
+    //    cameraControlle->RockUpdate(elapsedTime, position);
 
-    }
-    else
-    {
-        cameraControlle->SetTarget(
-            { 
-                position.x,
-                position.y + height,
-                position.z
-            });
+    //}
+    //else
+    //{
+    //    cameraControlle->SetTarget(
+    //        { 
+    //            position.x,
+    //            position.y + height,
+    //            position.z
+    //        });
 
-        cameraControlle->Update(elapsedTime);
-    }
+    //    cameraControlle->Update(elapsedTime);
+    //}
 
     // カメラ設定
     {
@@ -441,6 +445,163 @@ void Player::RenderShadowmap(RenderContext& rc)
     
 }
 
+void Player::UpdateCameraState(float elapsedTime)
+{
+    //std::shared_ptr<Actor> enemyid = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1);
+    CameraState oldLockonState = lockonState;
+    std::shared_ptr<Transform> oldLockonCharacter = lockonCharactor;
+    lockonState = CameraState::NotLockOn;
+    lockonCharactor = nullptr;
+    //lockonCharacter = nullptr;
+
+    
+        // ロックオンモード
+    if (Input::Instance().GetGamePad().GetButton() & GamePad::BTN_RIGHT_SHOULDER)
+    {
+        DirectX::XMVECTOR p, t, v;
+        switch (oldLockonState)
+        {
+        case	CameraState::NotLockOn:
+        {
+            // 一番近い距離のキャラクターを検索
+            float	length1, length2;
+            int enemyCount = EnemyManager::Instance().GetEnemyCount();
+            for (int ii = 0; ii < enemyCount; ++ii)
+            {
+                std::shared_ptr<Transform> character = EnemyManager::Instance().GetEnemy(ii)->GetComponent<Transform>();
+
+                if (lockonState != CameraState::NotLockOn)
+                {
+                    p = DirectX::XMLoadFloat3(&position);
+                    t = DirectX::XMLoadFloat3(&lockonCharactor->GetPosition());
+                    v = DirectX::XMVectorSubtract(t, p);
+                    DirectX::XMStoreFloat(&length2, DirectX::XMVector3LengthSq(v));
+                    p = DirectX::XMLoadFloat3(&position);
+                    t = DirectX::XMLoadFloat3(&character->GetPosition());
+                    v = DirectX::XMVectorSubtract(t, p);
+                    DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
+                    if (length1 < length2)
+                    {
+                        lockonCharactor = character;
+                        //DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
+                        
+                    }
+                }
+                else
+                {
+                    p = DirectX::XMLoadFloat3(&position);
+                    t = DirectX::XMLoadFloat3(&character->GetPosition());
+                    v = DirectX::XMVectorSubtract(t, p);
+                    DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
+
+                    lockonCharactor = character;
+                    //DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
+                    lockonState = CameraState::LockOn;
+                }
+            }
+            break;
+        }
+        case	CameraState::LockOn:
+        {
+            // ロックオン対象が存在しているかチェックして
+            // 対象がいればロックオンを継続させる
+            int enemyCount = EnemyManager::Instance().GetEnemyCount();
+            for (int ii = 0; ii < enemyCount; ++ii)
+            {
+                std::shared_ptr<Transform> character = EnemyManager::Instance().GetEnemy(ii)->GetComponent<Transform>();
+                //if (character == oldLockonCharacter)
+                //{
+                lockonCharactor = character;
+                lockonState = CameraState::LockOn;
+                p = DirectX::XMLoadFloat3(&position);
+                t = DirectX::XMLoadFloat3(&character->GetPosition());
+                v = DirectX::XMVectorSubtract(t, p);
+
+                lockonCharactor = character;
+                //DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
+                //break;
+
+            }
+            // 右スティックでロックオン対象を変更する処理
+            GamePad& gamePad = Input::Instance().GetGamePad();
+            float ax = gamePad.GetAxisRX();	// 水平のみ
+            // 垂直方向は使わないでおく
+            lockonTargetChangeTime -= 60.0f * elapsedTime;
+            if (lockonCharactor &&
+                lockonTargetChangeTime <= 0 &&
+                ax * ax > 0.3f)
+            {
+                lockonTargetChangeTime = lockonTargetChangeTimeMax;
+                // ロックオン対象と自分自身の位置からベクトルを算出
+                float dx = oldLockonCharacter->GetPosition().x - position.x;
+                float dz = oldLockonCharacter->GetPosition().z - position.z;
+                float l = sqrtf(dx * dx + dz * dz);
+                dx /= l;
+                dz /= l;
+                // 外積を用いて左右判定を行い、角度的に最も近い対象にロックオンを変える
+                float angleMax = FLT_MAX;
+                for (int ii = 0; ii < enemyCount; ++ii)
+                {
+                    std::shared_ptr<Transform> character = EnemyManager::Instance().GetEnemy(ii)->GetComponent<Transform>();
+       /*             if (character == oldLockonCharacter)
+                        continue;*/
+                    float ddx = character->GetPosition().x - position.x;
+                    float ddz = character->GetPosition().z - position.z;
+                    float ll = sqrtf(ddx * ddx + ddz * ddz);
+                    ddx /= ll;
+                    ddz /= ll;
+                    float cross = dx * ddz - dz * ddx;
+                    if (ax > 0 && cross < 0)
+                    {
+                        cross = abs(cross);
+                        if (cross < angleMax)
+                        {
+                            angleMax = cross;
+                            lockonCharactor = character;
+                        }
+                    }
+                    else if (ax < 0 && cross > 0)
+                    {
+                        if (cross < angleMax)
+                        {
+                            angleMax = cross;
+                            lockonCharactor = character;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+        }
+        if (lockonState == CameraState::LockOn)
+        {
+            MessageData::CAMERACHANGELOCKONMODEDATA	p = { position, lockonCharactor->GetPosition() };
+            Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONMODE, &p);
+            //break;
+        }
+    }
+    else
+    {
+    MessageData::CAMERACHANGEFREEMODEDATA	p = { position };
+    Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
+     }
+
+        //break;
+    
+    //case	State::Death:
+    //{
+    //    // 死亡時はそれっぽいカメラアングルで死亡
+    //    // 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
+    //    MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+    //    float vx = sinf(angle.y) * 6;
+    //    float vz = cosf(angle.y) * 6;
+    //    p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+    //    p.data.push_back({ 90, {position.x + vx, position.y + 15, position.z + vz }, position });
+    //    Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+    //    break;
+    //}
+}
+
 
 
 // デバッグプリミティブ描画
@@ -516,68 +677,68 @@ bool Player::InputRockOn()
 {
    
 
-    GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && !rockCheck)
-    {
+    //GamePad& gamePad = Input::Instance().GetGamePad();
+    //if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && !rockCheck)
+    //{
 
-        buttonRock = true;
-        rockCheck = true;
-        return true;
-    }
+    //    buttonRock = true;
+    //    rockCheck = true;
+    //    return true;
+    //}
 
-    if (rockCheck)
-    {
-        EnemyManager& enemyManager = EnemyManager::Instance();
-        int enemyCount = enemyManager.GetEnemyCount();
-        DirectX::XMFLOAT3 epos = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetPosition();
-        float eheight = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetHeight();
-
-
-        DirectX::XMFLOAT3 pos;
-        pos =
-        {
-            position.x - epos.x,
-            position.y - epos.y,
-            position.z - epos.z
-        };
-        //{
-        //   epos.x - position.x,
-        //   epos.y - position.y,
-        //   epos.z - position.z,
-        //};
-
-        cameraControlle->SetTarget(
-            {
-                epos.x, 
-                epos.y + eheight, 
-                epos.z 
-            });
-        //cameraControlle->SetTarget(position);
-        cameraControlle->SetFrontAngle(
-            { 
-                pos.x,
-                pos.y,
-                pos.z
-            }
-            //{
-            //position.x,
-            //-position.y,
-            //position.z
-            //}
-        );
-    }
-
-    if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && rockCheck)
-    {
-        cameraControlle->SetTarget(position);
-        rockCheck = false;
-        buttonRock = true;
-        return true;
-    }
+    //if (rockCheck)
+    //{
+    //    EnemyManager& enemyManager = EnemyManager::Instance();
+    //    int enemyCount = enemyManager.GetEnemyCount();
+    //    DirectX::XMFLOAT3 epos = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetPosition();
+    //    float eheight = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetHeight();
 
 
-    if (gamePad.GetButtonUp() & GamePad::BTN_RIGHT_SHOULDER)
-        buttonRock = false;
+    //    DirectX::XMFLOAT3 pos;
+    //    pos =
+    //    {
+    //        position.x - epos.x,
+    //        position.y - epos.y,
+    //        position.z - epos.z
+    //    };
+    //    //{
+    //    //   epos.x - position.x,
+    //    //   epos.y - position.y,
+    //    //   epos.z - position.z,
+    //    //};
+
+    //    cameraControlle->SetTarget(
+    //        {
+    //            epos.x, 
+    //            epos.y + eheight, 
+    //            epos.z 
+    //        });
+    //    //cameraControlle->SetTarget(position);
+    //    cameraControlle->SetFrontAngle(
+    //        { 
+    //            pos.x,
+    //            pos.y,
+    //            pos.z
+    //        }
+    //        //{
+    //        //position.x,
+    //        //-position.y,
+    //        //position.z
+    //        //}
+    //    );
+    //}
+
+    //if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && rockCheck)
+    //{
+    //    cameraControlle->SetTarget(position);
+    //    rockCheck = false;
+    //    buttonRock = true;
+    //    return true;
+    //}
+
+
+    //if (gamePad.GetButtonUp() & GamePad::BTN_RIGHT_SHOULDER)
+    //    buttonRock = false;
 
     return false;
 }
@@ -1143,9 +1304,9 @@ bool Player::InputSpecialShotCharge()
 
 void Player::CameraControl(float elapsedTime)
 {
-    GamePad& gamePad = Input::Instance().GetGamePad();
+   /* GamePad& gamePad = Input::Instance().GetGamePad();
 
-    cameraControlle->SetAngleY(-angle.y);
+    cameraControlle->SetAngleY(-angle.y);*/
     
   /*  float ax = gamePad.GetAxisRX();
     float ay = gamePad.GetAxisRY();

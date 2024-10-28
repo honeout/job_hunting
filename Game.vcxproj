@@ -159,6 +159,8 @@
     <ClInclude Include="Source\LightManager.h" />
     <ClInclude Include="Source\Logger.h" />
     <ClInclude Include="Source\Mathf.h" />
+    <ClInclude Include="Source\MessageData.h" />
+    <ClInclude Include="Source\Messenger.h" />
     <ClInclude Include="Source\Misc.h" />
     <ClInclude Include="Source\ModelControll.h" />
     <ClInclude Include="Source\Movement.h" />
@@ -243,6 +245,7 @@
     <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Mathf.cpp" />
+    <ClCompile Include="Source\Messenger.cpp" />
     <ClCompile Include="Source\ModelControll.cpp" />
     <ClCompile Include="Source\Movement.cpp" />
     <ClCompile Include="Source\Player.cpp" />

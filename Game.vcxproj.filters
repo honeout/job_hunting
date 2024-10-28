@@ -297,6 +297,12 @@
     <ClInclude Include="Source\ProjectileSunder.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\MessageData.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Messenger.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -531,6 +537,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\ProjectileSunder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Messenger.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
