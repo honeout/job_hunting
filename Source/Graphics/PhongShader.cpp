@@ -202,10 +202,11 @@ PhonShader::PhonShader(ID3D11Device* device)
 // 描画開始
 void PhonShader::Begin(const RenderContext& rc)
 {
+    
     rc.deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0);
     rc.deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0);
     rc.deviceContext->IASetInputLayout(inputLayout.Get());
-
+ 
     ID3D11Buffer* constantBuffers[] =
     {
         sceneConstantBuffer.Get(),
@@ -217,6 +218,12 @@ void PhonShader::Begin(const RenderContext& rc)
     rc.deviceContext->VSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
     rc.deviceContext->PSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
 
+    const float blend_factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    rc.deviceContext->OMSetBlendState(blendState.Get(), blend_factor, 0xFFFFFFFF);
+    rc.deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
+    rc.deviceContext->RSSetState(rasterizerState.Get());
+    //rc.deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
+
     ID3D11SamplerState* samplerStates[] =
     {
         samplerState.Get(),
@@ -225,11 +232,7 @@ void PhonShader::Begin(const RenderContext& rc)
     // UNIT11
     rc.deviceContext->PSSetSamplers(0, ARRAYSIZE(samplerStates), samplerStates);
 
-    const float blend_factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    rc.deviceContext->OMSetBlendState(blendState.Get(), blend_factor, 0xFFFFFFFF);
-    rc.deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
-    rc.deviceContext->RSSetState(rasterizerState.Get());
-    rc.deviceContext->PSGetSamplers(0, 1, samplerState.GetAddressOf());
+
 
     // シーン用定数バッファ更新
     CbScene cbScene;
@@ -271,7 +274,7 @@ void PhonShader::Begin(const RenderContext& rc)
     // UINT11
     // シャドウマップ設定
     rc.deviceContext->PSSetShaderResources(2, 1, &rc.shadowMapData.shadowMap);
-
+   
 }
 
 // 描画

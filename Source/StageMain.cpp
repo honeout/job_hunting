@@ -25,7 +25,8 @@ void StageMain::Start()
 {
     // モデルデータを入れる。
     //model = std::make_unique<Model>(GetActor()->GetComponent<ModelControll>()->GetModel());
-    model = GetActor()->GetComponent<ModelControll>();
+    //model = GetActor()->GetComponent<ModelControll>();
+    model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
     transformid = GetActor()->GetComponent<Transform>();
 }
@@ -39,7 +40,7 @@ void StageMain::Update(float elasedTime)
     // 今は特にやることなし
     transformid->UpdateTransform();
 
-    model->GetModel()->UpdateTransform(transformid->GetTransform());
+    model->UpdateTransform(transformid->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
    
 }
@@ -54,7 +55,7 @@ void StageMain::Render(RenderContext& rc, ModelShader& shader)
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
 
-    shader.Draw(rc, model->GetModel());
+    shader.Draw(rc, model);
 
     shader.End(rc);
 
@@ -69,9 +70,9 @@ void StageMain::RenderShadowmap(RenderContext& rc)
     Graphics& graphics = Graphics::Instance();
     ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
     shader->Begin(rc);// シェーダーにカメラの情報を渡す
+    
 
-
-    shader->Draw(rc, model->GetModel());
+    shader->Draw(rc, model);
 
     shader->End(rc);
 
@@ -80,7 +81,7 @@ void StageMain::RenderShadowmap(RenderContext& rc)
 bool StageMain::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end,
     HitResult& hit)
 {
-    return Collision::IntersectRayVsModel(start, end, model->GetModel(), hit);
+    return Collision::IntersectRayVsModel(start, end, model, hit);
 }
 
 void StageManager::Register(std::shared_ptr <Actor> actor)

@@ -3,9 +3,11 @@
 
 PostprocessingRenderer::PostprocessingRenderer()
 {
+
     Graphics& graphics = Graphics::Instance();
 
     renderSprite = std::make_unique<Sprite>();
+
 
     {
         UINT width = static_cast<UINT>(graphics.GetScreenWidth()) / 2;
@@ -44,6 +46,7 @@ PostprocessingRenderer::~PostprocessingRenderer()
 
 void PostprocessingRenderer::Render(ID3D11DeviceContext* deviceContext)
 {
+ 
     Graphics& graphics = Graphics::Instance();
 
     // 現在設定されているバッファを避難して初期化しておく

@@ -422,8 +422,8 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
     Graphics& graphics = Graphics::Instance();
 
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
-
-
+    
+    
     shader.Draw(rc, model);
    
     shader.End(rc);

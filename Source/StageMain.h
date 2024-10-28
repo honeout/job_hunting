@@ -45,7 +45,8 @@ public:
 
 private:
     //Model* model;
-    std::shared_ptr<ModelControll> model;
+    //std::shared_ptr<ModelControll> model;
+    Model* model = nullptr;
     //std::unique_ptr<Model>	model;
 
     std::shared_ptr<Transform> transformid;
