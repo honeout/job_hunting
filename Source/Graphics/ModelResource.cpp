@@ -203,11 +203,10 @@ void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
 		HRESULT hr = LoadTexture(device, filename, nullptr, true, material.diffuse_map.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
-		hr = LoadTexture(device, filename, nullptr, true, material.shaderResourceView.GetAddressOf());
-		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+		
 
-		hr = LoadTexture(device, filename, nullptr, true, material.normal_map.GetAddressOf());
-		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+		//hr = LoadTexture(device, filename, nullptr, true, material.normal_map.GetAddressOf());
+		//_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
 		//hr = LoadTexture(device, filename, nullptr, true, material.diffuse_map.GetAddressOf());
 		//_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
@@ -217,7 +216,9 @@ void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
         // ノーマルマップテクスチャ読み込み
 		LoadTexture(device, filename, "_N", true, material.normal_map.GetAddressOf(), 0xFFFF7F7F);
 
-
+		
+		hr = LoadTexture(device, filename, nullptr, true, material.shaderResourceView.GetAddressOf());
+		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
 		//// マルチバイト文字からワイド文字へ変換
 		//wchar_t wfilename[256];

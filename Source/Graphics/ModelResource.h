@@ -156,6 +156,7 @@ protected:
 protected:
 	std::vector<Node>		nodes;
 	std::vector<Material>	materials;
+	//std::vector<std::unique_ptr<Material>>	materials;
 	std::vector<Mesh>		meshes;
 	std::vector<Animation>	animations;
 };

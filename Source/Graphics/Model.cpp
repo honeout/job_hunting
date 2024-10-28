@@ -100,6 +100,86 @@ void Model::UpdateTransform(const DirectX::XMFLOAT4X4& transform,  std::vector<N
 		DirectX::XMStoreFloat4x4(&node.worldTransform, WorldTransform);
 	}
 }
+//
+//void Model::ComputeAnimation(int animationIndex, int nodeIndex, float time, NodePose& nodePose) const
+//{
+//	const Animation& animation = animations.at(animationIndex);
+//	const NodeAnim& nodeAnim = animation.nodeAnims.at(nodeIndex);
+//
+//	// 指定のアニメーションデータを取得
+//	const std::vector<ModelResource::Animation>& animations = resource->GetAnimations();
+//	const ModelResource::Animation& animation = animations.at(currentAnimationIndex);
+//
+//	// 位置
+//	for (size_t index = 0; index < nodeAnim.positionKeyframes.size() - 1; ++index)
+//	{
+//		// 現在の時間がどのキーフレームの間にいるか判定する
+//		ModelResource::Keyframe& keyframe0 = nodeAnim.positionKeyframes.at(index);
+//		ModelResource::Keyframe& keyframe1 = nodeAnim.positionKeyframes.at(index + 1);
+//		if (time >= keyframe0.seconds && time <= keyframe1.seconds)
+//		{
+//			// 再生時間とキーフレームの時間から補完率を算出する
+//			float rate = (time - keyframe0.seconds) / (keyframe1.seconds - keyframe0.seconds);
+//
+//			// 前のキーフレームと次のキーフレームの姿勢を補完
+//			DirectX::XMVECTOR V0 = DirectX::XMLoadFloat3(&keyframe0.value);
+//			DirectX::XMVECTOR V1 = DirectX::XMLoadFloat3(&keyframe1.value);
+//			DirectX::XMVECTOR V = DirectX::XMVectorLerp(V0, V1, rate);
+//			// 計算結果をノードに格納
+//			DirectX::XMStoreFloat3(&nodePose.position, V);
+//		}
+//	}
+//	// 回転
+//	for (size_t index = 0; index < nodeAnim.rotationKeyframes.size() - 1; ++index)
+//	{
+//		// 現在の時間がどのキーフレームの間にいるか判定する
+//		const QuaternionKeyframe& keyframe0 = nodeAnim.rotationKeyframes.at(index);
+//		const QuaternionKeyframe& keyframe1 = nodeAnim.rotationKeyframes.at(index + 1);
+//		if (time >= keyframe0.seconds && time <= keyframe1.seconds)
+//		{
+//			// 再生時間とキーフレームの時間から補完率を算出する
+//			float rate = (time - keyframe0.seconds) / (keyframe1.seconds - keyframe0.seconds);
+//
+//			// 前のキーフレームと次のキーフレームの姿勢を補完
+//			DirectX::XMVECTOR Q0 = DirectX::XMLoadFloat4(&keyframe0.value);
+//			DirectX::XMVECTOR Q1 = DirectX::XMLoadFloat4(&keyframe1.value);
+//			DirectX::XMVECTOR Q = DirectX::XMQuaternionSlerp(Q0, Q1, rate);
+//			// 計算結果をノードに格納
+//			DirectX::XMStoreFloat4(&nodePose.rotation, Q);
+//		}
+//	}
+//	// スケール
+//	for (size_t index = 0; index < nodeAnim.scaleKeyframes.size() - 1; ++index)
+//	{
+//		// 現在の時間がどのキーフレームの間にいるか判定する
+//		const VectorKeyframe& keyframe0 = nodeAnim.scaleKeyframes.at(index);
+//		const VectorKeyframe& keyframe1 = nodeAnim.scaleKeyframes.at(index + 1);
+//		if (time >= keyframe0.seconds && time <= keyframe1.seconds)
+//		{
+//			// 再生時間とキーフレームの時間から補完率を算出する
+//			float rate = (time - keyframe0.seconds) / (keyframe1.seconds - keyframe0.seconds);
+//
+//			// 前のキーフレームと次のキーフレームの姿勢を補完
+//			DirectX::XMVECTOR V0 = DirectX::XMLoadFloat3(&keyframe0.value);
+//			DirectX::XMVECTOR V1 = DirectX::XMLoadFloat3(&keyframe1.value);
+//			DirectX::XMVECTOR V = DirectX::XMVectorLerp(V0, V1, rate);
+//			// 計算結果をノードに格納
+//			DirectX::XMStoreFloat3(&nodePose.scale, V);
+//		}
+//	}
+//}
+//
+//void Model::ComputeAnimation(int animationIndex, float time, std::vector<NodePose>& nodePoses) const
+//{
+//	if (nodePoses.size() != nodes.size())
+//	{
+//		nodePoses.resize(nodes.size());
+//	}
+//	for (size_t nodeIndex = 0; nodeIndex < nodePoses.size(); ++nodeIndex)
+//	{
+//		ComputeAnimation(animationIndex, static_cast<int>(nodeIndex), time, nodePoses.at(nodeIndex));
+//	}
+//}
 
 
 void Model::UpdateAnimation(float elapsedTime, bool blend)
@@ -244,6 +324,151 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 
 
 }
+//
+//void Model::UpdateRootAnimation(float elapsedTime, char* bornName, bool blend)
+//{
+//
+//	// アニメーション更新処理
+//	UpdateAnimation(elapsedTime, blend);
+//		//const Model::Animation& animation = character->GetAnimations().at(animationIndex);
+//	const std::vector<ModelResource::Animation>& animations = resource->GetAnimations();
+//	
+//
+//		// 指定時間のアニメーションの姿勢を取得
+//		character->ComputeAnimation(animationIndex, currentAnimationSeconds, nodePoses);
+//	
+//		// TODO①:ルートモーション処理を行い、キャラクターを移動せよ
+//		{
+//			// ルートモーションノード番号取得 腰骨番号
+//			//const int rootMotionNodeIndex = character->GetNodeIndex("B_Pelvis");
+//			const int rootMotionNodeIndex = character->GetNodeIndex(bornName);
+//
+//			// 初回、前回、今回のルートモーションの姿勢を取得
+//			Model::NodePose beginPose, oldPose, newPose;
+//			character->ComputeAnimation(animationIndex, rootMotionNodeIndex, 0.0f, beginPose);
+//			character->ComputeAnimation(animationIndex, rootMotionNodeIndex, oldAnimationSeconds, oldPose);
+//			character->ComputeAnimation(animationIndex, rootMotionNodeIndex, animationSeconds, newPose);
+//
+//
+//			DirectX::XMFLOAT3 localTranslation;
+//			DirectX::XMFLOAT3 movepos;
+//
+//			if (oldAnimationSeconds > animationSeconds)
+//			{
+//				// TODO②:ループアニメーションに対応せよ
+//
+//				// 終端の姿勢を取得
+//				Model::NodePose rastPose;
+//				character->ComputeAnimation(animationIndex, rootMotionNodeIndex, rastAnimationSeconds, rastPose);
+//
+//
+//
+//				// ローカル移動値を算出
+//				movepos.x = oldPose.position.x - rastPose.position.x;
+//				movepos.y = oldPose.position.y - rastPose.position.y;
+//				movepos.z = oldPose.position.z - rastPose.position.z;
+//				// ローカル移動値を算出
+//				movepos.x += beginPose.position.x - newPose.position.x;
+//				movepos.y += beginPose.position.y - newPose.position.y;
+//				movepos.z += beginPose.position.z - newPose.position.z;
+//
+//				localTranslation.x = movepos.x;
+//				localTranslation.y = movepos.y;
+//				localTranslation.z = movepos.z;
+//
+//			}
+//			else
+//			{
+//				// ローカル移動値を取得
+//
+//				localTranslation.x = newPose.position.x - oldPose.position.x;
+//				localTranslation.y = newPose.position.y - oldPose.position.y;
+//				localTranslation.z = newPose.position.z - oldPose.position.z;
+//
+//
+//			}
+//
+//
+//			// グローバル移動値を算出
+//			Model::Node& rootMotionNode = character->GetNodes().at(rootMotionNodeIndex);
+//			DirectX::XMVECTOR LocalTranslation = DirectX::XMLoadFloat3(&localTranslation);
+//			// 親のグローバル行列
+//			DirectX::XMMATRIX ParentGlobalTransform = DirectX::XMLoadFloat4x4(&rootMotionNode.parent->globalTransform);
+//			// ローカルをグローバルに
+//			DirectX::XMVECTOR GlobalTranslation = DirectX::XMVector3TransformNormal(LocalTranslation, ParentGlobalTransform);
+//
+//
+//			if (bakeTranslationY)
+//			{
+//				DirectX::XMFLOAT3 globalTranslation;
+//
+//				DirectX::XMStoreFloat3(&globalTranslation, GlobalTranslation);
+//
+//				// TODO③:ルートモーションのY移動は適用しないようにせよ
+//
+//				// Y成分の移動値を抜く
+//				globalTranslation.y = 0;
+//				// 今回の姿勢のグローバル位置を算出
+//
+//				// XZ成分を削除
+//				//globalTranslation.x = 0;
+//				//globalTranslation.z = 0;
+//
+//				GlobalTranslation = DirectX::XMLoadFloat3(&globalTranslation);
+//				// ローカル空間変換
+//
+//				// ルートモーションノードの位置を設定
+//
+//
+//			}
+//			else
+//			{
+//				// 移動後にグローバル座標が元の位置に戻るのを防ぐために
+//				// ルートモーションノードを初回の姿勢にする
+//				nodePoses[rootMotionNodeIndex].position = beginPose.position;
+//			}
+//			// ワールド移動値を算出
+//			DirectX::XMMATRIX WorldTransform = DirectX::XMLoadFloat4x4(&worldTransform);
+//			DirectX::XMVECTOR WorldTranslation = DirectX::XMVector3TransformNormal(GlobalTranslation, WorldTransform);
+//			DirectX::XMFLOAT3 worldTranslation;
+//			DirectX::XMStoreFloat3(&worldTranslation, WorldTranslation);
+//
+//
+//			// キャラクターの位置を更新
+//			position.x += worldTranslation.x;
+//			position.y += worldTranslation.y;
+//			position.z += worldTranslation.z;
+//		}
+//
+//		// アニメーション時間更新
+//		oldAnimationSeconds = animationSeconds;
+//		animationSeconds += elapsedTime;
+//		if (animationSeconds > animation.secondsLength)
+//		{
+//			if (animationLoop)
+//			{
+//				animationSeconds -= animation.secondsLength;
+//			}
+//			else
+//			{
+//				animationSeconds = animation.secondsLength;
+//			}
+//		}
+//
+//		// 姿勢更新
+//		character->SetNodePoses(nodePoses);
+//	
+//
+//	// ワールドトランスフォーム更新
+//	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+//	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
+//	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+//	DirectX::XMMATRIX WorldTransform = S * R * T;
+//	DirectX::XMStoreFloat4x4(&worldTransform, WorldTransform);
+//
+//	// モデルトランスフォーム更新処理
+//	character->UpdateTransform(worldTransform);
+//}
 
 void Model::ReverseplaybackAnimation(float elapsedTime, bool blend)
 {

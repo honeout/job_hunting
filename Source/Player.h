@@ -18,14 +18,7 @@
 #include "StateMachine.h"
 #include <stack>
 
-enum class UpAnim
-{
-    Stop = -1,
-    Normal,
-    Doble,
-    Blend,
 
-};
 
 // プレイヤー
 class Player : public Component
@@ -41,21 +34,37 @@ public:
 
 
     // アニメーション
-    enum Animation
-    {
-        Anim_Attack,
-        Anim_Death,
-        Anim_Falling,
-        Anim_GetHit1,
-        Anim_GetHit2,
-        Anim_Idle,
-        Anim_Jump,
-        Anim_Jump_Flip,
-        Anim_Landing,
-        Anim_Revive,
-        Anim_Running,
-        Anim_Walking
-    };
+    //enum Animation
+    //{
+    //    Anim_Attack,
+    //    Anim_Death,
+    //    Anim_Falling,
+    //    Anim_GetHit1,
+    //    Anim_GetHit2,
+    //    Anim_Idle,
+    //    Anim_Jump,
+    //    Anim_Jump_Flip,
+    //    Anim_Landing,
+    //    Anim_Revive,
+    //    Anim_Running,
+    //    Anim_Walking
+    //};
+    //enum Animation
+    //{
+    //    Anim_Tpose,
+    //    Anim_Idle,
+    //    Anim_Move,
+    //    Anim_Back,
+    //    Anim_Beside,
+    //    Anim_BesideSrow,
+    //    Anim_Jump,
+    //    Anim_Slash,
+    //    Anim_SlashBeside,
+    //    Anim_SlashThree,
+    //    Anim_Deth,
+    //    Anim_Pain
+    //    
+    //};
 
     // 名前取得
     const char* GetName() const override { return "Player"; }
@@ -300,6 +309,37 @@ public:
         Avoidance,
         Reflection,
     };
+
+    // アニメ
+    enum Animation
+    {
+        Anim_Tpose,
+        Anim_Idle,
+        Anim_Move,
+        Anim_Back,
+        Anim_Beside,
+        Anim_BesideSrow,
+        Anim_Jump,
+        Anim_Slash,
+        Anim_SlashBeside,
+        Anim_SlashThree,
+        Anim_Deth,
+        Anim_Pain,
+        Anim_Counter
+
+    };
+
+    // アニメーション再生方法
+    enum class UpAnim
+    {
+        Stop = -1,
+        Normal,
+        Doble,
+        Blend,
+        Reverseplayback,
+
+    };
+
 
     enum class CommandAttack
     {

@@ -68,7 +68,7 @@ ColorGradingShader::ColorGradingShader(ID3D11Device* device)
         D3D11_BUFFER_DESC desc;
         ::memset(&desc, 0, sizeof(desc));
         desc.Usage = D3D11_USAGE_DEFAULT;
-        desc.BindFlags = D3D11_USAGE_DEFAULT;
+        desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         desc.CPUAccessFlags = 0;
         desc.MiscFlags = 0;
         desc.ByteWidth = sizeof(CBColorGrading);
@@ -166,12 +166,12 @@ void ColorGradingShader::Begin(const RenderContext& rc)
     rc.deviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
     rc.deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-    ID3D11Buffer* constantBuffer[] =
+    ID3D11Buffer* constantBuffers[] =
     {
         colorGradingConstantBuffer.Get(),
     };
-    rc.deviceContext->VSSetConstantBuffers(0, ARRAYSIZE(constantBuffer), constantBuffer);
-    rc.deviceContext->PSSetConstantBuffers(0, ARRAYSIZE(constantBuffer), constantBuffer);
+    rc.deviceContext->VSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
+    rc.deviceContext->PSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
 
     const float blend_factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
     rc.deviceContext->OMSetBlendState(blendState.Get(), blend_factor, 0xFFFFFFFF);

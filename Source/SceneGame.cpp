@@ -43,8 +43,8 @@ static const UINT SHADOWMAP_SIZE = 2048;
 // 初期化
 void SceneGame::Initialize()
 {
+	//
 
-	
 	// ステージ初期化
 	{
 		const char* filename = "Data/Model/ExampleStage/M_stage .mdl";
@@ -74,10 +74,11 @@ void SceneGame::Initialize()
 	}
 
 
-	//player = new Player;
+	////player = new Player;
 	{
 		// プレイヤー初期化
-		const char* filename = "Data/Model/Jammo/Jammo.mdl";
+		//const char* filename = "Data/Model/Jammo/Jammo.mdl";
+		const char* filename = "Data/Model/Player/Maria.mdl";
 
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
@@ -111,11 +112,12 @@ void SceneGame::Initialize()
 
 
 	}
-
+	
 	// 敵
 	{
 
 		const char* filename = "Data/Model/Boss/BossAnim8.mdl";
+		//const char* filename = "Data/Model/Slime/Slime.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
@@ -1273,6 +1275,12 @@ void SceneGame::Initialize()
 		renderTarget = std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth())
 			, static_cast<UINT>(graphics.GetScreenHeight())
 			, DXGI_FORMAT_R8G8B8A8_UNORM);
+
+		//// スプライトで描画する物をシーンの描画毛kkあに変える
+		//sprite = std::make_unique<Sprite>();
+		//sprite->SetShaderResourceView(renderTarget->GetShaderResourceView()
+		//	, renderTarget->GetWidth()
+		//	, renderTarget->GetHeight());
 	}
 
 	// シャドウマップ用に深度ステンシルの生成
@@ -1320,6 +1328,15 @@ void SceneGame::Update(float elapsedTime)
 
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
+
+	//// 色調補正
+	//sprite->Update(0.0f, 0.0f,
+	//	Graphics::Instance().GetScreenWidth(), Graphics::Instance().GetScreenHeight(),
+	//	0.0f, 0.0f,
+	//	static_cast<float>(renderTarget->GetWidth()), static_cast<float>(renderTarget->GetHeight()),
+	//	0.0f,
+	//	1.0f, 1.0f, 1.0f, 1.0f);
+
 
 	// シーン切り替え
 	{
@@ -1375,7 +1392,7 @@ void SceneGame::Update(float elapsedTime)
 // 描画処理
 void SceneGame::Render()
 {
-
+	
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 
@@ -1386,22 +1403,24 @@ void SceneGame::Render()
 
 	// 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
 	{
-		Microsoft::WRL::ComPtr <ID3D11RenderTargetView> rtv = graphics.GetRenderTargetView();
-		Microsoft::WRL::ComPtr <ID3D11DepthStencilView> dsv = graphics.GetDepthStencilView();
+		ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
+		ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
 		// 画面クリア＆レンダーターゲット設定
 		FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
-		dc->ClearRenderTargetView(rtv.Get(), color);
-		dc->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		dc->OMSetRenderTargets(1, rtv.GetAddressOf(), dsv.Get());
+		dc->ClearRenderTargetView(rtv, color);
+		dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		dc->OMSetRenderTargets(1, &rtv, dsv);
 
 		//RenderContext rc;
 		//rc.deviceContext = dc;
 
 		//SpriteShader* shader = graphics.GetShader(SpriteShaderId::ColorGrading);
 		//shader->Begin(rc);
-		//rc.colorGradingData = ColorGradingData;
-		//shader->Draw(rc.s)
+		//rc.colorGradingData = colorGradingData;
+		//shader->Draw(rc, sprite.get());
+
+		//shader->End(rc);
 
 		// UINT11
 		// ビューポートの設定
@@ -1441,26 +1460,37 @@ void SceneGame::Render()
 
 
 
-		// 2DデバッグGUI描画
+		 //2DデバッグGUI描画
+	{
+		ImGui::Separator();
+		 //UNIT11
+		if (ImGui::TreeNode("shadowmap"))
 		{
-			ImGui::Separator();
-			// UNIT11
-			if (ImGui::TreeNode("shadowmap"))
-			{
-				ImGui::SliderFloat("DrawRect", &shadowDrawRect, 1.0f, 2048.0f);
-				ImGui::ColorEdit3("Color", &shadowColor.x);
-				ImGui::SliderFloat("Bias", &shadowBias, 0.0f, 0.1f);
-				ImGui::Text("texture");
-				ImGui::Image(shadowmapDepthStencil->GetShaderResourceView().Get(), { 256,256 }, { 0,0 }, { 1,1 },
-					{ 1,1,1,1 });
-				ImGui::TreePop();
-			}
-			ImGui::Separator();
-
-			postprocessingRenderer->DrawDebugGUI();
-			ImGui::Separator();
-			LightManager::Instanes().DrawDebugGUI();
+			ImGui::SliderFloat("DrawRect", &shadowDrawRect, 1.0f, 2048.0f);
+			ImGui::ColorEdit3("Color", &shadowColor.x);
+			ImGui::SliderFloat("Bias", &shadowBias, 0.0f, 0.1f);
+			ImGui::Text("texture");
+			ImGui::Image(shadowmapDepthStencil->GetShaderResourceView().Get(), { 256,256 }, { 0,0 }, { 1,1 },
+				{ 1,1,1,1 });
+			ImGui::TreePop();
 		}
+		ImGui::Separator();
+		 //UNIT09
+		if (ImGui::TreeNode("ColorGrading"))
+		{
+			ImGui::SliderFloat("hueShift", &colorGradingData.hueShift, 0.0f, +360.0f);
+			ImGui::SliderFloat("saturation", &colorGradingData.saturation, 0.0f, +2.0f);
+			ImGui::SliderFloat("brigtness", &colorGradingData.brigthness, 0.0f, +2.0f);
+
+			ImGui::TreePop();
+		}
+		ImGui::Separator();
+	}
+
+		//	postprocessingRenderer->DrawDebugGUI();
+		//	ImGui::Separator();
+		//	LightManager::Instanes().DrawDebugGUI();
+		//}
 
 
 	
@@ -1468,6 +1498,7 @@ void SceneGame::Render()
 
 void SceneGame::Render3DScene()
 {
+
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView().Get();
@@ -1548,7 +1579,7 @@ void SceneGame::Render3DScene()
 		// デバッグレンダラ描画実行
 		graphics.GetDebugRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
 	}
-
+	
 
 }
 

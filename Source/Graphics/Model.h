@@ -26,11 +26,34 @@ public:
 		int now;
 	};
 
+	// 
+	struct NodePose
+	{
+		DirectX::XMFLOAT3	position = { 0, 0, 0 };
+		DirectX::XMFLOAT4	rotation = { 0, 0, 0, 1 };
+		DirectX::XMFLOAT3	scale = { 1, 1, 1 };
+	};
+
+	struct VectorKeyframe
+	{
+		float					seconds;
+		DirectX::XMFLOAT3		value;
+
+		template<class Archive>
+		void serialize(Archive& archive);
+	};
+
 
 	// 行列計算
 	void UpdateTransform(const DirectX::XMFLOAT4X4& transform);
 	// 行列計算　ボーン情報を共有
 	void UpdateTransform(const DirectX::XMFLOAT4X4& transform,  std::vector<Node> nodes);
+
+	//// アニメーション計算
+	//void ComputeAnimation(int animationIndex, int nodeIndex, float time, NodePose& nodePose) const;
+	//// 全骨の姿勢
+	//void ComputeAnimation(int animationIndex, float time, std::vector<NodePose>& nodePoses) const;
+
 
 	// ノードリスト取得
 	const std::vector<Node>& GetNodes() const { return nodes; }
@@ -44,6 +67,8 @@ public:
 	// アニメーション更新処理
 	void UpdateAnimation(float elapsedTime, bool blend = false);
 
+	// ルートモーション
+	//void UpdateRootAnimation(float elapsedTime,char * bornName, bool blend = false);
 
 	// 逆再生
 	void ReverseplaybackAnimation(float elapsedTime, bool blend = false);
@@ -145,3 +170,12 @@ private:
 	// 再生　逆再生
 	bool anim = true;
 };
+
+template<class Archive>
+inline void Model::VectorKeyframe::serialize(Archive& archive)
+{
+	archive(
+		CEREAL_NVP(seconds),
+		CEREAL_NVP(value)
+	);
+}

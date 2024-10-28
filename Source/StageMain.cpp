@@ -15,8 +15,8 @@ StageMain::~StageMain()
     // ステージモデルを破棄
     //delete model;
 
-    if (transformid)
-        transformid.reset();
+    //if (transformid)
+    //    transformid.reset();
     
 
 }
@@ -35,11 +35,13 @@ void StageMain::Start()
 // 更新処理
 void StageMain::Update(float elasedTime)
 {
+   
     // 今は特にやることなし
     transformid->UpdateTransform();
 
     model->GetModel()->UpdateTransform(transformid->GetTransform());
     //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
+   
 }
 
 //// 描画処理

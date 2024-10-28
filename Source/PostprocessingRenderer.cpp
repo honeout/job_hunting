@@ -83,7 +83,7 @@ void PostprocessingRenderer::Render(ID3D11DeviceContext* deviceContext)
         SpriteShader* shader = graphics.GetShader(SpriteShaderId::LuminanceExtraction);
  
         shader->Begin(rc);
-
+        
         // •`‰æ‘ÎÛ‚ğ•ÏX
         renderSprite->SetShaderResourceView(sceneData.srv, sceneData.width, sceneData.height);
         renderSprite->Update(0, 0, viewport.Width, viewport.Height,
@@ -98,11 +98,12 @@ void PostprocessingRenderer::Render(ID3D11DeviceContext* deviceContext)
     // ’Šo‚µ‚½‚‹P•`‰æ‘ÎÛ‚ğò‚µ‚Ä‘‚«‚Ş
     {
         // •`‰ææ‚ğ•ÏX
-        Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv = luminanceExtractBokehRenderTarget->GetRenderTargetView().Get();
+        ID3D11RenderTargetView* rtv = luminanceExtractBokehRenderTarget->GetRenderTargetView().Get();
+        //Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv = luminanceExtractBokehRenderTarget->GetRenderTargetView().Get();
         FLOAT color[] = { 0.0f,0.0f,0.0f,0.0f };
         //      •`‰ææ‚ğ•ÏX
-        rc.deviceContext->ClearRenderTargetView(rtv.Get(), color);
-        rc.deviceContext->OMSetRenderTargets(1, rtv.GetAddressOf(), nullptr);
+        rc.deviceContext->ClearRenderTargetView(rtv, color);
+        rc.deviceContext->OMSetRenderTargets(1, &rtv, nullptr);
         D3D11_VIEWPORT viewport{};
         viewport.Width = static_cast<float>(luminanceExtractBokehRenderTarget->GetWidth());
         viewport.Height = static_cast<float>(luminanceExtractBokehRenderTarget->GetHeight());

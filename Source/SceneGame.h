@@ -88,6 +88,9 @@ private:
 	float edgeThreshold; // 緑の閾値
 	DirectX::XMFLOAT4 edgeColor; // 緑の色
 
+	// 画面の色
+	ColorGradingData       colorGradingData;
+
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源
 	//std::unique_ptr <Light> mainDirectionalLight; // シャドウマップを生成する平行光源

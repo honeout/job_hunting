@@ -195,6 +195,9 @@ void Player::Start()
 
     // 曲がる速度
     turnSpeedAdd = 0;
+
+
+
 }
 
 // 更新処理
@@ -390,6 +393,14 @@ void Player::Update(float elapsedTime)
         // モデル複数ブレンドアニメーション更新処理
         model->Update_blend_animations(elapsedTime, true);
         break;
+    }
+
+    case UpAnim::Reverseplayback:
+    {
+        // モデル逆再生アニメーション更新処理
+        model->ReverseplaybackAnimation(elapsedTime, true);
+        break;
+
     }
     }
 
@@ -1663,6 +1674,7 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, cons
 
     // ノード取得
     Model::Node* node = model->FindNode(nodeName);
+    
     //worldTransform
     //localTransform
     // ノード位置取得
@@ -2531,7 +2543,7 @@ void Player::TransitionLandState()
 
     updateanim = UpAnim::Normal;
     // 着地アニメーション再生
-    model->PlayAnimation(Anim_Landing, false);
+    //model->PlayAnimation(Anim_Landing, false);
 
     movement->SetOnLadius(false);
 
@@ -2612,7 +2624,7 @@ void Player::TransitionAttackState()
 
     updateanim = UpAnim::Normal;
     // 走りアニメーション再生
-    model->PlayAnimation(Anim_Attack, false);
+    //model->PlayAnimation(Anim_Attack, false);
 }
 
 void Player::UpdateAttackState(float elapsedTime)
@@ -2638,7 +2650,7 @@ void Player::UpdateAttackState(float elapsedTime)
         bornUpStartPoint = "mixamorig:Spine";
         // 下半身
         bornDownerEndPoint = "mixamorig:Spine";
-        model->PlayAnimation(Anim_Attack, false);
+       // model->PlayAnimation(Anim_Attack, false);
     }
 
         // 任意のアニメーション再生区間でのみ衝突判定処理をする
@@ -2714,7 +2726,7 @@ void Player::TransitionDamageState()
     state = State::Damage;
 
     // ダメージアニメーション再生
-    model->PlayAnimation(Anim_GetHit1, false);
+    //model->PlayAnimation(Anim_GetHit1, false);
 }
 
 void Player::UpdateDamageState(float elapsedTime)
@@ -2733,7 +2745,7 @@ void Player::TransitionDeathState()
     state = State::Death;
 
     // ダメージアニメーション再生
-    model->PlayAnimation(Anim_Death, false);
+    //model->PlayAnimation(Anim_Death, false);
 }
 
 void Player::UpdateDeathState(float elapsedTime)
@@ -2763,7 +2775,7 @@ void Player::TransitionReviveState()
 
 
     // ダメージアニメーション再生
-    model->PlayAnimation(Anim_Revive, false);
+    //model->PlayAnimation(Anim_Revive, false);
 }
 
 void Player::UpdateReviveState(float elapsedTime)
