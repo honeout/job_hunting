@@ -1456,6 +1456,10 @@ void SceneGame::Update(float elapsedTime)
 	{
 		for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 		{
+			vignette_smoothness = 0.0f;
+			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->HealthPinch())
+				vignette_smoothness = 1;
+
 			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
 			{
 				//PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->SetDead(false);
@@ -1598,6 +1602,15 @@ void SceneGame::Render()
 		rc.deviceContext = dc;
 		rc.colorGradingData = colorGradingData;
 
+
+		// 周辺減光
+		rc.vignette_color = vignette_color;
+		rc.vignette_center = vignette_center;
+		rc.vignette_intensity = vignette_intensity * 3.0f;
+		rc.vignette_smoothness = vignette_smoothness;
+		//rc.vignette_smoothness = max(0.000001f, vignette_data.vignette_smoothness * 5.0f);
+		//rc.vignette_rounded = vignette_data.vignette_rounded ? 1.0f : 0.0f;
+		//rc.vignette_roundness = 6.0f * (1.0f - vignette_data.vignette_roundness) + vignette_data.vignette_roundness;
 
 
 		// ポストプロセスを処理を行う

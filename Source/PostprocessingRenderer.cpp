@@ -215,10 +215,13 @@ void PostprocessingRenderer::Render(RenderContext rc)
         {
             static constexpr int VignetteCBVIndex = 2;
             vignette_constants constant;
-            constant.vignette_color = vignette_data.vignette_color;
-            constant.vignette_center = vignette_data.vignette_center;
+            //constant.vignette_color = vignette_data.vignette_color;
+            constant.vignette_color = rc.vignette_color;
+            //constant.vignette_center = vignette_data.vignette_center;
+            constant.vignette_center = rc.vignette_center;
             constant.vignette_intensity = vignette_data.vignette_intensity * 3.0f;
-            constant.vignette_smoothness = max(0.000001f, vignette_data.vignette_smoothness * 5.0f);
+            //constant.vignette_smoothness = max(0.000001f, vignette_data.vignette_smoothness * 5.0f);
+            constant.vignette_smoothness = max(0.000001f, rc.vignette_smoothness * 5.0f);
             constant.vignette_rounded = vignette_data.vignette_rounded ? 1.0f : 0.0f;
             constant.vignette_roundness = 6.0f * (1.0f - vignette_data.vignette_roundness) + vignette_data.vignette_roundness;
 

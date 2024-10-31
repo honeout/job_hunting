@@ -89,3 +89,11 @@ bool HP::OnDead()
     ActorManager::Instance().Remove(GetActor());
     return true;
 }
+
+bool HP::HealthPinch()
+{
+    if (health <= (maxHealth / 4))
+        return true;
+    
+    return false;
+}

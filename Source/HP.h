@@ -54,6 +54,8 @@ public:
 	// c‹@
 	int GetLife() const { return life; }
 
+	bool HealthPinch();
+
 private:
 	// Å‘å’lHP
 	int          maxHealth = 5;
