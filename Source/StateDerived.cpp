@@ -10,6 +10,10 @@
 #include "ProjectileThrowing.h"
 #include "ProjectileManager.h"
 
+#include "SceneLoading.h"
+#include "SceneManager.h"
+#include "SceneGameOver.h"
+
 
 
 // TODO 02_03 Stateを基底クラスとして各種Stateクラスを用意する。
@@ -136,7 +140,10 @@ void IdleState::Exit()
 // 初期化
 void PursuitState::Enter()
 {
-	
+
+
+
+	--mortionLimit;
 	owner->GetComponent<EnemySlime>()->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Standby, loop,currentAnimationStartSeconds,  blendSeconds);
 
 	// アニメーションルール
@@ -187,6 +194,13 @@ void PursuitState::Execute(float elapsedTime)
 
 	owner->GetComponent<EnemySlime>()->SetTargetPosition(targetPosition);
 
+	if (mortionLimit < 0)
+	{
+		// 待機時間再設定
+		mortionLimit = Mathf::RandomRange(3.0f, mortionLimitMax);
+		// 限界がきたので休憩
+		owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::IdleBattle));
+	}
 
 	// タイマー処理
 	stateTimer -= elapsedTime;
@@ -317,7 +331,7 @@ void AttackState::Execute(float elapsedTime)
 	// 繰り返し踏みつけ最後
 	else if (attackMemory == attackMemoryMax)
 	{
-		owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::IdleBattle));
+		owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
 		
 		int attackMemoryStart = 0;
 		attackMemory = attackMemoryStart;
@@ -458,27 +472,28 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 	DirectX::XMFLOAT3 angle = owner->GetComponent<Transform>()->GetAngle();
 	// プレイヤーid
 	std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid->GetComponent<Transform>()->GetPosition());
 
-	for (int i = 0; i < ProjectileManager::Instance().GetProjectileCount(); ++i)
-	{
+	//for (int i = 0; i < ProjectileManager::Instance().GetProjectileCount(); ++i)
+	//{
 
-		std::shared_ptr<Actor> projectileManager = ProjectileManager::Instance().GetProjectile(i);
-		if (projectileManager->GetComponent<ProjectileThrowing>())
-		{
-			// 球回転
-			{
-				DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid->GetComponent<Transform>()->GetPosition());
-				DirectX::XMVECTOR projectilePosition = DirectX::XMLoadFloat3(&projectileManager->GetComponent<Transform>()->GetPosition());
+	//	std::shared_ptr<Actor> projectileManager = ProjectileManager::Instance().GetProjectile(i);
+	//	if (projectileManager->GetComponent<ProjectileThrowing>())
+	//	{
+	//		// 球回転
+	//		{
 
-				DirectX::XMVECTOR vectorVec = DirectX::XMVectorSubtract(playerPosition, projectilePosition);
-				vectorVec = DirectX::XMVector3Normalize(vectorVec);
-				DirectX::XMFLOAT3 vector;
-				DirectX::XMStoreFloat3(&vector, vectorVec);
+	//			DirectX::XMVECTOR projectilePosition = DirectX::XMLoadFloat3(&projectileManager->GetComponent<Transform>()->GetPosition());
 
-				projectileManager->GetComponent<BulletFiring>()->Turn(turnSpeed, vector, elapsedTime);
-			}
-		}
-	}
+	//			//DirectX::XMVECTOR vectorVec = DirectX::XMVectorSubtract(playerPosition, projectilePosition);
+	//			////vectorVec = DirectX::XMVector3Normalize(vectorVec);
+	//			//DirectX::XMFLOAT3 vector;
+	//			//DirectX::XMStoreFloat3(&vector, vectorVec);
+
+	//			projectileManager->GetComponent<BulletFiring>()->TurnFull(turnSpeed, playerid->GetComponent<Transform>()->GetPosition(), elapsedTime);
+	//		}
+	//	}
+	//}
 	
 
 
@@ -488,15 +503,15 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 	// 宝石取って設定
 	if (animationTime <= 3.9f && animationTime >= 3.89f && !turnPermission)
 	{
-		//// 正面の向きベクトル
-         direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
-         //direction.y = sinf(angle.x);
-         direction.y = DirectX::XMConvertToRadians(0);
-         direction.z = cosf(angle.y);		
+		////// 正面の向きベクトル
+  //       direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
+  //       direction.y = sinf(angle.x);
+  //       //direction.y = DirectX::XMConvertToRadians(0);
+  //       direction.z = cosf(angle.y);		
 
 		 
 		//	遠距離攻撃登録
-		owner->GetComponent<EnemySlime>()->InputThrowingRuby(direction);
+		owner->GetComponent<EnemySlime>()->InputThrowingRuby(playerid->GetComponent<Transform>()->GetPosition());
 
 		
 
@@ -526,6 +541,8 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 
 					});
 
+				projectileManager->GetComponent<BulletFiring>()->TurnFull(turnSpeed, playerid->GetComponent<Transform>()->GetPosition(), elapsedTime);
+
 			}
 		}
 
@@ -543,10 +560,10 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 				DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid->GetComponent<Transform>()->GetPosition());
 				DirectX::XMVECTOR projectilePosition = DirectX::XMLoadFloat3(&projectileManager->GetComponent<Transform>()->GetPosition());
 
-				DirectX::XMVECTOR vectorVec = DirectX::XMVectorSubtract(playerPosition, projectilePosition);
-				vectorVec = DirectX::XMVector3Normalize(vectorVec);
-				DirectX::XMFLOAT3 vector;
-				DirectX::XMStoreFloat3(&vector, vectorVec);
+				//DirectX::XMVECTOR vectorVec = DirectX::XMVectorSubtract(playerPosition, projectilePosition);
+				//vectorVec = DirectX::XMVector3Normalize(vectorVec);
+				//DirectX::XMFLOAT3 vector;
+				//DirectX::XMStoreFloat3(&vector, vectorVec);
 
 
 				projectileManager->GetComponent<Transform>()->SetPosition(owner->GetComponent<Transform>()->GetPosition());
@@ -648,7 +665,7 @@ void ConfusionState::Execute(float elapsedTime)
 	if (stateTimer < 0.0f)
 	{
 		// ステート変更
-		owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Idle));
+		owner->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
 	}
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
@@ -1066,10 +1083,57 @@ void PlayerDeathState::Enter()
 	);
 
 	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+
+	stateTimer = 0.0f;
+
+
 }
 
 void PlayerDeathState::Execute(float elapsedTime)
 {
+
+	if (stateTimer >= stateTimerMax)
+	{
+
+		owner->GetComponent<HP>()->SetDead(false);
+
+		//owner->GetComponent<HP>()->OnDead();
+
+		//ActorManager::Instance().Clear();
+		// ゲームオーバー
+		//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
+		
+	}
+
+	    // 死亡時はそれっぽいカメラアングルで死亡
+    // 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
+    MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+	DirectX::XMFLOAT3 position = owner->GetComponent<Transform>()->GetPosition();
+	DirectX::XMFLOAT3 angle = owner->GetComponent<Transform>()->GetAngle();
+
+
+
+    float vx = sinf(angle.y) * 6;
+    float vz = cosf(angle.y) * 6;
+    p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+    p.data.push_back({ 90, {position.x + vx, position.y + 15, position.z + vz }, position });
+	
+    Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+
+	// 任意のアニメーション再生区間でのみ衝突判定処理をする
+	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
+	bool CollisionFlag = animationTime >= 1.5f && animationTime <= 1.6f;
+	if (CollisionFlag)
+	{
+		++stateTimer;
+		
+		owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Stop);
+
+
+	}
+
 
 }
 

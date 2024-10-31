@@ -1,3 +1,4 @@
+#include "Misc.h"
 #include "PostprocessingRenderer.h"
 #include "Graphics/Graphics.h"
 
@@ -25,6 +26,45 @@ PostprocessingRenderer::PostprocessingRenderer()
         bloomData.gaussianFilterData.textureSize.y = static_cast<float>(luminanceExtractBokehRenderTarget->
             GetHeight());
     }
+    //	定数バッファの生成
+    {
+        D3D11_BUFFER_DESC buffer_desc{};
+        buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+        buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        buffer_desc.CPUAccessFlags = 0;
+        buffer_desc.MiscFlags = 0;
+        buffer_desc.StructureByteStride = 0;
+        //	ヴィネット用定数バッファ
+        {
+            
+            buffer_desc.ByteWidth = sizeof(vignette_constants);
+            HRESULT hr = Graphics::Instance().GetDevice()->CreateBuffer(&buffer_desc, nullptr, vignette_constant_buffer.GetAddressOf());
+            _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+        }
+
+
+        //	スプライトシェーダー準備
+        {
+            //	ヴィネットシェーダー
+            //create_ps_from_cso(Graphics::Instance().GetDevice(), "vignette_ps.cso", vignette_pixel_shader.GetAddressOf());
+            // ファイルを開く
+            FILE* fp{ nullptr };
+            fopen_s(&fp, "Shader\\vignette_ps.cso", "rb");
+            _ASSERT_EXPR_A(fp, "CSO File not found");
+
+            fseek(fp, 0, SEEK_END);
+            long cso_sz{ ftell(fp) };
+            fseek(fp, 0, SEEK_SET);
+
+            std::unique_ptr<unsigned char[]> cso_data{ std::make_unique<unsigned char[]>(cso_sz) };
+            fread(cso_data.get(), cso_sz, 1, fp);
+            fclose(fp);
+
+            HRESULT hr{ S_OK };
+            hr = Graphics::Instance().GetDevice()->CreatePixelShader(cso_data.get(), cso_sz, nullptr, vignette_pixel_shader.GetAddressOf());
+            _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+        }
+    }
 
     //// 高輝度抽出用描画ターゲットを生成
     //luminanceExtractRenderTarget =
@@ -44,7 +84,7 @@ PostprocessingRenderer::~PostprocessingRenderer()
 {
 }
 
-void PostprocessingRenderer::Render(ID3D11DeviceContext* deviceContext)
+void PostprocessingRenderer::Render(RenderContext rc)
 {
  
     Graphics& graphics = Graphics::Instance();
@@ -55,15 +95,16 @@ void PostprocessingRenderer::Render(ID3D11DeviceContext* deviceContext)
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> cachedRenderTargetView;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> cachedDepthStencilView;
     {
-        deviceContext->RSGetViewports(&cachedViewportCount, cachedViewports);
-        deviceContext->OMGetRenderTargets(1
+
+        rc.deviceContext->RSGetViewports(&cachedViewportCount, cachedViewports);
+        rc.deviceContext->OMGetRenderTargets(1
             , cachedRenderTargetView.ReleaseAndGetAddressOf()
             , cachedDepthStencilView.ReleaseAndGetAddressOf()
         );
     }
 
-    RenderContext rc;
-    rc.deviceContext = deviceContext;
+    //RenderContext rc;
+    
     rc.luminanceExtractionData = bloomData.luminanceExtractionData;
     rc.gaussianFilterData = bloomData.gaussianFilterData;
 
@@ -134,8 +175,8 @@ void PostprocessingRenderer::Render(ID3D11DeviceContext* deviceContext)
 
     // 元のバッファに戻す
     {
-        deviceContext->RSSetViewports(cachedViewportCount, cachedViewports);
-        deviceContext->OMSetRenderTargets(1, cachedRenderTargetView.GetAddressOf(),
+        rc.deviceContext->RSSetViewports(cachedViewportCount, cachedViewports);
+        rc.deviceContext->OMSetRenderTargets(1, cachedRenderTargetView.GetAddressOf(),
             cachedDepthStencilView.Get());
     }
 
@@ -165,7 +206,35 @@ void PostprocessingRenderer::Render(ID3D11DeviceContext* deviceContext)
         //    1, 1, 1, 1);
         // シェーダーに渡すテクスチャを設定
         rc.finalpassnData.bloomTexture = luminanceExtractBokehRenderTarget->GetShaderResourceView().Get();
-        rc.colorGradingData = colorGradingData;
+        //rc.colorGradingData = colorGradingData;
+
+
+
+
+        //	ヴィネット用定数バッファ
+        {
+            static constexpr int VignetteCBVIndex = 2;
+            vignette_constants constant;
+            constant.vignette_color = vignette_data.vignette_color;
+            constant.vignette_center = vignette_data.vignette_center;
+            constant.vignette_intensity = vignette_data.vignette_intensity * 3.0f;
+            constant.vignette_smoothness = max(0.000001f, vignette_data.vignette_smoothness * 5.0f);
+            constant.vignette_rounded = vignette_data.vignette_rounded ? 1.0f : 0.0f;
+            constant.vignette_roundness = 6.0f * (1.0f - vignette_data.vignette_roundness) + vignette_data.vignette_roundness;
+
+
+            rc.deviceContext->UpdateSubresource(vignette_constant_buffer.Get(), 0, 0, &constant, 0, 0);
+            //Graphics::Instance().GetDevice()->set_constant_buffer(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+             rc.deviceContext->VSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+             rc.deviceContext->HSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+             rc.deviceContext->DSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+             rc.deviceContext->GSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+             rc.deviceContext->PSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+             rc.deviceContext->CSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+
+        }
+        rc.deviceContext->PSSetShader(vignette_pixel_shader.Get(), nullptr, 0);
+
 
         shader->Draw(rc, renderSprite.get());
 
@@ -200,6 +269,16 @@ void PostprocessingRenderer::DrawDebugGUI()
             ImGui::SliderFloat("brigthness", &colorGradingData.brigthness, 0.0f, 2.0f);
             ImGui::TreePop();
 
+        }
+        if (ImGui::TreeNode("vignette"))
+        {
+            ImGui::ColorEdit3("color", &vignette_data.vignette_color.x);
+            ImGui::SliderFloat2("center", &vignette_data.vignette_center.x, 0, 1);
+            ImGui::SliderFloat("intensity", &vignette_data.vignette_intensity, 0.0f, +1.0f);
+            ImGui::SliderFloat("smoothness", &vignette_data.vignette_smoothness, 0.0f, +1.0f);
+            ImGui::Checkbox("rounded", &vignette_data.vignette_rounded);
+            ImGui::SliderFloat("roundness", &vignette_data.vignette_roundness, 0.0f, +1.0f);
+            ImGui::TreePop();
         }
         ImGui::TreePop();
     }

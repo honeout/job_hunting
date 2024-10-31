@@ -6,6 +6,9 @@
 #include "Graphics/Model.h"
 #include "Graphics/Sprite.h"
 
+HRESULT create_ps_from_cso(ID3D11Device* device, const char* cso_name, ID3D11PixelShader** pixel_shader);
+
+
 class ModelShader
 {
 public:

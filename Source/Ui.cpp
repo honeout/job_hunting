@@ -1,5 +1,5 @@
+#include <imgui.h>
 #include "Ui.h"
-
 
 Ui::~Ui()
 {
@@ -50,12 +50,14 @@ void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
             transForm2D->GetTexScale().x > 0 ?  transForm2D->GetTexScale().x : static_cast<float> (sprite->GetTextureWidth()),
             transForm2D->GetTexScale().y > 0 ?  transForm2D->GetTexScale().y : static_cast<float> (sprite->GetTextureHeight()),
             transForm2D->GetAngle(),
-			1, 1, 1, 1);
+            color.x,color.y,color.z,color.w);
     }
 }
 
 void Ui::OnGUI()
 {
+
+    ImGui::SliderFloat4("Color", &color.x, 0, 1);
 }
 
 void Ui::UiTimeUpdate()

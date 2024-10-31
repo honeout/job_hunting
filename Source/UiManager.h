@@ -69,6 +69,7 @@ public:
         Time,
         Sight,
         SightCheck,
+        Mp,
 
     };
 

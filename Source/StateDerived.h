@@ -99,6 +99,11 @@ private:
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
+
+	// 数回行動したら疲れるモーションを入れる。
+	int mortionLimit = 0;
+	// 行動制限最大数
+	int mortionLimitMax = 5;
 };
 
 // 攻撃ステートオブジェクト
@@ -183,7 +188,7 @@ private:
 	int                 attackCountMax = 0;
 	bool				turnPermission = false;
 
-	float               turnSpeed = DirectX::XMConvertToRadians(720);
+	float               turnSpeed = DirectX::XMConvertToRadians(320);
 
 	// 再生ループ
 	bool  loop = false;
@@ -562,6 +567,10 @@ private:
 
 	// アニメーションブレンド
 	float blendSeconds = 1.0f;
+
+	// 経過時間最大
+	float stateTimerMax = 50;
+	//float stateTimerMax = 240;
 };
 
 // 復活ステートオブジェクト

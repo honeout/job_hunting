@@ -36,6 +36,8 @@
 
 #include "UiTime.h"
 
+#include "Mp.h"
+
 // シャドウマップのサイズ
 static const UINT SHADOWMAP_SIZE = 2048;
 
@@ -99,6 +101,12 @@ void SceneGame::Initialize()
 		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
 		int life = 0;
 		hp->SetLife(life);
+
+		actor->AddComponent<Mp>();
+		std::shared_ptr<Mp> mp = actor->GetComponent<Mp>();
+		int mpMax = 50;
+		mp->SetMaxMagic(mpMax);
+
 
 		actor->AddComponent<Player>();
 		actor->AddComponent<Collision>();
@@ -1233,6 +1241,103 @@ void SceneGame::Initialize()
 		UiManager::Instance().Register(actor);
 	}
 
+
+	// UI MP
+	{
+		const char* filename = "Data/Sprite/enemyHPberGreen.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("MP");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 932, 515 };
+		transform2D->SetPosition(pos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 376,329 };
+		transform2D->SetScale(scale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		// UI揺らす範囲を指定揺らす場合
+		int max = pos.y + 3;
+		int min = pos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	//// UI PlayerHP
+	//{
+	//	const char* filename = "Data/Sprite/HP.png";
+	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+	//	actor->SetName("PlayerHP");
+	//	actor->AddComponent<SpriteControll>();
+	//	actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+	//	actor->AddComponent<TransForm2D>();
+	//	// 位置　角度　スケール情報
+	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+	//	DirectX::XMFLOAT2 pos = { 932, 421 };
+	//	transform2D->SetPosition(pos);
+	//	// 元の位置
+	//	DirectX::XMFLOAT2 texPos = { 0, 0 };
+	//	transform2D->SetTexPosition(texPos);
+
+	//	float angle = 0;
+	//	transform2D->SetAngle(angle);
+	//	DirectX::XMFLOAT2 scale = { 358,310 };
+	//	transform2D->SetScale(scale);
+	//	// 元の大きさ
+	//	DirectX::XMFLOAT2 texScale = { 0,0 };
+	//	transform2D->SetTexScale(texScale);
+
+
+	//	//// UI揺らす範囲を指定揺らす場合
+	//	//int max = pos.y + 3;
+	//	//int min = pos.y - 3;
+
+	//	//transform2D->SetUiMax(max);
+	//	//transform2D->SetUiMin(min);
+	//	//// UI揺らす時間
+	//	//int MaxTime = 30;
+
+	//	//transform2D->SetShakeTimeMax(MaxTime);
+
+	//	actor->AddComponent<Ui>();
+	//	// 描画チェック
+	//	std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+	//	ui->SetDrawCheck(true);
+
+	//	// これが２Dかの確認
+	//	bool check2d = true;
+	//	actor->SetCheck2d(check2d);
+
+	//	UiManager::Instance().Register(actor);
+	//}
+
+
 	// カメラ初期設定 見える位置追いかけるものなど
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
@@ -1351,14 +1456,23 @@ void SceneGame::Update(float elapsedTime)
 	{
 		for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 		{
-			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead())
+			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
 			{
-				PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->SetDead(false);
-				ActorManager::Instance().Clear();
+				//PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->SetDead(false);
+				//ActorManager::Instance().Clear();
 
+				//// ゲームオーバー
+				//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
+			
+				PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Death));
+
+				sceneChengeCheckDead = true;
+
+				colorGradingData.brigthness = 2.5f;
+			}
+			if (!PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && sceneChengeCheckDead)
 				// ゲームオーバー
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
-			}
 		}
 
 		for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
@@ -1366,11 +1480,13 @@ void SceneGame::Update(float elapsedTime)
 			std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
 			if (hp->GetDead())
 			{
+				colorGradingData.brigthness = 3.5f;
 				hp->SetDead(false);
 				ActorManager::Instance().Clear();
 				//// プレイヤー更新処理
 				//ActorManager::Instance().Update(elapsedTime);
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameClear));
+
 			}
 			if (hp->GetHealth() <= 0 && hp->GetLife() >= 0)
 			{
@@ -1387,6 +1503,7 @@ void SceneGame::Update(float elapsedTime)
 			std::shared_ptr<UiTime> uiTime = UiManager::Instance().GetUies((int)UiManager::UiCount::Time)->GetComponent<UiTime>();
 			if (uiTime->GetTimeUp())
 			{
+				colorGradingData.brigthness = 3.5f;
 				// ゲームオーバー
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
 			}
@@ -1459,7 +1576,17 @@ void SceneGame::Render()
 		dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		dc->OMSetRenderTargets(1, &rtv, dsv);
 
-		//RenderContext rc;
+
+		// UINT11
+        // ビューポートの設定
+		D3D11_VIEWPORT vp = {};
+		vp.Width = graphics.GetScreenWidth();
+		vp.Height = graphics.GetScreenHeight();
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+		dc->RSSetViewports(1, &vp);
+
+		RenderContext rc;
 		//rc.deviceContext = dc;
 
 		//SpriteShader* shader = graphics.GetShader(SpriteShaderId::ColorGrading);
@@ -1468,18 +1595,13 @@ void SceneGame::Render()
 		//shader->Draw(rc, sprite.get());
 
 		//shader->End(rc);
+		rc.deviceContext = dc;
+		rc.colorGradingData = colorGradingData;
 
-		// UINT11
-		// ビューポートの設定
-		D3D11_VIEWPORT vp = {};
-		vp.Width = graphics.GetScreenWidth();
-		vp.Height = graphics.GetScreenHeight();
-		vp.MinDepth = 0.0f;
-		vp.MaxDepth = 1.0f;
-		dc->RSSetViewports(1, &vp);
+
 
 		// ポストプロセスを処理を行う
-		postprocessingRenderer->Render(dc);
+		postprocessingRenderer->Render(rc);
 	}
 
 
@@ -1527,14 +1649,14 @@ void SceneGame::Render()
 		{
 			ImGui::SliderFloat("hueShift", &colorGradingData.hueShift, 0.0f, +360.0f);
 			ImGui::SliderFloat("saturation", &colorGradingData.saturation, 0.0f, +2.0f);
-			ImGui::SliderFloat("brigtness", &colorGradingData.brigthness, 0.0f, +2.0f);
+			ImGui::SliderFloat("brigtness", &colorGradingData.brigthness, 0.0f, +10.0f);
 
 			ImGui::TreePop();
 		}
 		ImGui::Separator();
 	}
 
-		//	postprocessingRenderer->DrawDebugGUI();
+		postprocessingRenderer->DrawDebugGUI();
 		//	ImGui::Separator();
 		//	LightManager::Instanes().DrawDebugGUI();
 		//}

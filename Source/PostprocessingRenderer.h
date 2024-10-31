@@ -1,6 +1,8 @@
 #pragma once
 
 // UNIT09
+//#include <memory>
+//#include <wrl.h>
 #include "Graphics/Shader.h"
 //#include "Graphics/Sprite.h"
 #include "Graphics\Sprite.h"
@@ -31,13 +33,15 @@ public:
     ~PostprocessingRenderer();
 
     // 描画
-    void Render(ID3D11DeviceContext* deviceContext);
+    void Render(RenderContext rc);
 
     // シーン情報の設定
     void SetSceneData(ShaderResourceViewData srvData);
 
     // デバッグ情報の表示
     void DrawDebugGUI();
+
+
 
 private:
     // シーン描画データ
@@ -57,4 +61,30 @@ private:
 
     // 高輝度抽出ぼかしテクスチャ
     std::unique_ptr<RenderTarget> luminanceExtractBokehRenderTarget;
+
+    struct vignette_data
+    {
+        DirectX::XMFLOAT4 vignette_color = { 0.2f, 0.2f, 0.2f, 1.0f };
+        DirectX::XMFLOAT2 vignette_center = { 0.5f, 0.5f };
+        float vignette_intensity = 0.5f;
+        float vignette_smoothness = 0.2f;
+
+        bool vignette_rounded = false;
+        float vignette_roundness = 1.0f;
+    };
+    struct vignette_constants
+    {
+        DirectX::XMFLOAT4 vignette_color;
+        DirectX::XMFLOAT2 vignette_center;
+        float vignette_intensity;
+        float vignette_smoothness;
+
+        float vignette_rounded;
+        float vignette_roundness;
+        DirectX::XMFLOAT2 vignette_dummy;
+    };
+    vignette_data vignette_data;
+    // UNIT05 05
+    Microsoft::WRL::ComPtr<ID3D11Buffer> vignette_constant_buffer;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;
 };

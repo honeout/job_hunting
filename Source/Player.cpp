@@ -108,6 +108,9 @@ void Player::Start()
     // hp関数を使えるように
     hp = GetActor()->GetComponent<HP>();
 
+    // mp関数を使えるように
+    mp = GetActor()->GetComponent<Mp>();
+
     // トランスフォーム関数を呼び出し
     transform = GetActor()->GetComponent<Transform>();
     
@@ -144,6 +147,13 @@ void Player::Start()
     hp->SetHealth(health);
     // hp最大値の設定
     hp->SetMaxHealth(maxHealth);
+
+
+    // mp設定
+    mp->SetMagic(magicPoint);
+    // mp最大値
+    mp->SetMaxMagic(magicPoint);
+
     // 半径
     transform->SetRadius(radius);
     // 身長
@@ -289,6 +299,9 @@ void Player::Update(float elapsedTime)
     scale = transform->GetScale();
 
     hp->UpdateInbincibleTimer(elapsedTime);
+
+    // マジック回復
+    mp->MpCharge(elapsedTime);
 
     //// ロックオン
     //InputRockOn();
@@ -2951,8 +2964,10 @@ void Player::UpdateReviveState(float elapsedTime)
 bool Player::InputMagicframe()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_B&& magicAction && !gamePad.GetButtonDownCountinue())
+    if (gamePad.GetButtonDown() & GamePad::BTN_B&& magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
     {
+        // mp消費
+        mp->ApplyConsumption(magicConsumption);
 
         // 前方向 sinの計算
         DirectX::XMFLOAT3 dir;
@@ -3053,9 +3068,10 @@ bool Player::InputMagicframe()
 bool Player::InputMagicIce()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue())
+    if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
     {
-
+        // mp消費
+        mp->ApplyConsumption(magicConsumption);
         // 前方向 sinの計算
         DirectX::XMFLOAT3 dir;
 
@@ -3156,9 +3172,10 @@ bool Player::InputMagicIce()
 bool Player::InputMagicLightning()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue())
+    if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
     {
-
+        // mp消費
+        mp->ApplyConsumption(magicConsumption);
         // 前方向 sinの計算
         DirectX::XMFLOAT3 dir;
 
@@ -3476,15 +3493,33 @@ void Player::UiControlle(float elapsedTime)
     std::shared_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
 
+
     uiHp->SetScale(scale);
 
-    
+    gaugeWidth = mp->GetMaxMagic() * mp->GetMagic() * 0.1f;
+    // mpゲージ
+    std::shared_ptr<TransForm2D> uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();
+    std::shared_ptr<Ui> uiColor = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<Ui>();
+    scale = { gaugeWidth, uiMp->GetScale().y };
+
+    uiMp->SetScale(scale);
+    // mp色
+   mpUiColor = { 1,1,1,1 };
+    if (mp->GetMpEmpth())
+    {
+        mpUiColor = { 1,0,0,1 };
+    }
+   uiColor->SetColor(mpUiColor);
+
+
+
     // 揺れ
     if (shakeMode)
     {
         
         uiHp->Shake();
         uiHpBar->Shake();
+        
 
         
 
@@ -3499,7 +3534,14 @@ void Player::UiControlle(float elapsedTime)
         uiHpBar->SetShakeTime(0);
         uiHp->SetPosition({ uiHp->GetPosition().x ,positionStandardBar });
         uiHpBar->SetPosition({ uiHpBar->GetPosition().x ,positionStandard });
+    
     }
+}
+
+void Player::MagicPointUpdate()
+{
+    
+    
 }
 
 

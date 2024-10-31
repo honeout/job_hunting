@@ -10,6 +10,7 @@
 #include "Component.h"
 #include "Movement.h"
 #include "HP.h"
+#include "Mp.h"
 #include "Input\GamePad.h"
 #include "CameraController.h"
 #include "Effect.h"
@@ -294,6 +295,9 @@ public:
     //  UI操作
     void UiControlle(float elapsedTime);
 
+    // 魔法の量
+    void MagicPointUpdate();
+
 public:
     // ステート
     enum class State
@@ -415,9 +419,15 @@ public:
 
     float GetGravity() const { return gravity; }
 
+    void SetLockOnState(CameraState lockonState) { this->lockonState = lockonState; }
+
+    CameraState GetLockOnState() const { return lockonState; }
+    
+
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
+    std::shared_ptr<Mp> mp;
     std::shared_ptr<Transform> transform;
 
     
@@ -514,6 +524,10 @@ private:
     // 最大HP
     int maxHealth = 50;
 
+    // Mp
+    int magicPoint = 50;
+
+
 
 
     // アニメーションの時間 
@@ -583,7 +597,9 @@ private:
     // 魔法の射程当たる距離
     float magicRangeLength = 470;
 
+    int magicConsumption = 5;
 
+    DirectX::XMFLOAT4 mpUiColor = {1,1,1,1};
 
 };
 

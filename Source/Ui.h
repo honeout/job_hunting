@@ -45,6 +45,8 @@ public:
 
     void SetCountDown(int countDown) { this->countDown = countDown; }
 
+    void SetColor(DirectX::XMFLOAT4 color) { this->color = color; }
+
 private:
     Sprite* sprite = nullptr;
 
@@ -63,6 +65,6 @@ private:
     // カウントダウン
     int        countDown = 0;
 
-
+    DirectX::XMFLOAT4 color = { 1,1,1,1 };
 
 };

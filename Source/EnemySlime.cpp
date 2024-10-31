@@ -78,6 +78,7 @@ void EnemySlime::Start()
     stateMachine->RegisterState(new AttackShotThrowingState(GetActor().get()));
     stateMachine->RegisterState(new ConfusionState(GetActor().get()));
     stateMachine->RegisterState(new DamageState(GetActor().get()));
+    
 
     // ステートセット
     stateMachine->SetState(static_cast<int>(State::Idle));

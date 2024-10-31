@@ -103,4 +103,6 @@ private:
 	// ポストプロセス
 	std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
 
+
+	bool sceneChengeCheckDead = false;
 };

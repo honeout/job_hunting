@@ -3,7 +3,6 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-
 // 平行光源情報(太陽)
 struct DirectionalLightData
 {
@@ -58,7 +57,6 @@ struct GaussianFilterData
 // ガウスフィルターの最大カーネルサイズ
 static const int MaxkernelSize = 16;
 
-
 // 高輝度抽出用情報
 struct LuminanceExtractionData
 {
@@ -73,7 +71,6 @@ struct FinalpassnData
 	// ブルームテクスチャ
 	ID3D11ShaderResourceView* bloomTexture;
 };
-
 
 // シャドウマップ用情報
 struct ShadowMapData

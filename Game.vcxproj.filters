@@ -303,6 +303,9 @@
     <ClInclude Include="Source\Messenger.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Mp.h">
+      <Filter>Source\Character</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -542,6 +545,12 @@
     <ClCompile Include="Source\Messenger.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Mp.cpp">
+      <Filter>Source\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Debug.hlsli">
@@ -658,6 +667,9 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\FinalpassVS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\vignette_ps.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

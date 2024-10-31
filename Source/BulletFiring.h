@@ -10,7 +10,9 @@ public:
     void Move(float speed, float elapsedTime);
 
     // ‰ñ“]
-    bool Turn(float speed, DirectX::XMFLOAT3& target, float elapedTime);
+    bool Turn(float speed,const DirectX::XMFLOAT3& target, float elapedTime);
+
+    void TurnFull(float speed, const DirectX::XMFLOAT3& target, float elapedTime);
 
     // ‰¡‚¾‚¯
     bool Turn2D(float speed, DirectX::XMFLOAT3& direction, float elapedTime);

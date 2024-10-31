@@ -10,7 +10,7 @@ PhonShader::PhonShader(ID3D11Device* device)
         // ここで実際に開く
         fopen_s(&fp, "Shader\\PhongVS.cso", "rb");
         _ASSERT_EXPR_A(fp, "CSO File not found");
-
+ 
         // ファイルのサイズを求める
         fseek(fp, 0, SEEK_END);
         long csoSize = ftell(fp);

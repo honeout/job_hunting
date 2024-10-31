@@ -164,6 +164,7 @@
     <ClInclude Include="Source\Misc.h" />
     <ClInclude Include="Source\ModelControll.h" />
     <ClInclude Include="Source\Movement.h" />
+    <ClInclude Include="Source\Mp.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PlayerAfterimage.h" />
     <ClInclude Include="Source\AfterimageManager.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="External\imgui\imgui_demo.cpp" />
     <ClCompile Include="External\imgui\imgui_draw.cpp" />
     <ClCompile Include="External\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Source\Actor.cpp" />
     <ClCompile Include="Source\Afterimage.cpp" />
     <ClCompile Include="Source\Audio\Audio.cpp" />
@@ -248,6 +250,7 @@
     <ClCompile Include="Source\Messenger.cpp" />
     <ClCompile Include="Source\ModelControll.cpp" />
     <ClCompile Include="Source\Movement.cpp" />
+    <ClCompile Include="Source\Mp.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\AfterimageManager.cpp" />
     <ClCompile Include="Source\PostprocessingRenderer.cpp" />
@@ -452,6 +455,9 @@
     <FxCompile Include="HLSL\SpriteVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="HLSL\vignette_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
