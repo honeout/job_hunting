@@ -1457,9 +1457,9 @@ void SceneGame::Update(float elapsedTime)
 		for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 		{
 			vignette_smoothness = 0.0f;
-			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->HealthPinch())
+			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->HealthPinch() && !PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead())
 				vignette_smoothness = 1;
-
+			// 死んだ瞬間
 			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
 			{
 				//PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->SetDead(false);
@@ -1472,8 +1472,9 @@ void SceneGame::Update(float elapsedTime)
 
 				sceneChengeCheckDead = true;
 
-				colorGradingData.brigthness = 2.5f;
+				colorGradingData.brigthness = 3.0f;
 			}
+			// 演出終了
 			if (!PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && sceneChengeCheckDead)
 				// ゲームオーバー
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
@@ -1484,7 +1485,7 @@ void SceneGame::Update(float elapsedTime)
 			std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
 			if (hp->GetDead())
 			{
-				colorGradingData.brigthness = 3.5f;
+				colorGradingData.brigthness = 3.0f;
 				hp->SetDead(false);
 				ActorManager::Instance().Clear();
 				//// プレイヤー更新処理
@@ -1507,7 +1508,7 @@ void SceneGame::Update(float elapsedTime)
 			std::shared_ptr<UiTime> uiTime = UiManager::Instance().GetUies((int)UiManager::UiCount::Time)->GetComponent<UiTime>();
 			if (uiTime->GetTimeUp())
 			{
-				colorGradingData.brigthness = 3.5f;
+				colorGradingData.brigthness = 3.0f;
 				// ゲームオーバー
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
 			}
@@ -1644,7 +1645,7 @@ void SceneGame::Render()
 
 		 //2DデバッグGUI描画
 	{
-		ImGui::Separator();
+		//ImGui::Separator();
 		 //UNIT11
 		if (ImGui::TreeNode("shadowmap"))
 		{

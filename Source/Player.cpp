@@ -221,7 +221,7 @@ void Player::Update(float elapsedTime)
     cameraControlle->Update(elapsedTime);
 
     // ロックオン処理
-    UpdateCameraState(elapsedTime);
+    //UpdateCameraState(elapsedTime);
 
     // コマンド操作
     {
@@ -304,7 +304,7 @@ void Player::Update(float elapsedTime)
     mp->MpCharge(elapsedTime);
 
     //// ロックオン
-    //InputRockOn();
+    InputRockOn();
 
     //// カメラ設定
     //if (rockCheck)
@@ -469,7 +469,7 @@ void Player::UpdateCameraState(float elapsedTime)
 
     
         // ロックオンモード
-    if (Input::Instance().GetGamePad().GetButton() & GamePad::BTN_RIGHT_SHOULDER)
+    if (rockCheck)
     {
         DirectX::XMVECTOR p, t, v;
         switch (oldLockonState)
@@ -595,9 +595,10 @@ void Player::UpdateCameraState(float elapsedTime)
     }
     else
     {
-    MessageData::CAMERACHANGEFREEMODEDATA	p = { position };
-    Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
-     }
+        MessageData::CAMERACHANGEFREEMODEDATA	p = { position };
+        Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
+    }
+
 
         //break;
     
@@ -690,68 +691,68 @@ bool Player::InputRockOn()
 {
    
 
-    //GamePad& gamePad = Input::Instance().GetGamePad();
-    //if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && !rockCheck)
-    //{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && !rockCheck)
+    {
 
-    //    buttonRock = true;
-    //    rockCheck = true;
-    //    return true;
-    //}
+        buttonRock = true;
+        rockCheck = true;
+        return true;
+    }
 
     //if (rockCheck)
     //{
-    //    EnemyManager& enemyManager = EnemyManager::Instance();
-    //    int enemyCount = enemyManager.GetEnemyCount();
-    //    DirectX::XMFLOAT3 epos = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetPosition();
-    //    float eheight = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetHeight();
+    //    //EnemyManager& enemyManager = EnemyManager::Instance();
+    //    //int enemyCount = enemyManager.GetEnemyCount();
+    //    //DirectX::XMFLOAT3 epos = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetPosition();
+    //    //float eheight = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetHeight();
 
 
-    //    DirectX::XMFLOAT3 pos;
-    //    pos =
-    //    {
-    //        position.x - epos.x,
-    //        position.y - epos.y,
-    //        position.z - epos.z
-    //    };
+    //    //DirectX::XMFLOAT3 pos;
+    //    //pos =
+    //    //{
+    //    //    position.x - epos.x,
+    //    //    position.y - epos.y,
+    //    //    position.z - epos.z
+    //    //};
     //    //{
     //    //   epos.x - position.x,
     //    //   epos.y - position.y,
     //    //   epos.z - position.z,
     //    //};
 
-    //    cameraControlle->SetTarget(
-    //        {
-    //            epos.x, 
-    //            epos.y + eheight, 
-    //            epos.z 
-    //        });
-    //    //cameraControlle->SetTarget(position);
-    //    cameraControlle->SetFrontAngle(
-    //        { 
-    //            pos.x,
-    //            pos.y,
-    //            pos.z
-    //        }
+    //    //cameraControlle->SetTarget(
+    //    //    {
+    //    //        epos.x, 
+    //    //        epos.y + eheight, 
+    //    //        epos.z 
+    //    //    });
+    //    ////cameraControlle->SetTarget(position);
+    //    //cameraControlle->SetFrontAngle(
+    //    //    { 
+    //    //        pos.x,
+    //    //        pos.y,
+    //    //        pos.z
+    //    //    }
     //        //{
     //        //position.x,
     //        //-position.y,
     //        //position.z
     //        //}
-    //    );
+    //    //);
     //}
 
-    //if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && rockCheck)
-    //{
-    //    cameraControlle->SetTarget(position);
-    //    rockCheck = false;
-    //    buttonRock = true;
-    //    return true;
-    //}
+    if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && rockCheck)
+    {
+        //cameraControlle->SetTarget(position);
+        //rockCheck = false;
+        //buttonRock = true;
+        return true;
+    }
 
 
-    //if (gamePad.GetButtonUp() & GamePad::BTN_RIGHT_SHOULDER)
-    //    buttonRock = false;
+    if (gamePad.GetButtonUp() & GamePad::BTN_RIGHT_SHOULDER)
+        buttonRock = false;
 
     return false;
 }

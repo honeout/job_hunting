@@ -128,4 +128,7 @@ struct RenderContext
 
     // シャドウマップ情報
 	ShadowMapData shadowMapData;
+
+	//Microsoft::WRL::ComPtr<ID3D11Buffer> vignette_constant_buffer;
+	//Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;
 };

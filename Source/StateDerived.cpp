@@ -699,7 +699,8 @@ void PlayerIdleState::Enter()
 
 void PlayerIdleState::Execute(float elapsedTime)
 {
-	
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
 	// 移動入力処理
 	if (owner->GetComponent<Player>()->InputMove(elapsedTime))
@@ -750,6 +751,8 @@ void PlayerMovestate::Enter()
 
 void PlayerMovestate::Execute(float elapsedTime)
 {
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
 	// 移動入力処理
 	if (!owner->GetComponent<Player>()->InputMove(elapsedTime))
@@ -798,7 +801,8 @@ void PlayerJumpState::Enter()
 void PlayerJumpState::Execute(float elapsedTime)
 {
 
-
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
 	// ジャンプ入力処理
 	if (owner->GetComponent<Player>()->InputJump())
@@ -852,6 +856,8 @@ void PlayerLandState::Enter()
 
 void PlayerLandState::Execute(float elapsedTime)
 {
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
 	{
 		owner->GetComponent<Movement>()->SetOnLadius(false);
@@ -878,6 +884,8 @@ void PlayerJumpFlipState::Enter()
 
 void PlayerJumpFlipState::Execute(float elapsedTime)
 {
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 	// 移動
 	if (owner->GetComponent<Player>()->InputMove(elapsedTime))
 		bool afterimagemove = true;
@@ -926,6 +934,9 @@ void PlayerAttackState::Enter()
 void PlayerAttackState::Execute(float elapsedTime)
 {
 	GamePad& gamePad = Input::Instance().GetGamePad();
+
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
 	// 攻撃複数
 	if (owner->GetComponent<Player>()->InputAttack()&&
@@ -1064,6 +1075,9 @@ void PlayerDamageState::Enter()
 
 void PlayerDamageState::Execute(float elapsedTime)
 {
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+
 	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
 	{
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
@@ -1092,17 +1106,12 @@ void PlayerDeathState::Enter()
 void PlayerDeathState::Execute(float elapsedTime)
 {
 
+
 	if (stateTimer >= stateTimerMax)
 	{
 
 		owner->GetComponent<HP>()->SetDead(false);
 
-		//owner->GetComponent<HP>()->OnDead();
-
-		//ActorManager::Instance().Clear();
-		// ゲームオーバー
-		//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
-		
 	}
 
 	    // 死亡時はそれっぽいカメラアングルで死亡
@@ -1117,7 +1126,7 @@ void PlayerDeathState::Execute(float elapsedTime)
     float vx = sinf(angle.y) * 6;
     float vz = cosf(angle.y) * 6;
     p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-    p.data.push_back({ 90, {position.x + vx, position.y + 15, position.z + vz }, position });
+    p.data.push_back({ 95, {position.x + vx + 13, position.y + 3, position.z + vz }, position });
 	
     Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 

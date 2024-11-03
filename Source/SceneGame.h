@@ -105,7 +105,7 @@ private:
 
 	// Žü•ÓŒ¸ŒõŽü‚è
 		// Žü•ÓŒ¸Œõ
-	DirectX::XMFLOAT4 vignette_color = { 0.5f, 0.0f, 0.0f, 1.0f };
+	DirectX::XMFLOAT4 vignette_color = { 1.0f, 0.0f, 0.0f, 1.0f };
 	DirectX::XMFLOAT2 vignette_center = { 0.5f, 0.5f };
 	float vignette_intensity = 0.5f;
 	float vignette_smoothness = 0.2f;

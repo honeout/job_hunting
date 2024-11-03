@@ -569,7 +569,7 @@ private:
 	float blendSeconds = 1.0f;
 
 	// Œo‰ßŠÔÅ‘å
-	float stateTimerMax = 50;
+	float stateTimerMax = 40;
 	//float stateTimerMax = 240;
 };
 

@@ -24,7 +24,7 @@
 // Name                                 Type  Format         Dim      HLSL Bind  Count
 // ------------------------------ ---------- ------- ----------- -------------- ------
 // linear_sampler_state              sampler      NA          NA             s0      1 
-// scene_map                         texture  float4          2d             t0      1 
+// scene_map                         texture  float4          2d             t1      1 
 // VIGNETTE_CONSTANT_BUFFER          cbuffer      NA          NA            cb2      1 
 //
 //
@@ -48,7 +48,7 @@ ps_5_0
 dcl_globalFlags refactoringAllowed | skipOptimization
 dcl_constantbuffer CB2[3], immediateIndexed
 dcl_sampler s0, mode_default
-dcl_resource_texture2d (float,float,float,float) t0
+dcl_resource_texture2d (float,float,float,float) t1
 dcl_input_ps linear v2.xy
 dcl_output o0.xyzw
 dcl_temps 3
@@ -60,12 +60,12 @@ dcl_temps 3
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
 #line 25 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\vignette_ps.hlsl"
-resinfo_indexable(texture2d)(float,float,float,float) r0.xy, l(0), t0.xyzw
+resinfo_indexable(texture2d)(float,float,float,float) r0.xy, l(0), t1.xyzw
 mov r0.x, r0.x  // r0.x <- scene_map_size.x
 mov r0.y, r0.y  // r0.y <- scene_map_size.y
 
 #line 27
-sample_indexable(texture2d)(float,float,float,float) r1.xyzw, v2.xyxx, t0.xyzw, s0  // r1.x <- color.x; r1.y <- color.y; r1.z <- color.z; r1.w <- color.w
+sample_indexable(texture2d)(float,float,float,float) r1.xyzw, v2.xyxx, t1.xyzw, s0  // r1.x <- color.x; r1.y <- color.y; r1.z <- color.z; r1.w <- color.w
 
 #line 30
 mov r0.zw, -cb2[1].xxxy

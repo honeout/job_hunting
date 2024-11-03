@@ -16,7 +16,7 @@ cbuffer VIGNETTE_CONSTANT_BUFFER : register(b2)
     float vignette_dummy;
 };
 
-Texture2D scene_map : register(t0);
+Texture2D scene_map : register(t1);
 SamplerState linear_sampler_state : register(s0);
 
 float4 main(VS_OUT pin) : SV_TARGET

@@ -16,6 +16,8 @@ public:
 	{
 		const char*			name;
 		Node*				parent;
+		DirectX::XMFLOAT3	position = { 0, 0, 0 };
+		DirectX::XMFLOAT4	rotation = { 0, 0, 0, 1 };
 		DirectX::XMFLOAT3	scale;
 		DirectX::XMFLOAT4	rotate;
 		DirectX::XMFLOAT3	translate;
@@ -34,15 +36,36 @@ public:
 		DirectX::XMFLOAT3	scale = { 1, 1, 1 };
 	};
 
-	struct VectorKeyframe
-	{
-		float					seconds;
-		DirectX::XMFLOAT3		value;
 
-		template<class Archive>
-		void serialize(Archive& archive);
-	};
 
+	//struct VectorKeyframe
+	//{
+	//	float					seconds;
+	//	DirectX::XMFLOAT3		value;
+
+	//	template<class Archive>
+	//	void serialize(Archive& archive);
+	//};
+
+	//struct QuaternionKeyframe
+	//{
+	//	float					seconds;
+	//	DirectX::XMFLOAT4		value;
+
+	//	template<class Archive>
+	//	void serialize(Archive& archive);
+	//};
+
+
+	//struct NodeAnim
+	//{
+	//	std::vector<VectorKeyframe>		positionKeyframes;
+	//	std::vector<QuaternionKeyframe>	rotationKeyframes;
+	//	std::vector<VectorKeyframe>		scaleKeyframes;
+
+	//	template<class Archive>
+	//	void serialize(Archive& archive);
+	//};
 
 	// 行列計算
 	void UpdateTransform(const DirectX::XMFLOAT4X4& transform);
@@ -50,10 +73,12 @@ public:
 	void UpdateTransform(const DirectX::XMFLOAT4X4& transform,  std::vector<Node> nodes);
 
 	//// アニメーション計算
-	//void ComputeAnimation(int animationIndex, int nodeIndex, float time, NodePose& nodePose) const;
+	void ComputeAnimation(int animationIndex, int nodeIndex, float time, NodePose& nodePose, float blendRate) ;
 	//// 全骨の姿勢
-	//void ComputeAnimation(int animationIndex, float time, std::vector<NodePose>& nodePoses) const;
+	void ComputeAnimation(int animationIndex, float time, std::vector<NodePose>& nodePoses, float blendRate) ;
 
+	// ルートモーションアップデート
+	void UpdateRootMortion(float elapsedTime);
 
 	// ノードリスト取得
 	const std::vector<Node>& GetNodes() const { return nodes; }
@@ -126,17 +151,23 @@ public:
 
 	int GetNodeIndex(const char* name)const;
 
+	// ノードポーズ設定
+	void SetNodePoses(const std::vector<NodePose>& nodePoses);
+
 	void SetAnimationEndFlag(bool end) { this->animationEndFlag = end; }
 
 private:
 	std::shared_ptr<ModelResource>	resource;
 	std::vector<Node>				nodes;
 
+	std::vector<Model::NodePose>		nodePoses;
+
 	// 個々がーだとないという事
 	int currentAnimationIndex = -1;           //アニメーション番号
 	int currentAnimationIndexSeconds = -1;           //アニメーション番号 ブレンド用
 	float currentAnimationSeconds = 0.0f;    //アニメーションの再生用時間
-
+	float oldcurrentAnimationSeconds = 0;
+	float rastcurrentAnimationSeconds = 0.67;
 	float animationSecondsLengthMax = 0.0f;
 
 	//パンチをした即ー１つまりアニメーション終了つまりTポーズに戻る。
@@ -170,12 +201,31 @@ private:
 	// 再生　逆再生
 	bool anim = true;
 };
-
-template<class Archive>
-inline void Model::VectorKeyframe::serialize(Archive& archive)
-{
-	archive(
-		CEREAL_NVP(seconds),
-		CEREAL_NVP(value)
-	);
-}
+//
+//template<class Archive>
+//inline void Model::VectorKeyframe::serialize(Archive& archive)
+//{
+//	archive(
+//		CEREAL_NVP(seconds),
+//		CEREAL_NVP(value)
+//	);
+//}
+//
+//template<class Archive>
+//inline void Model::QuaternionKeyframe::serialize(Archive& archive)
+//{
+//	archive(
+//		CEREAL_NVP(seconds),
+//		CEREAL_NVP(value)
+//	);
+//}
+//
+//template<class Archive>
+//inline void Model::NodeAnim::serialize(Archive& archive)
+//{
+//	archive(
+//		CEREAL_NVP(positionKeyframes),
+//		CEREAL_NVP(rotationKeyframes),
+//		CEREAL_NVP(scaleKeyframes)
+//	);
+//}
