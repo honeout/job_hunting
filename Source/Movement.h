@@ -14,8 +14,10 @@ public:
 	// –¼‘OŽæ“¾
 	const char* GetName() const override { return "Movement"; }
 
+#ifdef _DEBUG
 	// GUI•`‰æ
 	void OnGUI() override;
+#endif // _DEBUG
 
 	// ˆÚ“®
 	void Move(const DirectX::XMFLOAT3& direction,  float speed,  float elapsedTime);

@@ -33,8 +33,10 @@ public:
 	virtual void RenderShadwomap(RenderContext rc);
 
 
+#ifdef _DEBUG
 	// GUI•\Ž¦
 	virtual void OnGUI();
+#endif // _DEBUG
 
 	// –¼‘O‚ÌÝ’è
 	void SetName(const char* name) { this->name = name; }
@@ -116,9 +118,10 @@ public:
 
 
 private:
+#ifdef _DEBUG
 	void DrawLister();
 	void DrawDetail();
-
+#endif // _DEBUG
 private:
 	std::vector<std::shared_ptr<Actor>>		startActors;
 	std::vector<std::shared_ptr<Actor>>		updateActors;

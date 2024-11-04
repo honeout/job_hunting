@@ -12,9 +12,10 @@ public:
 
     // –¼‘Oæ“¾
     const char* GetName() const override { return "SpriteControll"; }
-
-    //// GUI•\¦
+#ifdef _DEBUG
+    // GUI•`‰æ
     void OnGUI() override;
+#endif // _DEBUG
 
     // ƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ
     void LoadSprite(const char* filename);

@@ -88,12 +88,12 @@ void ProjectileStraight::DrawDebugPrimitive()
         //// 衝突判定用のデバッグ球を描画
     debugRenderer->DrawSphere(transform->GetPosition(), radius, DirectX::XMFLOAT4(0, 0, 1, 1));
 }
-
+#ifdef _DEBUG
 void ProjectileStraight::OnGUI()
 {
 
 }
-
+#endif // _DEBUG
 //// 描画処理
 //void ProjectileStraight::Render(const RenderContext& rc, ModelShader* shader)
 //{

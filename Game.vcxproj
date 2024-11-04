@@ -295,6 +295,7 @@
     <None Include="HLSL\Line.hlsli" />
     <None Include="HLSL\LuminanceExtracition.hlsli" />
     <None Include="HLSL\Phong.hlsli" />
+    <None Include="HLSL\scene_constant_buffer.hlsli" />
     <None Include="HLSL\ShadowmapCaster.hlsli" />
     <None Include="HLSL\ShadowmapFunctions.hlsli" />
     <None Include="HLSL\Sprite.hlsli" />
@@ -458,6 +459,7 @@
     </FxCompile>
     <FxCompile Include="HLSL\vignette_ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

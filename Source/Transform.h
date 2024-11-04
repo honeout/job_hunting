@@ -16,9 +16,10 @@ public:
 
     // ’eŠÛƒz[ƒ~ƒ“ƒOŽž‚ÌŒvŽZ‚ð‚â‚è‚â‚·‚­‚·‚é‚½‚ß
     void UpdateTransformProjectile();
-
+#ifdef _DEBUG
     // GUI•`‰æ
     void OnGUI() override;
+#endif // _DEBUG
 
     // ˆÊ’u‚ÌÝ’è
     void SetPosition(const DirectX::XMFLOAT3& position) { this->position = position; }

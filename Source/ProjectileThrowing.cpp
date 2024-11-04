@@ -113,12 +113,12 @@ void ProjectileThrowing::DrawDebugPrimitive()
         radius, DirectX::XMFLOAT4(0, 1, 1, 1));*/
     //debugRenderer->DrawCylinder(transform->GetPosition(), radius, transform->GetHeight(), DirectX::XMFLOAT4(1, 0, 0, 1));
 }
-
+#ifdef _DEBUG
 void ProjectileThrowing::OnGUI()
 {
     ImGui::InputFloat("Radius", &radius);
 }
-
+#endif // _DEBUG
 void ProjectileThrowing::EffectProgressPlay()
 {
     effectProgress->Play(transform->GetPosition(), scale);

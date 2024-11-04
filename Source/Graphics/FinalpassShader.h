@@ -25,28 +25,28 @@ private:
 
     };
 
-    // Žü•ÓŒ¸Œõ
-    struct vignette_data
-    {
-        DirectX::XMFLOAT4 vignette_color = { 0.2f, 0.2f, 0.2f, 1.0f };
-        DirectX::XMFLOAT2 vignette_center = { 0.5f, 0.5f };
-        float vignette_intensity = 0.5f;
-        float vignette_smoothness = 0.2f;
+    //// Žü•ÓŒ¸Œõ
+    //struct vignette_data
+    //{
+    //    DirectX::XMFLOAT4 vignette_color = { 0.2f, 0.2f, 0.2f, 1.0f };
+    //    DirectX::XMFLOAT2 vignette_center = { 0.5f, 0.5f };
+    //    float vignette_intensity = 0.5f;
+    //    float vignette_smoothness = 0.2f;
 
-        bool vignette_rounded = false;
-        float vignette_roundness = 1.0f;
-    };
-    struct vignette_constants
-    {
-        DirectX::XMFLOAT4 vignette_color;
-        DirectX::XMFLOAT2 vignette_center;
-        float vignette_intensity;
-        float vignette_smoothness;
+    //    bool vignette_rounded = false;
+    //    float vignette_roundness = 1.0f;
+    //};
+    //struct vignette_constants
+    //{
+    //    DirectX::XMFLOAT4 vignette_color;
+    //    DirectX::XMFLOAT2 vignette_center;
+    //    float vignette_intensity;
+    //    float vignette_smoothness;
 
-        float vignette_rounded;
-        float vignette_roundness;
-        DirectX::XMFLOAT2 vignette_dummy;
-    };
+    //    float vignette_rounded;
+    //    float vignette_roundness;
+    //    DirectX::XMFLOAT2 vignette_dummy;
+    //};
 
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer>     finalpassConstatBuffer;
@@ -61,9 +61,9 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
 
-    // Žü•ÓŒ¸Œõ
-    vignette_data vignette_data;
-    // UNIT05 05
-    Microsoft::WRL::ComPtr<ID3D11Buffer> vignette_constant_buffer;
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;
+    //// Žü•ÓŒ¸Œõ
+    //vignette_data vignette_data;
+    //// UNIT05 05
+    //Microsoft::WRL::ComPtr<ID3D11Buffer> vignette_constant_buffer;
+    //Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;
 };

@@ -33,8 +33,10 @@ public:
     // 描画処理
     void Render(RenderContext& rc, ModelShader& shader) override;
 
+#ifdef _DEBUG
     // GUI描画
     void OnGUI() override;
+#endif // _DEBUG
 
     // シャドウマップ処理
     void RenderShadowmap(RenderContext& rc) override;

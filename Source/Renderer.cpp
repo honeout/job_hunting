@@ -15,13 +15,13 @@ Rendere::~Rendere()
 {
 
 }
-
+#ifdef _DEBUG
 // GUI•`‰æ
 void Rendere::OnGUI()
 {
     ImGui::InputFloat("Render", &radius);
 }
-
+#endif // _DEBUG
 bool Rendere::DrawDebugPrimitive()
 {
     return false;

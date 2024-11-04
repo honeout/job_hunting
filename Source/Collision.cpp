@@ -1,8 +1,9 @@
 #include "Collision.h"
-
+#ifdef _DEBUG
 void Collision::OnGUI()
 {
 }
+#endif // _DEBUG
 
 // ‹…‚Æ‹…‚ÌŒğ·”»’è
     bool Collision::IntersectSpherVsSphere(

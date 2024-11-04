@@ -245,10 +245,12 @@ void EnemySlime::Render(RenderContext& rc, ModelShader& shader)
 
 
 }
+#ifdef _DEBUG
 void EnemySlime::OnGUI()
 {
     //ImGui::InputFloat("Bullet", &moveSpeed);
 }
+#endif // _DEBUG
 // シャドウマップ
 void EnemySlime::RenderShadowmap(RenderContext& rc)
 {

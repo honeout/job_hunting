@@ -13,8 +13,11 @@ public:
 	// –¼‘OŽæ“¾
 	const char* GetName() const override { return "HP"; }
 
+
+#ifdef _DEBUG
 	// GUI•`‰æ
 	void OnGUI() override;
+#endif // _DEBUG
 
 	// –³“G
 	void UpdateInbincibleTimer(float elapsedTime);

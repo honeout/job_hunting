@@ -30,7 +30,10 @@ public:
     // “–‚½‚è”»’èŒ©‚é
     void DrawDebugPrimitive();
 
+#ifdef _DEBUG
+    // GUI•`‰æ
     void OnGUI() override;
+#endif // _DEBUG
 
     // •`‰æˆ—
     //void Render(const RenderContext& rc, ModelShader* shader)override;

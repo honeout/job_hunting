@@ -80,7 +80,9 @@ void UiTime::Render2D(RenderContext& rc, SpriteShader& shader)
     }
 }
 
+#ifdef _DEBUG
 void UiTime::OnGUI()
 {
     ImGui::InputInt("countDown", &countDown);
 }
+#endif // _DEBUG

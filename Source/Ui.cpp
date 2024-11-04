@@ -54,12 +54,13 @@ void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
     }
 }
 
+#ifdef _DEBUG
 void Ui::OnGUI()
 {
 
     ImGui::SliderFloat4("Color", &color.x, 0, 1);
 }
-
+#endif // _DEBUG
 void Ui::UiTimeUpdate()
 {
     if (timeMax > 0)

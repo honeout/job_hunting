@@ -56,7 +56,7 @@ void Actor::RenderShadwomap(RenderContext rc)
 	}
 }
 
-
+#ifdef _DEBUG
 // GUI表示
 void Actor::OnGUI()
 {
@@ -90,6 +90,7 @@ void Actor::OnGUI()
 		}
 	}
 }
+#endif // _DEBUG
 
 // モデルの読み込み
 //void Actor::LoadModel(const char* filename)
@@ -232,12 +233,13 @@ void ActorManager::Render(RenderContext rc, ModelShader* shader)
 	//shader->End(rc);
 
 
-
+#ifdef _DEBUG
 	// リスター描画
 	DrawLister();
 
 	// 詳細描画
 	DrawDetail();
+#endif // _DEBUG
 
 }
 
@@ -292,7 +294,7 @@ void ActorManager::Clear()
     
 	
 }
-
+#ifdef _DEBUG
 // リスター描画
 void ActorManager::DrawLister()
 {
@@ -326,7 +328,10 @@ void ActorManager::DrawLister()
 	}
 	ImGui::End();
 }
+#endif // _DEBUG
 
+
+#ifdef _DEBUG
 // 詳細描画
 void ActorManager::DrawDetail()
 {
@@ -344,6 +349,7 @@ void ActorManager::DrawDetail()
 	}
 	ImGui::End();
 }
+#endif // _DEBUG
 //
 //// 垂直速度
 //void Actor::UpdateVerticalVelocity(float elapsedFrame)

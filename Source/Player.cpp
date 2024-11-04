@@ -462,15 +462,22 @@ void Player::UpdateCameraState(float elapsedTime)
 {
     //std::shared_ptr<Actor> enemyid = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1);
     CameraState oldLockonState = lockonState;
-    std::shared_ptr<Transform> oldLockonCharacter = lockonCharactor;
+    DirectX::XMFLOAT3 oldLockonCharacter = lockonCharactor;
     lockonState = CameraState::NotLockOn;
-    lockonCharactor = nullptr;
+    lockonCharactor = {0,0,0};
     //lockonCharacter = nullptr;
 
     
         // ロックオンモード
     if (rockCheck)
     {
+        Model::Node* PNeck = model->FindNode("mixamorig:Spine1");
+        DirectX::XMFLOAT3 pPosition =
+        {
+                    PNeck->worldTransform._41,
+                    PNeck->worldTransform._42,
+                    PNeck->worldTransform._43
+        };
         DirectX::XMVECTOR p, t, v;
         switch (oldLockonState)
         {
@@ -481,16 +488,24 @@ void Player::UpdateCameraState(float elapsedTime)
             int enemyCount = EnemyManager::Instance().GetEnemyCount();
             for (int ii = 0; ii < enemyCount; ++ii)
             {
-                std::shared_ptr<Transform> character = EnemyManager::Instance().GetEnemy(ii)->GetComponent<Transform>();
+                Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
+                
+                DirectX::XMFLOAT3 character = 
+                {
+                    characterWorld->worldTransform._41,
+                    characterWorld->worldTransform._42,
+                    characterWorld->worldTransform._43
+                };
 
                 if (lockonState != CameraState::NotLockOn)
                 {
-                    p = DirectX::XMLoadFloat3(&position);
-                    t = DirectX::XMLoadFloat3(&lockonCharactor->GetPosition());
+                   
+                    p = DirectX::XMLoadFloat3(&pPosition);
+                    t = DirectX::XMLoadFloat3(&lockonCharactor);
                     v = DirectX::XMVectorSubtract(t, p);
                     DirectX::XMStoreFloat(&length2, DirectX::XMVector3LengthSq(v));
-                    p = DirectX::XMLoadFloat3(&position);
-                    t = DirectX::XMLoadFloat3(&character->GetPosition());
+                    p = DirectX::XMLoadFloat3(&pPosition);
+                    t = DirectX::XMLoadFloat3(&character);
                     v = DirectX::XMVectorSubtract(t, p);
                     DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
                     if (length1 < length2)
@@ -502,8 +517,8 @@ void Player::UpdateCameraState(float elapsedTime)
                 }
                 else
                 {
-                    p = DirectX::XMLoadFloat3(&position);
-                    t = DirectX::XMLoadFloat3(&character->GetPosition());
+                    p = DirectX::XMLoadFloat3(&pPosition);
+                    t = DirectX::XMLoadFloat3(&character);
                     v = DirectX::XMVectorSubtract(t, p);
                     DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
 
@@ -521,13 +536,20 @@ void Player::UpdateCameraState(float elapsedTime)
             int enemyCount = EnemyManager::Instance().GetEnemyCount();
             for (int ii = 0; ii < enemyCount; ++ii)
             {
-                std::shared_ptr<Transform> character = EnemyManager::Instance().GetEnemy(ii)->GetComponent<Transform>();
+                Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
+
+                DirectX::XMFLOAT3 character =
+                {
+                    characterWorld->worldTransform._41,
+                    characterWorld->worldTransform._42,
+                    characterWorld->worldTransform._43
+                };
                 //if (character == oldLockonCharacter)
                 //{
-                lockonCharactor = character;
+                //lockonCharactor = character;
                 lockonState = CameraState::LockOn;
-                p = DirectX::XMLoadFloat3(&position);
-                t = DirectX::XMLoadFloat3(&character->GetPosition());
+                p = DirectX::XMLoadFloat3(&pPosition);
+                t = DirectX::XMLoadFloat3(&character);
                 v = DirectX::XMVectorSubtract(t, p);
 
                 lockonCharactor = character;
@@ -540,14 +562,14 @@ void Player::UpdateCameraState(float elapsedTime)
             float ax = gamePad.GetAxisRX();	// 水平のみ
             // 垂直方向は使わないでおく
             lockonTargetChangeTime -= 60.0f * elapsedTime;
-            if (lockonCharactor &&
+            if (
                 lockonTargetChangeTime <= 0 &&
                 ax * ax > 0.3f)
             {
                 lockonTargetChangeTime = lockonTargetChangeTimeMax;
                 // ロックオン対象と自分自身の位置からベクトルを算出
-                float dx = oldLockonCharacter->GetPosition().x - position.x;
-                float dz = oldLockonCharacter->GetPosition().z - position.z;
+                float dx = oldLockonCharacter.x - pPosition.x;
+                float dz = oldLockonCharacter.z - pPosition.z;
                 float l = sqrtf(dx * dx + dz * dz);
                 dx /= l;
                 dz /= l;
@@ -555,11 +577,21 @@ void Player::UpdateCameraState(float elapsedTime)
                 float angleMax = FLT_MAX;
                 for (int ii = 0; ii < enemyCount; ++ii)
                 {
-                    std::shared_ptr<Transform> character = EnemyManager::Instance().GetEnemy(ii)->GetComponent<Transform>();
+                    //std::shared_ptr<Transform> character = EnemyManager::Instance().GetEnemy(ii)->GetComponent<Transform>();
+                    
+                    Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
+
+                    DirectX::XMFLOAT3 character =
+                    {
+                        characterWorld->worldTransform._41,
+                        characterWorld->worldTransform._42,
+                        characterWorld->worldTransform._43
+                    };
+
        /*             if (character == oldLockonCharacter)
                         continue;*/
-                    float ddx = character->GetPosition().x - position.x;
-                    float ddz = character->GetPosition().z - position.z;
+                    float ddx = character.x - pPosition.x;
+                    float ddz = character.z - pPosition.z;
                     float ll = sqrtf(ddx * ddx + ddz * ddz);
                     ddx /= ll;
                     ddz /= ll;
@@ -588,7 +620,7 @@ void Player::UpdateCameraState(float elapsedTime)
         }
         if (lockonState == CameraState::LockOn)
         {
-            MessageData::CAMERACHANGELOCKONMODEDATA	p = { position, lockonCharactor->GetPosition() };
+            MessageData::CAMERACHANGELOCKONMODEDATA	p = { pPosition, lockonCharactor };
             Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONMODE, &p);
             //break;
         }
@@ -656,9 +688,10 @@ void Player::DrawDebugPrimitive()
         );
     }
 }
-
+#ifdef _DEBUG
 void Player::OnGUI()
 {
+
     ImGui::InputFloat("Move Speed", &moveSpeed);
     ImGui::InputInt("selectCheck", &selectCheck);
     ImGui::InputInt("selectMagicCheck", &selectMagicCheck);
@@ -673,7 +706,7 @@ void Player::OnGUI()
     
 
 }
-
+#endif // _DEBUG
 
 // 移動入力処理
 bool Player::InputMove(float elapsedTime)
@@ -745,8 +778,8 @@ bool Player::InputRockOn()
     if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && rockCheck)
     {
         //cameraControlle->SetTarget(position);
-        //rockCheck = false;
-        //buttonRock = true;
+        rockCheck = false;
+        buttonRock = true;
         return true;
     }
 
@@ -1688,10 +1721,11 @@ void Player::CollisionPlayerVsEnemies()
 
 
             if (Collision::IntersectCylinderVsCylinder(
-                position, radius, height,
+                
                 enemyPosition,
                 enemyRadius,
                 enemyHeight/2,
+                position, radius, height,
                 
                 outPositon))
 
@@ -1736,7 +1770,8 @@ void Player::CollisionPlayerVsEnemies()
                         // 押し出し後の位置設定　
                         //enemy->GetComponent<Transform>()->SetPosition(outPositon);
                         //position = outPositon;
-                        const float power = 2.3f;
+                        position = outPositon;
+                        const float power = 1.3f;
 
                         DirectX::XMFLOAT3 impulse;
                         impulse.x = normal.x * power;
@@ -1823,7 +1858,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
                 // 押し出し後の位置設定　
                 //enemy->GetComponent<Transform>()->SetPosition(outPositon);
                 
-                const float power = 2.3f;
+                const float power = 1.3f;
 
                 float velocityMax = 2;
 

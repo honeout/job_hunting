@@ -21,10 +21,10 @@ public:
 
     // •`‰æˆ—
     void Render2D(RenderContext& rc, SpriteShader& shader) override;
-
+#ifdef _DEBUG
     // GUI•`‰æ
     void OnGUI() override;
-
+#endif // _DEBUG
     // ŠÔ
     void UiTimeUpdate();
 

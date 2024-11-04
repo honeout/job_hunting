@@ -79,9 +79,11 @@ void Transform::UpdateTransformProjectile()
 	this->direction = front;// Œü‚«‚ð‚±‚Á‚¿‚É“ü‚ê‚é‚±‚ê‚Å‚Þ‚«‚ÌŒvŽZ
 }
 
+#ifdef _DEBUG
 void Transform::OnGUI()
 {
     ImGui::InputFloat3("Position", &position.x);
     ImGui::InputFloat3("Angle", &angle.x);
     ImGui::InputFloat3("Scale", &scale.x);
 }
+#endif // _DEBUG

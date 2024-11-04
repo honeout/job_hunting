@@ -815,7 +815,7 @@ void BulletFiring::Destroy()
     ProjectileManager::Instance().Remove(GetActor());
    
 }
-
+#ifdef _DEBUG
 void BulletFiring::OnGUI()
 {
     ImGui::InputFloat3("Move Speed", &position.x);
@@ -824,3 +824,4 @@ void BulletFiring::OnGUI()
     
 
 }
+#endif // _DEBUG

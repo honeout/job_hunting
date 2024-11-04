@@ -79,8 +79,8 @@ void SceneGame::Initialize()
 	////player = new Player;
 	{
 		// プレイヤー初期化
-		//const char* filename = "Data/Model/Jammo/Jammo.mdl";
-		const char* filename = "Data/Model/Player/Maria.mdl";
+		const char* filename = "Data/Model/Jammo/Jammo.mdl";
+		//const char* filename = "Data/Model/Player/Maria.mdl";
 
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
@@ -89,7 +89,7 @@ void SceneGame::Initialize()
 		actor->AddComponent<Transform>();
 
 		actor->GetComponent<Transform>()->
-			SetPosition(DirectX::XMFLOAT3(0, 0, 0));
+			SetPosition(DirectX::XMFLOAT3(0, 0, -7));
 
 		actor->GetComponent<Transform>()->
 			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
@@ -1454,11 +1454,18 @@ void SceneGame::Update(float elapsedTime)
 
 	// シーン切り替え
 	{
+		
 		for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 		{
 			vignette_smoothness = 0.0f;
+			vignette_intensity = 0.0f;
+			
 			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->HealthPinch() && !PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead())
-				vignette_smoothness = 1;
+			{
+				vignette_smoothness = 0.5f;
+				vignette_intensity = 0.4f;
+			}
+			
 			// 死んだ瞬間
 			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
 			{
@@ -1469,6 +1476,10 @@ void SceneGame::Update(float elapsedTime)
 				//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
 			
 				PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Death));
+
+				vignette_smoothness = 0.0f;
+
+				vignette_intensity = 0.0f;
 
 				sceneChengeCheckDead = true;
 
@@ -1607,7 +1618,7 @@ void SceneGame::Render()
 		// 周辺減光
 		rc.vignette_color = vignette_color;
 		rc.vignette_center = vignette_center;
-		rc.vignette_intensity = vignette_intensity * 3.0f;
+		rc.vignette_intensity = vignette_intensity;
 		rc.vignette_smoothness = vignette_smoothness;
 		//rc.vignette_smoothness = max(0.000001f, vignette_data.vignette_smoothness * 5.0f);
 		//rc.vignette_rounded = vignette_data.vignette_rounded ? 1.0f : 0.0f;
@@ -1642,7 +1653,7 @@ void SceneGame::Render()
 	}
 
 
-
+#ifdef _DEBUG
 		 //2DデバッグGUI描画
 	{
 		//ImGui::Separator();
@@ -1674,7 +1685,7 @@ void SceneGame::Render()
 		//	ImGui::Separator();
 		//	LightManager::Instanes().DrawDebugGUI();
 		//}
-
+#endif // _DEBUG
 
 	
 }
@@ -1743,7 +1754,7 @@ void SceneGame::Render3DScene()
 		EffectManager::Instance().Render(rc.view, rc.projection);
 	}
 
-
+#ifdef _DEBUG
 
 	// デバッグプリミティブの表示
 	{
@@ -1764,7 +1775,7 @@ void SceneGame::Render3DScene()
 		// デバッグレンダラ描画実行
 		graphics.GetDebugRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
 	}
-	
+#endif // _DEBUG
 
 }
 

@@ -39,10 +39,10 @@ public:
 
     // –¼‘OŽæ“¾
     const char* GetName() const override { return "BulletFiring"; }
-
+#ifdef _DEBUG
     // GUI•`‰æ
     void OnGUI() override;
-
+#endif // _DEBUG
 private:
     std::shared_ptr<Transform> transformid;
     // ˆÊ’u

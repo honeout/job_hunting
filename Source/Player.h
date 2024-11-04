@@ -83,8 +83,10 @@ public:
 
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
+#ifdef _DEBUG
     // GUI描画
     void OnGUI() override;
+#endif // _DEBUG
 
     // 描画処理
     void Render(RenderContext& rc, ModelShader& shader) override;
@@ -328,19 +330,32 @@ public:
     // アニメ
     enum Animation
     {
-        Anim_Tpose,
+        Anim_Attack,
+        Anim_Death,
+        Anim_Falling,
+        Anim_GetHit1,
+        Anim_GetHit2,
         Anim_Idle,
-        Anim_Move,
-        Anim_Back,
-        Anim_Beside,
-        Anim_BesideSrow,
         Anim_Jump,
-        Anim_Slash,
-        Anim_SlashBeside,
-        Anim_SlashThree,
-        Anim_Deth,
-        Anim_Pain,
-        Anim_Counter
+        Anim_Jump_Flip,
+        Anim_Landing,
+        Anim_Revive,
+        Anim_Running,
+        Anim_Walking
+
+        //Anim_Tpose,
+        //Anim_Idle,
+        //Anim_Move,
+        //Anim_Back,
+        //Anim_Beside,
+        //Anim_BesideSrow,
+        //Anim_Jump,
+        //Anim_Slash,
+        //Anim_SlashBeside,
+        //Anim_SlashThree,
+        //Anim_Deth,
+        //Anim_Pain,
+        //Anim_Counter
 
     };
 
@@ -476,7 +491,7 @@ private:
     CameraState            cameraState = CameraState::Normal;
     CameraState			lockonState = CameraState::NotLockOn;
 
-    std::shared_ptr<Transform> lockonCharactor;
+    DirectX::XMFLOAT3 lockonCharactor;
 
 
     float				lockonTargetChangeTime = 0;

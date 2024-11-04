@@ -14,8 +14,10 @@ public:
 	// –¼‘OŽæ“¾
 	const char* GetName() const override { return "Render"; }
 
+#ifdef _DEBUG
 	// GUI•`‰æ
 	void OnGUI() override;
+#endif // _DEBUG
 
 	// ”¼ŒaŽæ“¾ 05
 	float GetRadius() const { return radius; }

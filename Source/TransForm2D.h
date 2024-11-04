@@ -9,9 +9,10 @@ public:
 
     // –¼‘OŽæ“¾
     const char* GetName() const override { return "TransForm2D"; }
-
+#ifdef _DEBUG
     // GUI•`‰æ
     void OnGUI() override;
+#endif // _DEBUG
 
     // —h‚ê
     void Shake();

@@ -24,10 +24,10 @@ public:
 
     // –¼‘Oæ“¾
     const char* GetName() const override { return "Collision"; }
-
+#ifdef _DEBUG
     // GUI•`‰æ
     void OnGUI() override;
-
+#endif // _DEBUG
 
     // ‹…‚Æ‹…‚ÌŒğ·”»’è
     static bool IntersectSpherVsSphere(

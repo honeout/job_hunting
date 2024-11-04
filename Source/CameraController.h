@@ -60,7 +60,7 @@ private:
 	float				rollSpeed = DirectX::XMConvertToRadians(90);
 	float				range = 10.0f;
 	float				maxAngleX = DirectX::XMConvertToRadians(+45);
-	float				minAngleX = DirectX::XMConvertToRadians(-45);
+	float				minAngleX = DirectX::XMConvertToRadians(+5);
 	// ロックオン処理
 	DirectX::XMFLOAT3	newPosition = { 0, 0, 0 };
 	DirectX::XMFLOAT3	newTarget = { 0, 0, 0 };
@@ -73,6 +73,8 @@ private:
 	// カメラ揺れ
 	float				shakeTimer = 0;
 	float				shakePower = 1;
+
+	float               lengthMin = 1;
 
 	// メッセージキー
 	uint64_t			CAMERACHANGEFREEMODEKEY;

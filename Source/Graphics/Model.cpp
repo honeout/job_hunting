@@ -120,7 +120,7 @@ void Model::ComputeAnimation(int animationIndex, int nodeIndex, float time, Node
 	const std::vector<ModelResource::Keyframe>& keyframes = animation.keyframes;
 	int keyCount = static_cast<int> (keyframes.size());
 
-	int keyCount = static_cast<int> (keyframes.size());
+	//int keyCount = static_cast<int> (keyframes.size());
 	for (int keyIndex = 0; keyIndex < keyCount - 1; ++keyIndex)
 	{
 		// 現在の時間がどのキーフレームの間にいるか判定する
@@ -346,52 +346,52 @@ void Model::UpdateRootMortion(float elapsedTime)
 		// グローバル移動値を算出
 		Model::Node& rootMotionNode = nodes[rootMotionNodeIndex];
 		DirectX::XMVECTOR LocalTranslation = DirectX::XMLoadFloat3(&localTranslation);
-		// 親のグローバル行列
-		DirectX::XMMATRIX ParentGlobalTransform = DirectX::XMLoadFloat4x4(&rootMotionNode.parent->globalTransform);
-		// ローカルをグローバルに
-		DirectX::XMVECTOR GlobalTranslation = DirectX::XMVector3TransformNormal(LocalTranslation, ParentGlobalTransform);
+	//	// 親のグローバル行列
+	//	DirectX::XMMATRIX ParentGlobalTransform = DirectX::XMLoadFloat4x4(&rootMotionNode.parent->globalTransform);
+	//	// ローカルをグローバルに
+	//	DirectX::XMVECTOR GlobalTranslation = DirectX::XMVector3TransformNormal(LocalTranslation, ParentGlobalTransform);
 
 
-		//if (bakeTranslationY)
-		//{
-		//	DirectX::XMFLOAT3 globalTranslation;
+	//	//if (bakeTranslationY)
+	//	//{
+	//	//	DirectX::XMFLOAT3 globalTranslation;
 
-		//	DirectX::XMStoreFloat3(&globalTranslation, GlobalTranslation);
+	//	//	DirectX::XMStoreFloat3(&globalTranslation, GlobalTranslation);
 
-		//	// TODO③:ルートモーションのY移動は適用しないようにせよ
+	//	//	// TODO③:ルートモーションのY移動は適用しないようにせよ
 
-		//	// Y成分の移動値を抜く
-		//	globalTranslation.y = 0;
-		//	// 今回の姿勢のグローバル位置を算出
+	//	//	// Y成分の移動値を抜く
+	//	//	globalTranslation.y = 0;
+	//	//	// 今回の姿勢のグローバル位置を算出
 
-		//	// XZ成分を削除
-		//	//globalTranslation.x = 0;
-		//	//globalTranslation.z = 0;
+	//	//	// XZ成分を削除
+	//	//	//globalTranslation.x = 0;
+	//	//	//globalTranslation.z = 0;
 
-		//	GlobalTranslation = DirectX::XMLoadFloat3(&globalTranslation);
-		//	// ローカル空間変換
+	//	//	GlobalTranslation = DirectX::XMLoadFloat3(&globalTranslation);
+	//	//	// ローカル空間変換
 
-		//	// ルートモーションノードの位置を設定
-
-
-		//}
-		//else
-		{
-			// 移動後にグローバル座標が元の位置に戻るのを防ぐために
-			// ルートモーションノードを初回の姿勢にする
-			nodePoses[rootMotionNodeIndex].position = beginPose.position;
-		}
-		// ワールド移動値を算出
-		DirectX::XMMATRIX WorldTransform = DirectX::XMLoadFloat4x4(&worldTransform);
-		DirectX::XMVECTOR WorldTranslation = DirectX::XMVector3TransformNormal(GlobalTranslation, WorldTransform);
-		DirectX::XMFLOAT3 worldTranslation;
-		DirectX::XMStoreFloat3(&worldTranslation, WorldTranslation);
+	//	//	// ルートモーションノードの位置を設定
 
 
-		// キャラクターの位置を更新
-		position.x += worldTranslation.x;
-		position.y += worldTranslation.y;
-		position.z += worldTranslation.z;
+	//	//}
+	//	//else
+	//	{
+	//		// 移動後にグローバル座標が元の位置に戻るのを防ぐために
+	//		// ルートモーションノードを初回の姿勢にする
+	//		nodePoses[rootMotionNodeIndex].position = beginPose.position;
+	//	}
+	//	// ワールド移動値を算出
+	//	DirectX::XMMATRIX WorldTransform = DirectX::XMLoadFloat4x4(&worldTransform);
+	//	DirectX::XMVECTOR WorldTranslation = DirectX::XMVector3TransformNormal(GlobalTranslation, WorldTransform);
+	//	DirectX::XMFLOAT3 worldTranslation;
+	//	DirectX::XMStoreFloat3(&worldTranslation, WorldTranslation);
+
+
+	//	// キャラクターの位置を更新
+	//	position.x += worldTranslation.x;
+	//	position.y += worldTranslation.y;
+	//	position.z += worldTranslation.z;
 	}
 
 	// アニメーション時間更新
@@ -432,12 +432,12 @@ void Model::UpdateRootMortion(float elapsedTime)
 	SetNodePoses(nodePoses);
 
 
-// ワールドトランスフォーム更新
-DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
-DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
-DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-DirectX::XMMATRIX WorldTransform = S * R * T;
-DirectX::XMStoreFloat4x4(&worldTransform, WorldTransform);
+//// ワールドトランスフォーム更新
+//DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+//DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
+//DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+//DirectX::XMMATRIX WorldTransform = S * R * T;
+//DirectX::XMStoreFloat4x4(&worldTransform, WorldTransform);
 
 
 }

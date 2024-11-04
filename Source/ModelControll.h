@@ -18,10 +18,10 @@ public:
 
     // 更新処理
     void Update(float elapsedTime) override;
-
+#ifdef _DEBUG
     // GUI表示
     void OnGUI() override;
-
+#endif // _DEBUG
     // モデルの読み込み
     void LoadModel(const char* filename);
 

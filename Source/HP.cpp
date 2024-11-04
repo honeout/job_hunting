@@ -15,13 +15,13 @@ HP::~HP()
 {
 
 }
-
+#ifdef _DEBUG
 // GUI•`‰æ
 void HP::OnGUI()
 {
 	ImGui::SliderInt("Hp", &health,1,maxHealth);
 }
-
+#endif // _DEBUG
 void HP::UpdateInbincibleTimer(float elapsedTime)
 {
     if (invincibleTimer > 0.0f)

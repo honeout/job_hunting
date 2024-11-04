@@ -24,10 +24,10 @@ public:
 
 	// シャドウマップ描画
 	virtual void RenderShadowmap(RenderContext& rc) {}
-
+#ifdef _DEBUG
 	// GUI描画
 	virtual void OnGUI() {}
-
+#endif // _DEBUG
 	// アクター設定
 	void SetActor(std::shared_ptr<Actor> actor) { this->actor = actor; }
 

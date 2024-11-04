@@ -21,7 +21,7 @@ Movement::~Movement()
 {
 
 }
-
+#ifdef _DEBUG
 // GUI•`‰æ
 void Movement::OnGUI()
 {
@@ -37,7 +37,7 @@ void Movement::OnGUI()
 
     
 }
-
+#endif // _DEBUG
 // ƒ[ƒ‹ƒhˆÚ“®
 void Movement::Move(const DirectX::XMFLOAT3& direction,float speed ,float elapsedTime)
 {

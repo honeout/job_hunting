@@ -60,9 +60,6 @@ FinalpassShader::FinalpassShader(ID3D11Device* device)
 		// シーン用バッファ
 		D3D11_BUFFER_DESC desc;
 		::memset(&desc, 0, sizeof(desc));
-
-
-
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		desc.CPUAccessFlags = 0;
@@ -70,41 +67,39 @@ FinalpassShader::FinalpassShader(ID3D11Device* device)
 		desc.ByteWidth = sizeof(CBFinalpass);
 		desc.StructureByteStride = 0;
 
-
-
 		HRESULT hr = device->CreateBuffer(&desc, 0, finalpassConstatBuffer.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
-		//	ヴィネット用定数バッファ
-		{
+		////	ヴィネット用定数バッファ
+		//{
 
-			desc.ByteWidth = sizeof(vignette_constants);
-			HRESULT hr = device->CreateBuffer(&desc, nullptr, vignette_constant_buffer.GetAddressOf());
-			_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-		}
+		//	desc.ByteWidth = sizeof(vignette_constants);
+		//	HRESULT hr = device->CreateBuffer(&desc, nullptr, vignette_constant_buffer.GetAddressOf());
+		//	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+		//}
 
 
 	}
 
-	// ヴィネットシェーダー準備
-	{
-		//	ヴィネットシェーダー
-		FILE* fp{ nullptr };
-		fopen_s(&fp, "Shader\\vignette_ps.cso", "rb");
-		_ASSERT_EXPR_A(fp, "CSO File not found");
+	//// ヴィネットシェーダー準備
+	//{
+	//	//	ヴィネットシェーダー
+	//	FILE* fp{ nullptr };
+	//	fopen_s(&fp, "Shader\\vignette_ps.cso", "rb");
+	//	_ASSERT_EXPR_A(fp, "CSO File not found");
 
-		fseek(fp, 0, SEEK_END);
-		long cso_sz{ ftell(fp) };
-		fseek(fp, 0, SEEK_SET);
+	//	fseek(fp, 0, SEEK_END);
+	//	long cso_sz{ ftell(fp) };
+	//	fseek(fp, 0, SEEK_SET);
 
-		std::unique_ptr<unsigned char[]> cso_data{ std::make_unique<unsigned char[]>(cso_sz) };
-		fread(cso_data.get(), cso_sz, 1, fp);
-		fclose(fp);
+	//	std::unique_ptr<unsigned char[]> cso_data{ std::make_unique<unsigned char[]>(cso_sz) };
+	//	fread(cso_data.get(), cso_sz, 1, fp);
+	//	fclose(fp);
 
-		HRESULT hr{ S_OK };
-		hr = device->CreatePixelShader(cso_data.get(), cso_sz, nullptr, vignette_pixel_shader.GetAddressOf());
-		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-	}
+	//	HRESULT hr{ S_OK };
+	//	hr = device->CreatePixelShader(cso_data.get(), cso_sz, nullptr, vignette_pixel_shader.GetAddressOf());
+	//	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+	//}
 
 	// ブレンドステート
 	{
@@ -182,8 +177,6 @@ FinalpassShader::FinalpassShader(ID3D11Device* device)
 // 描画開始
 void FinalpassShader::Begin(const RenderContext& rc)
 {
-
-
 	rc.deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0);
 	rc.deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0);
 	rc.deviceContext->IASetInputLayout(inputLayout.Get());
@@ -216,32 +209,34 @@ void FinalpassShader::Draw(const RenderContext& rc, const Sprite* sprite)
 	cbFinalpass.brightness = rc.colorGradingData.brigthness;
 	rc.deviceContext->UpdateSubresource(finalpassConstatBuffer.Get(), 0, 0, &cbFinalpass, 0, 0);
 
-	//	ヴィネット用定数バッファ
-	{
-		static constexpr int VignetteCBVIndex = 2;
-		vignette_constants constant;
-		//constant.vignette_color = vignette_data.vignette_color;
-		constant.vignette_color = rc.vignette_color;
-		//constant.vignette_center = vignette_data.vignette_center;
-		constant.vignette_center = rc.vignette_center;
-		constant.vignette_intensity = vignette_data.vignette_intensity * 3.0f;
-		//constant.vignette_smoothness = max(0.000001f, vignette_data.vignette_smoothness * 5.0f);
-		constant.vignette_smoothness = max(0.000001f, rc.vignette_smoothness * 5.0f);
-		constant.vignette_rounded = vignette_data.vignette_rounded ? 1.0f : 0.0f;
-		constant.vignette_roundness = 6.0f * (1.0f - vignette_data.vignette_roundness) + vignette_data.vignette_roundness;
 
 
-		rc.deviceContext->UpdateSubresource(vignette_constant_buffer.Get(), 0, 0, &constant, 0, 0);
-		//Graphics::Instance().GetDevice()->set_constant_buffer(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
-		rc.deviceContext->VSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
-		rc.deviceContext->HSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
-		rc.deviceContext->DSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
-		rc.deviceContext->GSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
-		rc.deviceContext->PSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
-		rc.deviceContext->CSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+	////	ヴィネット用定数バッファ
+	//{
+	//	static constexpr int VignetteCBVIndex = 2;
+	//	vignette_constants constant;
+	//	//constant.vignette_color = vignette_data.vignette_color;
+	//	constant.vignette_color = rc.vignette_color;
+	//	//constant.vignette_center = vignette_data.vignette_center;
+	//	constant.vignette_center = rc.vignette_center;
+	//	constant.vignette_intensity = vignette_data.vignette_intensity * 3.0f;
+	//	//constant.vignette_smoothness = max(0.000001f, vignette_data.vignette_smoothness * 5.0f);
+	//	constant.vignette_smoothness = max(0.000001f, rc.vignette_smoothness * 5.0f);
+	//	constant.vignette_rounded = vignette_data.vignette_rounded ? 1.0f : 0.0f;
+	//	constant.vignette_roundness = 6.0f * (1.0f - vignette_data.vignette_roundness) + vignette_data.vignette_roundness;
 
-	}
-	rc.deviceContext->PSSetShader(vignette_pixel_shader.Get(), nullptr, 0);
+
+	//	rc.deviceContext->UpdateSubresource(vignette_constant_buffer.Get(), 0, 0, &constant, 0, 0);
+	//	//Graphics::Instance().GetDevice()->set_constant_buffer(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+	//	rc.deviceContext->VSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+	//	rc.deviceContext->HSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+	//	rc.deviceContext->DSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+	//	rc.deviceContext->GSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+	//	rc.deviceContext->PSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+	//	rc.deviceContext->CSSetConstantBuffers(VignetteCBVIndex, 1, vignette_constant_buffer.GetAddressOf());
+
+	//}
+	//rc.deviceContext->PSSetShader(vignette_pixel_shader.Get(), nullptr, 0);
 
 	//rc.deviceContext->PSGetShaderResources(2, 1, vignette_pixel_shader.Get());
 
@@ -256,9 +251,6 @@ void FinalpassShader::Draw(const RenderContext& rc, const Sprite* sprite)
 
 
 	rc.deviceContext->PSSetShaderResources(0,ARRAYSIZE(srvs),srvs);
-
-
-
 	rc.deviceContext->Draw(4, 0);
 
 }

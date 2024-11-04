@@ -54,6 +54,25 @@ void CameraController::Update(float elapsedTime)
 	//	DirectX::XMStoreFloat3(&newPosition, p);
 	//}
 
+		// X軸のカメラ回転を制限
+	if (angle.x < minAngleX)
+	{
+		angle.x = minAngleX;
+	}
+	if (angle.x > maxAngleX)
+	{
+		angle.x = maxAngleX;
+	}
+	// Y軸の回転値を-3.14～3.14に収まるようにする
+	if (angle.y < -DirectX::XM_PI)
+	{
+		angle.y += DirectX::XM_2PI;
+	}
+	if (angle.y > DirectX::XM_PI)
+	{
+		angle.y -= DirectX::XM_2PI;
+	}
+
 	// 徐々に目標に近づける
 	static	constexpr	float	Speed = 1.0f / 8.0f;
 	position.x += (newPosition.x - position.x) * Speed;
@@ -115,12 +134,14 @@ void CameraController::FreeCamera(float elapsedTime)
 void CameraController::LockonCamera(float elapsedTime)
 {
 	//	後方斜に移動させる
-	DirectX::XMVECTOR	t0 = DirectX::XMVectorSet(targetWork[0].x, 0.5f, targetWork[0].z, 0);
-	DirectX::XMVECTOR	t1 = DirectX::XMVectorSet(targetWork[1].x, 0.5f, targetWork[1].z, 0);
+	DirectX::XMVECTOR	t0 = DirectX::XMVectorSet(targetWork[0].x, targetWork[0].y, targetWork[0].z, 0);
+	DirectX::XMVECTOR	t1 = DirectX::XMVectorSet(targetWork[1].x, targetWork[1].y, targetWork[1].z, 0);
 	DirectX::XMVECTOR	crv = DirectX::XMLoadFloat3(&Camera::Instance().GetRight());
 	DirectX::XMVECTOR	cuv = DirectX::XMVectorSet(0, 1, 0, 0);
 	DirectX::XMVECTOR	v = DirectX::XMVectorSubtract(t1, t0);
 	DirectX::XMVECTOR	l = DirectX::XMVector3Length(v);
+	float len;
+	DirectX::XMStoreFloat(&len,v);
 
 	t0 = DirectX::XMLoadFloat3(&targetWork[0]);
 	t1 = DirectX::XMLoadFloat3(&targetWork[1]);
@@ -128,12 +149,19 @@ void CameraController::LockonCamera(float elapsedTime)
 	//	新しい注視点を算出
 	DirectX::XMStoreFloat3(&newTarget, DirectX::XMVectorMultiplyAdd(v, DirectX::XMVectorReplicate(0.5f), t0));
 
+	//if (len < lengthMin)
+	//{
+	//	DirectX::XMVECTOR	vv = DirectX::XMVectorSubtract(t0, t1);
+	//	t0 = DirectX::XMVectorMultiply(t0, vv);
+	//}
 	//	新しい座標を算出
 	l = DirectX::XMVectorClamp(l
 		, DirectX::XMVectorReplicate(lengthLimit[0])
 		, DirectX::XMVectorReplicate(lengthLimit[1]));
 	t0 = DirectX::XMVectorMultiplyAdd(l, DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), t0);
-	t0 = DirectX::XMVectorMultiplyAdd(crv, DirectX::XMVectorReplicate(sideValue * 3.0f), t0);
+	// 少し右
+	//t0 = DirectX::XMVectorMultiplyAdd(crv, DirectX::XMVectorReplicate(sideValue * 3.0f), t0);
+	// 少し上
 	t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
 	DirectX::XMStoreFloat3(&newPosition, t0);
 }

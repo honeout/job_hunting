@@ -121,7 +121,6 @@ void IdleState::Enter()
 
 	// アニメーションルール
 	owner->GetComponent<EnemySlime>()->SetUpdateAnim(EnemySlime::UpAnim::Normal);
-	
 
 }
 
@@ -695,6 +694,10 @@ void PlayerIdleState::Enter()
 	// アニメーションルール
 	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
 	
+
+	// 落ちる
+	bool stop = false;
+	owner->GetComponent<Movement>()->SetStopMove(stop);
 }
 
 void PlayerIdleState::Execute(float elapsedTime)
@@ -734,19 +737,26 @@ void PlayerIdleState::Exit()
 
 void PlayerMovestate::Enter()
 {
+		//Player::Anim_Move, loop,
 	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
-		Player::Anim_Move, loop,
+		Player::Anim_Running, loop,
 		currentAnimationStartSeconds, blendSeconds
 	);
 
+		//Player::Anim_Move, loop,
 	owner->GetComponent<ModelControll>()->GetModel()->PlayUpeerBodyAnimation(
-		Player::Anim_Move, loop,
+		Player::Anim_Running, loop,
 		currentAnimationStartSeconds, blendSeconds
 	);
 
 
 	// アニメーションルール
 	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Doble);
+
+
+	// 落ちる
+	bool stop = false;
+	owner->GetComponent<Movement>()->SetStopMove(stop);
 }
 
 void PlayerMovestate::Execute(float elapsedTime)
@@ -796,6 +806,10 @@ void PlayerJumpState::Enter()
 	// アニメーションルール
 	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
 
+
+	// 落ちる
+	bool stop = false;
+	owner->GetComponent<Movement>()->SetStopMove(stop);
 }
 
 void PlayerJumpState::Execute(float elapsedTime)
@@ -911,9 +925,10 @@ void PlayerAttackState::Enter()
 
 	std::shared_ptr<Player> playerId = owner->GetComponent<Player>();
 
+		//Player::Anim_Slash, loop,
 	// アニメーション再生
 	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
-		Player::Anim_Slash, loop,
+		Player::Anim_Attack, loop,
 		currentAnimationStartSeconds, blendSeconds
 	);
 	// アニメーション再生
@@ -993,9 +1008,10 @@ void PlayerAttackState::Execute(float elapsedTime)
 				// 正面
 				if (owner->GetComponent<Movement>()->Turn(vector, turnSpeed, elapsedTime))
 				{
+						//Player::Anim_Slash, loop,
 					rotateCheck = true;
 					owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
-						Player::Anim_Slash, loop,
+						Player::Anim_Attack, loop,
 						currentAnimationStartSeconds, blendSeconds
 					);
 					// アニメーション再生
@@ -1053,8 +1069,8 @@ void PlayerAttackState::Execute(float elapsedTime)
 	//}
 
 	// 左手ノードとエネミーの衝突処理
-	owner->GetComponent<Player>()->CollisionNodeVsEnemies("Maria_sword", owner->GetComponent<Player>()->GetLeftHandRadius(), "shoulder");
-
+	//owner->GetComponent<Player>()->CollisionNodeVsEnemies("Maria_sword", owner->GetComponent<Player>()->GetLeftHandRadius(), "shoulder");
+	owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "shoulder");
 }
 
 void PlayerAttackState::Exit()
@@ -1066,8 +1082,9 @@ void PlayerDamageState::Enter()
 {
 	bool loop = false;
 
+		//Player::Anim_Pain, loop,
 	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
-		Player::Anim_Pain, loop,
+		Player::Anim_GetHit1, loop,
 		currentAnimationStartSeconds, blendSeconds);
 
 	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -1091,8 +1108,9 @@ void PlayerDamageState::Exit()
 
 void PlayerDeathState::Enter()
 {
+		//Player::Anim_Deth, loop,
 	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
-		Player::Anim_Deth, loop,
+		Player::Anim_Death, loop,
 		currentAnimationStartSeconds ,blendSeconds
 	);
 
@@ -1133,7 +1151,8 @@ void PlayerDeathState::Execute(float elapsedTime)
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
-	bool CollisionFlag = animationTime >= 1.5f && animationTime <= 1.6f;
+	//bool CollisionFlag = animationTime >= 1.5f && animationTime <= 1.6f;
+	bool CollisionFlag = animationTime >= 0.5f && animationTime <= 1.6f;
 	if (CollisionFlag)
 	{
 		++stateTimer;
@@ -1166,8 +1185,9 @@ void PlayerReviveState::Exit()
 // 回避初期化
 void PlayerAvoidanceState::Enter()
 {
+		//Player::Anim_Slash, loop
 	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
-		Player::Anim_Slash, loop
+		Player::Anim_Attack, loop
 	,currentAnimationStartSeconds, blendSeconds);
 
 
@@ -1188,6 +1208,8 @@ void PlayerAvoidanceState::Enter()
 // 回避更新
 void PlayerAvoidanceState::Execute(float elapsedTime)
 {
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
 	// 転がりダッシュ
 	DirectX::XMFLOAT3 dir;
@@ -1229,8 +1251,9 @@ void PlayerReflectionState::Enter()
 {
 	bool loop = false;
 
+		//Player::Anim_Counter, loop,
 	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
-		Player::Anim_Counter, loop,
+		Player::Anim_Attack, loop,
 		currentAnimationStartSeconds, blendSeconds);
 
 	// アニメーション種類 通常

@@ -15,13 +15,13 @@ Mp::~Mp()
 {
 
 }
-
+#ifdef _DEBUG
 // GUI•`‰æ
 void Mp::OnGUI()
 {
     ImGui::SliderInt("Mp", &magic, 1, maxMagic);
 }
-
+#endif // _DEBUG
 bool Mp::UpdateInbincibleTimer(float elapsedTime)
 {
     if (invincibleTimer > 0.0f)

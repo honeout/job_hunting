@@ -13,8 +13,10 @@ public:
 	// –¼‘OŽæ“¾
 	const char* GetName() const override { return "Mp"; }
 
+#ifdef _DEBUG
 	// GUI•`‰æ
 	void OnGUI() override;
+#endif // _DEBUG
 
 	// –³“G
 	bool UpdateInbincibleTimer(float elapsedTime);
