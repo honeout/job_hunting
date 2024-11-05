@@ -7,6 +7,7 @@
 // 開始処理
 void Actor::Start()
 {
+	// 全て初期化
 	for (std::shared_ptr<Component>& component : components)
 	{
 		component->Start();
@@ -16,12 +17,7 @@ void Actor::Start()
 // 更新
 void Actor::Update(float elapsedTime)
 {
-	//// アニメーションの更新
-	//if (model != nullptr)
-	//{
-	//	model->UpdateAnimation(elapsedTime,true);
-	//}
-
+	// コンポーネント全て更新
 	for (std::shared_ptr<Component>& component : components)
 	{
 		component->Update(elapsedTime);
@@ -30,16 +26,16 @@ void Actor::Update(float elapsedTime)
 
 void Actor::Render(RenderContext rc, ModelShader* shader)
 {
+	// 3D描画
 	for (std::shared_ptr<Component>& component : components)
 	{
-
-
 		component->Render(rc, *shader);
 	}
 }
 
 void Actor::Render2D(RenderContext rc, SpriteShader* shader)
 {
+	// ２D描画
 	for (std::shared_ptr<Component>& component : components)
 	{
 
@@ -48,13 +44,6 @@ void Actor::Render2D(RenderContext rc, SpriteShader* shader)
 	}
 }
 
-void Actor::RenderShadwomap(RenderContext rc)
-{
-	for (std::shared_ptr<Component>& component : components)
-	{
-		component->RenderShadowmap(rc);
-	}
-}
 
 #ifdef _DEBUG
 // GUI表示
@@ -92,18 +81,7 @@ void Actor::OnGUI()
 }
 #endif // _DEBUG
 
-// モデルの読み込み
-//void Actor::LoadModel(const char* filename)
-//{
-//	model = std::make_unique<Model>(filename);
-//}
-
-//void Actor::LoadModelSabe(const char* filename)
-//{
-//	modelsabe = std::make_unique<Model>(filename);
-//}
-
-// 作成
+// 作成 作った奴を入れる。
 std::shared_ptr<Actor> ActorManager::Create()
 {
 	std::shared_ptr<Actor> actor = std::make_shared<Actor>();
@@ -117,7 +95,7 @@ std::shared_ptr<Actor> ActorManager::Create()
 	return actor;
 }
 
-// 削除
+// 削除 に追加
 void ActorManager::Remove(std::shared_ptr<Actor> actor)
 {
 	removeActors.insert(actor);
@@ -161,50 +139,11 @@ void ActorManager::Update(float elapsedTime)
 	removeActors.clear();
 }
 
-// 行列更新
-//void ActorManager::UpdateTransform()
-//{
-//	for (std::shared_ptr<Actor>& actor : updateActors)
-//	{
-//		
-//		//actor->UpdateTransform();
-//
-//	}
-//}
 
 // 描画
 void ActorManager::Render(RenderContext rc, ModelShader* shader)
 {
 	Graphics& graphics = Graphics::Instance();
-	//Shader* shader = graphics.GetShader();
-	//ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-	//ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-	// 描画処理 
-	//RenderContext rc;// 描画するために必要な情報をまとめた構造体
-
-	//rc.view = view;
-	//rc.projection = projection;
-
-	//// ライトの方向
-	//DirectX::XMFLOAT3 lightDirection = DirectX::XMFLOAT3(0.2f, -0.8f, 0.0f);
-	//
-	//rc.lightDirection = { lightDirection.x,lightDirection.y,lightDirection.z ,0};
-	//// モデルそれぞれでシェーダーをするために
-	//rc.deviceContext = dc;
-	// 描画
-	//shader->Begin(dc, view, projection, lightDirection);
-
-	//for (std::shared_ptr<Actor>& actor : updateActors)
-	//{
-	//	// モデルがあれば描画
-	//	Model* model = actor->GetModel();
-	//	if (model != nullptr)
-	//	{
-	//		shader->Draw(dc, actor->GetModel());
-	//	}
-	//}
-
-	//shader->End(dc);
 	
 	// 3D
     for (std::shared_ptr<Actor>& actor : updateActors)
@@ -218,19 +157,6 @@ void ActorManager::Render(RenderContext rc, ModelShader* shader)
 
 
 
-	//shader->Begin(rc);// シェーダーにカメラの情報を渡す
-
-	//for (std::shared_ptr<Actor>& actor : updateActors)
-	//{
-	//	// モデルがあれば描画
-	//	Model* model = actor->GetModel();
-	//	if (model != nullptr)
-	//	{
-	//		shader->Draw(rc, model);
-	//	}
-	//}
-
-	//shader->End(rc);
 
 
 #ifdef _DEBUG
@@ -256,25 +182,6 @@ void ActorManager::Render2D(RenderContext rc, SpriteShader* shader)
 	}
 }
 
-void ActorManager::RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
-{
-	// 描画処理 
-	Graphics& graphics = Graphics::Instance();
-	RenderContext rc;// 描画するために必要な情報をまとめた構造体
-	// 描画用
-	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-
-	rc.deviceContext = dc;
-
-	rc.view = view;
-	rc.projection = projection;
-
-	for (std::shared_ptr<Actor>& actor : updateActors)
-	{
-		// モデルがあれば描画
-		actor->RenderShadwomap(rc);
-	}
-}
 
 void ActorManager::Clear()
 {
@@ -282,9 +189,6 @@ void ActorManager::Clear()
 	for (std::shared_ptr<Actor>& actor : updateActors)// 
 	{
 		// 実体を消した管理している数はそのまま
-	   // delete projectile;
-		//Remove(actor);
-		//actor.reset();
 		actor.reset();
 		
 	}
@@ -350,107 +254,3 @@ void ActorManager::DrawDetail()
 	ImGui::End();
 }
 #endif // _DEBUG
-//
-//// 垂直速度
-//void Actor::UpdateVerticalVelocity(float elapsedFrame)
-//{
-//    // 重力処理
-//    this->velocity.y += this->grabity * elapsedFrame;
-//
-//}
-//// 垂直移動
-//void Actor::UpdateVerticalMove(float elapsedTime)
-//{
-//
-//    // 垂直方向の移動量
-//    float my = velocity.y * elapsedTime;
-//
-//    slopeRate = 0.0f; // 傾斜率
-//
-//    // キャラクターのY軸方向となる法線ベクトル
-//    DirectX::XMFLOAT3 normal = { 0,1,0 };
-//
-//    // 落下中
-//    if (my < 0.0f)
-//    {
-//        // レイの開始位置は足元より少し上
-//        DirectX::XMFLOAT3 start = { position.x, position.y + stepOffset, position.z };
-//        // レイの終点位置は移動後の位置
-//        DirectX::XMFLOAT3 end = { position.x, position.y + my , position.z };
-//
-//        // レイキャストによる地面判定
-//        HitResult hit;
-//        // レイキャストを呼ぶための関数
-//        //if (StageManager::instance().RayCast(start, end, hit))
-//        if (StageManager::instance().RayCast(start, end, hit))
-//        {
-//
-//            // 法線ベクトル取得
-//            normal = hit.normal;
-//
-//
-//            // 地面に設置している
-//            position = hit.position;
-//
-//            // 回転
-//            // ｙだけな理由は角度が真横になった時にクモみたいにひっつかないように
-//            angle.y += hit.rotation.y;
-//
-//            // 傾斜率の計算 法線とXZ平面に置けるベクトルとｙ軸のベクトルで傾きが求められる。
-//            float normalLengthXZ = sqrtf(hit.normal.x * hit.normal.x + hit.normal.z * hit.normal.z);
-//            slopeRate = 1.0f - (hit.normal.y / (normalLengthXZ + hit.normal.y));
-//            // 着地
-//            if (!isGround)
-//            {
-//
-//                OnLanding();
-//            }
-//            isGround = true;
-//            velocity.y = 0.0f;
-//
-//        }
-//        else
-//        {
-//            // 空中に浮いている
-//            position.y += my;
-//            isGround = false;
-//        }
-//
-//    }
-//    // 上昇中
-//    else if (my > 0.0f)
-//    {
-//        position.y += my;
-//        isGround = false;
-//    }
-//
-//    // 地面の向きに沿うようにXZ軸回転
-//    {
-//        // Y軸が法線ベクトル方向に向くオイラー角回転を算出する
-//        float storageAngleX = atan2f(normal.z, normal.y);
-//        float storageAngleZ = -atan2f(normal.x, normal.y);
-//
-//        // 線形補完で滑らかに回転する
-//        // (変化する値,最終的な値,これだけ進)
-//        angle.x = Mathf::Lerp(angle.x, storageAngleX, 0.2f);
-//        angle.z = Mathf::Lerp(angle.z, storageAngleZ, 0.2f);
-//
-//    }
-//}
-//
-//void Actor::UpdateVelocity(float elapsedTime)
-//{
-//    // 経過フレーム
-//    float elapsedFrame = 60.0f * elapsedTime;
-//
-//    // 垂直速力更新処理
-//    UpdateVerticalVelocity(elapsedFrame);
-//
-//    // 水平速力更新処理
-//    UpdateHorizontalVelocity(elapsedFrame);
-//    // 垂直移動更新処理
-//    UpdateVerticalMove(elapsedTime);
-//
-//    // 水平移動更新処理
-//    UpdateHorizontalMove(elapsedTime);
-//}

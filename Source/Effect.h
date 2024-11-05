@@ -16,15 +16,17 @@ public:
     // 停止
     void Stop(Effekseer::Handle handle);
 
-    // 座標設定
+    // 座標更新
     void SetPosition(Effekseer::Handle handle, const DirectX::XMFLOAT3& position);
 
-    // スケール設定
+    // スケール更新
     void SetScale(Effekseer::Handle handle, const DirectX::XMFLOAT3& scale);
-
+    // ハンドルゲット
     Effekseer::Handle GetEfeHandle() const { return this->handle; }
 
 private:
+    // 読み込み
     Effekseer::EffectRef effekseerEffect;
+    // 自分自身か
     Effekseer::Handle handle;
 };

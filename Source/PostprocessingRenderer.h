@@ -1,11 +1,10 @@
 #pragma once
 
 // UNIT09
-//#include <memory>
-//#include <wrl.h>
+
 #include "Graphics/Shader.h"
-//#include "Graphics/Sprite.h"
-#include "Graphics\Sprite.h"
+
+#include "Graphics/Sprite.h"
 #include "Graphics/RenderTarget.h"
 
 // シェーダーリソースビューの情報

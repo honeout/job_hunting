@@ -3,11 +3,6 @@
 // XVˆ—
 void SceneManager::Update(float elapsedTime)
 {
-    //if (nextScene)
-    //{
-
-
-    //}
 
     if (currentScene )
     {

@@ -6,8 +6,6 @@
 #include "Scene.h"
 #include "Graphics/Sprite.h"
 
-#include "AfterimageManager.h"
-
 #include "Graphics/RenderTarget.h"
 #include "Graphics/DepthStencil.h"
 #include "Light.h"
@@ -53,13 +51,7 @@ private:
 
 
 private:
-	//Player* player = nullptr;
-	//CameraController* cameraController = nullptr;
-
-	//Sprite* gauge = nullptr;
-
-	//AfterimageManager* afterimageManager;
-
+	
 
 	// 残像出す間隔最大値
 	float spawnafterimagetimemax = 0.1f;
@@ -76,8 +68,6 @@ private:
 	float reduceMax = 0.4f;
 	// 残像消えるまで
 	float reduce = reduceMax;
-
-	//DirectX::XMFLOAT4 ambientLightColor;
 
 
 	// オフスクリーンレンダリング用描画ターゲット

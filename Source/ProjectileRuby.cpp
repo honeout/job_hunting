@@ -3,15 +3,11 @@
 // コンストラクタ
 ProjectileRuby::ProjectileRuby()
 {
-    //model = new Model("Data/Model/Sword/Sword.mdl");
-
-    //// モデルが小さいのでスケーリング
-    //scale.x = scale.y = scale.z = 3.0f;
+   
 }
 // デストラクタ
 ProjectileRuby::~ProjectileRuby()
 {
-    //delete model;
 
     // エフェクト更新削除
     if (effectProgress)
@@ -44,8 +40,6 @@ void ProjectileRuby::Start()
     // トランスフォーム取得
     transform = GetActor()->GetComponent<Transform>();
 
-    // 動き反映
-    //movementCheck = true;
 
     if (effectProgress)
         effectProgress->Play(transform->GetPosition(), 1);
@@ -92,7 +86,7 @@ void ProjectileRuby::DrawDebugPrimitive()
 
     // 今は何も表示しない
         //// 衝突判定用のデバッグ球を描画
-    //debugRenderer->DrawSphere(transform->GetPosition(), radius, DirectX::XMFLOAT4(0, 0, 1, 1));
+    
     debugRenderer->DrawCylinder(transform->GetPosition(), radius, transform->GetHeight(), DirectX::XMFLOAT4(0, 0, 1, 1));
 }
 

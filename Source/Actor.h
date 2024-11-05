@@ -29,8 +29,7 @@ public:
 	virtual void Render(RenderContext rc, ModelShader* shader);
 	virtual void Render2D(RenderContext rc, SpriteShader* shader);
 
-	// シャドウマップ描画
-	virtual void RenderShadwomap(RenderContext rc);
+
 
 
 #ifdef _DEBUG
@@ -98,22 +97,19 @@ public:
 	// 作成
 	std::shared_ptr<Actor> Create();
 
-	// 削除
+	// 一つづつ削除
 	void Remove(std::shared_ptr<Actor> actor);
 
 	// 更新
 	void Update(float elapsedTime);
 
-	// 行列更新
-	//void UpdateTransform();
 
-	// 描画
+
+	// 3D描画
 	void Render(RenderContext rc, ModelShader* shader);
-
+	// 2D描画
 	void Render2D(RenderContext rc, SpriteShader* shader);
-
-	void RenderShadowmap(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
-
+	// 全削除
 	void Clear();
 
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Graphics/Model.h"
-//#include "Enemy.h"
 #include "Component.h"
 #include "Movement.h"
 #include "HP.h"
@@ -38,12 +37,6 @@ public:
     void OnGUI() override;
 #endif // _DEBUG
 
-    // シャドウマップ処理
-    void RenderShadowmap(RenderContext& rc) override;
-
-    //// 描画処理
-    //void Render(const RenderContext& rc, ModelShader* shader) override;
-
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
 
@@ -66,8 +59,7 @@ public:
 
     // 宝石弧のじで飛ぶ
     void InputThrowingRuby(DirectX::XMFLOAT3 target);
-    //void InputThrowingRuby(DirectX::XMFLOAT3 dir);
-
+    
     // 縄張り設定
     void SetTerritory(const DirectX::XMFLOAT3& origin, float range);
 
@@ -102,23 +94,6 @@ public:
     // アニメーション
     enum Animation
     {
-        // slime
-        //Anim_IdleNormal,       
-        //Anim_IdleBattle,       
-        //Anim_Attack1,
-        //Anim_Attack2,
-        //Anim_WalkFWD,
-        //Anim_WalkBWD,
-        //Anim_WalkLeft,
-        //Anim_WalkRight,
-        //Anim_RunFWD,
-        //Anim_SceneSomthinST,
-        //Anim_SceneSomthinPRT,
-        //Anim_Taunt,
-        //Anim_Victory,
-        //Anim_GetHit,
-        //Anim_Dizzy,
-        //Anim_Die,
 
         Anim_Walk,
         Anim_Standby,
@@ -141,14 +116,6 @@ public:
 
     };
 public:
-
-    // アニメーション　ゲット
-    //int GetAnimationStateNormal() { return Animation::Anim_Standby; }
-    //int GetAnimationStateAttack() { return Animation::Anim_Attack; }
-    //int GetAnimationStateWalk() { return Animation::Anim_Walk; }
-    ////int GetAnimationStateHit() { return Animation::Anim_GetHit; }
-    //int GetAnimationStateDie() { return Animation::Anim_Die; }
-
     // ステートタイマー設定
     void SetStateTimer(float timer) {
         stateTimer = timer;
@@ -178,6 +145,7 @@ public:
     // 目的方向への回転
     void TurnToTarget(float elapsedTime, float speedRate);
 
+    // ジャンプ設定
     void InputJump();
 
     // 徘徊ステートへ遷移
@@ -231,9 +199,6 @@ public:
     // 破棄
     void Destroy();
 
-    // ターゲットポジション取得
-    //DirectX::XMFLOAT3 GetTargetPosition() { return targetPosition; }
-
     // ポジション取得
     DirectX::XMFLOAT3 GetPosition() { return position; }
 
@@ -246,29 +211,24 @@ public:
     // 近距離攻撃時の当たり判定
     float GetAttackRightFootRange() const { return attackRightFootRange; }
 
-    // 再生方法
+    // 再生方法セット
     void  SetUpdateAnim(UpAnim  updateanim) { this->updateanim = updateanim; }
-
+    // 再生方法ゲット
     UpAnim  GetUpdateAnim() const { return this->updateanim; }
 
-
+    // Todo現在おかしいので使っていないが投げてプレイヤーが跳ね返せる攻撃の一時的地面判定消去
+    // 地面判定復活
     void SetPushuThrow(bool pushuThrow) { this->pushuThrow = pushuThrow; }
-
+    // 地面判定復活
     bool GetPushuThrow() const { return pushuThrow; }
 
 
-protected:
-    //// 死亡した時に呼ばれる
-    //void OnDead() override;
-
-    //// ダメージを受けた時に呼ばれる
-    //void OnDamaged() override;
 
 private:
     // モデル情報を確保
     Model* model = nullptr;
-    //std::unique_ptr<Model> model;
-
+    
+    
     DirectX::XMFLOAT3 position = {};
     DirectX::XMFLOAT3 angle = {};
     DirectX::XMFLOAT3 scale = {};
@@ -277,11 +237,6 @@ private:
     std::shared_ptr<HP>	hp;
     std::shared_ptr<Transform>	transform;
 
-    //std::unique_ptr<Model> model;
-    // Model* model;
-
-    // 速度
-    //float moveSpeed = 5;
 
 
     // どのステートで動くか
@@ -351,11 +306,6 @@ private:
 
     bool pushuThrow = false;
 
-   
-
-    // ステート切り替え時間管理
-   // float				stateTimer = 0.0f;
-
 };
 
 // エネミーマネージャー
@@ -372,9 +322,6 @@ public:
         static EnemyManager instance;
         return instance;
     }
-
-    // 描画
-    //void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
 
     // 更新処理
     void DeleteUpdate(float elapsedTime);

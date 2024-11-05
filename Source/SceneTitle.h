@@ -20,7 +20,7 @@ public:
 private:
 
     std::unique_ptr<Sprite> sprite;
-    //Sprite* sprite = nullptr;
+
 
 
 

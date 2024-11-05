@@ -66,18 +66,6 @@ PostprocessingRenderer::PostprocessingRenderer()
         }
     }
 
-    //// 高輝度抽出用描画ターゲットを生成
-    //luminanceExtractRenderTarget =
-    //    std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth()),
-    //        static_cast<UINT>(graphics.GetScreenHeight()), DXGI_FORMAT_R8G8B8A8_UNORM);
-
-    //// 高輝度抽出ぼかし用描画ターゲットを生成
-    //luminanceExtractBokehRenderTarget =
-    //    std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth()),
-    //        static_cast<UINT>(graphics.GetScreenHeight()), DXGI_FORMAT_R8G8B8A8_UNORM);
-    //bloomData.gaussianFilterData.textureSize.x = static_cast<float>(luminanceExtractBokehRenderTarget->GetWidth());
-    //bloomData.gaussianFilterData.textureSize.y = static_cast<float>(luminanceExtractBokehRenderTarget->GetHeight());
-
 }
 
 PostprocessingRenderer::~PostprocessingRenderer()
@@ -195,20 +183,13 @@ void PostprocessingRenderer::Render(RenderContext rc)
         // 描画対象を変更
     
         renderSprite->SetShaderResourceView(sceneData.srv,sceneData.width,sceneData.height);
-        //renderSprite->SetShaderResourceView(luminanceExtractBokehRenderTarget->GetShaderResourceView(),
-        //    luminanceExtractBokehRenderTarget->GetWidth(),
-        //    luminanceExtractBokehRenderTarget->GetHeight());
 
 
         renderSprite->Update(0, 0, graphics.GetScreenWidth(), graphics.GetScreenHeight(),
             0, 0, static_cast<float>(sceneData.width),static_cast<float>(sceneData.height),
             0,
             1, 1, 1, 1);
-        //renderSprite->Update(0, 0, graphics.GetScreenWidth(), graphics.GetScreenHeight(),
-        //    0, 0, static_cast<float>(luminanceExtractBokehRenderTarget->GetWidth()), static_cast<float>(luminanceExtractBokehRenderTarget->GetHeight()),
-        //    0,
-        //    1, 1, 1, 1);
-        
+
 
 
 
@@ -222,6 +203,7 @@ void PostprocessingRenderer::Render(RenderContext rc)
         {
             static constexpr int VignetteCBVIndex = 2;
             vignette_constants constant;
+            // Todo実際の処理かImGuiでいじれるかの違い
             //constant.vignette_color = vignette_data.vignette_color;
             constant.vignette_color = rc.vignette_color;
             //constant.vignette_center = vignette_data.vignette_center;

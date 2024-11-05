@@ -72,16 +72,6 @@ public:
         DirectX::XMFLOAT3& outCylinderPosition
     );
 
-    //// ‹…‚Æ‰~’Œ‚ÌŒğ·”»’è‚‚³ˆê’è@‚¤‚»‚Ì
-    //static bool IntersectSphereVsCylinder(
-    //    const DirectX::XMFLOAT3& spherePosition,
-    //    float sphereRadius,
-    //    const DirectX::XMFLOAT3& cylinderPosition,
-    //    float cylinderRadius,
-    //    float cylinderHeight,
-    //    DirectX::XMFLOAT3& outCylinderPosition
-    //);
-
     // ƒŒƒC‚Æƒ‚ƒfƒ‹‚ÌŒğ·”»’è
     static bool IntersectRayVsModel(
     const DirectX::XMFLOAT3& start,

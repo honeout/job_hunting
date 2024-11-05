@@ -11,7 +11,6 @@
 class ProjectileStraight : public Component
 {
 public:
-  /*  ProjectileStraight();*/
     ProjectileStraight();
     ~ProjectileStraight()override;
 
@@ -35,14 +34,6 @@ public:
     void OnGUI() override;
 #endif // _DEBUG
 
-    // 描画処理
-    //void Render(const RenderContext& rc, ModelShader* shader)override;
-
-    //// 発射    (  どっちからはっしゃ向き、位置何処から)
-    //void Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position);
-
-    //// 反射弾丸更新処理
-    //void UpdateReflection(float elapsedTime);
 
 private:
     Model* model = nullptr;

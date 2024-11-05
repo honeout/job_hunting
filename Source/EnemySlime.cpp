@@ -251,18 +251,7 @@ void EnemySlime::OnGUI()
     //ImGui::InputFloat("Bullet", &moveSpeed);
 }
 #endif // _DEBUG
-// シャドウマップ
-void EnemySlime::RenderShadowmap(RenderContext& rc)
-{
-    Graphics& graphics = Graphics::Instance();
-    ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
-    shader->Begin(rc);// シェーダーにカメラの情報を渡す
 
-
-    shader->Draw(rc, model);
-
-    shader->End(rc);
-}
 
 // デバッグプリミティブ描画
 void EnemySlime::DrawDebugPrimitive()
@@ -1341,23 +1330,9 @@ void EnemySlime::UpdateDeathState(float elapsedTime)
 
 void EnemySlime::Destroy()
 {
-    //Actor* enemyId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1);
     EnemyManager::Instance().Remove(GetActor());
-    //ActorManager::Instance().Remove();
-}
 
-//// 死亡した時に呼ばれる
-//void EnemySlime::OnDead()
-//{
-//    // 死亡ステートへ遷移
-//    TransitionDeathState();
-//}
-//
-//void EnemySlime::OnDamaged()
-//{
-//    // ダメージステートへ遷移
-//    TransitionDamageState();
-//}
+}
 
 
 
@@ -1391,9 +1366,6 @@ void EnemyManager::Clear()
     for (std::shared_ptr<Actor>& actor : enemies)// 
     {
         // 実体を消した管理している数はそのまま
-       // delete projectile;
-       // Remove(actor);
-        //actor.reset();
         actor.reset();
     }
     enemies.clear();

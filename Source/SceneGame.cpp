@@ -10,12 +10,8 @@
 
 #include <DirectXMath.h>
 
-//#include "StageManager.h"
 #include "StageMain.h"
 
-#include "StageMoveFloor.h"
-
-#include "PlayerAfterimage.h"
 
 #include "Actor.h"
 #include "Movement.h"
@@ -1289,55 +1285,6 @@ void SceneGame::Initialize()
 		UiManager::Instance().Register(actor);
 	}
 
-	//// UI PlayerHP
-	//{
-	//	const char* filename = "Data/Sprite/HP.png";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->SetName("PlayerHP");
-	//	actor->AddComponent<SpriteControll>();
-	//	actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-	//	actor->AddComponent<TransForm2D>();
-	//	// 位置　角度　スケール情報
-	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-	//	DirectX::XMFLOAT2 pos = { 932, 421 };
-	//	transform2D->SetPosition(pos);
-	//	// 元の位置
-	//	DirectX::XMFLOAT2 texPos = { 0, 0 };
-	//	transform2D->SetTexPosition(texPos);
-
-	//	float angle = 0;
-	//	transform2D->SetAngle(angle);
-	//	DirectX::XMFLOAT2 scale = { 358,310 };
-	//	transform2D->SetScale(scale);
-	//	// 元の大きさ
-	//	DirectX::XMFLOAT2 texScale = { 0,0 };
-	//	transform2D->SetTexScale(texScale);
-
-
-	//	//// UI揺らす範囲を指定揺らす場合
-	//	//int max = pos.y + 3;
-	//	//int min = pos.y - 3;
-
-	//	//transform2D->SetUiMax(max);
-	//	//transform2D->SetUiMin(min);
-	//	//// UI揺らす時間
-	//	//int MaxTime = 30;
-
-	//	//transform2D->SetShakeTimeMax(MaxTime);
-
-	//	actor->AddComponent<Ui>();
-	//	// 描画チェック
-	//	std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-	//	ui->SetDrawCheck(true);
-
-	//	// これが２Dかの確認
-	//	bool check2d = true;
-	//	actor->SetCheck2d(check2d);
-
-	//	UiManager::Instance().Register(actor);
-	//}
-
-
 	// カメラ初期設定 見える位置追いかけるものなど
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
@@ -1381,12 +1328,6 @@ void SceneGame::Initialize()
 		renderTarget = std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth())
 			, static_cast<UINT>(graphics.GetScreenHeight())
 			, DXGI_FORMAT_R8G8B8A8_UNORM);
-
-		////// スプライトで描画する物をシーンの描画毛kkあに変える
-		//sprite = std::make_unique<Sprite>();
-		//sprite->SetShaderResourceView(renderTarget->GetShaderResourceView()
-		//	, renderTarget->GetWidth()
-		//	, renderTarget->GetHeight());
 	}
 
 
@@ -1413,12 +1354,6 @@ void SceneGame::Initialize()
 void SceneGame::Finalize()
 {
 
-	//if (renderTarget != nullptr)
-	//{
-	//	delete renderTarget;
-	//	renderTarget = nullptr;
-	//}
-
 	ActorManager::Instance().Clear();
 
 	LightManager::Instanes().Clear();
@@ -1443,15 +1378,6 @@ void SceneGame::Update(float elapsedTime)
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
 
-	//// 色調補正
-	//sprite->Update(0.0f, 0.0f,
-	//	Graphics::Instance().GetScreenWidth(), Graphics::Instance().GetScreenHeight(),
-	//	0.0f, 0.0f,
-	//	static_cast<float>(renderTarget->GetWidth()), static_cast<float>(renderTarget->GetHeight()),
-	//	0.0f,
-	//	1.0f, 1.0f, 1.0f, 1.0f);
-
-
 	// シーン切り替え
 	{
 		
@@ -1469,12 +1395,7 @@ void SceneGame::Update(float elapsedTime)
 			// 死んだ瞬間
 			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
 			{
-				//PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->SetDead(false);
-				//ActorManager::Instance().Clear();
-
-				//// ゲームオーバー
-				//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
-			
+				
 				PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Death));
 
 				vignette_smoothness = 0.0f;
@@ -1499,8 +1420,7 @@ void SceneGame::Update(float elapsedTime)
 				colorGradingData.brigthness = 3.0f;
 				hp->SetDead(false);
 				ActorManager::Instance().Clear();
-				//// プレイヤー更新処理
-				//ActorManager::Instance().Update(elapsedTime);
+
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameClear));
 
 			}
@@ -1534,43 +1454,6 @@ void SceneGame::Update(float elapsedTime)
 // 描画処理
 void SceneGame::Render()
 {
-	//Graphics& graphics = Graphics::Instance();
-	//ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-	//ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
-	//ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
-
-	//// 画面クリア＆レンダーターゲット設定
-	//FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0～1.0)
-	//dc->ClearRenderTargetView(rtv, color);
-	//dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	//dc->OMSetRenderTargets(1, &rtv, dsv);
-
-	//// 描画処理 
-	//RenderContext rc;// 描画するために必要な情報をまとめた構造体
-	//rc.lightDirection = { 0.0f, -1.0f, 0.0f, 0.0f };	// ライト方向（下方向）
-
-	//// カメラパラメータ設定
-	//Camera& camera = Camera::Instance();
-	//rc.view = camera.GetView();
-	//rc.projection = camera.GetProjection();
-
-	//rc.deviceContext = dc;
-
-
-
-
-	//// 3Dモデル描画
-	//{
-	//	ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-
-	//	ActorManager::Instance().Render(rc, shader);
-
-	//}
-
-	//// 3Dエフェクト描画
-	//{
-	//	EffectManager::Instance().Render(rc.view, rc.projection);
-	//}
 
 	
 	Graphics& graphics = Graphics::Instance();
@@ -1603,14 +1486,7 @@ void SceneGame::Render()
 		dc->RSSetViewports(1, &vp);
 
 		RenderContext rc;
-		//rc.deviceContext = dc;
-
-		//SpriteShader* shader = graphics.GetShader(SpriteShaderId::ColorGrading);
-		//shader->Begin(rc);
-		//rc.colorGradingData = colorGradingData;
-		//shader->Draw(rc, sprite.get());
-
-		//shader->End(rc);
+		
 		rc.deviceContext = dc;
 		rc.colorGradingData = colorGradingData;
 
@@ -1620,11 +1496,7 @@ void SceneGame::Render()
 		rc.vignette_center = vignette_center;
 		rc.vignette_intensity = vignette_intensity;
 		rc.vignette_smoothness = vignette_smoothness;
-		//rc.vignette_smoothness = max(0.000001f, vignette_data.vignette_smoothness * 5.0f);
-		//rc.vignette_rounded = vignette_data.vignette_rounded ? 1.0f : 0.0f;
-		//rc.vignette_roundness = 6.0f * (1.0f - vignette_data.vignette_roundness) + vignette_data.vignette_roundness;
-
-
+		
 		// ポストプロセスを処理を行う
 		postprocessingRenderer->Render(rc);
 	}
@@ -1644,9 +1516,7 @@ void SceneGame::Render()
 		rc.viewPosition.w = 1;
 		rc.view = camera.GetView();
 		rc.projection = camera.GetProjection();
-		//RenderEnemyGauge(dc, rc.view, rc.projection);
-
-
+		
 		SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
 
 		ActorManager::Instance().Render2D(rc, shaderUi);

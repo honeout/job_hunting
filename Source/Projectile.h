@@ -21,9 +21,6 @@ public:
     // 描画処理
     virtual void Render(const RenderContext& rc, ModelShader* shader) = 0;
 
-    // デバッグプリミティブ描画
-    //virtual void DrawDebugPrimitive();
-
     // 破壊　
     void Destroy();
 
@@ -52,7 +49,6 @@ protected:
     // 移動　回転　縮地
     DirectX::XMFLOAT4X4   transform = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 
-    //ProjectileManager* manager = nullptr;
     // 半径弾だから
     float  radius = 0.5f;
 };

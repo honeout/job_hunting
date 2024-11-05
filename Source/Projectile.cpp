@@ -4,20 +4,8 @@
 Projectile::Projectile()
   
 {
-    // ì‚Á‚½“z‚ð“o˜^
-   /* manager->Register(this);*/
+   
 }
-
-//void Projectile::DrawDebugPrimitive()
-//{
-//    DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
-//
-//    // ¡‚Í‰½‚à•\Ž¦‚µ‚È‚¢
-//        //// Õ“Ë”»’è—p‚ÌƒfƒoƒbƒO‹…‚ð•`‰æ
-//    debugRenderer->DrawSphere(position, radius, DirectX::XMFLOAT4(0, 0, 1, 1));
-//
-//}
-
 
 
 

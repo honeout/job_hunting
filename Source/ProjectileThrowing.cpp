@@ -91,27 +91,16 @@ void ProjectileThrowing::Render(RenderContext& rc, ModelShader& shader)
 
 void ProjectileThrowing::DrawDebugPrimitive()
 {
+#ifdef DEBUG
+
+
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
 
     // 今は何も表示しない
         //// 衝突判定用のデバッグ球を描画
     debugRenderer->DrawSphere(transform->GetPosition(), radius, DirectX::XMFLOAT4(0, 1, 1, 1));
-    /*debugRenderer->DrawSphere(
-        { 
-            transform->GetPosition().x,
-            transform->GetPosition().y,
-            transform->GetPosition().z + transform->GetHeight()
-        },
-        radius, DirectX::XMFLOAT4(0, 1, 1, 1));
-
-    debugRenderer->DrawSphere(
-        {
-            transform->GetPosition().x,
-            transform->GetPosition().y,
-            transform->GetPosition().z - transform->GetHeight()
-        },
-        radius, DirectX::XMFLOAT4(0, 1, 1, 1));*/
-    //debugRenderer->DrawCylinder(transform->GetPosition(), radius, transform->GetHeight(), DirectX::XMFLOAT4(1, 0, 0, 1));
+   
+#endif // DEBUG
 }
 #ifdef _DEBUG
 void ProjectileThrowing::OnGUI()
@@ -140,14 +129,3 @@ void ProjectileThrowing::EffectHitUpdate(float elapsedTime)
     effectHit->SetPosition(effectHit->GetEfeHandle(),
         transform->GetPosition());
 }
-//
-//void ProjectileThrowing::Lanch(const DirectX::XMFLOAT3& direction,
-//    const DirectX::XMFLOAT3& position,
-//    const DirectX::XMFLOAT3& target)
-//{
-//    this->direction = direction;
-//    this->position = position;
-//    this->target = target;
-//
-//    //UpdateTransform();
-//}

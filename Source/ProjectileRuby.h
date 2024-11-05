@@ -12,7 +12,7 @@ class ProjectileRuby :public Component
 {
 public:
     ProjectileRuby();
-    ~ProjectileRuby() override;
+    virtual ~ProjectileRuby() ;
 
     // 名前取得
     const char* GetName() const override { return "ProjectileHoming"; }
@@ -27,14 +27,6 @@ public:
     void Render(RenderContext& rc, ModelShader& shader) override;
 
     void DrawDebugPrimitive();
-
-    // 描画処理
-    //virtual void Render(const RenderContext& rc, ModelShader* shader) override;
-
-    //// 発射    (  どっちからはっしゃ向き、位置何処から)　targetに向かってホーミングスピード
-    //void Lanch(const DirectX::XMFLOAT3& direction,
-    //           const DirectX::XMFLOAT3& position,
-    //           const DirectX::XMFLOAT3& target);
 
     void SetTarget(DirectX::XMFLOAT3 target) { this->target = target; }
 

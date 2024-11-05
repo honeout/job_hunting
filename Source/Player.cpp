@@ -14,8 +14,6 @@
 
 #include "StateDerived.h"
 
-#include "AfterimageManager.h"
-
 #include "TransForm2D.h"
 
 #include "ProjectileImpact.h"

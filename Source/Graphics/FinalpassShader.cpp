@@ -69,7 +69,7 @@ FinalpassShader::FinalpassShader(ID3D11Device* device)
 
 		HRESULT hr = device->CreateBuffer(&desc, 0, finalpassConstatBuffer.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
+		// Todo周辺減光をcolorGradingといっしょに使うための施行錯誤
 		////	ヴィネット用定数バッファ
 		//{
 
@@ -80,7 +80,7 @@ FinalpassShader::FinalpassShader(ID3D11Device* device)
 
 
 	}
-
+	// Todo周辺減光をcolorGradingといっしょに使うための施行錯誤
 	//// ヴィネットシェーダー準備
 	//{
 	//	//	ヴィネットシェーダー
@@ -210,7 +210,7 @@ void FinalpassShader::Draw(const RenderContext& rc, const Sprite* sprite)
 	rc.deviceContext->UpdateSubresource(finalpassConstatBuffer.Get(), 0, 0, &cbFinalpass, 0, 0);
 
 
-
+	// Todo周辺減光をcolorGradingといっしょに使うための施行錯誤
 	////	ヴィネット用定数バッファ
 	//{
 	//	static constexpr int VignetteCBVIndex = 2;

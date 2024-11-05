@@ -6,11 +6,7 @@ ModelControll::ModelControll()
 
 ModelControll::~ModelControll()
 {
-    //if (model != nullptr)
-    //{
-    //   delete model;
-    //   model = nullptr;
-    //}
+
 }
 
 void ModelControll::Start()

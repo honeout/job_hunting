@@ -3,8 +3,7 @@
 
 #include "Graphics/Model.h"
 
-#include "Stage.h"
-
+#include "Collision.h"
 #include "Component.h"
 #include "ModelControll.h"
 #include "Transform.h"
@@ -39,10 +38,6 @@ public:
         const DirectX::XMFLOAT3& start,
         const DirectX::XMFLOAT3& end,
         HitResult& hit) ;
-
-    //// ƒ‚ƒfƒ‹Žæ“¾
-    //Model* GetModel() const { return model.get(); }
-
 private:
     //Model* model;
     //std::shared_ptr<ModelControll> model;
