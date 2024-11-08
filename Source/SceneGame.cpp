@@ -75,8 +75,8 @@ void SceneGame::Initialize()
 	////player = new Player;
 	{
 		// プレイヤー初期化
-		const char* filename = "Data/Model/Jammo/Jammo.mdl";
-		//const char* filename = "Data/Model/Player/Maria.mdl";
+		//const char* filename = "Data/Model/Jammo/Jammo.mdl";
+		const char* filename = "Data/Model/Player/Maria.mdl";
 
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
@@ -180,8 +180,8 @@ void SceneGame::Initialize()
 
 
 		// UI揺らす範囲を指定揺らす場合
-		int max = pos.y + 3;
-		int min = pos.y - 3;
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
 
 		transform2D->SetUiMax(max);
 		transform2D->SetUiMin(min);
@@ -886,8 +886,8 @@ void SceneGame::Initialize()
 
 
 		// UI揺らす範囲を指定揺らす場合
-		int max = pos.y + 3;
-		int min = pos.y - 3;
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
 
 		transform2D->SetUiMax(max);
 		transform2D->SetUiMin(min);
@@ -938,8 +938,8 @@ void SceneGame::Initialize()
 
 
 		// UI揺らす範囲を指定揺らす場合
-		int max = pos.y + 3;
-		int min = pos.y - 3;
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
 
 		transform2D->SetUiMax(max);
 		transform2D->SetUiMin(min);
@@ -991,8 +991,8 @@ void SceneGame::Initialize()
 
 
 		// UI揺らす範囲を指定揺らす場合
-		int max = pos.y + 3;
-		int min = pos.y - 3;
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
 
 		transform2D->SetUiMax(max);
 		transform2D->SetUiMin(min);
@@ -1044,8 +1044,8 @@ void SceneGame::Initialize()
 		transform2D->SetTexScale(texScale);
 
 		// UI揺らす範囲を指定揺らす場合
-		int max = pos.y + 3;
-		int min = pos.y - 3;
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
 
 		transform2D->SetUiMax(max);
 		transform2D->SetUiMin(min);
@@ -1097,8 +1097,8 @@ void SceneGame::Initialize()
 		transform2D->SetTexScale(texScale);
 
 		// UI揺らす範囲を指定揺らす場合
-		int max = pos.y + 3;
-		int min = pos.y - 3;
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
 
 		transform2D->SetUiMax(max);
 		transform2D->SetUiMin(min);
@@ -1162,8 +1162,8 @@ void SceneGame::Initialize()
 		transform2D->SetTexScale(texScale);
 
 		// UI揺らす範囲を指定揺らす場合
-		int max = pos.y + 3;
-		int min = pos.y - 3;
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
 
 		transform2D->SetUiMax(max);
 		transform2D->SetUiMin(min);
@@ -1214,8 +1214,8 @@ void SceneGame::Initialize()
 		transform2D->SetTexScale(texScale);
 
 		// UI揺らす範囲を指定揺らす場合
-		int max = pos.y + 3;
-		int min = pos.y - 3;
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
 
 		transform2D->SetUiMax(max);
 		transform2D->SetUiMin(min);
@@ -1263,8 +1263,8 @@ void SceneGame::Initialize()
 		transform2D->SetTexScale(texScale);
 
 		// UI揺らす範囲を指定揺らす場合
-		int max = pos.y + 3;
-		int min = pos.y - 3;
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
 
 		transform2D->SetUiMax(max);
 		transform2D->SetUiMin(min);

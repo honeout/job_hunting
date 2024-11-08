@@ -212,14 +212,12 @@ void Player::Start()
 // elapsedTime(経過時間)
 void Player::Update(float elapsedTime)
 {
+
     //// ステート毎の処理
     stateMachine->Update(elapsedTime);
 
     // カメラコントローラー更新処理
     cameraControlle->Update(elapsedTime);
-
-    // ロックオン処理
-    //UpdateCameraState(elapsedTime);
 
     // コマンド操作
     {
@@ -304,56 +302,6 @@ void Player::Update(float elapsedTime)
     //// ロックオン
     InputRockOn();
 
-    //// カメラ設定
-    //if (rockCheck)
-    //{
-    //    cameraControlle->RockUpdate(elapsedTime, position);
-
-    //}
-    //else
-    //{
-    //    cameraControlle->SetTarget(
-    //        { 
-    //            position.x,
-    //            position.y + height,
-    //            position.z
-    //        });
-
-    //    cameraControlle->Update(elapsedTime);
-    //}
-
-    // カメラ設定
-    {
-
-
- //       cameraControlle->RockUpdate(elapsedTime);
-
- //       DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&position);
-
- //       DirectX::XMVECTOR EPosition =  DirectX::XMLoadFloat3(&EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>()->GetPosition());
-
- //       DirectX::XMVECTOR Pos = DirectX::XMVectorSubtract(EPosition, Position);
-
- //     
-
- //       Pos = DirectX::XMVector3Normalize(Pos);
-
- ///*       Pos = DirectX::XMVectorScale(Pos, 5.0f);
-
- //       Pos = DirectX::XMVectorAdd(Position, Pos);*/
-
- //       DirectX::XMFLOAT3 pos;
-
- //       DirectX::XMStoreFloat3(&pos, Pos);
-
- //     
- //       
- //       pos = { position.x /2, 0, position.z /2};
-
-
- //       cameraControlle->SetTarget(pos);
-    }
-
     hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
     // 加速度等
     movement->UpdateVelocity(elapsedTime);
@@ -422,10 +370,7 @@ void Player::Update(float elapsedTime)
 
     // 位置更新
     model->UpdateTransform(transform->GetTransform());
-    //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
-
-    // モデル行列更新
-    //model->UpdateTransform(transform);
+    
 }
 
 void Player::Render(RenderContext& rc, ModelShader& shader)
@@ -458,12 +403,10 @@ void Player::RenderShadowmap(RenderContext& rc)
 
 void Player::UpdateCameraState(float elapsedTime)
 {
-    //std::shared_ptr<Actor> enemyid = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1);
     CameraState oldLockonState = lockonState;
     DirectX::XMFLOAT3 oldLockonCharacter = lockonCharactor;
     lockonState = CameraState::NotLockOn;
     lockonCharactor = {0,0,0};
-    //lockonCharacter = nullptr;
 
     
         // ロックオンモード
@@ -476,6 +419,7 @@ void Player::UpdateCameraState(float elapsedTime)
                     PNeck->worldTransform._42,
                     PNeck->worldTransform._43
         };
+        pPosition.z *= 1.1f;
         DirectX::XMVECTOR p, t, v;
         switch (oldLockonState)
         {
@@ -509,7 +453,7 @@ void Player::UpdateCameraState(float elapsedTime)
                     if (length1 < length2)
                     {
                         lockonCharactor = character;
-                        //DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
+
                         
                     }
                 }
@@ -521,7 +465,6 @@ void Player::UpdateCameraState(float elapsedTime)
                     DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
 
                     lockonCharactor = character;
-                    //DirectX::XMStoreFloat3(&lockDirection, DirectX::XMVector3Normalize(v));
                     lockonState = CameraState::LockOn;
                 }
             }
@@ -630,20 +573,7 @@ void Player::UpdateCameraState(float elapsedTime)
     }
 
 
-        //break;
     
-    //case	State::Death:
-    //{
-    //    // 死亡時はそれっぽいカメラアングルで死亡
-    //    // 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
-    //    MessageData::CAMERACHANGEMOTIONMODEDATA	p;
-    //    float vx = sinf(angle.y) * 6;
-    //    float vz = cosf(angle.y) * 6;
-    //    p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-    //    p.data.push_back({ 90, {position.x + vx, position.y + 15, position.z + vz }, position });
-    //    Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
-    //    break;
-    //}
 }
 
 
@@ -661,15 +591,6 @@ void Player::DrawDebugPrimitive()
     debugRenderer->DrawCylinder( 
             position, radius, height, DirectX::XMFLOAT4(0, 0, 1, 1));
 
-
-    //// 弾丸デバッグプリミティブ描画
-    //projectileManager.DrawDebugPrimitive();
-    //for (int i = 0; i < projectileManager.GetProjectileCount(); ++i)
-    //{
-
-    //    projectileManager.GetProjectile(i)->GetComponent<ProjectileStraight>()->DrawDebugPrimitive();
-
-    //}
 
     if (attackCollisionFlag)
     {
@@ -731,47 +652,6 @@ bool Player::InputRockOn()
         return true;
     }
 
-    //if (rockCheck)
-    //{
-    //    //EnemyManager& enemyManager = EnemyManager::Instance();
-    //    //int enemyCount = enemyManager.GetEnemyCount();
-    //    //DirectX::XMFLOAT3 epos = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetPosition();
-    //    //float eheight = enemyManager.GetEnemy(0)->GetComponent<Transform>()->GetHeight();
-
-
-    //    //DirectX::XMFLOAT3 pos;
-    //    //pos =
-    //    //{
-    //    //    position.x - epos.x,
-    //    //    position.y - epos.y,
-    //    //    position.z - epos.z
-    //    //};
-    //    //{
-    //    //   epos.x - position.x,
-    //    //   epos.y - position.y,
-    //    //   epos.z - position.z,
-    //    //};
-
-    //    //cameraControlle->SetTarget(
-    //    //    {
-    //    //        epos.x, 
-    //    //        epos.y + eheight, 
-    //    //        epos.z 
-    //    //    });
-    //    ////cameraControlle->SetTarget(position);
-    //    //cameraControlle->SetFrontAngle(
-    //    //    { 
-    //    //        pos.x,
-    //    //        pos.y,
-    //    //        pos.z
-    //    //    }
-    //        //{
-    //        //position.x,
-    //        //-position.y,
-    //        //position.z
-    //        //}
-    //    //);
-    //}
 
     if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER && !buttonRock && rockCheck)
     {
@@ -1070,24 +950,7 @@ bool Player::InputSpecialAttackCharge()
 
     if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::Attack && !specialAttackTime)
     {
-        //EnemyManager& enemyManager = EnemyManager::Instance();
-        //int enemyCount = enemyManager.GetEnemyCount();
-        //for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
-        //{
-        //    // ターゲットまでのベクトルを算出
-        //    DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&position);
-
-        //    DirectX::XMVECTOR Target = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
-        //    DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(Position, Target);
-
-        //    DirectX::XMFLOAT3 vec;
-        //    DirectX::XMStoreFloat3(&vec, Vec);
-
-        //    DirectX::XMFLOAT3 direction = GetForwerd(angle);
-
-        //    // カメラ関係
-        //    cameraControlle->SetAngle(vec);
-        //}
+     
 
         // 技確定
         std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
@@ -1270,14 +1133,6 @@ bool Player::InputSpecialShotCharge()
         uiIdSpecialMagicPush->SetDrawCheck(drawCheck);
     }
 
-    //if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::MagicFire && !specialAttackTime)
-    //{
-    //    // 一度発動すると初期化
-    //    if (specialAttack.top() != (int)SpecialAttack::Normal)
-    //        specialAttack.pop();
-    //    specialAttackTime = true;
-    //    return true;
-    //}
 
     // チャージを見やすく
     if (specialShotCharge >= 0.4f && specialShotCharge < 0.8f)
@@ -1346,58 +1201,6 @@ bool Player::InputSpecialShotCharge()
     return false;
 }
 
-
-void Player::CameraControl(float elapsedTime)
-{
-   /* GamePad& gamePad = Input::Instance().GetGamePad();
-
-    cameraControlle->SetAngleY(-angle.y);*/
-    
-  /*  float ax = gamePad.GetAxisRX();
-    float ay = gamePad.GetAxisRY();
-
-    float lengthSq = ax * ax + ay * ay;
-    if (lengthSq > 0.1f)
-    {
-        float speed = cameraRollSpeed * elapsedTime;
-
-        cameraAngle.x += ay * speed;
-        cameraAngle.y += ax * speed;
-
-        if (cameraAngle.x < cameraMinPitch)
-        {
-            cameraAngle.x = cameraMinPitch;
-        }
-        if (cameraAngle.x > cameraMaxPitch)
-        {
-            cameraAngle.x = cameraMaxPitch;
-        }
-        if (cameraAngle.y < -DirectX::XM_PI)
-        {
-            cameraAngle.y += DirectX::XM_2PI;
-        }
-        if (cameraAngle.y > DirectX::XM_PI)
-        {
-            cameraAngle.y -= DirectX::XM_2PI;
-        }
-    }
-
-    DirectX::XMVECTOR Offset = DirectX::XMVectorSet(0.0f, characterHeight, 0.0f, 0.0f);
-    DirectX::XMVECTOR Target = DirectX::XMLoadFloat3(&GetActor()->GetPosition());
-    DirectX::XMVECTOR Focus = DirectX::XMVectorAdd(Target, Offset);
-    DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(cameraAngle.x, cameraAngle.y, cameraAngle.z);
-    DirectX::XMVECTOR Range = DirectX::XMVectorSet(0.0f, 0.0f, -cameraRange, 0.0f);
-    DirectX::XMVECTOR Vec = DirectX::XMVector3TransformCoord(Range, Transform);
-    DirectX::XMVECTOR Eye = DirectX::XMVectorAdd(Focus, Vec);
-
-    DirectX::XMFLOAT3 eye, focus;
-    DirectX::XMStoreFloat3(&eye, Eye);
-    DirectX::XMStoreFloat3(&focus, Focus);
-
-    Camera& camera = Camera::Instance();
-    camera.SetLookAt(eye, focus, DirectX::XMFLOAT3(0, 1, 0));*/
-}
-
 DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 {
     // 入力情報を取得
@@ -1464,51 +1267,6 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
 }
 
-void Player::CharacterControl(float elapsedTime)
-{
-  /*  float ax = gamePad.GetAxisLX();
-    float ay = gamePad.GetAxisLY();
-
-    float lengthSq = ax * ax + ay * ay;
-    if (lengthSq > 0.1f)
-    {
-        Camera& camera = Camera::Instance();
-        const DirectX::XMFLOAT3& cameraRight = camera.GetRight();
-        const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
-
-        DirectX::XMFLOAT3 direction;
-        direction.x = (cameraRight.x * ax) + (cameraFront.x * ay);
-        direction.y = 0.0f;
-        direction.z = (cameraRight.z * ax) + (cameraFront.z * ay);
-
-        float length = sqrtf(direction.x * direction.x + direction.z * direction.z);
-        direction.x /= length;
-        direction.z /= length;
-
-        movement->Turn(direction, elapsedTime);
-        movement->Move(direction,5 ,elapsedTime);
-    }*/
-}
-
-
-
-//// 描画処理
-//void Player::Render(RenderContext& rc, ModelShader* shader)
-//{
-//
-//
-//    shader->Begin(rc);
-//    // 描画
-//    shader->Draw(rc, model);
-//
-//    shader->End(rc);
-//    // 弾丸描画処理
-//    //projectileManager.Render(rc, shader);
-//}
-
-
-
-
 
 // 弾丸と敵の衝突処理
 void Player::CollisionProjectilesVsEnemies()
@@ -1560,25 +1318,7 @@ void Player::CollisionProjectilesVsEnemies()
                 // ダメージを与える。
                 if (enemy->GetComponent<HP>()->ApplyDamage(3, 0.5f))
                 {
-                    // 吹き飛ばす
-                    {
-                        // 衝動
-        /*                DirectX::XMFLOAT3 impulse;
-                        const float power = 10.0f;
-                        const DirectX::XMFLOAT3& e = enemyPosition;
-                        const DirectX::XMFLOAT3& p = projectilePosition;
-                        float vx = e.x - p.x;
-                        float vz = e.z - p.z;
-                        float lengthXZ = sqrtf(vx * vx + vz * vz);
-                        vx /= lengthXZ;
-                        vz /= lengthXZ;*/
-
-                       /* impulse.x = vx * power;
-                        impulse.y = power * 0.5f;
-                        impulse.z = vz * power;
-
-                        enemy->GetComponent<Movement>()->AddImpulse(impulse);*/
-                    }
+             
                     // ヒットエフェクト再生
                     {
                         DirectX::XMFLOAT3 e = enemyPosition;
@@ -1652,22 +1392,7 @@ void Player::CollisionRubyVsEnemies()
                 {
                     // 吹き飛ばす
                     {
-                        //// 衝動
-                        //DirectX::XMFLOAT3 impulse;
-                        //const float power = 10.0f;
-                        //const DirectX::XMFLOAT3& e = enemyPosition;
-                        //const DirectX::XMFLOAT3& p = projectilePosition;
-                        //float vx = e.x - p.x;
-                        //float vz = e.z - p.z;
-                        //float lengthXZ = sqrtf(vx * vx + vz * vz);
-                        //vx /= lengthXZ;
-                        //vz /= lengthXZ;
-
-                        //impulse.x = vx * power;
-                        //impulse.y = power * 0.5f;
-                        //impulse.z = vz * power;
-
-                        //enemy->GetComponent<Movement>()->AddImpulse(impulse);
+                      
                     }
                     // ヒットエフェクト再生
                     {
@@ -1719,33 +1444,15 @@ void Player::CollisionPlayerVsEnemies()
 
 
             if (Collision::IntersectCylinderVsCylinder(
-                
                 enemyPosition,
                 enemyRadius,
-                enemyHeight/2,
+                enemyHeight / 2,
                 position, radius, height,
-                
                 outPositon))
 
             {
-                //// 吹き飛ばす
-                //{
-                //    // 衝動
-                //    DirectX::XMFLOAT3 impulse;
-                //    const float power = 10.0f;
-                //    const DirectX::XMFLOAT3& e = enemyPosition;
-                //    const DirectX::XMFLOAT3& p = projectilePosition;
-                //    float vx = e.x - p.x;
-                //    float vz = e.z - p.z;
-                //    float lengthXZ = sqrtf(vx * vx + vz * vz);
-                //    vx /= lengthXZ;
-                //    vz /= lengthXZ;
-
-                //    impulse.x = vx * power;
-                //    impulse.y = power * 0.5f;
-                //    impulse.z = vz * power;
-                //}
-
+      
+      
                     DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
                     DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemyPosition);
                     DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
@@ -1758,7 +1465,7 @@ void Player::CollisionPlayerVsEnemies()
 
                         //小ジャンプ
                         //Jump(jumpSpeed * 0.5f);
-                        movement->JumpVelocity(jumpSpeed * 0.5f);
+                       // movement->JumpVelocity(jumpSpeed * 0.5f);
 
 
                     }
@@ -1768,15 +1475,23 @@ void Player::CollisionPlayerVsEnemies()
                         // 押し出し後の位置設定　
                         //enemy->GetComponent<Transform>()->SetPosition(outPositon);
                         //position = outPositon;
-                        position = outPositon;
+                        //position = outPositon;
                         const float power = 1.3f;
 
-                        DirectX::XMFLOAT3 impulse;
-                        impulse.x = normal.x * power;
-                        impulse.y = power * normal.y;
-                        impulse.z = normal.z * power;
+                        //position = {
+                        //    position.x * -normal.x * power,
+                        //    position.y * -normal.y * power,
+                        //    position.z * -normal.z * power
+                        //};
+                        position = outPositon;
 
-                        movement->AddImpulse(impulse);
+                        transform->SetPosition(position);
+                        //DirectX::XMFLOAT3 impulse;
+                        //impulse.x = normal.x * power;
+                        //impulse.y = power * normal.y;
+                        //impulse.z = normal.z * power;
+   
+                        //movement->AddImpulse(impulse);
                     }
                 
             }
@@ -1826,10 +1541,11 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 
 
         if (Collision::IntersectCylinderVsCylinder(
-            position, radius, height,
+         
             nodePosition,
             enemyRadius,
             enemyHeight,
+            position, radius, height,
             outPositon))
 
         {
@@ -1855,17 +1571,19 @@ void Player::CollisionBornVsProjectile(const char* bornname)
             {
                 // 押し出し後の位置設定　
                 //enemy->GetComponent<Transform>()->SetPosition(outPositon);
-                
-                const float power = 1.3f;
+                //
+                //const float power = 1.3f;
 
-                float velocityMax = 2;
+                //float velocityMax = 2;
 
-                DirectX::XMFLOAT3 impulse;
-                impulse.x = normal.x * power;
-                impulse.y = power * normal.y;
-                impulse.z = normal.z * power;
-                if(movement->GetVelocity().x <= velocityMax)
-                movement->AddImpulse(impulse);
+                //DirectX::XMFLOAT3 impulse;
+                //impulse.x = normal.x * power;
+                //impulse.y = power * normal.y;
+                //impulse.z = normal.z * power;
+                //if(movement->GetVelocity().x <= velocityMax)
+                //movement->AddImpulse(impulse);
+                position = outPositon;
+                transform->SetPosition(position);
 
 
             }
@@ -1914,11 +1632,11 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, cons
             nodeRadius, 
             {
             enemyPosition.x,
-            enemyPosition.y + enemyHeight / 2,
+            enemyPosition.y,
             enemyPosition.z 
             },
             enemyRudius,
-            enemyHeight / 2,
+            enemyHeight,
             outPositon))
 
         {
@@ -1929,32 +1647,16 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, cons
             if (enemy->GetComponent<HP>()->ApplyDamage(5, 0.5f))
             {
 
-                //// 吹き飛ばす
-                //{
-                //    // 衝動
-                //    DirectX::XMFLOAT3 impulse;
-                //    const float power = 10.0f;
-                //    const DirectX::XMFLOAT3& e = enemyPosition;
-                //    const DirectX::XMFLOAT3& p = nodePosition;
-                //    float vx = e.x - p.x;
-                //    float vz = e.z - p.z;
-                //    float lengthXZ = sqrtf(vx * vx + vz * vz);
-                //    vx /= lengthXZ;
-                //    vz /= lengthXZ;
-
-                //    impulse.x = vx * power;
-                //    impulse.y = power * 0.5f;
-                //    impulse.z = vz * power;
-
-                //    enemy->GetComponent<Movement>()->AddImpulse(impulse);
-                //}
+     
                 // ヒットエフェクト再生
                 {
-                    DirectX::XMFLOAT3 e = enemyPosition;
-                    e.y += enemyHeight * 0.5f;
+         /*           DirectX::XMFLOAT3 e = enemyPosition;
+                    e.y += enemyHeight * 0.5f;*/
+                    //DirectX::XMFLOAT3 e = enemyPosition;
+                 
 
 
-                    hitEffect->Play(e);
+                    hitEffect->Play(nodePosition);
 
 
                     //desEffect->Play(e);

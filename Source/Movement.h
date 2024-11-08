@@ -113,6 +113,9 @@ private:
 	// ˆÚ“®•ûŒüY‚Æ‘¬“x
 	float moveVecZ = 0.0f;
 
+	// ˆÚ“®Y‚ÌÅ‘å’l
+	float posYMax = -3.620f;
+
 	// d—Í
 	float gravity = -1.0f;
 

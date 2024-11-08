@@ -947,7 +947,7 @@ void Model::Update_blend_animations(float elapsedTime,   bool blend)
 	// アニメーションデータからキーフレームデータリストを取得
 
 
-	float animationKeyFrames;
+	//float animationKeyFrames;
 	
 	//DirectX::XMStoreFloat(&animationKeyFrames, DirectX::XMVector3Normalize(DirectX::XMLoadFloat(&animation.keyframes)));
 	const std::vector<ModelResource::Keyframe>& keyframes = animation.keyframes;

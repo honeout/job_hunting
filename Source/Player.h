@@ -128,14 +128,10 @@ protected:
 
 public:
 
-    // カメラ操作
-    void CameraControl(float elapsedTime);
+
 
     // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
     DirectX::XMFLOAT3 GetMoveVec(float elapsedTime) const;
-
-    //// キャラクター操作
-    void CharacterControl(float elapsedTime);
 
 
     // 移動入力処理
@@ -330,18 +326,18 @@ public:
     // アニメ
     enum Animation
     {
-        Anim_Attack,
-        Anim_Death,
-        Anim_Falling,
-        Anim_GetHit1,
-        Anim_GetHit2,
-        Anim_Idle,
-        Anim_Jump,
-        Anim_Jump_Flip,
-        Anim_Landing,
-        Anim_Revive,
-        Anim_Running,
-        Anim_Walking
+        //Anim_Attack,
+        //Anim_Death,
+        //Anim_Falling,
+        //Anim_GetHit1,
+        //Anim_GetHit2,
+        //Anim_Idle,
+        //Anim_Jump,
+        //Anim_Jump_Flip,
+        //Anim_Landing,
+        //Anim_Revive,
+        //Anim_Running,
+        //Anim_Walking
 
         //Anim_Tpose,
         //Anim_Idle,
@@ -356,6 +352,20 @@ public:
         //Anim_Deth,
         //Anim_Pain,
         //Anim_Counter
+
+
+        Anim_Tpose,
+        Anim_Idle,
+        Anim_Jump,
+        Anim_Slash,
+        Anim_SlashBeside,
+        Anim_Deth,
+        Anim_Pain,
+        Anim_Counter,
+        Anim_Running,
+        Anim_SlashThree,
+        Anim_Land,
+        Anim_Dush
 
     };
 
@@ -405,7 +415,7 @@ public:
 
     bool GetAfterimageMove() const { return this->afterimagemove; }
 
-   // Model* GetModel() const { return model; }
+
 
     bool Ground();
 
@@ -480,6 +490,9 @@ private:
     ProjectileManager projectileManager;
 
     Effect* hitEffect = nullptr;
+    Effect* magicFireHitEffect = nullptr;
+    Effect* magicThenderHitEffect = nullptr;
+    Effect* magicIceHitEffect = nullptr;
     Effect* ImpactEffect = nullptr;
     Effect* desEffect = nullptr;
 

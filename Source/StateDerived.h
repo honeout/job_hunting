@@ -27,6 +27,7 @@ public:
 private:
 	std::shared_ptr<EnemySlime> enemyid;
 	std::shared_ptr<ModelControll> modelid;
+	std::shared_ptr<Movement> moveid;
 	//std::shared_ptr<Actor> playerid;
 	
 	float				stateTimer = 0.0f;
@@ -61,7 +62,7 @@ public:
 	void Exit()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> modelControllid;
 	
 	float				stateTimer = 0.0f;
 
@@ -134,7 +135,7 @@ public:
 	void Exit()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
-	std::shared_ptr<ModelControll> modelid;
+
 	std::shared_ptr<HP> hpid;
 
 	float				stateTimer = 0.0f;
@@ -170,7 +171,7 @@ public:
 	void Exit()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
-	std::shared_ptr<ModelControll> modelid;
+
 	std::shared_ptr<HP> hpid;
 	//std::shared_ptr<ProjectileRuby> projectileRubyid;
 
@@ -204,7 +205,7 @@ public:
 	void Exit()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
-	std::shared_ptr<ModelControll> modelid;
+
 	std::shared_ptr<Transform> transformid;
 
 
@@ -242,7 +243,7 @@ public:
 	void Exit()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
-	std::shared_ptr<ModelControll> modelid;
+
 	//std::shared_ptr<Transform> transformid;
 
 
@@ -276,7 +277,7 @@ public:
 	void Exit()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
-	std::shared_ptr<ModelControll> modelid;
+
 
 
 	float				stateTimer = 0.0f;
@@ -315,9 +316,8 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
-	//std::shared_ptr<Player> playerid;
+	//std::shared_ptr<Actor> playerid;
 	std::shared_ptr<Movement> moveid;
-	std::shared_ptr<ModelControll> modelid;
 
 	float				stateTimer = 0.0f;
 
@@ -346,9 +346,9 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
-	//std::shared_ptr<Player> playerid;
+
 	std::shared_ptr<Movement> moveid;
-	std::shared_ptr<ModelControll> modelid;
+
 
 	// 再生ループ
 	bool  loop = true;
@@ -376,6 +376,9 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
+
 	float				stateTimer = 0.0f;
 	float				attackRange = 1.5f;
 
@@ -407,6 +410,9 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
+
 	float				stateTimer = 0.0f;
 
 	// 再生ループ
@@ -434,6 +440,9 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
+
 	float				stateTimer = 0.0f;
 
 	// 再生ループ
@@ -467,6 +476,8 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
 	float				stateTimer = 0.0f;
 	bool				button = false;
 
@@ -517,6 +528,9 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
+	std::shared_ptr<ModelControll> modelControllid;
+
+
 	float				stateTimer = 0.0f;
 
 	// 再生ループ
@@ -544,6 +558,11 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
+	std::shared_ptr<Transform> transformid;
+	std::shared_ptr<Movement> moveid;
+	std::shared_ptr<HP> hpid;
+
+
 	float				stateTimer = 0.0f;
 
 	float               moveSpeed = 2.0f;
@@ -573,6 +592,8 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
+	
+
 	float				stateTimer = 0.0f;
 
 	// 再生ループ
@@ -600,6 +621,9 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<HP> hpid;
+	std::shared_ptr<Transform> transformid;
 	float				stateTimer = 0.0f;
 
 	// 再生ループ

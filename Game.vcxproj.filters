@@ -225,12 +225,6 @@
     <ClInclude Include="Source\StateMachine.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Transform.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\TransForm2D.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Ui.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -280,6 +274,12 @@
       <Filter>Source\Character</Filter>
     </ClInclude>
     <ClInclude Include="Source\StateBase.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Transform.h">
+      <Filter>Source\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TransForm2D.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
@@ -422,16 +422,10 @@
     <ClCompile Include="Source\ModelControll.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Transform.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\SpriteControll.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Ui.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TransForm2D.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\UiManager.cpp">
@@ -505,6 +499,12 @@
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Transform.cpp">
+      <Filter>Source\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TransForm2D.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

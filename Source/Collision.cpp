@@ -76,12 +76,52 @@ bool Collision::IntersectCylinderVsCylinder(
     {
         return false;
     }
+    // 改造
+    ////////////////////////
+    //
+    //float vy = positionB.y;//B-Aであa->B
+    //// ベクトルプレイヤーに向かう
+    //DirectX::XMFLOAT3 vv = { vx,vy,vz };
+    //// プレイヤー
+    //DirectX::XMVECTOR End = DirectX::XMLoadFloat3(&positionA);
+    //DirectX::XMVECTOR vV = DirectX::XMLoadFloat3(&vv);
+    //// 疑似的上方向
+    //DirectX::XMFLOAT3 normalRange = {0, 1, 0};
+
+    //// 疑似的上方向
+    //DirectX::XMVECTOR Normal = DirectX::XMLoadFloat3(&normalRange);
+
+    //// 入射ベクトルを法線に射影長 a ここを変えると向きを変更したらとぶ
+    //DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(DirectX::XMVectorNegate(vV), Normal);
+    //Dot = DirectX::XMVectorScale(Dot, 1.1f); // 壁にめり込まないように少しだけ補正
+
+    //// 補正位置の計算
+    //DirectX::XMVECTOR CollectPosition = DirectX::XMVectorMultiplyAdd(Normal, Dot, End);
+    //DirectX::XMFLOAT3 collectPosition;
+    //DirectX::XMStoreFloat3(&collectPosition, CollectPosition);
+
+
+    //DirectX::XMFLOAT3 endDirection;
+    //endDirection.x = collectPosition.x - positionB.x;
+    //endDirection.z = collectPosition.z - positionB.z;
+    //float distcollectPositionXZ = sqrtf(endDirection.x * endDirection.x + endDirection.z * endDirection.z); // 
+    //// ノルマライズ
+    //endDirection.x /= distcollectPositionXZ;
+    //endDirection.z /= distcollectPositionXZ;
+    ////////////////////////
+
+    // 疑似的当たり判定
+
+
+    float rangeAdd = 0.001f;
+
     //AがBを押し出す
     vx /= distXZ;
     vz /= distXZ;
-    outPositionB.x = positionA.x + (vx * range);
+    outPositionB.x = positionA.x + (vx * (range + rangeAdd));
     outPositionB.y = positionB.y;
-    outPositionB.z = positionA.z + (vz * range);
+    outPositionB.z = positionA.z + (vz * (range + rangeAdd));
+
 
     return true;
 }
@@ -118,12 +158,16 @@ bool Collision::IntersectCylinderWidthVsCylinderWidth(const DirectX::XMFLOAT3& p
         return false;
     }
 
+    
+
     //AがBを押し出す
     vx /= distXZ;
     vz /= distXZ;
     outPositionB.x = positionA.x + (vx * range);
     outPositionB.y = positionB.y;
     outPositionB.z = positionA.z + (vz * range);
+
+
 
     return true;
 }

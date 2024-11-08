@@ -67,6 +67,7 @@ void EnemySlime::Start()
     //SetTerritory(position, territoryarea);
 
     //stateMachine = std::make_unique<StateMachine>();
+
     stateMachine = new StateMachine();
 
     // ステートマシンにステート登録
@@ -82,6 +83,7 @@ void EnemySlime::Start()
 
     // ステートセット
     stateMachine->SetState(static_cast<int>(State::Idle));
+
 
     // アニメーションルール
     updateanim = UpAnim::Normal;
@@ -106,30 +108,7 @@ void EnemySlime::Start()
 void EnemySlime::Update(float elapsedTime)
 {
     // ステート毎の処理
-   /* switch (state)
-    {
-    case State::Wander:
-        UpdateWanderState(elapsedTime);
-        break;
-    case State::Idle:
-        UpdateIdleState(elapsedTime);
-        break;
-    case State::Pursuit:
-        UpdatePursuitState(elapsedTime);
-        break;
-    case State::Attack:
-        UpdateAttackState(elapsedTime);
-        break;
-    case State::IdleBattle:
-        UpdateIdleBattleState(elapsedTime);
-        break;
-    case State::Damage:
-        UpdateDamageState(elapsedTime);
-        break;
-    case State::Death:
-        UpdateDeathState(elapsedTime);
-        break;
-    }*/
+ 
 
     stateMachine->Update(elapsedTime);
 
@@ -202,34 +181,14 @@ void EnemySlime::Update(float elapsedTime)
     }
 
 
-    //model->UpdateAnimation(elapsedTime,true);
-
-    //model->UpdateAnimation(elapsedTime, true);
-
     model->UpdateTransform(transform->GetTransform());
-    //GetActor()->GetModel()->UpdateTransform(GetActor()->GetTransform());
     
-   // UpdateVelocity(elapsedTime);
-
-    //UpdateInbincibleTimer(elapsedTime);
-    // オブジェクト行列を更新
-    //UpdateTransform();
-
-    //// モデルアニメーション更新
-    //model->UpdateAnimation(elapsedTime);
-
-    //// モデル行列更新
-    //model->UpdateTransform(transform);
 
     // ゲージ管理
     UiControlle(elapsedTime);
 }
 
-// 描画処理
-//void EnemySlime::Render(const RenderContext& rc, ModelShader* shader)
-//{
-//    shader->Draw(rc, model);
-//}
+
 
 void EnemySlime::Render(RenderContext& rc, ModelShader& shader)
 {

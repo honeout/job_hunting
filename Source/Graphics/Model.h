@@ -167,7 +167,7 @@ private:
 	int currentAnimationIndexSeconds = -1;           //アニメーション番号 ブレンド用
 	float currentAnimationSeconds = 0.0f;    //アニメーションの再生用時間
 	float oldcurrentAnimationSeconds = 0;
-	float rastcurrentAnimationSeconds = 0.67;
+	float rastcurrentAnimationSeconds = 0.67f;
 	float animationSecondsLengthMax = 0.0f;
 
 	//パンチをした即ー１つまりアニメーション終了つまりTポーズに戻る。

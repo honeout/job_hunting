@@ -389,73 +389,71 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
         // 移動方向分足した奴
         DirectX::XMFLOAT3 end = { position.x + mx, position.y + stepOffSet, position.z + mz };
 
-        // レイキャストによる壁判定
-        HitResult hit;
+        // 移動
+        position.x += mx;
+        position.z += mz;
 
-        // モデルデータを入れる。
-        //Model* model = GetActor()->GetModel();
-        //std::shared_ptr<Actor> actor2 = GetActor();
-        //actor2->SetName("StageMain");
-        //Model* model = actor2->GetModel();
-
-        // モデルデータ
-        Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetComponent<ModelControll>()->GetModel();
-        
-        //if (StageManager::instance().RayCast(start, end, hit))
-        //if (Collision::IntersectRayVsModel->(start, end,  , hit))
-        //if (GetActor()->GetComponent<StageMain>()->RayCast(start,end,hit))
-        if (collision->IntersectRayVsModel(start,end, stagemodel,hit))
-        {
-
-          /*  actor2->SetName("Player");*/
-            // 壁までのベクトル
-            DirectX::XMVECTOR Start = DirectX::XMLoadFloat3(&hit.position);
-            DirectX::XMVECTOR End = DirectX::XMLoadFloat3(&end);
-            DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(End, Start);
-
-            // 壁の法線
-            DirectX::XMVECTOR Normal = DirectX::XMLoadFloat3(&hit.normal);
-
-            // 入射ベクトルを法線に射影長
-            DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(DirectX::XMVectorNegate(Vec), Normal);
-            Dot = DirectX::XMVectorScale(Dot, 1.1f); // 壁にめり込まないように少しだけ補正
-
-            // 補正位置の計算
-            DirectX::XMVECTOR CollectPosition = DirectX::XMVectorMultiplyAdd(Normal, Dot, End);
-            DirectX::XMFLOAT3 collectPosition;
-            DirectX::XMStoreFloat3(&collectPosition, CollectPosition);
-
-            // 壁ずり方向へレイキャスト
-            HitResult hit2;
+        //// レイキャストによる壁判定
+        //HitResult hit;
 
 
-            // モデルデータ
-            Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetComponent<ModelControll>()->GetModel();
 
-            //// モデルデータを入れる。
-            //Model* model2 = GetActor()->GetModel();
-                   
-           // if (!StageManager::instance().RayCast(hit.position, collectPosition, hit2))
-            //if (!stageMain->RayCast(hit.position, collectPosition,  hit))
-            //if (!Collision::IntersectRayVsModel(hit.position, collectPosition, GetActor()->GetComponent<HP>()->GetActor()->GetModel(),  hit))
-            if (!collision->IntersectRayVsModel(hit.position, collectPosition, stagemodel, hit2))
-            {
-                // 壁ずり方向で壁に当たらなかったら補正位置に移動
-                position.x = collectPosition.x;
-                position.z = collectPosition.z;
-            }
-            else
-            {
-                position.x = hit2.position.x;
-                position.z = hit2.position.z;
-            }
-        }
-        else
-        {
-            // 移動
-            position.x += mx;
-            position.z += mz;
-        }
+        //// モデルデータ
+        //Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetComponent<ModelControll>()->GetModel();
+        //
+
+        //if (collision->IntersectRayVsModel(start,end, stagemodel,hit))
+        //{
+
+        //  /*  actor2->SetName("Player");*/
+        //    // 壁までのベクトル
+        //    DirectX::XMVECTOR Start = DirectX::XMLoadFloat3(&hit.position);
+        //    DirectX::XMVECTOR End = DirectX::XMLoadFloat3(&end);
+        //    DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(End, Start);
+
+        //    // 壁の法線
+        //    DirectX::XMVECTOR Normal = DirectX::XMLoadFloat3(&hit.normal);
+
+        //    // 入射ベクトルを法線に射影長
+        //    DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(DirectX::XMVectorNegate(Vec), Normal);
+        //    Dot = DirectX::XMVectorScale(Dot, 1.1f); // 壁にめり込まないように少しだけ補正
+
+        //    // 補正位置の計算
+        //    DirectX::XMVECTOR CollectPosition = DirectX::XMVectorMultiplyAdd(Normal, Dot, End);
+        //    DirectX::XMFLOAT3 collectPosition;
+        //    DirectX::XMStoreFloat3(&collectPosition, CollectPosition);
+
+        //    // 壁ずり方向へレイキャスト
+        //    HitResult hit2;
+
+
+        //    // モデルデータ
+        //    Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetComponent<ModelControll>()->GetModel();
+
+        //    //// モデルデータを入れる。
+        //    //Model* model2 = GetActor()->GetModel();
+        //           
+        //   // if (!StageManager::instance().RayCast(hit.position, collectPosition, hit2))
+        //    //if (!stageMain->RayCast(hit.position, collectPosition,  hit))
+        //    //if (!Collision::IntersectRayVsModel(hit.position, collectPosition, GetActor()->GetComponent<HP>()->GetActor()->GetModel(),  hit))
+        //    if (!collision->IntersectRayVsModel(hit.position, collectPosition, stagemodel, hit2))
+        //    {
+        //        // 壁ずり方向で壁に当たらなかったら補正位置に移動
+        //        position.x = collectPosition.x;
+        //        position.z = collectPosition.z;
+        //    }
+        //    else
+        //    {
+        //        position.x = hit2.position.x;
+        //        position.z = hit2.position.z;
+        //    }
+        //}
+        //else
+        //{
+        //    // 移動
+        //    position.x += mx;
+        //    position.z += mz;
+        //}
 
         
     }
@@ -500,42 +498,17 @@ void Movement::UpdateVerticalMove( float elapsedTime)
         // レイの終点位置は移動後の位置
         DirectX::XMFLOAT3 end = { position.x, position.y + my , position.z };
 
-        // レイキャストによる地面判定
-        HitResult hit;
+        //
 
-        // モデルデータを入れる。
-        //Model* model = GetActor()->GetModel();
-
-        //std::shared_ptr<Actor> actor2 = GetActor();
-        //actor2->SetName("StageMain");
-        //// モデルデータを入れる。
-        //Model* model = actor2->GetModel();
-        //Model* model = stageMain->GetModel();
-
-        // モデルデータ
-        Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetComponent<ModelControll>()->GetModel();
-
-        // レイキャストを呼ぶための関数
-        //if (StageManager::instance().RayCast(start, end, hit))
-       // if (collision->IntersectRayVsModel(start, end, GetActor()->GetComponent<StageMain>()->GetActor()->GetModelSabe(), hit))
-        if (collision->IntersectRayVsModel(start, end, stagemodel, hit))
+        if (position.y >= posYMax)
         {
-    
-
-            // 法線ベクトル取得
-            normal = hit.normal;
-
-
-            // 地面に設置している
-            position = hit.position;
-
-            // 回転
-            // ｙだけな理由は角度が真横になった時にクモみたいにひっつかないように
-            angle.y += hit.rotation.y;
-
-            // 傾斜率の計算 法線とXZ平面に置けるベクトルとｙ軸のベクトルで傾きが求められる。
-            float normalLengthXZ = sqrtf(hit.normal.x * hit.normal.x + hit.normal.z * hit.normal.z);
-            slopeRate = 1.0f - (hit.normal.y / (normalLengthXZ + hit.normal.y));
+            // 空中に浮いている
+            position.y += my;
+            isGround = false;
+            onLadius = false;
+        }
+        else
+        {
             // 着地
             if (!isGround)
             {
@@ -545,17 +518,70 @@ void Movement::UpdateVerticalMove( float elapsedTime)
             isGround = true;
             onLadius = true;
             velocity.y = 0.0f;
-            
-            //jumpSpeed = 0.0f;
 
+            //jumpSpeed = 0.0f;
         }
-        else
-        {
-            // 空中に浮いている
-            position.y += my;
-            isGround = false;
-            onLadius = false;
-        }
+
+
+       // // レイキャストによる地面判定
+       // HitResult hit;
+
+
+
+       // // モデルデータを入れる。
+       // //Model* model = GetActor()->GetModel();
+
+       // //std::shared_ptr<Actor> actor2 = GetActor();
+       // //actor2->SetName("StageMain");
+       // //// モデルデータを入れる。
+       // //Model* model = actor2->GetModel();
+       // //Model* model = stageMain->GetModel();
+
+       // // モデルデータ
+       // Model* stagemodel = StageManager::Instance().GetStage(StageManager::Instance().GetStageCount() - 1)->GetComponent<ModelControll>()->GetModel();
+
+       // // レイキャストを呼ぶための関数
+       // //if (StageManager::instance().RayCast(start, end, hit))
+       //// if (collision->IntersectRayVsModel(start, end, GetActor()->GetComponent<StageMain>()->GetActor()->GetModelSabe(), hit))
+       // if (collision->IntersectRayVsModel(start, end, stagemodel, hit))
+       // {
+    
+
+       //     // 法線ベクトル取得
+       //     normal = hit.normal;
+
+
+       //     // 地面に設置している
+       //     position = hit.position;
+
+       //     // 回転
+       //     // ｙだけな理由は角度が真横になった時にクモみたいにひっつかないように
+       //     angle.y += hit.rotation.y;
+
+       //     // 傾斜率の計算 法線とXZ平面に置けるベクトルとｙ軸のベクトルで傾きが求められる。
+       //     float normalLengthXZ = sqrtf(hit.normal.x * hit.normal.x + hit.normal.z * hit.normal.z);
+       //     slopeRate = 1.0f - (hit.normal.y / (normalLengthXZ + hit.normal.y));
+       //     // 着地
+       //     if (!isGround)
+       //     {
+
+       //         OnLanding();
+       //     }
+       //     isGround = true;
+       //     onLadius = true;
+       //     velocity.y = 0.0f;
+       //     
+       //     //jumpSpeed = 0.0f;
+
+       // }
+       // else
+       // {
+       //     // 空中に浮いている
+       //     position.y += my;
+       //     isGround = false;
+       //     onLadius = false;
+       // }
+
 
     }
     // 上昇中
@@ -585,19 +611,11 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
 void Movement::UpdateVelocity( float elapsedTime)
 {
-    //DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-    //DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, speed);
-
-  /*  DirectX::XMStoreFloat3(&velocity, Velocity);*/
 
 
     // 経過フレーム
     float elapsedFrame = 60.0f * elapsedTime;
-    //if (!stopFall)
-    //{
-    //    //// 垂直速力更新処理
-    //    //UpdateVerticalVelocity(elapsedFrame);
-    //}
+
     if (!stopMove)
     {
         // 水平速力更新処理
