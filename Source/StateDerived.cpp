@@ -1,10 +1,10 @@
 #include <math.h>
 #include "EnemySlime.h"
 #include "StateDerived.h"
-#include "Input\GamePad.h"
+
 #include "Player.h"
 #include "Mathf.h"
-#include "Input/Input.h"
+
 #include "ProjectileHoming.h"
 #include "ProjectileRuby.h"
 #include "ProjectileThrowing.h"
@@ -37,7 +37,8 @@ void WanderState::Enter()
 	// アニメーションルール
 	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Reverseplayback);
 
-	stateTimer = Mathf::RandomRange(6.0f, 8.0f);
+	//stateTimer = Mathf::RandomRange(6.0f, 8.0f);
+	stateTimer = 60.0f;
 
 	// 着地瞬間
 	upOnLading = false;
@@ -889,7 +890,7 @@ void PlayerLandState::Enter()
 {
 	modelControllid = owner->GetComponent<ModelControll>();
 	moveid = owner->GetComponent<Movement>();
-	moveid->SetOnLadius(false);
+	//moveid->SetOnLadius(false);
 
 	modelControllid->GetModel()->PlayAnimation(
 		Player::Anim_Land, loop,
@@ -897,16 +898,19 @@ void PlayerLandState::Enter()
 	);
 
 	// アニメーションルール
-	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Reverseplayback);
+	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
 }
 
 void PlayerLandState::Execute(float elapsedTime)
 {
 	// ロックオン処理
 	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+
+
+
 	if (!modelControllid->GetModel()->IsPlayAnimation())
 	{
-		moveid->SetOnLadius(false);
+		//moveid->SetOnLadius(false);
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 
 
@@ -962,11 +966,51 @@ void PlayerAttackState::Enter()
 	//std::shared_ptr<Player> playerId = owner->GetComponent<Player>();
 
 		//Player::Anim_Slash, loop,
-	// アニメーション再生
-	modelControllid->GetModel()->PlayAnimation(
-		Player::Anim_Slash, loop,
-		currentAnimationStartSeconds, blendSeconds
-	);
+	
+		// １回
+	if (!button && !buttonSeconde)
+	{
+		// アニメーション再生
+		modelControllid->GetModel()->PlayAnimation(
+			Player::Anim_Slash, loop,
+			currentAnimationStartSeconds, blendSeconds
+		);
+	}
+
+	// 三回
+	if (!button && buttonSeconde)
+	{
+		// アニメーション再生
+		modelControllid->GetModel()->PlayAnimation(
+			Player::Anim_SlashThree, loop,
+			currentAnimationStartSeconds, blendSeconds
+		);
+
+		buttonSeconde = false;
+	}
+	// 二回
+	if (button)
+	{
+		// アニメーション再生
+		modelControllid->GetModel()->PlayAnimation(
+			Player::Anim_SlashBeside, loop,
+			currentAnimationStartSeconds, blendSeconds
+		);
+		button = false;
+	}
+
+	if (!InitializationCheck)
+	{
+
+		// コマンド設定二回目攻撃
+		commandSeconde.push_back(GamePad::BTN_B);
+		commandSeconde.push_back(GamePad::BTN_B);
+
+		// コマンド設定三回目攻撃
+		commandThrede.push_back(GamePad::BTN_B);
+		commandThrede.push_back(GamePad::BTN_B);
+		commandThrede.push_back(GamePad::BTN_B);
+	}
 	// アニメーション再生
 	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
 
@@ -980,6 +1024,13 @@ void PlayerAttackState::Enter()
 
 	// 回転するかチェック
 	rotateCheck = false;
+
+
+	// ダメージ食らった時に攻撃を１からに戻すため
+	deleteCheck = true;
+
+	InitializationCheck = true;
+
 }
 
 void PlayerAttackState::Execute(float elapsedTime)
@@ -989,24 +1040,56 @@ void PlayerAttackState::Execute(float elapsedTime)
 	// ロックオン処理
 	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
-	// 攻撃複数
-	if (owner->GetComponent<Player>()->InputAttack()&&
-		owner->GetComponent<Player>()->GetSelectCheck() == 
+	//// 攻撃複数
+	//if (owner->GetComponent<Player>()->InputAttack()&&
+	//	owner->GetComponent<Player>()->GetSelectCheck() == 
+	//	(int)Player::CommandAttack::Attack)
+	//{
+	//	button = true;
+	//}
+	//// コマンド確認
+	//std::vector<GamePadButton> command;
+	//command.push_back(GamePad::BTN_X);
+	//command.push_back(GamePad::BTN_X);
+	//command.push_back(GamePad::BTN_A);
+	//int frame = 60;
+	//// コマンド確認
+	//if (gamePad.ConfirmCommand(command, frame))
+	//{
+	//	button = false;
+	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
+	//}
+
+	if (owner->GetComponent<Player>()->InputAttack() && 
+		owner->GetComponent<Player>()->GetSelectCheck() ==
 		(int)Player::CommandAttack::Attack)
 	{
-		button = true;
+		int frame;
+
+		frame = 60;
+		// コマンド確認3弾攻撃
+		if (gamePad.ConfirmCommand(commandThrede, frame) && button && !buttonSeconde)
+		{
+			buttonSeconde = true;
+			//owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
+		}
+		frame = 60;
+		// コマンド確認2弾攻撃
+		if (gamePad.ConfirmCommand(commandSeconde, frame) && !button && !buttonSeconde)
+		{
+			button = true;
+			//owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
+		}
+
 	}
-	// コマンド確認
-	std::vector<GamePadButton> command;
-	command.push_back(GamePad::BTN_X);
-	command.push_back(GamePad::BTN_X);
-	command.push_back(GamePad::BTN_A);
-	int frame = 60;
-	// コマンド確認
-	if (gamePad.ConfirmCommand(command, frame))
+
+	// 回避
+	if (owner->GetComponent<Player>()->InputAvoidance())
 	{
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+
 		button = false;
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
+		buttonSeconde = false;
 	}
 
 
@@ -1074,21 +1157,21 @@ void PlayerAttackState::Execute(float elapsedTime)
 	if (!modelControllid->GetModel()->IsPlayAnimation())
 	{
 		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
+		deleteCheck = false;
 		// 入力確認でステート変更
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button ? Player::State::Attack : Player::State::Move));
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
 
-		
 	
-		// 移動の停止
-		moveid->SetGravity(button ?
-			gravity :
-			owner->GetComponent<Player>()->GetGravity());
+		//// 移動の停止
+		//moveid->SetGravity(button ?
+		//	gravity :
+		//	owner->GetComponent<Player>()->GetGravity());
 
-		bool stop = false;
-		moveid->SetStopMove(stop);
+		//bool stop = false;
+		//moveid->SetStopMove(stop);
 
 
-		button = false;
+		//button = false;
 		
 	}
 	
@@ -1102,7 +1185,121 @@ void PlayerAttackState::Execute(float elapsedTime)
 
 void PlayerAttackState::Exit()
 {
-	
+	// 移動の停止
+	moveid->SetGravity(
+		owner->GetComponent<Player>()->GetGravity());
+
+	bool stop = false;
+	moveid->SetStopMove(stop);
+	if (deleteCheck)
+	{
+		// ダメージ食らったかどうか
+		button = false;
+		buttonSeconde = false;
+	}
+
+}
+
+
+void PlayerMagicState::Enter()
+{
+
+	modelControllid = owner->GetComponent<ModelControll>();
+	moveid = owner->GetComponent<Movement>();
+
+
+	// サンダー系
+	if (owner->GetComponent<Player>()->GetSelectMagicCheck() ==
+		(int)Player::CommandMagic::Thander)
+	{
+		// アニメーション再生
+		modelControllid->GetModel()->PlayAnimation(
+			Player::Anim_MagicSeconde, loop,
+			currentAnimationStartSeconds, blendSeconds
+		);
+
+
+	}
+	else
+	{
+		// アニメーション再生
+		modelControllid->GetModel()->PlayAnimation(
+			Player::Anim_Magic, loop,
+			currentAnimationStartSeconds, blendSeconds
+		);
+	}
+
+	// アニメーション再生
+	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+
+
+	magicType = owner->GetComponent<Player>()->GetSelectMagicCheck();
+	// 落ちるの停止
+	bool stopFall = true;
+	moveid->SetStopFall(stopFall);
+
+}
+
+void PlayerMagicState::Execute(float elapsedTime)
+{
+
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+
+	// 任意のアニメーション再生区間でのみ衝突判定処理をする
+	float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+	// アニメーション終わったら通る
+
+
+
+	// 魔法の種類で終わりを帰る。
+	switch (magicType)
+	{
+	case (int)Player::CommandMagic::Fire:
+	{
+		// 時間
+		if (animationTime <= 0.5f)return;
+		// 炎発射
+		owner->GetComponent<Player>()->InputMagicframe();
+
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Idle);
+		break;
+	}
+
+	case (int)Player::CommandMagic::Thander:
+	{
+		// 時間
+		if (animationTime <= 1.1f)return;
+
+		// 雷発射
+		owner->GetComponent<Player>()->InputMagicLightning();
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Idle);
+		break;
+	}
+	case (int)Player::CommandMagic::Ice:
+	{
+		// 時間
+		if (animationTime <= 0.5f)return;
+		// 氷発射
+		owner->GetComponent<Player>()->InputMagicIce();
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Idle);
+		break;
+	}
+
+	default:
+		break;
+	}
+
+}
+
+void PlayerMagicState::Exit()
+{
+	// 魔法の選択をゼロに
+	owner->GetComponent<Player>()->SetSelectCheck((int)Player::CommandMagic::Normal);
+
+	// 落ちるの再開
+	bool stopFall = false;
+	moveid->SetStopFall(stopFall);
 }
 
 void PlayerDamageState::Enter()
@@ -1243,6 +1440,10 @@ void PlayerAvoidanceState::Enter()
 // 回避更新
 void PlayerAvoidanceState::Execute(float elapsedTime)
 {
+	// 動き自由
+	bool stopMove = false;
+	moveid->SetStopMove(stopMove);
+
 	// ロックオン処理
 	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
@@ -1261,7 +1462,8 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 		moveid->Move(dir, moveSpeed, elapsedTime);
 	}
 	// アニメーション終了
-	if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
+	//if (!owner->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
+	if (animationTime >= 2.0f)
 	{
 
 		// 当たり判定の有無
@@ -1269,16 +1471,16 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 
-		// 落ちるの停止
-		bool stopFall = false;
-		moveid->SetStopFall(stopFall);
+
 	}
 }
 
 // 回避終了
 void PlayerAvoidanceState::Exit()
 {
-
+	// 落ちるの停止
+	bool stopFall = false;
+	moveid->SetStopFall(stopFall);
 }
 
 // 反射開始
@@ -1327,5 +1529,4 @@ void PlayerReflectionState::Execute(float elapsedTime)
 void PlayerReflectionState::Exit()
 {
 }
-
 

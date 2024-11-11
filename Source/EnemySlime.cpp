@@ -311,6 +311,8 @@ void EnemySlime::CollisionImpactVsPlayer()
                     // ダメージを与える。
                     if (player->GetComponent<HP>()->ApplyDamage(3, 0.5f))
                     {
+                        player->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+
                         // 吹き飛ばす
                         {
                             // 衝動
@@ -392,7 +394,8 @@ void EnemySlime::CollisionRubyVsPlayer()
                     // ダメージを与える。
                     if (player->GetComponent<HP>()->ApplyDamage(3, 0.5f))
                     {
-
+                        player->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+                        
                         DirectX::XMVECTOR ProjectileP = DirectX::XMLoadFloat3(&projectilePosition);
                         DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
                         DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P , ProjectileP);

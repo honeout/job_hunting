@@ -19,6 +19,8 @@ public:
 	virtual void Execute(float elapsedTime) = 0;
 	// ステートから出ていくときのメソッド
 	virtual void Exit() = 0;
+
+
 protected:
 	Actor* owner;
 };

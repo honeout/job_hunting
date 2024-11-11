@@ -147,62 +147,63 @@ void Player::Start()
     hp->SetMaxHealth(maxHealth);
 
 
-    // mp設定
-    mp->SetMagic(magicPoint);
-    // mp最大値
-    mp->SetMaxMagic(magicPoint);
+// mp設定
+mp->SetMagic(magicPoint);
+// mp最大値
+mp->SetMaxMagic(magicPoint);
 
-    // 半径
-    transform->SetRadius(radius);
-    // 身長
-    transform->SetHeight(height);
+// 半径
+transform->SetRadius(radius);
+// 身長
+transform->SetHeight(height);
 
-    // コマンド操作用
-    selectCheck = (int)CommandAttack::Attack;
+// コマンド操作用
+selectCheck = (int)CommandAttack::Attack;
 
-    // 魔法選択用
-    selectMagicCheck = (int)CommandMagic::Normal;
+// 魔法選択用
+selectMagicCheck = (int)CommandMagic::Normal;
 
-    // 特殊攻撃ため初期値
-    specialAttackCharge = 0.0f;
+// 特殊攻撃ため初期値
+specialAttackCharge = 0.0f;
 
-    // ステートマシン
-    stateMachine = new StateMachine();
+// ステートマシン
+stateMachine = new StateMachine();
 
-    stateMachine->RegisterState(new PlayerIdleState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerMovestate(GetActor().get()));
-    stateMachine->RegisterState(new PlayerJumpState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerLandState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerJumpFlipState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerAttackState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerDamageState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerDeathState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerReviveState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerAvoidanceState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerReflectionState(GetActor().get()));
+stateMachine->RegisterState(new PlayerIdleState(GetActor().get()));
+stateMachine->RegisterState(new PlayerMovestate(GetActor().get()));
+stateMachine->RegisterState(new PlayerJumpState(GetActor().get()));
+stateMachine->RegisterState(new PlayerLandState(GetActor().get()));
+stateMachine->RegisterState(new PlayerJumpFlipState(GetActor().get()));
+stateMachine->RegisterState(new PlayerAttackState(GetActor().get()));
+stateMachine->RegisterState(new PlayerMagicState(GetActor().get()));
+stateMachine->RegisterState(new PlayerDamageState(GetActor().get()));
+stateMachine->RegisterState(new PlayerDeathState(GetActor().get()));
+stateMachine->RegisterState(new PlayerReviveState(GetActor().get()));
+stateMachine->RegisterState(new PlayerAvoidanceState(GetActor().get()));
+stateMachine->RegisterState(new PlayerReflectionState(GetActor().get()));
 
-    // ステートセット
-    stateMachine->SetState(static_cast<int>(State::Idle));
+// ステートセット
+stateMachine->SetState(static_cast<int>(State::Idle));
 
-    // アニメーションルール
-    updateanim = UpAnim::Normal;
+// アニメーションルール
+updateanim = UpAnim::Normal;
 
-    moveSpeedAnimation = 0.0f;
+moveSpeedAnimation = 0.0f;
 
-    // 特殊アクションの種類
-    specialAttack.push((int)SpecialAttack::Normal);
+// 特殊アクションの種類
+specialAttack.push((int)SpecialAttack::Normal);
 
-    // 特殊アクション発動不
-    specialAttackTime = false;
+// 特殊アクション発動不
+specialAttackTime = false;
 
-    // 揺れモード
-    shakeMode = false;
+// 揺れモード
+shakeMode = false;
 
-    // 回転確認
-    angleCheck = false;
+// 回転確認
+angleCheck = false;
 
-    // 曲がる速度
-    turnSpeedAdd = 0;
+// 曲がる速度
+turnSpeedAdd = 0;
 
 
 
@@ -234,7 +235,7 @@ void Player::Update(float elapsedTime)
         // 攻撃の時にステートを変更
         if (
             InputAttack() && GetSelectCheck() ==
-            (int)Player::CommandAttack::Attack && 
+            (int)Player::CommandAttack::Attack &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Attack)
             )
         {
@@ -242,28 +243,33 @@ void Player::Update(float elapsedTime)
 
         }
 
-        // 弾丸入力処理
-        // 炎発射
-        if (selectMagicCheck == (int)Player::CommandMagic::Fire && GetSelectCheck() == (int)Player::CommandAttack::Magic)
+        //　魔法入力処理
+        if (InputAttack() && GetSelectCheck() == (int)Player::CommandAttack::Magic)
         {
-            // 炎発射
-            InputMagicframe();
-            //TransitionAttackState();
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
         }
-        // 雷
-        if (selectMagicCheck == (int)Player::CommandMagic::Thander && GetSelectCheck() == (int)Player::CommandAttack::Magic)
-        {
-            // 雷発射
-            InputMagicLightning();
-            //TransitionAttackState();
-        }
-        // 氷
-        if (selectMagicCheck == (int)Player::CommandMagic::Ice && GetSelectCheck() == (int)Player::CommandAttack::Magic)
-        {
-            // 氷発射
-            InputMagicIce();
-            //TransitionAttackState();
-        }
+        //
+        //// 炎発射
+        //if (selectMagicCheck == (int)Player::CommandMagic::Fire && GetSelectCheck() == (int)Player::CommandAttack::Magic)
+        //{
+        //    // 炎発射
+        //    InputMagicframe();
+        //    //TransitionAttackState();
+        //}
+        //// 雷
+        //if (selectMagicCheck == (int)Player::CommandMagic::Thander && GetSelectCheck() == (int)Player::CommandAttack::Magic)
+        //{
+        //    // 雷発射
+        //    InputMagicLightning();
+        //    //TransitionAttackState();
+        //}
+        //// 氷
+        //if (selectMagicCheck == (int)Player::CommandMagic::Ice && GetSelectCheck() == (int)Player::CommandAttack::Magic)
+        //{
+        //    // 氷発射
+        //    InputMagicIce();
+        //    //TransitionAttackState();
+        //}
 
         // 特殊攻撃
         if (InputSpecialAttackCharge())
@@ -412,12 +418,13 @@ void Player::UpdateCameraState(float elapsedTime)
         // ロックオンモード
     if (rockCheck)
     {
-        Model::Node* PNeck = model->FindNode("mixamorig:Spine1");
+        Model::Node* PRock = model->FindNode("mixamorig:Spine1");
+        //Model::Node* PRock = model->FindNode("mixamorig:Neck");
         DirectX::XMFLOAT3 pPosition =
         {
-                    PNeck->worldTransform._41,
-                    PNeck->worldTransform._42,
-                    PNeck->worldTransform._43
+                    PRock->worldTransform._41,
+                    PRock->worldTransform._42,
+                    PRock->worldTransform._43
         };
         pPosition.z *= 1.1f;
         DirectX::XMVECTOR p, t, v;
@@ -568,7 +575,15 @@ void Player::UpdateCameraState(float elapsedTime)
     }
     else
     {
-        MessageData::CAMERACHANGEFREEMODEDATA	p = { position };
+        Model::Node* PRock = model->FindNode("mixamorig:Hips");
+        //Model::Node* PRock = model->FindNode("mixamorig:Neck");
+        DirectX::XMFLOAT3 pPosition =
+        {
+                    PRock->worldTransform._41,
+                    PRock->worldTransform._42,
+                    PRock->worldTransform._43
+        };
+        MessageData::CAMERACHANGEFREEMODEDATA	p = { pPosition };
         Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
     }
 
@@ -2700,7 +2715,8 @@ void Player::UpdateReviveState(float elapsedTime)
 bool Player::InputMagicframe()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_B&& magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
+    //if (gamePad.GetButtonDown() & GamePad::BTN_B&& magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
+    if ( !mp->GetMpEmpth())
     {
         // mp消費
         mp->ApplyConsumption(magicConsumption);
@@ -2794,18 +2810,19 @@ bool Player::InputMagicframe()
      
         return true;
     }
-    else if (gamePad.GetButtonUp() & GamePad::BTN_B)
-    {
-        gamePad.SetButtonDownCountinue(false);
-    }
+    //else if (gamePad.GetButtonUp() & GamePad::BTN_B)
+    //{
+    //    gamePad.SetButtonDownCountinue(false);
+    //}
     return false;
 }
 
 bool Player::InputMagicIce()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
-    {
+    //if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
+        if ( !mp->GetMpEmpth())
+        {
         // mp消費
         mp->ApplyConsumption(magicConsumption);
         // 前方向 sinの計算
@@ -2898,17 +2915,18 @@ bool Player::InputMagicIce()
 
         return true;
     }
-    else if (gamePad.GetButtonUp() & GamePad::BTN_B)
-    {
-        gamePad.SetButtonDownCountinue(false);
-    }
+    //else if (gamePad.GetButtonUp() & GamePad::BTN_B)
+    //{
+    //    gamePad.SetButtonDownCountinue(false);
+    //}
     return false;
 }
 
 bool Player::InputMagicLightning()
 {
-    GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
+   // GamePad& gamePad = Input::Instance().GetGamePad();
+   // if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
+    if (!mp->GetMpEmpth())
     {
         // mp消費
         mp->ApplyConsumption(magicConsumption);
@@ -3002,10 +3020,10 @@ bool Player::InputMagicLightning()
 
         return true;
     }
-    else if (gamePad.GetButtonUp() & GamePad::BTN_B)
-    {
-        gamePad.SetButtonDownCountinue(false);
-    }
+    //else if (gamePad.GetButtonUp() & GamePad::BTN_B)
+    //{
+    //    gamePad.SetButtonDownCountinue(false);
+    //}
     return false;
 }
 

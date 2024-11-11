@@ -1,5 +1,7 @@
 #pragma once
 #include "StateBase.h"
+#include "Input\GamePad.h"
+#include "Input/Input.h"
 #include "Actor.h"
 
 
@@ -289,7 +291,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 };
 
 
@@ -328,7 +330,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 };
 
 // 徘徊ステートオブジェクト
@@ -357,7 +359,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 };
 
 
@@ -392,7 +394,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 };
 
 // 着地ステートオブジェクト
@@ -419,10 +421,10 @@ private:
 	bool  loop = false;
 
 	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	float currentAnimationStartSeconds = 0.5f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 };
 
 // ジャンプ中ステートオブジェクト
@@ -475,15 +477,20 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
 private:
 	std::shared_ptr<ModelControll> modelControllid;
 	std::shared_ptr<Movement> moveid;
 	float				stateTimer = 0.0f;
 	bool				button = false;
+	bool				buttonSeconde = false;
 
 	float				turnSpeed = DirectX::XMConvertToRadians(90);
 
 	float               speed = 10;
+
+	// 最初の一回だけ呼びたいから
+	bool                InitializationCheck = false;
 
 	// 再生ループ
 	bool  loop = false;
@@ -492,7 +499,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 
 	// 回転許可
 	bool rotateCheck = false;
@@ -503,7 +510,7 @@ private:
 	DirectX::XMFLOAT3 vector = {0,0,0};
 
 	// 攻撃サポート範囲
-	float attackCheckRange = 15;
+	float attackCheckRange = 10;
 
 	float attackCheckRangeMin = 4;
 
@@ -511,6 +518,46 @@ private:
 
 	// 加速度
 	DirectX::XMFLOAT3 velocity = { 0,0,0 };
+
+	// コマンド確認
+	std::vector<GamePadButton> commandSeconde;
+	std::vector<GamePadButton> commandThrede;
+	
+
+	bool deleteCheck = false;
+};
+
+// 魔法ステートオブジェクト
+class PlayerMagicState : public State
+{
+public:
+	// コンストラクタ
+	PlayerMagicState(Actor* player) :State(player) {};
+	// デストラクタ
+	~PlayerMagicState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+
+private:
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+	// 魔法発射種類
+	int                       magicType = 0;
+
 };
 
 // よろけステートオブジェクト
@@ -540,7 +587,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 };
 
 // 回避ステートオブジェクト
@@ -574,7 +621,7 @@ private:
 	float currentAnimationStartSeconds = 0.3f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 };
 
 // 反射ステートオブジェクト
@@ -603,7 +650,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 };
 
 // 死亡ステートオブジェクト
@@ -633,7 +680,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 
 	// 経過時間最大
 	float stateTimerMax = 40;
@@ -664,5 +711,5 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 1.0f;
+	float blendSeconds = 0.5f;
 };

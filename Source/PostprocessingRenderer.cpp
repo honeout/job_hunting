@@ -180,25 +180,6 @@ void PostprocessingRenderer::Render(RenderContext rc)
 
 
 
-        // 描画対象を変更
-    
-        renderSprite->SetShaderResourceView(sceneData.srv,sceneData.width,sceneData.height);
-
-
-        renderSprite->Update(0, 0, graphics.GetScreenWidth(), graphics.GetScreenHeight(),
-            0, 0, static_cast<float>(sceneData.width),static_cast<float>(sceneData.height),
-            0,
-            1, 1, 1, 1);
-
-
-
-
-
-        // シェーダーに渡すテクスチャを設定
-        rc.finalpassnData.bloomTexture = luminanceExtractBokehRenderTarget->GetShaderResourceView().Get();
-        //rc.colorGradingData = colorGradingData;
-
-
         //	ヴィネット用定数バッファ
         {
             static constexpr int VignetteCBVIndex = 2;
@@ -227,6 +208,27 @@ void PostprocessingRenderer::Render(RenderContext rc)
 
         }
         rc.deviceContext->PSSetShader(vignette_pixel_shader.Get(), nullptr, 0);
+
+
+
+        // 描画対象を変更
+    
+        renderSprite->SetShaderResourceView(sceneData.srv,sceneData.width,sceneData.height);
+
+
+        renderSprite->Update(0, 0, graphics.GetScreenWidth(), graphics.GetScreenHeight(),
+            0, 0, static_cast<float>(sceneData.width),static_cast<float>(sceneData.height),
+            0,
+            1, 1, 1, 1);
+
+
+
+
+
+        // シェーダーに渡すテクスチャを設定
+        rc.finalpassnData.bloomTexture = luminanceExtractBokehRenderTarget->GetShaderResourceView().Get();
+        //rc.colorGradingData = colorGradingData;
+
 
 
         shader->Draw(rc, renderSprite.get());

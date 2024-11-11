@@ -265,7 +265,7 @@ public:
     // 魔法変更
     void SetSelectMagicCheck(bool selectMagicCheck) { this->selectMagicCheck = selectMagicCheck; }
     // 魔法変更
-    bool GetSelectMagicCheck() const { return selectMagicCheck; }
+    int GetSelectMagicCheck() const { return selectMagicCheck; }
 
     // 特殊魔法発動ため
     void SetSpecialAttackCharge(float specialAttackCharge) { this->specialAttackCharge = specialAttackCharge; }
@@ -307,6 +307,7 @@ public:
         Land,
         JumpFlip,
         Attack,
+        Magic,
         Damage,
         Death,
         Revive,
@@ -365,7 +366,9 @@ public:
         Anim_Running,
         Anim_SlashThree,
         Anim_Land,
-        Anim_Dush
+        Anim_Dush,
+        Anim_Magic,
+        Anim_MagicSeconde
 
     };
 
@@ -577,10 +580,10 @@ private:
     float				characterHeight = 10.0f;
 
     // 攻撃方法の選択
-    int selectCheck = false;
+    int selectCheck = 0;
 
     // 魔法選択
-    int selectMagicCheck = false;
+    int selectMagicCheck = 0;
 
     // 特殊攻撃出るまで
     float specialAttackCharge = 0.0f;
