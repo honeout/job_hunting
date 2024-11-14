@@ -159,7 +159,14 @@ public:
     //void CollisionPlayerVsEnemies();
 
     // ノードとエネミーの衝突処理
-    void CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, const char* nodeNameSeconds);
+    void CollisionNodeVsEnemies(
+        const char* nodeName, 
+        float nodeRadius,
+        const char* nodeHeartName,
+        const char* nodeLeftArmName,
+        const char* nodeRightArmName
+
+    );
 
     // ノードと弾丸の衝突処理
     void CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius);
@@ -307,6 +314,7 @@ public:
         Land,
         JumpFlip,
         Attack,
+        SpecialAttack,
         Magic,
         Damage,
         Death,
@@ -368,7 +376,8 @@ public:
         Anim_Land,
         Anim_Dush,
         Anim_Magic,
-        Anim_MagicSeconde
+        Anim_MagicSeconde,
+        Anim_SpecialAttack
 
     };
 
@@ -451,6 +460,7 @@ public:
 
     CameraState GetLockOnState() const { return lockonState; }
     
+    void Hit();
 
 private:
     std::shared_ptr<Movement>	movement;
@@ -628,9 +638,18 @@ private:
     // 魔法の射程当たる距離
     float magicRangeLength = 470;
 
+    // 魔法消費量
     int magicConsumption = 5;
 
+    // 描画の色をどうするか
     DirectX::XMFLOAT4 mpUiColor = {1,1,1,1};
+
+
+    // ダメージ量
+    int applyDamageNormal = 1;
+
+    int hitMortion = 0;
+    int hitMortionMax = 180;
 
 };
 

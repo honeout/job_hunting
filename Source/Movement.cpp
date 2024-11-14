@@ -84,43 +84,8 @@ void Movement::MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime)
 //
 // 旋回
 bool Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime)
-{/*
-
-	std::shared_ptr<Actor> actor = GetActor();
-	speed = turnSpeed * elapsedTime;
-	DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
-	DirectX::XMVECTOR Rotation = DirectX::XMLoadFloat4(&actor->GetRotation());
-	DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationQuaternion(Rotation);
-	DirectX::XMVECTOR OneZ = DirectX::XMVectorSet(0, 0, 1, 0);
-	DirectX::XMVECTOR Front = DirectX::XMVector3TransformNormal(OneZ, Transform);
-
-    if (direction.x == 0 && direction.z == 0)return;
-
-	Direction = DirectX::XMVector3Normalize(Direction);
-	DirectX::XMVECTOR Axis = DirectX::XMVector3Cross(Front, Direction);
-	if (DirectX::XMVector3Equal(Axis, DirectX::XMVectorZero()))
-	{
-		return;
-	}
-
-	DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Front, Direction);
-
-	float dot;
-	DirectX::XMStoreFloat(&dot, Dot);
-    speed = (std::min)(1.0f - dot, speed);
-
-	DirectX::XMVECTOR Turn = DirectX::XMQuaternionRotationAxis(Axis, speed);
-	Rotation = DirectX::XMQuaternionMultiply(Rotation, Turn);
-
-	DirectX::XMFLOAT4 rotation;
-	DirectX::XMStoreFloat4(&rotation, Rotation);
-	actor->SetRotation(rotation);*/
-
-
-    //transformid = GetActor()->GetComponent<Transform>();
-     //1フレームでどれだけ移動
+{
     speed = speed * elapsedTime;
-    //speed *= elapsedTime;
 
     std::shared_ptr<Actor> actor = GetActor();
 
@@ -179,6 +144,47 @@ bool Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapse
     }
     return false;
 }
+bool Movement::TurnCheck(const DirectX::XMFLOAT3& direction, DirectX::XMFLOAT2 angleRange, float elapsedTime)
+{
+    std::shared_ptr<Actor> actor = GetActor();
+
+    DirectX::XMFLOAT3 angle = GetActor()->GetComponent<Transform>()->GetAngle();
+
+    // 進行ベクトルが0ベクトルの場合は処理する必要なし
+    if (direction.x == 0 && direction.z == 0)
+        return true;
+
+    float vx = direction.x;
+    float vz = direction.z;
+
+    float length = sqrtf(direction.x * direction.x + direction.z * direction.z);
+    if (length < 0.001f) return true;
+
+    vx /= length;
+    vz /= length;
+
+    // 自身の回転値から前方向を求める
+    float frontX = sinf(angle.y); // 左右を見る為
+    float frontZ = cosf(angle.y); // 前後判定のため
+
+
+    // 左右判定を行う為に２つの単位ベクトルの外積を計算する
+    float cross = (frontZ * vx) - (frontX * vz);
+
+    // 2Dの外積値が正の場合か負の場合によって左右判定が行える
+    // 左右判定を行うことによって左右回転を選択する
+    if (cross > angleRange.x)
+    {
+        return true;
+    }
+    else if (cross < angleRange.y)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 //
 ////旋回処理
 //void Movement::Turn(float elapsedTime, float vx, float vz, float speed)

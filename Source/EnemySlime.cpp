@@ -146,6 +146,8 @@ void EnemySlime::Update(float elapsedTime)
 
     transform->UpdateTransform();
 
+    // ダメージ点滅
+    OnHit(elapsedTime);
 
     // モーション更新処理
     switch (updateanim)
@@ -192,21 +194,32 @@ void EnemySlime::Update(float elapsedTime)
 
 void EnemySlime::Render(RenderContext& rc, ModelShader& shader)
 {
-    Graphics& graphics = Graphics::Instance();
-    //Shader* shader = graphics.GetShader();
-    //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
-    shader.Begin(rc);// シェーダーにカメラの情報を渡す
+ 
+    
+        Graphics& graphics = Graphics::Instance();
+        //Shader* shader = graphics.GetShader();
+        //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+        shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
+        if (modelDrawCheck)
+        shader.Draw(rc, model);
 
-    shader.Draw(rc, model);
-
-    shader.End(rc);
-
+        shader.End(rc);
+    
 
 }
 #ifdef _DEBUG
 void EnemySlime::OnGUI()
 {
+    if(ImGui::Button("drawtrue"))
+    {
+        modelDrawCheck = true;
+    }
+
+    if (ImGui::Button("drawfalse"))
+    {
+        modelDrawCheck = false;
+    }
     //ImGui::InputFloat("Bullet", &moveSpeed);
 }
 #endif // _DEBUG
@@ -908,6 +921,38 @@ void EnemySlime::UiControlle(float elapsedTime)
     
     
 
+}
+
+void EnemySlime::OnHit(float elapsedTime)
+{
+    if (hp->OnHit(elapsedTime))
+    {
+        ++damageStateTime;
+        if (damageStateTime >= damageStateTimeMax)
+        {
+            damageStateCheck = damageStateCheck ? false : true;
+            damageStateTime = 0;
+        }
+
+        if (damageStateCheck)
+        {
+            bool onHit = false;
+            modelDrawCheck = onHit;
+     
+        }
+        else
+        {
+            bool onHit = true;
+            modelDrawCheck = onHit;
+        }
+    }
+    else
+    {
+        damageStateTime = 0;
+
+        bool onHit = true;
+        modelDrawCheck = onHit;
+    }
 }
 
 void EnemySlime::SetRandomTargetPosition()

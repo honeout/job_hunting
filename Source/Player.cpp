@@ -111,7 +111,7 @@ void Player::Start()
 
     // トランスフォーム関数を呼び出し
     transform = GetActor()->GetComponent<Transform>();
-    
+
     // 位置等
     position = transform->GetPosition();
 
@@ -128,7 +128,7 @@ void Player::Start()
     cameraControlle = new CameraController();
 
     // ヒットエフェクト読込 
-    hitEffect = new Effect("Data/Effect/sunder.efk");
+    hitEffect = new Effect("Data/Effect/Hit.efk");
     ImpactEffect = new Effect("Data/Effect/rehleckte.efk");
     desEffect = new Effect("Data/Effect/F.efk");
 
@@ -140,70 +140,71 @@ void Player::Start()
     // 下半身
     bornDownerEndPoint = "mixamorig:Spine";
 
-   
+
     // hp設定
     hp->SetHealth(health);
     // hp最大値の設定
     hp->SetMaxHealth(maxHealth);
 
 
-// mp設定
-mp->SetMagic(magicPoint);
-// mp最大値
-mp->SetMaxMagic(magicPoint);
+    // mp設定
+    mp->SetMagic(magicPoint);
+    // mp最大値
+    mp->SetMaxMagic(magicPoint);
 
-// 半径
-transform->SetRadius(radius);
-// 身長
-transform->SetHeight(height);
+    // 半径
+    transform->SetRadius(radius);
+    // 身長
+    transform->SetHeight(height);
 
-// コマンド操作用
-selectCheck = (int)CommandAttack::Attack;
+    // コマンド操作用
+    selectCheck = (int)CommandAttack::Attack;
 
-// 魔法選択用
-selectMagicCheck = (int)CommandMagic::Normal;
+    // 魔法選択用
+    selectMagicCheck = (int)CommandMagic::Normal;
 
-// 特殊攻撃ため初期値
-specialAttackCharge = 0.0f;
+    // 特殊攻撃ため初期値
+    specialAttackCharge = 0.0f;
 
-// ステートマシン
-stateMachine = new StateMachine();
+    // ステートマシン
+    stateMachine = new StateMachine();
 
-stateMachine->RegisterState(new PlayerIdleState(GetActor().get()));
-stateMachine->RegisterState(new PlayerMovestate(GetActor().get()));
-stateMachine->RegisterState(new PlayerJumpState(GetActor().get()));
-stateMachine->RegisterState(new PlayerLandState(GetActor().get()));
-stateMachine->RegisterState(new PlayerJumpFlipState(GetActor().get()));
-stateMachine->RegisterState(new PlayerAttackState(GetActor().get()));
-stateMachine->RegisterState(new PlayerMagicState(GetActor().get()));
-stateMachine->RegisterState(new PlayerDamageState(GetActor().get()));
-stateMachine->RegisterState(new PlayerDeathState(GetActor().get()));
-stateMachine->RegisterState(new PlayerReviveState(GetActor().get()));
-stateMachine->RegisterState(new PlayerAvoidanceState(GetActor().get()));
-stateMachine->RegisterState(new PlayerReflectionState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerIdleState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerMovestate(GetActor().get()));
+    stateMachine->RegisterState(new PlayerJumpState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerLandState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerJumpFlipState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerAttackState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerSpecialAttackState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerMagicState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerDamageState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerDeathState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerReviveState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerAvoidanceState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerReflectionState(GetActor().get()));
 
-// ステートセット
-stateMachine->SetState(static_cast<int>(State::Idle));
+    // ステートセット
+    stateMachine->SetState(static_cast<int>(State::Idle));
 
-// アニメーションルール
-updateanim = UpAnim::Normal;
+    // アニメーションルール
+    updateanim = UpAnim::Normal;
 
-moveSpeedAnimation = 0.0f;
+    moveSpeedAnimation = 0.0f;
 
-// 特殊アクションの種類
-specialAttack.push((int)SpecialAttack::Normal);
+    // 特殊アクションの種類
+    specialAttack.push((int)SpecialAttack::Normal);
 
-// 特殊アクション発動不
-specialAttackTime = false;
+    // 特殊アクション発動不
+    specialAttackTime = false;
 
-// 揺れモード
-shakeMode = false;
+    // 揺れモード
+    shakeMode = false;
 
-// 回転確認
-angleCheck = false;
+    // 回転確認
+    angleCheck = false;
 
-// 曲がる速度
-turnSpeedAdd = 0;
+    // 曲がる速度
+    turnSpeedAdd = 0;
 
 
 
@@ -244,7 +245,10 @@ void Player::Update(float elapsedTime)
         }
 
         //　魔法入力処理
-        if (InputAttack() && GetSelectCheck() == (int)Player::CommandAttack::Magic)
+        if (InputAttack() && GetSelectCheck() == (int)Player::CommandAttack::Magic &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Magic) && 
+            !mp->GetMpEmpth()
+                )
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
         }
@@ -276,7 +280,7 @@ void Player::Update(float elapsedTime)
         {
             
             //TransitionAttackState();
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialAttack));
             // 特殊攻撃の発生条件 解消
             specialAttackTime = false;
                 
@@ -314,6 +318,7 @@ void Player::Update(float elapsedTime)
     
 
     // プレイヤーと敵との衝突処理
+    //CollisionBornVsProjectile("shoulder");
     CollisionBornVsProjectile("shoulder");
     CollisionPlayerVsEnemies();
     // 弾丸当たり判定
@@ -382,7 +387,6 @@ void Player::Update(float elapsedTime)
 void Player::Render(RenderContext& rc, ModelShader& shader)
 {
     Graphics& graphics = Graphics::Instance();
-
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
     
     
@@ -1578,7 +1582,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 
                 //小ジャンプ
                 //Jump(jumpSpeed * 0.5f);
-                movement->JumpVelocity(jumpSpeed * 0.5f);
+                //movement->JumpVelocity(jumpSpeed * 0.5f);
 
 
             }
@@ -1610,11 +1614,17 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 }
 
 // ノードと敵の衝突判定
-void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, const char* nodeNameSeconds)
+void Player::CollisionNodeVsEnemies(
+    const char* nodeName, float nodeRadius,
+    const char* nodeHeartName,
+    const char* nodeLeftArmName,
+    const char* nodeRightArmName
+)
 {
 
     // ノード取得
     Model::Node* node = model->FindNode(nodeName);
+
     
     //worldTransform
     //localTransform
@@ -1625,6 +1635,8 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, cons
         node->worldTransform._42,
         node->worldTransform._43
     };
+
+
     // マネージャー取得
     EnemyManager& enemyManager = EnemyManager::Instance();
 
@@ -1633,14 +1645,45 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, cons
     for (int i = 0; i < enemyCount; ++i)
     {
         std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+        
 
         DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
         float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
         float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
 
+
+
+        Model::Node* nodeHeart = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(nodeHeartName);
+        Model::Node* nodeLeftArm = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(nodeLeftArmName);
+        Model::Node* nodeRightArm = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(nodeRightArmName);
+        // 心臓位置
+        DirectX::XMFLOAT3 nodeHeartPosition;
+        nodeHeartPosition = {
+        nodeHeart->worldTransform._41,
+        nodeHeart->worldTransform._42,
+        nodeHeart->worldTransform._43
+        };
+
+        //  左腕位置
+        DirectX::XMFLOAT3 nodeLeftArmPosition;
+        nodeLeftArmPosition = {
+        nodeLeftArm->worldTransform._41,
+        nodeLeftArm->worldTransform._42,
+        nodeLeftArm->worldTransform._43
+        };
+
+        // 右腕位置
+        DirectX::XMFLOAT3 nodeRightArmPosition;
+        nodeRightArmPosition = {
+        nodeRightArm->worldTransform._41,
+        nodeRightArm->worldTransform._42,
+        nodeRightArm->worldTransform._43
+        };
+
+
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
-
+        // 下半身
         // 円柱と円
         if (Collision::IntersectSphereVsCylinder(
             nodePosition,
@@ -1659,35 +1702,169 @@ void Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius, cons
             // ダメージを与える。
             //enemy->ApplyDamage(1);
         // ダメージが通ったら消える。TRUEになるから
-            if (enemy->GetComponent<HP>()->ApplyDamage(5, 0.5f))
+            if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
             {
 
      
                 // ヒットエフェクト再生
                 {
-         /*           DirectX::XMFLOAT3 e = enemyPosition;
-                    e.y += enemyHeight * 0.5f;*/
-                    //DirectX::XMFLOAT3 e = enemyPosition;
-                 
-
+      
 
                     hitEffect->Play(nodePosition);
 
-
-                    //desEffect->Play(e);
 
                 }
                 // 当たった時の副次的効果
                 {
                     specialAttackCharge += 0.1f;
                 }
+           
+            }
+        }
+     
+        // 胸
+        // 円柱と円
+        if (Collision::IntersectSpherVsSphere(
+            nodePosition,
+            nodeRadius,
+            {
+            nodeHeartPosition.x,
+            nodeHeartPosition.y,
+            nodeHeartPosition.z
+            },
+            enemyRudius,
+            outPositon))
 
+        {
+
+            // ダメージを与える。
+            //enemy->ApplyDamage(1);
+        // ダメージが通ったら消える。TRUEになるから
+            if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
+            {
+
+
+                // ヒットエフェクト再生
+                {
+
+
+                    hitEffect->Play(nodePosition);
+
+
+                }
+                // 当たった時の副次的効果
+                {
+                    specialAttackCharge += 0.1f;
+                }
+             
+            }
+        }
+        // 左腕
+        // 円柱と円
+        if (Collision::IntersectSphereVsCylinder(
+            nodePosition,
+            nodeRadius,
+            {
+            nodeLeftArmPosition.x,
+            nodeLeftArmPosition.y,
+            nodeLeftArmPosition.z
+            },
+            enemyRudius,
+            enemyHeight,
+            outPositon))
+
+        {
+
+            // ダメージを与える。
+            //enemy->ApplyDamage(1);
+        // ダメージが通ったら消える。TRUEになるから
+            if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
+            {
+
+
+                // ヒットエフェクト再生
+                {
+
+
+
+                    hitEffect->Play(nodePosition);
+
+
+                }
+                // 当たった時の副次的効果
+                {
+                    specialAttackCharge += 0.1f;
+                }
+                
             }
         }
 
+        // 右腕
+       // 円柱と円
+        if (Collision::IntersectSphereVsCylinder(
+            nodePosition,
+            nodeRadius,
+            {
+              nodeRightArmPosition.x,
+              nodeRightArmPosition.y,
+              nodeRightArmPosition.z
+            },
+            enemyRudius,
+            enemyHeight,
+            outPositon))
 
+        {
+
+            // ダメージを与える。
+            //enemy->ApplyDamage(1);
+        // ダメージが通ったら消える。TRUEになるから
+            if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
+            {
+
+
+                // ヒットエフェクト再生
+                {
+
+
+                    hitEffect->Play(nodePosition);
+
+
+                }
+                // 当たった時の副次的効果
+                {
+                    specialAttackCharge += 0.1f;
+                }
+                
+            }
+        }
+        //// ダメージ確認
+        //if (enemy->GetComponent<HP>()->InvincibleTimerCheck())
+        //{
+        //    hitMortion = 0;
+        //}
+        //if (hitMortion < hitMortionMax)
+        //{
+        //    if (enemy->GetComponent<HP>()->DamageDrawCheck())
+        //    {
+        //        bool modelDrawCheck = false;
+        //        enemy->GetComponent<EnemySlime>()->SetModelDrawCheck(modelDrawCheck);
+        //    }
+        //    else
+        //    {
+        //        bool modelDrawCheck = true;
+        //        enemy->GetComponent<EnemySlime>()->SetModelDrawCheck(modelDrawCheck);
+        //    }
+
+        //}
+        //else
+        //{
+        //    bool modelDrawCheck = true;
+        //    enemy->GetComponent<EnemySlime>()->SetModelDrawCheck(modelDrawCheck);
+        //}
 
     }
+
+
  
 }
 
@@ -1715,7 +1892,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
     {
         for (int j = 0; j < enemyCount; ++j)
         {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(j);
             std::shared_ptr<Actor> projectille = projectileManager.GetProjectile(i);
 
             //enemy->GetComponent<ModelControll>()->GetModel()->FindNode
@@ -1786,6 +1963,7 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
 {
     // ノード取得
     Model::Node* node = model->FindNode(nodeName);
+
     //worldTransform
     //localTransform
     // ノード位置取得
@@ -2592,7 +2770,7 @@ void Player::UpdateAttackState(float elapsedTime)
     if (attackCollisionFlag)
     {
         // 左手ノードとエネミーの衝突処理
-        CollisionNodeVsEnemies("mixamorig:LeftHand", leftHandRadius, "shoulder");
+        //CollisionNodeVsEnemies("mixamorig:LeftHand", leftHandRadius);
     }
 
     Ground();
@@ -2716,8 +2894,8 @@ bool Player::InputMagicframe()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
     //if (gamePad.GetButtonDown() & GamePad::BTN_B&& magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
-    if ( !mp->GetMpEmpth())
-    {
+    //if ( !mp->GetMpEmpth())
+    //{
         // mp消費
         mp->ApplyConsumption(magicConsumption);
 
@@ -2809,20 +2987,20 @@ bool Player::InputMagicframe()
         selectMagicCheck = (int)CommandMagic::Normal;
      
         return true;
-    }
+    //}
     //else if (gamePad.GetButtonUp() & GamePad::BTN_B)
     //{
     //    gamePad.SetButtonDownCountinue(false);
     //}
-    return false;
+    //return false;
 }
 
 bool Player::InputMagicIce()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
     //if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
-        if ( !mp->GetMpEmpth())
-        {
+        //if ( !mp->GetMpEmpth())
+        //{
         // mp消費
         mp->ApplyConsumption(magicConsumption);
         // 前方向 sinの計算
@@ -2914,20 +3092,20 @@ bool Player::InputMagicIce()
         selectMagicCheck = (int)CommandMagic::Normal;
 
         return true;
-    }
+    //}
     //else if (gamePad.GetButtonUp() & GamePad::BTN_B)
     //{
     //    gamePad.SetButtonDownCountinue(false);
     //}
-    return false;
+    //return false;
 }
 
 bool Player::InputMagicLightning()
 {
    // GamePad& gamePad = Input::Instance().GetGamePad();
    // if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
-    if (!mp->GetMpEmpth())
-    {
+    //if (!mp->GetMpEmpth())
+    //{
         // mp消費
         mp->ApplyConsumption(magicConsumption);
         // 前方向 sinの計算
@@ -3019,7 +3197,7 @@ bool Player::InputMagicLightning()
         selectMagicCheck = (int)CommandMagic::Normal;
 
         return true;
-    }
+    //}
     //else if (gamePad.GetButtonUp() & GamePad::BTN_B)
     //{
     //    gamePad.SetButtonDownCountinue(false);
@@ -3310,6 +3488,8 @@ bool Player::Ground()
     return false;
     
 }
+
+
 
 
 

@@ -38,9 +38,9 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     std::shared_ptr<Actor> actor = GetActor();
   /*  int health = actor->GetHealth();*/
 
+    onDamage = false;
     // €–S‚µ‚Ä‚¢‚éê‡‚ÍŒ’Nó‘Ô‚ğ•ÏX‚µ‚È‚¢
     if (health <= 0)return false;
-
     if (invincibleTimer > 0.0f)return false;
 
     // ‰½•b–³“G
@@ -66,18 +66,28 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     // ƒ_ƒ[ƒW’Ê’m
     else
     {
-        OnDamaged();
+        onDamage = true;
         return true;
     }
 
     //actor->SetHealth(health);
-
     // Œ’Nó‘Ô‚ª•ÏX‚µ‚½ê‡‚Ítrue‚ğ•Ô‚·
     return false;
 }
 
+bool HP::DamageDrawCheck()
+{
+    --stateTimer;
 
-
+    if (stateTimer < 0.0f)
+    {
+        stateTimer = stateTimerMax;
+        return false;
+    }
+
+    if (stateTimer >= 0.0f)
+        return true;
+}
 bool HP::OnDamaged()
 {
     //--health;
@@ -95,5 +105,34 @@ bool HP::HealthPinch()
     if (health <= (maxHealth / 4))
         return true;
     
+    return false;
+}
+
+bool HP::InvincibleTimerCheck()
+{
+    if (invincibleTimer <= 0)
+        return false;
+
+    if (invincibleTimer > 0)
+        return true;
+}
+
+bool HP::OnHit(float elapsedTime)
+{
+
+    if (onDamage)
+    {
+        blinkingTime = 0;
+    }
+
+    if (blinkingTime < blinkingTimeMax)
+    {
+        ++blinkingTime;
+
+        return true;
+    }
+
+
+
     return false;
 }

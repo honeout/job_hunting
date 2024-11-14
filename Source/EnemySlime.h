@@ -136,6 +136,9 @@ public:
     //  UI操作
     void UiControlle(float elapsedTime);
 
+    // HP現象時点滅
+    void OnHit(float elapsedTime);
+
 //private:
     // ターゲット位置をランダム設定
     void SetRandomTargetPosition();
@@ -222,7 +225,7 @@ public:
     // 地面判定復活
     bool GetPushuThrow() const { return pushuThrow; }
 
-
+    void SetModelDrawCheck(bool modelDrawCheck) {this->modelDrawCheck = modelDrawCheck;}
 
 private:
     // モデル情報を確保
@@ -306,6 +309,14 @@ private:
 
     bool pushuThrow = false;
 
+    // model描画チェック
+    bool modelDrawCheck = true;
+
+    // ダメージ経過時間
+    int damageStateTime = 0;
+    int damageStateTimeMax = 15;
+    bool damageStateCheck = false;
+
 };
 
 // エネミーマネージャー
@@ -338,6 +349,8 @@ public:
     std::shared_ptr<Actor> GetEnemy(int index) { return enemies.at(index); }
 
     void Remove(std::shared_ptr<Actor> projectile);
+
+
 
 private:
     std::vector<std::shared_ptr<Actor>> enemies;

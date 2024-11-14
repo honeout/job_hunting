@@ -550,8 +550,8 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 
 
 
-	// 時間経過
-	currentAnimationSeconds += elapsedTime;
+	// 時間経過 加算分アニメーションを早めるかどうか
+	currentAnimationSeconds += currentAnimationAddSeconds > currentAnimationAddSecondsMin ? currentAnimationAddSeconds : elapsedTime;
 
 	// 再生時間が終端時間を超えたら
 	// 最高を超えた場合のループの場合を作る。
@@ -1693,7 +1693,7 @@ void Model::PlayLowerBodyAnimation(int index, bool loop, float blendSeconds)
 }
 
 // アニメーション再生
-void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,float blendSeconds)
+void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,float blendSeconds, float currentAnimationAddSeconds)
 {
 	currentAnimationIndex = index;
 	currentAnimationSeconds = oldcurrentAnimationSeconds = currentanimationseconds;
@@ -1702,6 +1702,8 @@ void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,flo
 
 	animationBlendTime = 0.0f;
 	animationBlendSeconds = blendSeconds;
+
+	this->currentAnimationAddSeconds = currentAnimationAddSeconds;
 }
 
 void Model::PlayReverseAnimation(int index, bool loop,float currentanimationseconds, float blendSeconds)

@@ -26,6 +26,9 @@ public:
 	// ù‰ñ
 	//void Turn(float elapsedTime, float vx, float vz, float speed);
 	bool Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime);
+	
+	// Šp“x‚ğ’²®‚µ‚Äˆê’èŠp“x‚È‚çOk
+	bool TurnCheck(const DirectX::XMFLOAT3& direction, DirectX::XMFLOAT2 angleRange,float elapsedTime);
 
 	// ’…’n‚µ‚½‚ÉŒÄ‚×‚ê‚é
 	void OnLanding();

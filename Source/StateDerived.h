@@ -3,6 +3,7 @@
 #include "Input\GamePad.h"
 #include "Input/Input.h"
 #include "Actor.h"
+#include "Effect.h"
 
 
 enum AttackChange
@@ -454,7 +455,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	float blendSeconds = 0.3f;
 
 	// 回転スピード
 	float turnSpeed = DirectX::XMConvertToRadians(720);
@@ -477,7 +478,13 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
+private:
+	enum  AttackMemory
+	{
+		OnePushu = 1,
+		TwoPushu,
+		ThreePushu,
+	};
 private:
 	std::shared_ptr<ModelControll> modelControllid;
 	std::shared_ptr<Movement> moveid;
@@ -485,7 +492,7 @@ private:
 	bool				button = false;
 	bool				buttonSeconde = false;
 
-	float				turnSpeed = DirectX::XMConvertToRadians(90);
+	float				turnSpeed = DirectX::XMConvertToRadians(720);
 
 	float               speed = 10;
 
@@ -497,6 +504,8 @@ private:
 
 	// 再生開始時間 
 	float currentAnimationStartSeconds = 0.0f;
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.03f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
@@ -510,9 +519,9 @@ private:
 	DirectX::XMFLOAT3 vector = {0,0,0};
 
 	// 攻撃サポート範囲
-	float attackCheckRange = 10;
+	float attackCheckRange = 8;
 
-	float attackCheckRangeMin = 4;
+	float attackCheckRangeMin = 3;
 
 	float gravity = -0.2f;
 
@@ -523,8 +532,69 @@ private:
 	std::vector<GamePadButton> commandSeconde;
 	std::vector<GamePadButton> commandThrede;
 	
-
+	// ダメージ食らった時に強制終了
 	bool deleteCheck = false;
+
+	// ３回目の攻撃で強制終了
+	int attackMemory = 0;
+	int attackMemoryMax = 3;
+
+	// コマンド操作の記録確認時間
+	int frame = 150;
+
+	// 角度範囲
+	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
+
+	bool              oneAttackCheck = false;
+};
+
+
+
+// 近接必殺技ステートオブジェクト
+class PlayerSpecialAttackState : public State
+{
+public:
+	// コンストラクタ
+	PlayerSpecialAttackState(Actor* player) :State(player) {};
+	// デストラクタ
+	~PlayerSpecialAttackState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	enum  AttackMemory
+	{
+		OnePushu = 1,
+		TwoPushu,
+		ThreePushu,
+	};
+private:
+	std::shared_ptr<Transform> transformid;
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
+	std::shared_ptr<HP> enemyHpId;
+	float				stateTimer = 0.0f;
+
+	std::unique_ptr<Effect> lightning;
+	std::unique_ptr<Effect> lightningAttack;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.03f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+
+	bool button = false;
+
 };
 
 // 魔法ステートオブジェクト

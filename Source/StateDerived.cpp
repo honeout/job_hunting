@@ -948,6 +948,12 @@ void PlayerJumpFlipState::Execute(float elapsedTime)
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Jump));
 	}
 
+	// 回避
+	if (owner->GetComponent<Player>()->InputAvoidance())
+	{
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+	}
+
 }
 
 void PlayerJumpFlipState::Exit()
@@ -966,36 +972,56 @@ void PlayerAttackState::Enter()
 	//std::shared_ptr<Player> playerId = owner->GetComponent<Player>();
 
 		//Player::Anim_Slash, loop,
-	
 		// １回
 	if (!button && !buttonSeconde)
 	{
+		// 再生開始
+		currentAnimationStartSeconds = 0.0f;
 		// アニメーション再生
 		modelControllid->GetModel()->PlayAnimation(
 			Player::Anim_Slash, loop,
 			currentAnimationStartSeconds, blendSeconds
+			, currentAnimationAddSeconds
 		);
+		// 攻撃三回で一度強制終了
+		++attackMemory;
+
+		// 1回目の攻撃なら
+		oneAttackCheck = true;
 	}
 
 	// 三回
 	if (!button && buttonSeconde)
 	{
+		// 再生開始
+		currentAnimationStartSeconds = 0.7f;
 		// アニメーション再生
 		modelControllid->GetModel()->PlayAnimation(
 			Player::Anim_SlashThree, loop,
 			currentAnimationStartSeconds, blendSeconds
+			, currentAnimationAddSeconds
 		);
+		// 攻撃三回で一度強制終了
+		++attackMemory;
 
 		buttonSeconde = false;
+		
 	}
 	// 二回
 	if (button)
 	{
+		// 再生開始
+		currentAnimationStartSeconds = 0.3f;
+
 		// アニメーション再生
 		modelControllid->GetModel()->PlayAnimation(
 			Player::Anim_SlashBeside, loop,
 			currentAnimationStartSeconds, blendSeconds
+			, currentAnimationAddSeconds
 		);
+		// 攻撃三回で一度強制終了
+		++attackMemory;
+
 		button = false;
 	}
 
@@ -1015,8 +1041,10 @@ void PlayerAttackState::Enter()
 	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
 
 	
-	moveid->SetGravity(gravity);
-
+	//moveid->SetGravity(gravity);
+	// 重力オフ
+	bool stopFall = true;
+	moveid->SetStopFall(stopFall);
 
 	// 移動の停止
 	bool stopMove = true;
@@ -1064,23 +1092,18 @@ void PlayerAttackState::Execute(float elapsedTime)
 		owner->GetComponent<Player>()->GetSelectCheck() ==
 		(int)Player::CommandAttack::Attack)
 	{
-		int frame;
-
-		frame = 60;
 		// コマンド確認3弾攻撃
 		if (gamePad.ConfirmCommand(commandThrede, frame) && button && !buttonSeconde)
 		{
 			buttonSeconde = true;
 			//owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
 		}
-		frame = 60;
 		// コマンド確認2弾攻撃
 		if (gamePad.ConfirmCommand(commandSeconde, frame) && !button && !buttonSeconde)
 		{
 			button = true;
 			//owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
 		}
-
 	}
 
 	// 回避
@@ -1116,71 +1139,117 @@ void PlayerAttackState::Execute(float elapsedTime)
 
 			DirectX::XMStoreFloat(&length, LengthSq);
 			// 距離
-			if (length < attackCheckRange && length > attackCheckRangeMin)
+			if (length < attackCheckRange && length > attackCheckRangeMin
+				&& moveid->TurnCheck(
+					vector, angleRange, elapsedTime))
 			{
 				bool stop = false;
 				moveid->SetStopMove(stop);
-				
-				
-				
 				
 				// 正面
 				if (moveid->Turn(vector, turnSpeed, elapsedTime))
 				{
 						//Player::Anim_Slash, loop,
-					rotateCheck = true;
-					modelControllid->GetModel()->PlayAnimation(
-						Player::Anim_Slash, loop,
-						currentAnimationStartSeconds, blendSeconds
-					);
-					// アニメーション再生
-					owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+					//rotateCheck = true;
+					//modelControllid->GetModel()->PlayAnimation(
+					//	Player::Anim_Slash, loop,
+					//	currentAnimationStartSeconds, blendSeconds
+					//);
+					//// アニメーション再生
+					//owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
 
 					moveid->Move(vector, speed, elapsedTime);
 					
 				}
-
+				stop = true;
+				moveid->SetStopMove(stop);
 			}
 			else
 			{
 
-				bool stop = true;
-				moveid->SetStopMove(stop);
+			
+
+				rotateCheck = true;
 			}
 
 
 		}
 
 	}
-
-
-	if (!modelControllid->GetModel()->IsPlayAnimation())
+	if (attackMemory > attackMemoryMax)
 	{
-		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
-		deleteCheck = false;
 		// 入力確認でステート変更
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
-
-	
-		//// 移動の停止
-		//moveid->SetGravity(button ?
-		//	gravity :
-		//	owner->GetComponent<Player>()->GetGravity());
-
-		//bool stop = false;
-		//moveid->SetStopMove(stop);
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 
-		//button = false;
-		
+		// 攻撃最大値調整
+		attackMemory = 0;
 	}
-	
+	//if (!modelControllid->GetModel()->IsPlayAnimation())
+	//{
+	//	owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
+	//	deleteCheck = false;
+	//	// 入力確認でステート変更
+	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
+	//	
+	//}
+
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 
-	owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "shoulder");
+
+	// 1撃目
+	if (animationTime >= 0.8f && attackMemory == AttackMemory::OnePushu)
+	{
+		// １回目の攻撃なら
+		oneAttackCheck = false;
+
+		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
+		deleteCheck = false;
+		// 入力確認でステート変更
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
+		return;
+	}
+
+	// 2撃目
+	if (animationTime >= 1.1f && attackMemory == AttackMemory::TwoPushu)
+	{
+		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
+		deleteCheck = false;
+
+
+
+		// 入力確認でステート変更
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
+		return;
+	}
+
+	// 3撃目
+	if (animationTime >= 2.7f && attackMemory == AttackMemory::ThreePushu)
+	{
+		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
+		deleteCheck = false;
+
+		
+
+		// 入力確認でステート変更
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
+		return;
+	}
+
+	// １撃目以外でそのアニメ―ションが起こった時
+	if (modelControllid->GetModel()->IsPlayAnimation())
+	{
+		deleteCheck = false;
+
+		// 入力確認でステート変更
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
+		return;
+	}
+
+	owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 }
 
 void PlayerAttackState::Exit()
@@ -1189,17 +1258,167 @@ void PlayerAttackState::Exit()
 	moveid->SetGravity(
 		owner->GetComponent<Player>()->GetGravity());
 
-	bool stop = false;
-	moveid->SetStopMove(stop);
-	if (deleteCheck)
+	//bool stop = false;
+	//moveid->SetStopMove(stop);
+
+
+
+	// 重力オフ
+	bool stopFall = false;
+	moveid->SetStopFall(stopFall);
+	if (deleteCheck )
 	{
 		// ダメージ食らったかどうか
 		button = false;
 		buttonSeconde = false;
+
+		// 攻撃最大値調整
+		attackMemory = 0;
 	}
 
 }
 
+void PlayerSpecialAttackState::Enter()
+{
+
+	transformid = owner->GetComponent<Transform>();
+	modelControllid = owner->GetComponent<ModelControll>();
+	moveid = owner->GetComponent<Movement>();
+
+	enemyHpId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<HP>();
+
+	lightning = std::make_unique<Effect>("Data/Effect/lightningStrike.efk");
+	lightningAttack = std::make_unique<Effect>("Data/Effect/sunder.efk");
+
+	// アニメーション再生
+	modelControllid->GetModel()->PlayAnimation(
+		Player::Anim_MagicSeconde, loop,
+		currentAnimationStartSeconds, blendSeconds
+		, currentAnimationAddSeconds
+	);
+
+	Model::Node* pHPosiiton = modelControllid->GetModel()->FindNode("mixamorig:LeftHand");
+
+	DirectX::XMFLOAT3 pPosition =
+	{
+				pHPosiiton->worldTransform._41,
+				pHPosiiton->worldTransform._42,
+				pHPosiiton->worldTransform._43
+	};
+
+	lightning->Play(pPosition);
+	// アニメーション再生
+	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+
+	// 落ちるの停止
+	bool stopFall = true;
+	moveid->SetStopFall(stopFall);
+
+	button = true;
+}
+
+void PlayerSpecialAttackState::Execute(float elapsedTime)
+{
+	if (button)
+	{
+		// 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
+		MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+		DirectX::XMFLOAT3 position = transformid->GetPosition();
+		DirectX::XMFLOAT3 angle = transformid->GetAngle();
+
+
+
+		float vx = sinf(angle.y) * 6;
+		float vz = cosf(angle.y) * 6;
+		p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+		p.data.push_back({ 95, {position.x + vx , position.y + 3, position.z + vz }, position });
+
+		Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+
+		//lightning->SetPosition(lightning->GetEfeHandle(), modelControllid->GetModel()->FindNode("mixamorig:LeftHand")->position);
+
+					// 任意のアニメーション再生区間でのみ衝突判定処理をする
+		float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+
+		//// アニメーション
+		//if (animationTime >= 1.6f)
+		//{
+
+		//}
+
+		// アニメーション
+		if (!modelControllid->GetModel()->IsPlayAnimation())
+		{
+			// アニメーション再生
+			modelControllid->GetModel()->PlayAnimation(
+				Player::Anim_SpecialAttack, loop,
+				currentAnimationStartSeconds, blendSeconds
+				, currentAnimationAddSeconds
+			);
+			button = false;
+
+
+			lightning->Stop(lightning->GetEfeHandle());
+
+			
+		}
+	}
+	else
+	{
+		// 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
+		MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+		DirectX::XMFLOAT3 position = transformid->GetPosition();
+		DirectX::XMFLOAT3 angle = transformid->GetAngle();
+
+
+
+		float vx = sinf(angle.y);
+		float vz = cosf(angle.y) * 6;
+		p.data.push_back({ 0, {position.x , position.y , position.z - vz  }, position });
+
+		Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+
+		owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+
+		/*lightningAttack->SetPosition(lightningAttack->GetEfeHandle(), modelControllid->GetModel()->FindNode("mixamorig:LeftHand")->position);*/
+
+			// 任意のアニメーション再生区間でのみ衝突判定処理をする
+		float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+
+		// アニメーション
+		if (animationTime >= 1.6f)
+		{
+			Model::Node* pHPosiiton = modelControllid->GetModel()->FindNode("mixamorig:LeftHand");
+
+			DirectX::XMFLOAT3 pPosition =
+			{
+						pHPosiiton->worldTransform._41,
+						pHPosiiton->worldTransform._42,
+						pHPosiiton->worldTransform._43
+			};
+
+			lightningAttack->Play(pPosition);
+			// 入力確認でステート変更
+			owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+
+
+			enemyHpId->ApplyDamage(10, 0.5f);
+
+
+			//owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+		}
+	}
+
+}
+
+void PlayerSpecialAttackState::Exit()
+{
+	// 落ちるの再開
+	bool stopFall = false;
+	moveid->SetStopFall(stopFall);
+}
 
 void PlayerMagicState::Enter()
 {
@@ -1529,4 +1748,5 @@ void PlayerReflectionState::Execute(float elapsedTime)
 void PlayerReflectionState::Exit()
 {
 }
+
 

@@ -124,7 +124,7 @@ public:
 
 
 	// アニメーション再生
-	void PlayAnimation(int index, bool loop,float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);
+	void PlayAnimation(int index, bool loop,float currentanimationseconds = 0.0f, float blendSeconds = 0.2f, float currentAnimationAddSeconds = 0);
 
 	//逆再生アニメーション
 	void PlayReverseAnimation(int index, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);
@@ -166,6 +166,8 @@ private:
 	int currentAnimationIndex = -1;           //アニメーション番号
 	int currentAnimationIndexSeconds = -1;           //アニメーション番号 ブレンド用
 	float currentAnimationSeconds = 0.0f;    //アニメーションの再生用時間
+	float currentAnimationAddSeconds = 0.0f;    //アニメーションの再生用加算用
+	float currentAnimationAddSecondsMin = 0.0f;    //アニメーションの再生用加算用
 	float oldcurrentAnimationSeconds = 0;
 	float rastcurrentAnimationSeconds = 0.67f;
 	float animationSecondsLengthMax = 0.0f;

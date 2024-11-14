@@ -18,6 +18,8 @@ Effect::Effect(const char* filename)
     // Effekseer::Managerを取得
     Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();
 
+    
+
     // Effekseerエフェクトを読込
     effekseerEffect = Effekseer::Effect::Create(effekseerManager, (EFK_CHAR*)utf16Filename);
 }

@@ -27,7 +27,7 @@ public:
 	bool ApplyDamage(int damage, float invincibleTime);
 
 
-	
+	bool DamageDrawCheck();
 
 	// HP状態を取得
 	int GetHealth() const { return health; }
@@ -59,6 +59,13 @@ public:
 
 	bool HealthPinch();
 
+	// 無敵時間中
+	bool InvincibleTimerCheck();
+
+	// ダメージ時を取得
+	bool OnHit(float elapsedTime);
+
+
 private:
 	// 最大値HP
 	int          maxHealth = 5;
@@ -67,7 +74,7 @@ private:
 	int          health = maxHealth;
 
 	// 無敵時間
-	float   invincibleTimer = 1.0f;
+	float   invincibleTimer = 0.0f;
 
 	// 判定
 	bool dead = false;
@@ -75,5 +82,14 @@ private:
 	// 残機
 	int life = 0;
 
-	
+	// ダメージ判定
+	bool onDamage = false;
+
+	// 経過時間
+	float stateTimerMax = 30.0f;
+	float stateTimer = stateTimerMax;
+
+	// 反転用
+	int blinkingTimeMax = 130;
+	int blinkingTime = blinkingTimeMax;
 };
