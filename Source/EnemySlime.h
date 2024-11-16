@@ -226,7 +226,10 @@ public:
     bool GetPushuThrow() const { return pushuThrow; }
 
     void SetModelDrawCheck(bool modelDrawCheck) {this->modelDrawCheck = modelDrawCheck;}
-
+    
+    // クリア確認
+    bool GetClearCheck() { return clearCheck; }
+    void SetClearCheck(bool clearCheck) { this->clearCheck = clearCheck; }
 private:
     // モデル情報を確保
     Model* model = nullptr;
@@ -312,10 +315,15 @@ private:
     // model描画チェック
     bool modelDrawCheck = true;
 
+
+
     // ダメージ経過時間
     int damageStateTime = 0;
     int damageStateTimeMax = 15;
     bool damageStateCheck = false;
+
+    // クリア確認
+    bool clearCheck = false;
 
 };
 

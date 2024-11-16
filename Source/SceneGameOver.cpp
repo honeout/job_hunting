@@ -7,7 +7,7 @@
 void SceneGameOver::Initialize()
 {
     // スプライト初期化
-    sprite = new Sprite("Data/Sprite/LoadingIcon.png");
+    sprite = new Sprite("Data/Sprite/仮End.png");
 }
 
 void SceneGameOver::Finalize()

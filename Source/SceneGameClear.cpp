@@ -7,7 +7,7 @@
 void SceneGameClear::Initialize()
 {
     // スプライト初期化
-    sprite = new Sprite("Data/Sprite/LoadingIcon.png");
+    sprite = new Sprite("Data/Sprite/仮Clear.png");
 }
 
 void SceneGameClear::Finalize()

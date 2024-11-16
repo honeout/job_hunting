@@ -69,7 +69,7 @@ private:
     DirectX::XMFLOAT3 direction;
 
     // îºåa05 
-    float radius = 0.5f;
+    float radius = 0.6f;
 
     // çÇÇ≥
     float height = 1;

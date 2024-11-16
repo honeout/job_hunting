@@ -2,6 +2,7 @@
 #include "StateBase.h"
 #include "Input\GamePad.h"
 #include "Input/Input.h"
+#include "SceneGameClear.h"
 #include "Actor.h"
 #include "Effect.h"
 
@@ -282,7 +283,6 @@ private:
 	std::shared_ptr<EnemySlime> enemyid;
 
 
-
 	float				stateTimer = 0.0f;
 
 	// 再生ループ
@@ -296,6 +296,43 @@ private:
 };
 
 
+
+// 死亡ステートオブジェクト
+class DeathState : public State
+{
+public:
+	// コンストラクタ
+	DeathState(Actor* enemy) :State(enemy) {};
+	// デストラクタ
+	~DeathState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	std::shared_ptr<EnemySlime> enemyid;
+
+	std::shared_ptr<Transform> transformid;
+
+
+
+	float				stateTimer = 0.0f;
+
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+	// クリア確認
+	bool clearCheck = true;
+};
 
 
 
@@ -465,13 +502,13 @@ private:
 
 
 // 攻撃ステートオブジェクト
-class PlayerAttackState : public State
+class PlayerQuickJabState : public State
 {
 public:
 	// コンストラクタ
-	PlayerAttackState(Actor* player) :State(player) {};
+	PlayerQuickJabState(Actor* player) :State(player) {};
 	// デストラクタ
-	~PlayerAttackState() {}
+	~PlayerQuickJabState() {}
 	// ステートに入った時のメソッド
 	void Enter()override;
 	// ステートで実行するメソッド
@@ -488,6 +525,10 @@ private:
 private:
 	std::shared_ptr<ModelControll> modelControllid;
 	std::shared_ptr<Movement> moveid;
+	std::shared_ptr<Transform> transformid;
+
+	DirectX::XMFLOAT3 angle; 
+
 	float				stateTimer = 0.0f;
 	bool				button = false;
 	bool				buttonSeconde = false;
@@ -495,6 +536,8 @@ private:
 	float				turnSpeed = DirectX::XMConvertToRadians(720);
 
 	float               speed = 10;
+
+	float               attackSpeed = 3.0f;
 
 	// 最初の一回だけ呼びたいから
 	bool                InitializationCheck = false;
@@ -550,6 +593,190 @@ private:
 
 
 
+// 攻撃ステートオブジェクト
+class PlayerSideCutState : public State
+{
+public:
+	// コンストラクタ
+	PlayerSideCutState(Actor* player) :State(player) {};
+	// デストラクタ
+	~PlayerSideCutState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	enum  AttackMemory
+	{
+		OnePushu = 1,
+		TwoPushu,
+		ThreePushu,
+	};
+private:
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
+	std::shared_ptr<Transform> transformid;
+
+	DirectX::XMFLOAT3 angle;
+
+	float				stateTimer = 0.0f;
+	bool				button = false;
+	bool				buttonSeconde = false;
+
+	float				turnSpeed = DirectX::XMConvertToRadians(720);
+
+	float               speed = 10;
+
+	float               attackSpeed = 3.0f;
+
+	// 最初の一回だけ呼びたいから
+	bool                InitializationCheck = false;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.03f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+	// 回転許可
+	bool rotateCheck = false;
+
+	// 距離
+	float length = 0;
+
+	DirectX::XMFLOAT3 vector = { 0,0,0 };
+
+	// 攻撃サポート範囲
+	float attackCheckRange = 8;
+
+	float attackCheckRangeMin = 3;
+
+	float gravity = -0.2f;
+
+	// 加速度
+	DirectX::XMFLOAT3 velocity = { 0,0,0 };
+
+	// コマンド確認
+	std::vector<GamePadButton> commandSeconde;
+	std::vector<GamePadButton> commandThrede;
+
+	// ダメージ食らった時に強制終了
+	bool deleteCheck = false;
+
+	// ３回目の攻撃で強制終了
+	int attackMemory = 0;
+	int attackMemoryMax = 3;
+
+	// コマンド操作の記録確認時間
+	int frame = 150;
+
+	// 角度範囲
+	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
+
+	bool              oneAttackCheck = false;
+};
+
+
+
+// 攻撃ステートオブジェクト
+class PlayerCycloneStrikeState : public State
+{
+public:
+	// コンストラクタ
+	PlayerCycloneStrikeState(Actor* player) :State(player) {};
+	// デストラクタ
+	~PlayerCycloneStrikeState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	enum  AttackMemory
+	{
+		OnePushu = 1,
+		TwoPushu,
+		ThreePushu,
+	};
+private:
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
+	std::shared_ptr<Transform> transformid;
+
+	DirectX::XMFLOAT3 angle;
+
+	float				stateTimer = 0.0f;
+	bool				button = false;
+	bool				buttonSeconde = false;
+
+	float				turnSpeed = DirectX::XMConvertToRadians(720);
+
+	float               speed = 10;
+
+
+	float               attackSpeed = 3.0f;
+
+	// 最初の一回だけ呼びたいから
+	bool                InitializationCheck = false;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.03f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+	// 回転許可
+	bool rotateCheck = false;
+
+	// 距離
+	float length = 0;
+
+	DirectX::XMFLOAT3 vector = { 0,0,0 };
+
+	// 攻撃サポート範囲
+	float attackCheckRange = 8;
+
+	float attackCheckRangeMin = 3;
+
+	float gravity = -0.2f;
+
+	// 加速度
+	DirectX::XMFLOAT3 velocity = { 0,0,0 };
+
+	// コマンド確認
+	std::vector<GamePadButton> commandSeconde;
+	std::vector<GamePadButton> commandThrede;
+
+	// ダメージ食らった時に強制終了
+	bool deleteCheck = false;
+
+	// ３回目の攻撃で強制終了
+	int attackMemory = 0;
+	int attackMemoryMax = 3;
+
+	// コマンド操作の記録確認時間
+	int frame = 150;
+
+	// 角度範囲
+	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
+
+	bool              oneAttackCheck = false;
+};
+
+
 // 近接必殺技ステートオブジェクト
 class PlayerSpecialAttackState : public State
 {
@@ -575,7 +802,14 @@ private:
 	std::shared_ptr<Transform> transformid;
 	std::shared_ptr<ModelControll> modelControllid;
 	std::shared_ptr<Movement> moveid;
+
+	// エネミー入れ物
+	std::shared_ptr<Transform> enemyTransform;
 	std::shared_ptr<HP> enemyHpId;
+
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT3 angle;
+
 	float				stateTimer = 0.0f;
 
 	std::unique_ptr<Effect> lightning;
@@ -594,6 +828,13 @@ private:
 
 
 	bool button = false;
+
+	// ロックオンモード
+	bool rockCheck = true;
+
+
+	float				turnSpeed = DirectX::XMConvertToRadians(720);
+
 
 };
 

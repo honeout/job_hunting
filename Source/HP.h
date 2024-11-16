@@ -90,6 +90,6 @@ private:
 	float stateTimer = stateTimerMax;
 
 	// ”½“]—p
-	int blinkingTimeMax = 130;
+	int blinkingTimeMax = 60;
 	int blinkingTime = blinkingTimeMax;
 };

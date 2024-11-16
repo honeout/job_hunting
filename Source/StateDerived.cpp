@@ -682,6 +682,8 @@ void ConfusionState::Enter()
 	// ステート待機時間
 	stateTimer = Mathf::RandomRange(6.0f, 8.0f);
 
+	
+
 }
 // 混乱更新
 void ConfusionState::Execute(float elapsedTime)
@@ -709,6 +711,60 @@ void ConfusionState::Execute(float elapsedTime)
 void ConfusionState::Exit()
 {
 
+}
+
+void DeathState::Enter()
+{
+	enemyid = owner->GetComponent<EnemySlime>();
+	transformid = owner->GetComponent<Transform>();
+
+
+	owner->GetComponent<ModelControll>() = owner->GetComponent<ModelControll>();
+	owner->GetComponent<ModelControll>()->GetModel()->
+		PlayAnimation(
+			EnemySlime::Animation::Anim_Die, loop);
+	// アニメーションルール
+	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Normal);
+
+	stateTimer = 3;
+
+	bool freeCheckCamera = false;
+
+	int playerCountMax = PlayerManager::Instance().GetPlayerCount();
+	if (playerCountMax > 0)
+	PlayerManager::Instance().GetPlayer(playerCountMax - 1)->GetComponent<Player>()->SetFreeCameraCheck(freeCheckCamera);
+}
+
+void DeathState::Execute(float elapsedTime)
+{
+
+	stateTimer -= elapsedTime; 
+	// 死亡時はそれっぽいカメラアングルで死亡
+// 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
+	MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+	DirectX::XMFLOAT3 position = transformid->GetPosition();
+	DirectX::XMFLOAT3 angle = transformid->GetAngle();
+
+
+
+	float vx = sinf(angle.y) * 6;
+	float vz = cosf(angle.y) * 6;
+	p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+	p.data.push_back({ 95, {position.x + vx + 13, position.y + 3, position.z + vz }, position });
+
+	Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+
+	if (stateTimer < 0)
+	{
+
+		enemyid->SetClearCheck(clearCheck);
+	}
+}
+
+void DeathState::Exit()
+{
+	return;
 }
 
 // プレイヤー
@@ -962,19 +1018,19 @@ void PlayerJumpFlipState::Exit()
 
 }
 
-void PlayerAttackState::Enter()
+void PlayerQuickJabState::Enter()
 {
 	bool loop = false;
 
 	modelControllid = owner->GetComponent<ModelControll>();
 	moveid = owner->GetComponent<Movement>();
+	transformid = owner->GetComponent<Transform>();
 
 	//std::shared_ptr<Player> playerId = owner->GetComponent<Player>();
 
 		//Player::Anim_Slash, loop,
 		// １回
-	if (!button && !buttonSeconde)
-	{
+
 		// 再生開始
 		currentAnimationStartSeconds = 0.0f;
 		// アニメーション再生
@@ -986,44 +1042,8 @@ void PlayerAttackState::Enter()
 		// 攻撃三回で一度強制終了
 		++attackMemory;
 
-		// 1回目の攻撃なら
-		oneAttackCheck = true;
-	}
 
-	// 三回
-	if (!button && buttonSeconde)
-	{
-		// 再生開始
-		currentAnimationStartSeconds = 0.7f;
-		// アニメーション再生
-		modelControllid->GetModel()->PlayAnimation(
-			Player::Anim_SlashThree, loop,
-			currentAnimationStartSeconds, blendSeconds
-			, currentAnimationAddSeconds
-		);
-		// 攻撃三回で一度強制終了
-		++attackMemory;
-
-		buttonSeconde = false;
-		
-	}
-	// 二回
-	if (button)
-	{
-		// 再生開始
-		currentAnimationStartSeconds = 0.3f;
-
-		// アニメーション再生
-		modelControllid->GetModel()->PlayAnimation(
-			Player::Anim_SlashBeside, loop,
-			currentAnimationStartSeconds, blendSeconds
-			, currentAnimationAddSeconds
-		);
-		// 攻撃三回で一度強制終了
-		++attackMemory;
-
-		button = false;
-	}
+	
 
 	if (!InitializationCheck)
 	{
@@ -1046,9 +1066,11 @@ void PlayerAttackState::Enter()
 	bool stopFall = true;
 	moveid->SetStopFall(stopFall);
 
+
+
 	// 移動の停止
-	bool stopMove = true;
-	moveid->SetStopMove(stopMove);
+	//bool stopMove = true;
+	//moveid->SetStopMove(stopMove);
 
 	// 回転するかチェック
 	rotateCheck = false;
@@ -1061,43 +1083,27 @@ void PlayerAttackState::Enter()
 
 }
 
-void PlayerAttackState::Execute(float elapsedTime)
+void PlayerQuickJabState::Execute(float elapsedTime)
 {
 	GamePad& gamePad = Input::Instance().GetGamePad();
 
 	// ロックオン処理
 	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
-	//// 攻撃複数
-	//if (owner->GetComponent<Player>()->InputAttack()&&
-	//	owner->GetComponent<Player>()->GetSelectCheck() == 
-	//	(int)Player::CommandAttack::Attack)
-	//{
-	//	button = true;
-	//}
-	//// コマンド確認
-	//std::vector<GamePadButton> command;
-	//command.push_back(GamePad::BTN_X);
-	//command.push_back(GamePad::BTN_X);
-	//command.push_back(GamePad::BTN_A);
-	//int frame = 60;
-	//// コマンド確認
-	//if (gamePad.ConfirmCommand(command, frame))
-	//{
-	//	button = false;
-	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
-	//}
+
+	angle = transformid->GetAngle();
+
+	DirectX::XMFLOAT3 direction;
+	direction.x = sinf(angle.y) * 6;
+	direction.y = 0;
+	direction.z = cosf(angle.y) * 6;
+
+	moveid->Move(direction, attackSpeed,elapsedTime);
 
 	if (owner->GetComponent<Player>()->InputAttack() && 
 		owner->GetComponent<Player>()->GetSelectCheck() ==
 		(int)Player::CommandAttack::Attack)
 	{
-		// コマンド確認3弾攻撃
-		if (gamePad.ConfirmCommand(commandThrede, frame) && button && !buttonSeconde)
-		{
-			buttonSeconde = true;
-			//owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
-		}
 		// コマンド確認2弾攻撃
 		if (gamePad.ConfirmCommand(commandSeconde, frame) && !button && !buttonSeconde)
 		{
@@ -1143,26 +1149,18 @@ void PlayerAttackState::Execute(float elapsedTime)
 				&& moveid->TurnCheck(
 					vector, angleRange, elapsedTime))
 			{
-				bool stop = false;
-				moveid->SetStopMove(stop);
+				//bool stop = false;
+				//moveid->SetStopMove(stop);
 				
 				// 正面
 				if (moveid->Turn(vector, turnSpeed, elapsedTime))
 				{
-						//Player::Anim_Slash, loop,
-					//rotateCheck = true;
-					//modelControllid->GetModel()->PlayAnimation(
-					//	Player::Anim_Slash, loop,
-					//	currentAnimationStartSeconds, blendSeconds
-					//);
-					//// アニメーション再生
-					//owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
 
 					moveid->Move(vector, speed, elapsedTime);
 					
 				}
-				stop = true;
-				moveid->SetStopMove(stop);
+				//stop = true;
+				//moveid->SetStopMove(stop);
 			}
 			else
 			{
@@ -1185,14 +1183,7 @@ void PlayerAttackState::Execute(float elapsedTime)
 		// 攻撃最大値調整
 		attackMemory = 0;
 	}
-	//if (!modelControllid->GetModel()->IsPlayAnimation())
-	//{
-	//	owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
-	//	deleteCheck = false;
-	//	// 入力確認でステート変更
-	//	owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
-	//	
-	//}
+
 
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
@@ -1201,7 +1192,7 @@ void PlayerAttackState::Execute(float elapsedTime)
 
 
 	// 1撃目
-	if (animationTime >= 0.8f && attackMemory == AttackMemory::OnePushu)
+	if (animationTime >= 0.8f )
 	{
 		// １回目の攻撃なら
 		oneAttackCheck = false;
@@ -1209,57 +1200,21 @@ void PlayerAttackState::Execute(float elapsedTime)
 		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
 		deleteCheck = false;
 		// 入力確認でステート変更
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button  ? Player::State::SideCut : Player::State::Move));
 		return;
 	}
 
-	// 2撃目
-	if (animationTime >= 1.1f && attackMemory == AttackMemory::TwoPushu)
-	{
-		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
-		deleteCheck = false;
 
-
-
-		// 入力確認でステート変更
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
-		return;
-	}
-
-	// 3撃目
-	if (animationTime >= 2.7f && attackMemory == AttackMemory::ThreePushu)
-	{
-		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
-		deleteCheck = false;
-
-		
-
-		// 入力確認でステート変更
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
-		return;
-	}
-
-	// １撃目以外でそのアニメ―ションが起こった時
-	if (modelControllid->GetModel()->IsPlayAnimation())
-	{
-		deleteCheck = false;
-
-		// 入力確認でステート変更
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button || buttonSeconde ? Player::State::Attack : Player::State::Move));
-		return;
-	}
 
 	owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 }
 
-void PlayerAttackState::Exit()
+void PlayerQuickJabState::Exit()
 {
 	// 移動の停止
 	moveid->SetGravity(
 		owner->GetComponent<Player>()->GetGravity());
 
-	//bool stop = false;
-	//moveid->SetStopMove(stop);
 
 
 
@@ -1278,6 +1233,362 @@ void PlayerAttackState::Exit()
 
 }
 
+
+void PlayerSideCutState::Enter()
+{
+	bool loop = false;
+
+	modelControllid = owner->GetComponent<ModelControll>();
+	moveid = owner->GetComponent<Movement>();
+	transformid = owner->GetComponent<Transform>();
+
+	// 二回
+
+		// 再生開始
+		currentAnimationStartSeconds = 0.2f;
+
+		// アニメーション再生
+		modelControllid->GetModel()->PlayAnimation(
+			Player::Anim_SlashBeside, loop,
+			currentAnimationStartSeconds, blendSeconds
+			, currentAnimationAddSeconds
+		);
+
+	
+
+	if (!InitializationCheck)
+	{
+
+		// コマンド設定二回目攻撃
+		commandSeconde.push_back(GamePad::BTN_B);
+
+
+		// コマンド設定三回目攻撃
+		commandThrede.push_back(GamePad::BTN_B);
+
+
+	}
+	// アニメーション再生
+	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+
+
+	//moveid->SetGravity(gravity);
+	// 重力オフ
+	bool stopFall = true;
+	moveid->SetStopFall(stopFall);
+
+	// 移動の停止
+	//bool stopMove = true;
+	//moveid->SetStopMove(stopMove);
+
+	// 回転するかチェック
+	rotateCheck = false;
+
+
+	InitializationCheck = true;
+}
+
+void PlayerSideCutState::Execute(float elapsedTime)
+{
+	GamePad& gamePad = Input::Instance().GetGamePad();
+
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+
+
+
+	angle = transformid->GetAngle();
+
+	DirectX::XMFLOAT3 direction;
+	direction.x = sinf(angle.y) * 6;
+	direction.y = 0;
+	direction.z = cosf(angle.y) * 6;
+
+	moveid->Move(direction, attackSpeed, elapsedTime);
+
+	if (owner->GetComponent<Player>()->InputAttack() &&
+		owner->GetComponent<Player>()->GetSelectCheck() ==
+		(int)Player::CommandAttack::Attack)
+	{
+		// コマンド確認3弾攻撃
+		if (gamePad.ConfirmCommand(commandThrede, frame))
+		{
+			buttonSeconde = true;
+			//owner->GetComponent<Pl/ayer>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
+		}
+
+	}
+
+	// 回避
+	if (owner->GetComponent<Player>()->InputAvoidance())
+	{
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+
+		button = false;
+		buttonSeconde = false;
+	}
+
+
+
+	// 回転
+	if (!rotateCheck)
+	{
+		DirectX::XMVECTOR Vector;
+		DirectX::XMVECTOR LengthSq;
+
+		DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner->GetComponent<Transform>()->GetPosition());
+		EnemyManager& enemyManager = EnemyManager::Instance();
+		int enemyCount = enemyManager.GetEnemyCount();
+		for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+		{
+			DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
+
+
+			Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+
+			LengthSq = DirectX::XMVector3Length(Vector);
+
+			DirectX::XMStoreFloat3(&vector, Vector);
+
+			DirectX::XMStoreFloat(&length, LengthSq);
+			// 距離
+			if (length < attackCheckRange && length > attackCheckRangeMin
+				&& moveid->TurnCheck(
+					vector, angleRange, elapsedTime))
+			{
+				//bool stop = false;
+				//moveid->SetStopMove(stop);
+
+				// 正面
+				if (moveid->Turn(vector, turnSpeed, elapsedTime))
+				{
+
+					moveid->Move(vector, speed, elapsedTime);
+
+				}
+				//stop = true;
+				//moveid->SetStopMove(stop);
+			}
+			else
+			{
+
+
+
+				rotateCheck = true;
+			}
+
+
+		}
+
+	}
+
+
+	// 任意のアニメーション再生区間でのみ衝突判定処理をする
+	float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
+
+
+	// 2撃目
+	if (animationTime >= 1.1f)
+	{
+		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
+		deleteCheck = false;
+
+
+
+		// 入力確認でステート変更
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(buttonSeconde ? Player::State::CycloneStrike : Player::State::Move));
+
+		return;
+	}
+
+
+	owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+
+}
+
+void PlayerSideCutState::Exit()
+{
+	// 移動の停止
+	moveid->SetGravity(
+		owner->GetComponent<Player>()->GetGravity());
+
+
+	// 重力オフ
+	bool stopFall = false;
+	moveid->SetStopFall(stopFall);
+	
+}
+
+
+void PlayerCycloneStrikeState::Enter()
+{
+	bool loop = false;
+
+	modelControllid = owner->GetComponent<ModelControll>();
+	moveid = owner->GetComponent<Movement>();
+	transformid = owner->GetComponent<Transform>();
+
+		// 再生開始
+		currentAnimationStartSeconds = 0.7f;
+		// アニメーション再生
+		modelControllid->GetModel()->PlayAnimation(
+			Player::Anim_SlashThree, loop,
+			currentAnimationStartSeconds, blendSeconds
+			, currentAnimationAddSeconds
+		);
+
+
+
+	if (!InitializationCheck)
+	{
+
+		// コマンド設定二回目攻撃
+		commandSeconde.push_back(GamePad::BTN_B);
+		commandSeconde.push_back(GamePad::BTN_B);
+
+		// コマンド設定三回目攻撃
+		commandThrede.push_back(GamePad::BTN_B);
+		commandThrede.push_back(GamePad::BTN_B);
+		commandThrede.push_back(GamePad::BTN_B);
+	}
+	// アニメーション再生
+	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+
+	// 重力オフ
+	bool stopFall = true;
+	moveid->SetStopFall(stopFall);
+
+	//// 移動の停止
+	//bool stopMove = true;
+	//moveid->SetStopMove(stopMove);
+
+	// 回転するかチェック
+	rotateCheck = false;
+
+
+	InitializationCheck = true;
+}
+
+void PlayerCycloneStrikeState::Execute(float elapsedTime)
+{
+	GamePad& gamePad = Input::Instance().GetGamePad();
+
+	// ロックオン処理
+	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+
+
+	angle = transformid->GetAngle();
+
+	DirectX::XMFLOAT3 direction;
+	direction.x = sinf(angle.y) * 6;
+	direction.y = 0;
+	direction.z = cosf(angle.y) * 6;
+
+	moveid->Move(direction, attackSpeed, elapsedTime);
+
+	// 回避
+	if (owner->GetComponent<Player>()->InputAvoidance())
+	{
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+
+		button = false;
+		buttonSeconde = false;
+	}
+
+
+
+	// 回転
+	if (!rotateCheck)
+	{
+		DirectX::XMVECTOR Vector;
+		DirectX::XMVECTOR LengthSq;
+
+		DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner->GetComponent<Transform>()->GetPosition());
+		EnemyManager& enemyManager = EnemyManager::Instance();
+		int enemyCount = enemyManager.GetEnemyCount();
+		for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+		{
+			DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
+
+
+			Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+
+			LengthSq = DirectX::XMVector3Length(Vector);
+
+			DirectX::XMStoreFloat3(&vector, Vector);
+
+			DirectX::XMStoreFloat(&length, LengthSq);
+			// 距離
+			if (length < attackCheckRange && length > attackCheckRangeMin
+				&& moveid->TurnCheck(
+					vector, angleRange, elapsedTime))
+			{
+				//bool stop = false;
+				//moveid->SetStopMove(stop);
+
+				// 正面
+				if (moveid->Turn(vector, turnSpeed, elapsedTime))
+				{
+
+					moveid->Move(vector, speed, elapsedTime);
+
+				}
+				//stop = true;
+				//moveid->SetStopMove(stop);
+			}
+			else
+			{
+
+
+
+				rotateCheck = true;
+			}
+
+
+		}
+
+	}
+
+
+	// 任意のアニメーション再生区間でのみ衝突判定処理をする
+	float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
+
+
+	// 3撃目
+	if (animationTime >= 2.7f )
+	{
+		owner->GetComponent<Player>()->SetAttackCollisionFlag(false);
+		deleteCheck = false;
+
+
+
+		// 入力確認でステート変更
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+		return;
+	}
+
+
+	owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+
+}
+
+void PlayerCycloneStrikeState::Exit()
+{
+	// 移動の停止
+	moveid->SetGravity(
+		owner->GetComponent<Player>()->GetGravity());
+
+
+
+	// 重力オフ
+	bool stopFall = false;
+	moveid->SetStopFall(stopFall);
+
+}
+
+
 void PlayerSpecialAttackState::Enter()
 {
 
@@ -1285,6 +1596,8 @@ void PlayerSpecialAttackState::Enter()
 	modelControllid = owner->GetComponent<ModelControll>();
 	moveid = owner->GetComponent<Movement>();
 
+
+	enemyTransform = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>();
 	enemyHpId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<HP>();
 
 	lightning = std::make_unique<Effect>("Data/Effect/lightningStrike.efk");
@@ -1321,11 +1634,11 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 {
 	if (button)
 	{
-		// 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
+
 		MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-		DirectX::XMFLOAT3 position = transformid->GetPosition();
-		DirectX::XMFLOAT3 angle = transformid->GetAngle();
+		position = transformid->GetPosition();
+		angle = transformid->GetAngle();
 
 
 
@@ -1336,16 +1649,9 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 
 		Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
-		//lightning->SetPosition(lightning->GetEfeHandle(), modelControllid->GetModel()->FindNode("mixamorig:LeftHand")->position);
-
 					// 任意のアニメーション再生区間でのみ衝突判定処理をする
 		float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
 
-		//// アニメーション
-		//if (animationTime >= 1.6f)
-		//{
-
-		//}
 
 		// アニメーション
 		if (!modelControllid->GetModel()->IsPlayAnimation())
@@ -1361,24 +1667,66 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 
 			lightning->Stop(lightning->GetEfeHandle());
 
+
+			rockCheck = true;
+			owner->GetComponent<Player>()->SetRockCheck(rockCheck);
+
+
 			
 		}
 	}
 	else
 	{
 		// 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
-		MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+		//MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-		DirectX::XMFLOAT3 position = transformid->GetPosition();
-		DirectX::XMFLOAT3 angle = transformid->GetAngle();
+		//DirectX::XMFLOAT3 position = transformid->GetPosition();
+		//DirectX::XMFLOAT3 angle = transformid->GetAngle();
 
 
 
-		float vx = sinf(angle.y);
-		float vz = cosf(angle.y) * 6;
-		p.data.push_back({ 0, {position.x , position.y , position.z - vz  }, position });
+		/*float vx = sinf(angle.y);
+		float vz = cosf(angle.y);*/
+		//p.data.push_back({ 0, {position.x * vx , position.y + 3, position.z - vz }, position });
+		
+		// ロックオン
+		//rockCheck = true;
+		//owner->GetComponent<Player>()->SetRockCheck(rockCheck);
 
-		Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+		owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+
+		// フリーカメラのロックを外す
+		//bool freeCameraCheck = false;
+		//owner->GetComponent<Player>()->SetFreeCameraCheck(freeCameraCheck);
+
+		//position = transformid->GetPosition();
+		//angle = transformid->GetAngle();
+
+
+		//DirectX::XMVECTOR PPosition = DirectX::XMLoadFloat3(&position);
+		//DirectX::XMVECTOR EPosition = DirectX::XMLoadFloat3(&enemyTransform->GetPosition());
+
+		//DirectX::XMVECTOR vector = DirectX::XMVectorSubtract(EPosition,PPosition);
+		//vector = DirectX::XMVector3Normalize(vector);
+
+		//DirectX::XMFLOAT3 direction;
+		//DirectX::XMStoreFloat3(&direction, vector);
+
+		//DirectX::XMFLOAT3 pPosition;
+
+		//pPosition =
+		//{
+		//	position.x * direction.x ,
+		//	position.y * direction.y,
+		//	position.z * direction.z
+		//};
+		//MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+		//p.data.push_back({ 0, pPosition, position });
+		//Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+
+
+
+		//Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
 		owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 
@@ -1390,6 +1738,15 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 		// アニメーション
 		if (animationTime >= 1.6f)
 		{
+			// カメラ振動
+			MessageData::CAMERASHAKEDATA cameraShakeData;
+
+			float shakeTimer = 0.5f;
+			float shakePower = 0.8f;
+			cameraShakeData = { shakeTimer , shakePower};
+
+			Messenger::Instance().SendData(MessageData::CAMERASHAKE, &cameraShakeData);
+
 			Model::Node* pHPosiiton = modelControllid->GetModel()->FindNode("mixamorig:LeftHand");
 
 			DirectX::XMFLOAT3 pPosition =
@@ -1398,6 +1755,8 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 						pHPosiiton->worldTransform._42,
 						pHPosiiton->worldTransform._43
 			};
+
+
 
 			lightningAttack->Play(pPosition);
 			// 入力確認でステート変更
@@ -1418,6 +1777,14 @@ void PlayerSpecialAttackState::Exit()
 	// 落ちるの再開
 	bool stopFall = false;
 	moveid->SetStopFall(stopFall);
+
+	//rockCheck = false;
+	//owner->GetComponent<Player>()->SetRockCheck(rockCheck);
+
+	//// フリーカメラのロックをとどめる
+	//bool freeCameraCheck = true;
+	//owner->GetComponent<Player>()->SetFreeCameraCheck(freeCameraCheck);
+
 }
 
 void PlayerMagicState::Enter()

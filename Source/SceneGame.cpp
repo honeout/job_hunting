@@ -85,7 +85,7 @@ void SceneGame::Initialize()
 		actor->AddComponent<Transform>();
 
 		actor->GetComponent<Transform>()->
-			SetPosition(DirectX::XMFLOAT3(0, 0, -7));
+			SetPosition(DirectX::XMFLOAT3(0, 0, -10));
 
 		actor->GetComponent<Transform>()->
 			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
@@ -139,7 +139,7 @@ void SceneGame::Initialize()
 		actor->AddComponent<Movement>();
 		actor->AddComponent<HP>();
 		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
-		int life = 2;
+		int life = 0;
 		hp->SetLife(life);
 		actor->AddComponent<Collision>();
 		actor->AddComponent<EnemySlime>();
@@ -1206,7 +1206,7 @@ void SceneGame::Initialize()
 		float angle = 0;
 		transform2D->SetAngle(angle);
 
-		DirectX::XMFLOAT2 scale = { 100,100 };
+		DirectX::XMFLOAT2 scale = { 120,120 };
 		transform2D->SetScale(scale);
 
 		// 元の大きさ
@@ -1419,9 +1419,12 @@ void SceneGame::Update(float elapsedTime)
 			{
 				colorGradingData.brigthness = 3.0f;
 				hp->SetDead(false);
-				ActorManager::Instance().Clear();
+				//ActorManager::Instance().Clear();
 
-				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameClear));
+				EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Death));
+
+
+				
 
 			}
 			if (hp->GetHealth() <= 0 && hp->GetLife() >= 0)
@@ -1431,6 +1434,11 @@ void SceneGame::Update(float elapsedTime)
 
 				// 残機を減らす
 				//hp->SetLife(hp->GetLife() - 1);
+			}
+			// クリア
+			if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->GetClearCheck())
+			{
+				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameClear));
 			}
 		}
 		for (int i = 0; i < UiManager::Instance().GetUiesCount(); ++i)

@@ -38,11 +38,11 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     std::shared_ptr<Actor> actor = GetActor();
   /*  int health = actor->GetHealth();*/
 
-    onDamage = false;
+
     // €–S‚µ‚Ä‚¢‚éê‡‚ÍŒ’Nó‘Ô‚ğ•ÏX‚µ‚È‚¢
     if (health <= 0)return false;
     if (invincibleTimer > 0.0f)return false;
-
+    onDamage = false;
     // ‰½•b–³“G
     invincibleTimer = invincibleTime;
 
@@ -124,7 +124,7 @@ bool HP::OnHit(float elapsedTime)
     {
         blinkingTime = 0;
     }
-
+    onDamage = false;
     if (blinkingTime < blinkingTimeMax)
     {
         ++blinkingTime;

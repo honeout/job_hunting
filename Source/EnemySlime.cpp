@@ -79,6 +79,7 @@ void EnemySlime::Start()
     stateMachine->RegisterState(new AttackShotThrowingState(GetActor().get()));
     stateMachine->RegisterState(new ConfusionState(GetActor().get()));
     stateMachine->RegisterState(new DamageState(GetActor().get()));
+    stateMachine->RegisterState(new DeathState(GetActor().get()));
     
 
     // ステートセット
@@ -108,7 +109,6 @@ void EnemySlime::Start()
 void EnemySlime::Update(float elapsedTime)
 {
     // ステート毎の処理
- 
 
     stateMachine->Update(elapsedTime);
 
@@ -220,6 +220,8 @@ void EnemySlime::OnGUI()
     {
         modelDrawCheck = false;
     }
+
+
     //ImGui::InputFloat("Bullet", &moveSpeed);
 }
 #endif // _DEBUG
@@ -263,6 +265,8 @@ void EnemySlime::DrawDebugPrimitive()
 
     debugRenderer->DrawSphere(position, 10, DirectX::XMFLOAT4(0, 1, 0, 1));
     debugRenderer->DrawSphere(position, 3, DirectX::XMFLOAT4(0, 1, 0, 1));
+
+    debugRenderer->DrawCylinder(targetPosition, radius, height, DirectX::XMFLOAT4(1, 1, 0, 1));
 }
 
 // 足踏み(衝撃波)の当たり判定
@@ -893,6 +897,7 @@ void EnemySlime::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
 
 void EnemySlime::UiControlle(float elapsedTime)
 {
+    if (UiManager::Instance().GetUiesCount() <= 0)return;
     float gaugeWidth = hp->GetMaxHealth() * hp->GetHealth() * 0.12f;
     std::shared_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };

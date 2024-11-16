@@ -137,7 +137,13 @@ public:
     // 移動入力処理
     bool InputMove(float elapsedTime);
 
+    // ロックオン入力
     bool InputRockOn();
+
+    // ロックオンのUIを出す
+    void RockOnUI(ID3D11DeviceContext* dc,
+        const DirectX::XMFLOAT4X4& view,
+        const DirectX::XMFLOAT4X4& projection);
 
     // 攻撃方法選択
     bool InputSelectCheck();
@@ -313,7 +319,9 @@ public:
         Jump,
         Land,
         JumpFlip,
-        Attack,
+        QuickJab,
+        SideCut,
+        CycloneStrike,
         SpecialAttack,
         Magic,
         Damage,
@@ -462,6 +470,10 @@ public:
     
     void Hit();
 
+    // ロックオン入力確認
+    void SetRockCheck(bool rockCheck) { this->rockCheck = rockCheck; }
+
+    void SetFreeCameraCheck(bool freeCameraCheck) { this->freeCameraCheck = freeCameraCheck; }
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
@@ -496,7 +508,7 @@ private:
     // 回転速度　攻撃時
     float          turnSpeedAttack = DirectX::XMConvertToRadians(2600);
 
-    float          jumpSpeed = 15.0f;
+    float          jumpSpeed = 13.0f;
     
     int                     jumpLimit = 2;
 
@@ -529,7 +541,7 @@ private:
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
     float jumpfliptime = gravity * 5;
 
-    float            leftHandRadius = 0.2f;
+    float            leftHandRadius = 1.0f;
 
     bool             attackCollisionFlag = false;
   
@@ -557,7 +569,8 @@ private:
     char* bornDownerEndPoint = "";
 
     // 当たり判定半径
-    float radius = 0.7f;
+    //float radius = 0.7f;
+    float radius = 1.0f;
 
     // Hp
     int health = 50;
@@ -651,6 +664,17 @@ private:
     int hitMortion = 0;
     int hitMortionMax = 180;
 
+    // デバッグ用必殺技のカメラアングルを確認
+    bool SpecialCameraRock = false;
+
+
+    // デバッグ用カメラシェイク用
+    float shakeTimer = 3.0f;
+    float shakePower = 3.0f;
+
+
+    // ロックオン以外の狙いをプレイヤー中心かどうか
+    bool freeCameraCheck = true;
 };
 
 // プレイヤーマネージャー

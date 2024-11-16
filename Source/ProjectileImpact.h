@@ -100,7 +100,7 @@ private:
     float radiusInSide = 0.3f;
 
 
-    float scale = 1.0f;
+    float scale = 10.0f;
 
     bool movementCheck = false;
 

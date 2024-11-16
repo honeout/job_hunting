@@ -174,7 +174,9 @@ void Player::Start()
     stateMachine->RegisterState(new PlayerJumpState(GetActor().get()));
     stateMachine->RegisterState(new PlayerLandState(GetActor().get()));
     stateMachine->RegisterState(new PlayerJumpFlipState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerAttackState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerQuickJabState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerSideCutState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerCycloneStrikeState(GetActor().get()));
     stateMachine->RegisterState(new PlayerSpecialAttackState(GetActor().get()));
     stateMachine->RegisterState(new PlayerMagicState(GetActor().get()));
     stateMachine->RegisterState(new PlayerDamageState(GetActor().get()));
@@ -221,6 +223,7 @@ void Player::Update(float elapsedTime)
     // カメラコントローラー更新処理
     cameraControlle->Update(elapsedTime);
 
+    
     // コマンド操作
     {
         // 行動選択
@@ -237,10 +240,12 @@ void Player::Update(float elapsedTime)
         if (
             InputAttack() && GetSelectCheck() ==
             (int)Player::CommandAttack::Attack &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Attack)
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::SideCut)&&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::CycloneStrike)
             )
         {
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Attack));
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
 
         }
 
@@ -319,7 +324,7 @@ void Player::Update(float elapsedTime)
 
     // プレイヤーと敵との衝突処理
     //CollisionBornVsProjectile("shoulder");
-    CollisionBornVsProjectile("shoulder");
+    CollisionBornVsProjectile("body2");
     CollisionPlayerVsEnemies();
     // 弾丸当たり判定
     CollisionProjectilesVsEnemies();
@@ -386,6 +391,8 @@ void Player::Update(float elapsedTime)
 
 void Player::Render(RenderContext& rc, ModelShader& shader)
 {
+    RockOnUI(rc.deviceContext,rc.view,rc.projection);
+
     Graphics& graphics = Graphics::Instance();
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
     
@@ -577,7 +584,7 @@ void Player::UpdateCameraState(float elapsedTime)
             //break;
         }
     }
-    else
+    else if(freeCameraCheck)
     {
         Model::Node* PRock = model->FindNode("mixamorig:Hips");
         //Model::Node* PRock = model->FindNode("mixamorig:Neck");
@@ -642,7 +649,39 @@ void Player::OnGUI()
     ImGui::SliderFloat("blend", &moveSpeedAnimation, 0.0f, 1.0f);
 
     
+    if (ImGui::Button("RockCamera"))
+    {
+        SpecialCameraRock = SpecialCameraRock ? false : true;
+    }
 
+    ImGui::SliderFloat("ShakeTimer", &shakeTimer,0,10);
+    ImGui::SliderFloat("shakePower", &shakePower, 0, 10);
+
+    if (ImGui::Button("CameraShake"))
+    {
+        // カメラ振動
+        MessageData::CAMERASHAKEDATA cameraShakeData;
+
+
+        cameraShakeData = { shakeTimer , shakePower };
+
+        Messenger::Instance().SendData(MessageData::CAMERASHAKE, &cameraShakeData);
+
+    }
+
+
+    if (SpecialCameraRock)
+    {
+        MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+        float vx = sinf(angle.y);
+        float vz = cosf(angle.y);
+        p.data.push_back({ 0, {position.x * vx , position.y + 3, position.z * vz }, position });
+        
+
+        Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+
+    }
 }
 #endif // _DEBUG
 
@@ -685,6 +724,132 @@ bool Player::InputRockOn()
         buttonRock = false;
 
     return false;
+}
+void Player::RockOnUI(ID3D11DeviceContext* dc,
+    const DirectX::XMFLOAT4X4& view,
+    const DirectX::XMFLOAT4X4& projection)
+{
+    //if (!rockCheck)return;
+    // ビューポート 画面のサイズ等
+    // ビューポートとは2Dの画面に描画範囲の指定(クリッピング指定も出来る)位置を指定
+    D3D11_VIEWPORT viewport;
+    UINT numViewports = 1;
+    // ラスタライザーステートにバインドされているビューポート配列を取得
+    dc->RSGetViewports(&numViewports, &viewport);
+
+    // 変換行列
+    DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&view);
+    DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
+    // ローカルからワールドに行くときにいる奴相手のポジションを渡す。
+    DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
+
+    std::shared_ptr<Ui> uiIdSight = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<Ui>();
+    std::shared_ptr<TransForm2D> uiIdSightTransform = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<TransForm2D>();
+
+    std::shared_ptr<Ui> uiIdSightMove = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+    std::shared_ptr<TransForm2D> uiIdSightMoveTransform = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<TransForm2D>();
+
+    // 全ての敵の頭上にHPゲージを表示
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    int enemyCount = enemyManager.GetEnemyCount();
+
+    for (int i = 0; i < enemyCount; ++i)
+    {
+
+
+        Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(i)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
+
+        //std::shared_ptr <Transform> enemy = enemyManager.GetEnemy(i)->GetComponent<Transform>();
+        // エネミー頭上
+        DirectX::XMFLOAT3 worldPosition =
+        {
+            
+            characterWorld->worldTransform._41,
+            characterWorld->worldTransform._42,
+            characterWorld->worldTransform._43
+        };
+
+        // ワールドからスクリーン
+        DirectX::XMVECTOR WorldPosition = DirectX::XMLoadFloat3(&worldPosition);
+
+
+
+
+
+
+        // ゲージ描画 // ワールドからスクリーン
+
+        DirectX::XMVECTOR ScreenPosition = DirectX::XMVector3Project(
+            WorldPosition,
+            viewport.TopLeftX,
+            viewport.TopLeftY,
+            viewport.Width,
+            viewport.Height,
+            viewport.MinDepth,
+            viewport.MaxDepth,
+            Projection,
+            View,
+            World
+
+        );
+        // スクリーン座標
+        DirectX::XMFLOAT3 scereenPosition;
+        DirectX::XMStoreFloat3(&scereenPosition, ScreenPosition);
+
+        // ゲージ長さ
+        //const float gaugeWidth = 30.0f;
+        //const float gaugeHeight = 5.0f;
+
+        //float healthRate = enemy->GetHealth() / static_cast<float>(enemy->GetMaxHealth());
+
+
+        if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f && !rockCheck)
+        {
+            bool drawCheck = false;
+            uiIdSight->SetDrawCheck(drawCheck);
+
+            //uiIdSightMove->SetDrawCheck(drawCheck);
+
+            continue;
+        }
+
+        bool drawCheck = true;
+        uiIdSight->SetDrawCheck(drawCheck);
+
+       // uiIdSightMove->SetDrawCheck(drawCheck);
+
+        // 2Dスプライト描画
+        {
+            uiIdSightTransform->SetPosition(
+                { 
+                    scereenPosition.x,
+                    scereenPosition.y
+                });
+            uiIdSightMoveTransform->SetPosition(
+                {
+                    scereenPosition.x - 34,
+                    scereenPosition.y - 25
+                });
+
+            //// 描画
+            //gauge->Render(dc,
+            //    scereenPosition.x - gaugeWidth * 0.5f,
+            //    scereenPosition.y - gaugeHeight
+            //    , gaugeWidth * healthRate
+            //    , gaugeHeight,
+            //    0, 0,
+            //    static_cast<float> (gauge->GetTextureWidth()),
+            //    static_cast<float> (gauge->GetTextureHeight()),
+            //    0.0f,
+            //    1, 0, 0, 1);
+            // {位置}{サイズ}{画像どこから}{画像何処まで}
+            // dc , ｛範囲｝｛｝
+        }
+
+
+
+    }
+
 }
 // 攻撃方法選択
 bool Player::InputSelectCheck()
@@ -1465,7 +1630,7 @@ void Player::CollisionPlayerVsEnemies()
             if (Collision::IntersectCylinderVsCylinder(
                 enemyPosition,
                 enemyRadius,
-                enemyHeight / 2,
+                enemyHeight,
                 position, radius, height,
                 outPositon))
 
@@ -1527,7 +1692,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 {
 
     // ノード取得
-    Model::Node* nodehand = model->FindNode(bornname);
+    //Model::Node* nodehand = model->FindNode(bornname);
 
     EnemyManager& enemyManager = EnemyManager::Instance();
 
@@ -1556,12 +1721,17 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 
         DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
         float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
-        float enemyHeight = enemy->GetComponent<Transform>()->GetRadius();
+        float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
 
 
         if (Collision::IntersectCylinderVsCylinder(
          
-            nodePosition,
+            { 
+                nodePosition.x, 
+                nodePosition.y - 0.1f, 
+                nodePosition.z 
+            }
+            ,
             enemyRadius,
             enemyHeight,
             position, radius, height,
@@ -1687,7 +1857,7 @@ void Player::CollisionNodeVsEnemies(
         // 円柱と円
         if (Collision::IntersectSphereVsCylinder(
             nodePosition,
-            nodeRadius, 
+            leftHandRadius, 
             {
             enemyPosition.x,
             enemyPosition.y,
@@ -1726,7 +1896,7 @@ void Player::CollisionNodeVsEnemies(
         // 円柱と円
         if (Collision::IntersectSpherVsSphere(
             nodePosition,
-            nodeRadius,
+            leftHandRadius,
             {
             nodeHeartPosition.x,
             nodeHeartPosition.y,
@@ -1763,7 +1933,7 @@ void Player::CollisionNodeVsEnemies(
         // 円柱と円
         if (Collision::IntersectSphereVsCylinder(
             nodePosition,
-            nodeRadius,
+            leftHandRadius,
             {
             nodeLeftArmPosition.x,
             nodeLeftArmPosition.y,
@@ -1803,7 +1973,7 @@ void Player::CollisionNodeVsEnemies(
        // 円柱と円
         if (Collision::IntersectSphereVsCylinder(
             nodePosition,
-            nodeRadius,
+            leftHandRadius,
             {
               nodeRightArmPosition.x,
               nodeRightArmPosition.y,
@@ -2723,7 +2893,7 @@ void Player::TransitionAttackState()
     //    model->PlayAnimation(Anim_Attack, false);
     //}
 
-    state = State::Attack;
+    //state = State::Attack;
 
     updateanim = UpAnim::Normal;
     // 走りアニメーション再生
@@ -3210,7 +3380,6 @@ void Player::AttackCheckUI()
     // UIカーソル
     //std::shared_ptr<Ui> uiSight = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<Ui>();
     
-
     EnemyManager& enemyManager = EnemyManager::Instance();
 
     int enemyCount = enemyManager.GetEnemyCount();
@@ -3229,7 +3398,7 @@ void Player::AttackCheckUI()
 
 
             DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-            float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
+            float enemyRudius = enemy->GetComponent<Transform>()->GetRadius() + 1;
             float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
 
             //// 衝突処理
@@ -3241,11 +3410,11 @@ void Player::AttackCheckUI()
                 radius,
                 {
                 enemyPosition.x,
-                enemyPosition.y + enemyHeight / 2,
+                enemyPosition.y,
                 enemyPosition.z
                 },
                 enemyRudius,
-                enemyHeight / 2,
+                enemyHeight,
                 outPositon))
 
             {

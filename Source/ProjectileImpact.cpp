@@ -48,25 +48,27 @@ void ProjectileImpact::Start()
     // “®‚«”½‰f
     movementCheck = true;
 
+    scale = 10.0f;
+    effectProgress->SetScale(effectProgress->GetEfeHandle(), { scale,scale,scale });
+   
     if (effectProgress)
-        effectProgress->Play(transform->GetPosition(), 10.0f);
-
+        effectProgress->Play(transform->GetPosition(), scale);
 
 }
 
 // XVˆ—
 void ProjectileImpact::Update(float elapsedTime)
 {
+
+
     if (lifeTimer <= 0)
     {
         Destoroy();
     }
 
-    if (movementCheck)
-    {
        
-        ImpactUpdate();
-    }
+    ImpactUpdate();
+    
     transform->UpdateTransformProjectile();
 
     model->UpdateTransform(transform->GetTransform());
