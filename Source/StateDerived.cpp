@@ -1091,14 +1091,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
 
-	angle = transformid->GetAngle();
 
-	DirectX::XMFLOAT3 direction;
-	direction.x = sinf(angle.y) * 6;
-	direction.y = 0;
-	direction.z = cosf(angle.y) * 6;
-
-	moveid->Move(direction, attackSpeed,elapsedTime);
 
 	if (owner->GetComponent<Player>()->InputAttack() && 
 		owner->GetComponent<Player>()->GetSelectCheck() ==
@@ -1121,29 +1114,53 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 		buttonSeconde = false;
 	}
 
+	DirectX::XMVECTOR Vector;
+	DirectX::XMVECTOR LengthSq;
+
+	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner->GetComponent<Transform>()->GetPosition());
+	EnemyManager& enemyManager = EnemyManager::Instance();
+	int enemyCount = enemyManager.GetEnemyCount();
+	for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+	{
+		DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
+
+
+		Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+
+		LengthSq = DirectX::XMVector3Length(Vector);
+
+		DirectX::XMStoreFloat3(&vector, Vector);
+
+		DirectX::XMStoreFloat(&length, LengthSq);
+	}
+	if (length > attackCheckRangeMin)
+	{
+		bool stop = false;
+		moveid->SetStopMove(stop);
+
+		angle = transformid->GetAngle();
+
+		DirectX::XMFLOAT3 direction;
+		direction.x = sinf(angle.y) * 6;
+		direction.y = 0;
+		direction.z = cosf(angle.y) * 6;
+
+		moveid->Move(direction, attackSpeed, elapsedTime);
+	}
+	else
+	{
+
+		bool stop = true;
+		moveid->SetStopMove(stop);
+
+	}
+
 
 
 	// 回転
 	if (!rotateCheck)
 	{
-		DirectX::XMVECTOR Vector;
-		DirectX::XMVECTOR LengthSq;
 
-		DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner->GetComponent<Transform>()->GetPosition());
-		EnemyManager& enemyManager = EnemyManager::Instance();
-		int enemyCount = enemyManager.GetEnemyCount();
-		for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
-		{
-			DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
-
-
-			Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
-
-			LengthSq = DirectX::XMVector3Length(Vector);
-
-			DirectX::XMStoreFloat3(&vector, Vector);
-
-			DirectX::XMStoreFloat(&length, LengthSq);
 			// 距離
 			if (length < attackCheckRange && length > attackCheckRangeMin
 				&& moveid->TurnCheck(
@@ -1171,7 +1188,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 			}
 
 
-		}
+		
 
 	}
 	if (attackMemory > attackMemoryMax)
@@ -1297,14 +1314,14 @@ void PlayerSideCutState::Execute(float elapsedTime)
 
 
 
-	angle = transformid->GetAngle();
+	//angle = transformid->GetAngle();
 
-	DirectX::XMFLOAT3 direction;
-	direction.x = sinf(angle.y) * 6;
-	direction.y = 0;
-	direction.z = cosf(angle.y) * 6;
+	//DirectX::XMFLOAT3 direction;
+	//direction.x = sinf(angle.y) * 6;
+	//direction.y = 0;
+	//direction.z = cosf(angle.y) * 6;
 
-	moveid->Move(direction, attackSpeed, elapsedTime);
+	//moveid->Move(direction, attackSpeed, elapsedTime);
 
 	if (owner->GetComponent<Player>()->InputAttack() &&
 		owner->GetComponent<Player>()->GetSelectCheck() ==
@@ -1329,28 +1346,69 @@ void PlayerSideCutState::Execute(float elapsedTime)
 	}
 
 
+	DirectX::XMVECTOR Vector;
+	DirectX::XMVECTOR LengthSq;
+
+	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner->GetComponent<Transform>()->GetPosition());
+	EnemyManager& enemyManager = EnemyManager::Instance();
+	int enemyCount = enemyManager.GetEnemyCount();
+	for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+	{
+		DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
+
+
+		Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+
+		LengthSq = DirectX::XMVector3Length(Vector);
+
+		DirectX::XMStoreFloat3(&vector, Vector);
+
+		DirectX::XMStoreFloat(&length, LengthSq);
+	}
+
+	if (length > attackCheckRangeMin)
+	{
+		bool stop = false;
+		moveid->SetStopMove(stop);
+
+		angle = transformid->GetAngle();
+
+		DirectX::XMFLOAT3 direction;
+		direction.x = sinf(angle.y) * 6;
+		direction.y = 0;
+		direction.z = cosf(angle.y) * 6;
+
+		moveid->Move(direction, attackSpeed, elapsedTime);
+	}
+	else
+	{
+	
+		bool stop = true;
+		moveid->SetStopMove(stop);
+
+	}
 
 	// 回転
 	if (!rotateCheck)
 	{
-		DirectX::XMVECTOR Vector;
-		DirectX::XMVECTOR LengthSq;
+		//DirectX::XMVECTOR Vector;
+		//DirectX::XMVECTOR LengthSq;
 
-		DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner->GetComponent<Transform>()->GetPosition());
-		EnemyManager& enemyManager = EnemyManager::Instance();
-		int enemyCount = enemyManager.GetEnemyCount();
-		for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
-		{
-			DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
+		//DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner->GetComponent<Transform>()->GetPosition());
+		//EnemyManager& enemyManager = EnemyManager::Instance();
+		//int enemyCount = enemyManager.GetEnemyCount();
+		//for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+		//{
+		//	DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
 
 
-			Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+		//	Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
 
-			LengthSq = DirectX::XMVector3Length(Vector);
+		//	LengthSq = DirectX::XMVector3Length(Vector);
 
-			DirectX::XMStoreFloat3(&vector, Vector);
+		//	DirectX::XMStoreFloat3(&vector, Vector);
 
-			DirectX::XMStoreFloat(&length, LengthSq);
+		//	DirectX::XMStoreFloat(&length, LengthSq);
 			// 距離
 			if (length < attackCheckRange && length > attackCheckRangeMin
 				&& moveid->TurnCheck(
@@ -1378,7 +1436,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 			}
 
 
-		}
+		
 
 	}
 
@@ -1478,14 +1536,14 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
 
-	angle = transformid->GetAngle();
+	//angle = transformid->GetAngle();
 
-	DirectX::XMFLOAT3 direction;
-	direction.x = sinf(angle.y) * 6;
-	direction.y = 0;
-	direction.z = cosf(angle.y) * 6;
+	//DirectX::XMFLOAT3 direction;
+	//direction.x = sinf(angle.y) * 6;
+	//direction.y = 0;
+	//direction.z = cosf(angle.y) * 6;
 
-	moveid->Move(direction, attackSpeed, elapsedTime);
+	//moveid->Move(direction, attackSpeed, elapsedTime);
 
 	// 回避
 	if (owner->GetComponent<Player>()->InputAvoidance())
@@ -1497,28 +1555,52 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	}
 
 
+	DirectX::XMVECTOR Vector;
+	DirectX::XMVECTOR LengthSq;
+
+	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner->GetComponent<Transform>()->GetPosition());
+	EnemyManager& enemyManager = EnemyManager::Instance();
+	int enemyCount = enemyManager.GetEnemyCount();
+	for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+	{
+		DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
+
+
+		Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+
+		LengthSq = DirectX::XMVector3Length(Vector);
+
+		DirectX::XMStoreFloat3(&vector, Vector);
+
+		DirectX::XMStoreFloat(&length, LengthSq);
+	}
+
+	if (length > attackCheckRangeMin)
+	{
+		bool stop = false;
+		moveid->SetStopMove(stop);
+
+		angle = transformid->GetAngle();
+
+		DirectX::XMFLOAT3 direction;
+		direction.x = sinf(angle.y) * 6;
+		direction.y = 0;
+		direction.z = cosf(angle.y) * 6;
+
+		moveid->Move(direction, attackSpeed, elapsedTime);
+	}
+	else
+	{
+
+		bool stop = true;
+		moveid->SetStopMove(stop);
+
+	}
 
 	// 回転
 	if (!rotateCheck)
 	{
-		DirectX::XMVECTOR Vector;
-		DirectX::XMVECTOR LengthSq;
 
-		DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner->GetComponent<Transform>()->GetPosition());
-		EnemyManager& enemyManager = EnemyManager::Instance();
-		int enemyCount = enemyManager.GetEnemyCount();
-		for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
-		{
-			DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
-
-
-			Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
-
-			LengthSq = DirectX::XMVector3Length(Vector);
-
-			DirectX::XMStoreFloat3(&vector, Vector);
-
-			DirectX::XMStoreFloat(&length, LengthSq);
 			// 距離
 			if (length < attackCheckRange && length > attackCheckRangeMin
 				&& moveid->TurnCheck(
@@ -1546,7 +1628,7 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 			}
 
 
-		}
+		
 
 	}
 
@@ -1883,6 +1965,149 @@ void PlayerMagicState::Exit()
 	// 魔法の選択をゼロに
 	owner->GetComponent<Player>()->SetSelectCheck((int)Player::CommandMagic::Normal);
 
+	// 落ちるの再開
+	bool stopFall = false;
+	moveid->SetStopFall(stopFall);
+}
+
+void PlayerSpecialMagicState::Enter()
+{
+
+	transformid = owner->GetComponent<Transform>();
+	modelControllid = owner->GetComponent<ModelControll>();
+	moveid = owner->GetComponent<Movement>();
+
+
+	enemyTransform = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>();
+	enemyHpId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<HP>();
+
+	fire = std::make_unique<Effect>("Data/Effect/fire.efk");
+	fireAttack = std::make_unique<Effect>("Data/Effect/hit fire.efk");
+
+	// アニメーション再生
+	modelControllid->GetModel()->PlayAnimation(
+		Player::Anim_MagicSeconde, loop,
+		currentAnimationStartSeconds, blendSeconds
+		, currentAnimationAddSeconds
+	);
+
+	Model::Node* pHPosiiton = modelControllid->GetModel()->FindNode("mixamorig:LeftHand");
+
+	DirectX::XMFLOAT3 pPosition =
+	{
+				pHPosiiton->worldTransform._41,
+				pHPosiiton->worldTransform._42,
+				pHPosiiton->worldTransform._43
+	};
+
+	fire->Play(pPosition);
+	// アニメーション再生
+	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+
+	// 落ちるの停止
+	bool stopFall = true;
+	moveid->SetStopFall(stopFall);
+
+	button = true;
+}
+
+void PlayerSpecialMagicState::Execute(float elapsedTime)
+{
+	if (button)
+	{
+
+		MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+		position = transformid->GetPosition();
+		angle = transformid->GetAngle();
+
+
+
+		float vx = sinf(angle.y) * 6;
+		float vz = cosf(angle.y) * 6;
+		p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+		p.data.push_back({ 95, {position.x + vx , position.y + 3, position.z + vz }, position });
+
+		Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+
+		// 任意のアニメーション再生区間でのみ衝突判定処理をする
+		float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+
+
+		// アニメーション
+		if (!modelControllid->GetModel()->IsPlayAnimation())
+		{
+			// アニメーション再生
+			modelControllid->GetModel()->PlayAnimation(
+				Player::Anim_SpecialAttack, loop,
+				currentAnimationStartSeconds, blendSeconds
+				, currentAnimationAddSeconds
+			);
+			button = false;
+
+
+			fire->Stop(fire->GetEfeHandle());
+
+
+			rockCheck = true;
+			owner->GetComponent<Player>()->SetRockCheck(rockCheck);
+
+
+
+		}
+	}
+	else
+	{
+
+		owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+
+
+
+		owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+
+		/*lightningAttack->SetPosition(lightningAttack->GetEfeHandle(), modelControllid->GetModel()->FindNode("mixamorig:LeftHand")->position);*/
+
+			// 任意のアニメーション再生区間でのみ衝突判定処理をする
+		float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+
+		// アニメーション
+		if (animationTime >= 1.6f)
+		{
+			// カメラ振動
+			MessageData::CAMERASHAKEDATA cameraShakeData;
+
+			float shakeTimer = 0.5f;
+			float shakePower = 0.8f;
+			cameraShakeData = { shakeTimer , shakePower };
+
+			Messenger::Instance().SendData(MessageData::CAMERASHAKE, &cameraShakeData);
+
+			Model::Node* pHPosiiton = modelControllid->GetModel()->FindNode("mixamorig:LeftHand");
+
+			DirectX::XMFLOAT3 pPosition =
+			{
+						pHPosiiton->worldTransform._41,
+						pHPosiiton->worldTransform._42,
+						pHPosiiton->worldTransform._43
+			};
+
+
+
+			fireAttack->Play(pPosition);
+			// 入力確認でステート変更
+			owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+
+
+			enemyHpId->ApplyDamage(10, 0.5f);
+
+
+			//owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+		}
+	}
+}
+
+void PlayerSpecialMagicState::Exit()
+{
 	// 落ちるの再開
 	bool stopFall = false;
 	moveid->SetStopFall(stopFall);

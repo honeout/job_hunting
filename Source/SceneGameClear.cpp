@@ -31,7 +31,7 @@ void SceneGameClear::Update(float elapsedTime)
         GamePad::BTN_X |
         GamePad::BTN_Y;
 
-    if (gamePad.GetButton() & anyButton)// ロードの次ゲームという書き方
+    if (gamePad.GetButtonUp() & anyButton)// ロードの次ゲームという書き方
         SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
 
 }

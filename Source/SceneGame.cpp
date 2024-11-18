@@ -139,7 +139,7 @@ void SceneGame::Initialize()
 		actor->AddComponent<Movement>();
 		actor->AddComponent<HP>();
 		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
-		int life = 0;
+		int life = 2;
 		hp->SetLife(life);
 		actor->AddComponent<Collision>();
 		actor->AddComponent<EnemySlime>();

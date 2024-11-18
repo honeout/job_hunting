@@ -561,10 +561,11 @@ private:
 
 	DirectX::XMFLOAT3 vector = {0,0,0};
 
-	// 攻撃サポート範囲
-	float attackCheckRange = 8;
 
-	float attackCheckRangeMin = 3;
+	// 攻撃サポート範囲
+	float attackCheckRange = 9;
+
+	float attackCheckRangeMin = 7;
 
 	float gravity = -0.2f;
 
@@ -653,10 +654,11 @@ private:
 
 	DirectX::XMFLOAT3 vector = { 0,0,0 };
 
-	// 攻撃サポート範囲
-	float attackCheckRange = 8;
 
-	float attackCheckRangeMin = 3;
+	// 攻撃サポート範囲
+	float attackCheckRange = 9;
+
+	float attackCheckRangeMin = 7;
 
 	float gravity = -0.2f;
 
@@ -747,9 +749,9 @@ private:
 	DirectX::XMFLOAT3 vector = { 0,0,0 };
 
 	// 攻撃サポート範囲
-	float attackCheckRange = 8;
+	float attackCheckRange = 9;
 
-	float attackCheckRangeMin = 3;
+	float attackCheckRangeMin = 7;
 
 	float gravity = -0.2f;
 
@@ -868,6 +870,68 @@ private:
 
 	// 魔法発射種類
 	int                       magicType = 0;
+
+};
+
+
+// 近接必殺技ステートオブジェクト
+class PlayerSpecialMagicState : public State
+{
+public:
+	// コンストラクタ
+	PlayerSpecialMagicState(Actor* player) :State(player) {};
+	// デストラクタ
+	~PlayerSpecialMagicState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	enum  AttackMemory
+	{
+		OnePushu = 1,
+		TwoPushu,
+		ThreePushu,
+	};
+private:
+	std::shared_ptr<Transform> transformid;
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
+
+	// エネミー入れ物
+	std::shared_ptr<Transform> enemyTransform;
+	std::shared_ptr<HP> enemyHpId;
+
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT3 angle;
+
+	float				stateTimer = 0.0f;
+
+	std::unique_ptr<Effect> fire;
+	std::unique_ptr<Effect> fireAttack;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.03f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+
+	bool button = false;
+
+	// ロックオンモード
+	bool rockCheck = true;
+
+
+	float				turnSpeed = DirectX::XMConvertToRadians(720);
+
 
 };
 
