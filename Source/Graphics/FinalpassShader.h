@@ -23,6 +23,19 @@ private:
         float brightness; // 明度調整
         float dummy;
 
+#if	defined( UNIT_VN_01 )
+        //	ビネット情報
+        DirectX::XMFLOAT4	vn_color;
+        DirectX::XMFLOAT2	vn_center;
+        float				vn_intensity;
+        float				vn_smoothness;
+
+        float				vn_rounded;
+        float				vn_roundness;
+        float				vn_iris;
+        float				vn_dummy;
+#endif	//	defined( UNIT_VN_01 )
+
     };
 
     //// 周辺減光

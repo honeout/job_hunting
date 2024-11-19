@@ -1404,7 +1404,7 @@ void SceneGame::Update(float elapsedTime)
 
 				sceneChengeCheckDead = true;
 
-				colorGradingData.brigthness = 3.0f;
+				colorGradingData.brigthness = 2.0f;
 			}
 			// 演出終了
 			if (!PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && sceneChengeCheckDead)
@@ -1417,6 +1417,10 @@ void SceneGame::Update(float elapsedTime)
 			std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
 			if (hp->GetDead())
 			{
+				vignette_smoothness = 0.0f;
+
+				vignette_intensity = 0.0f;
+
 				colorGradingData.brigthness = 3.0f;
 				hp->SetDead(false);
 				//ActorManager::Instance().Clear();
@@ -1500,11 +1504,16 @@ void SceneGame::Render()
 
 
 		// 周辺減光
-		rc.vignette_color = vignette_color;
-		rc.vignette_center = vignette_center;
-		rc.vignette_intensity = vignette_intensity;
-		rc.vignette_smoothness = vignette_smoothness;
+		rc.vignetteData.color = vignette_color;
+		rc.vignetteData.center = vignette_center;
+		rc.vignetteData.intensity = vignette_intensity;
+		rc.vignetteData.smoothness = vignette_smoothness;
+		rc.vignetteData.rounded = vignette_rounded;
+		rc.vignetteData.roundness = vignette_roundness;
+
 		
+
+
 		// ポストプロセスを処理を行う
 		postprocessingRenderer->Render(rc);
 	}

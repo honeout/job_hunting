@@ -207,9 +207,34 @@ void FinalpassShader::Draw(const RenderContext& rc, const Sprite* sprite)
 	cbFinalpass.hueShift = rc.colorGradingData.hueShift;
 	cbFinalpass.saturation = rc.colorGradingData.saturation;
 	cbFinalpass.brightness = rc.colorGradingData.brigthness;
+
+#if	defined( UNIT_VN_01 )
+	//	ビネット情報
+	cbFinalpass.vn_color = rc.vignetteData.color;
+	cbFinalpass.vn_center = rc.vignetteData.center;
+	cbFinalpass.vn_rounded = rc.vignetteData.rounded ? 1.0f : 0.0f;
+#if defined( UNIT_VN_02 )
+	cbFinalpass.vn_iris = rc.vignetteData.iris ? 1.0f : 0.0f;
+#endif	//	defined( UNIT_VN_02 )
+
+	//	そのままの数値だとちょっと強度が弱いので調整する
+#if defined( UNIT_VN_02 )
+	if (rc.vignetteData.iris)
+	{
+		cbFinalpass.vn_intensity = rc.vignetteData.intensity;
+		cbFinalpass.vn_smoothness = rc.vignetteData.smoothness;
+	}
+	else
+#endif	//	defined( UNIT_VN_02 )
+	{
+		cbFinalpass.vn_intensity = rc.vignetteData.intensity * 3.0f;
+		cbFinalpass.vn_smoothness = max(0.00001f, rc.vignetteData.smoothness * 5.0f);
+	}
+	cbFinalpass.vn_roundness = 6.0f * (1.0f - rc.vignetteData.roundness) + rc.vignetteData.roundness;
+#endif	//	defined( UNIT_VN_01 )
+
+
 	rc.deviceContext->UpdateSubresource(finalpassConstatBuffer.Get(), 0, 0, &cbFinalpass, 0, 0);
-
-
 	// Todo周辺減光をcolorGradingといっしょに使うための施行錯誤
 	////	ヴィネット用定数バッファ
 	//{

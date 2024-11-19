@@ -11,6 +11,14 @@
 //   float saturation;                  // Offset:    4 Size:     4
 //   float brightness;                  // Offset:    8 Size:     4
 //   float dummy;                       // Offset:   12 Size:     4 [unused]
+//   float4 vn_color;                   // Offset:   16 Size:    16
+//   float2 vn_center;                  // Offset:   32 Size:     8
+//   float vn_intensity;                // Offset:   40 Size:     4
+//   float vn_smoothness;               // Offset:   44 Size:     4
+//   float vn_rounded;                  // Offset:   48 Size:     4
+//   float vn_roundness;                // Offset:   52 Size:     4
+//   float vn_iris;                     // Offset:   56 Size:     4
+//   float vn_dummy;                    // Offset:   60 Size:     4 [unused]
 //
 // }
 //
@@ -42,69 +50,427 @@
 // SV_TARGET                0   xyzw        0   TARGET   float   xyzw
 //
 ps_5_0
-dcl_globalFlags refactoringAllowed
-dcl_constantbuffer CB0[1], immediateIndexed
+dcl_globalFlags refactoringAllowed | skipOptimization
+dcl_constantbuffer CB0[4], immediateIndexed
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_resource_texture2d (float,float,float,float) t1
 dcl_input_ps linear v1.xyzw
 dcl_input_ps linear v2.xy
 dcl_output o0.xyzw
-dcl_temps 5
+dcl_temps 4
+//
+// Initial variable locations:
+//   v0.x <- pin.position.x; v0.y <- pin.position.y; v0.z <- pin.position.z; v0.w <- pin.position.w; 
+//   v1.x <- pin.color.x; v1.y <- pin.color.y; v1.z <- pin.color.z; v1.w <- pin.color.w; 
+//   v2.x <- pin.texcoord.x; v2.y <- pin.texcoord.y; 
+//   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
+//
+#line 12 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\FinalpassPS.hlsl"
 sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v2.xyxx, t0.xyzw, s0
-mul r1.w, r0.w, v1.w
-sample_indexable(texture2d)(float,float,float,float) r2.xyz, v2.xyxx, t1.xyzw, s0
-mad r0.xyz, r0.yzxy, v1.yzxy, r2.yzxy
-max r0.w, r0.y, r0.x
-max r0.w, r0.w, r0.z
-min r2.x, r0.y, r0.x
-min r2.x, r0.z, r2.x
-add r2.x, r0.w, -r2.x
-div r2.y, r2.x, r0.w
-mul r2.z, r2.y, cb0[0].y
-mul r3.y, r0.w, cb0[0].z
-eq r2.w, r2.z, l(0.000000)
-if_nz r2.w
-  mov r1.xyz, r3.yyyy
-else 
-  lt r2.w, l(0.000000), r2.y
-  eq r4.xyz, r0.zxyz, r0.wwww
-  add r0.xyz, -r0.yzxy, r0.xyzx
-  div r0.xyz, r0.xyzx, r2.xxxx
-  mul r0.x, r0.x, l(60.000000)
-  and r0.x, r0.x, r4.x
-  mad r0.yz, r0.yyzy, l(0.000000, 60.000000, 60.000000, 0.000000), l(0.000000, 120.000000, 240.000000, 0.000000)
-  movc r0.x, r4.y, r0.y, r0.x
-  movc r0.x, r4.z, r0.z, r0.x
-  lt r0.y, r0.x, l(0.000000)
-  add r0.z, r0.x, l(360.000000)
-  movc r0.x, r0.y, r0.z, r0.x
-  and r0.x, r0.x, r2.w
-  add r0.x, r0.x, cb0[0].x
-  mul r0.y, r0.x, l(360.000000)
-  ge r0.y, r0.y, -r0.y
-  movc r0.yz, r0.yyyy, l(0,360.000000,0.002778,0), l(0,-360.000000,-0.002778,0)
-  mul r0.x, r0.z, r0.x
-  frc r0.x, r0.x
-  mul r0.x, r0.x, r0.y
-  mul r0.y, r0.x, l(0.016667)
-  round_z r0.y, r0.y
-  mad r0.x, r0.x, l(0.016667), -r0.y
-  mad r0.z, -r2.y, cb0[0].y, l(1.000000)
-  mul r3.z, r0.z, r3.y
-  mad r0.z, -r2.z, r0.x, l(1.000000)
-  add r0.x, -r0.x, l(1.000000)
-  mad r0.x, -r2.z, r0.x, l(1.000000)
-  mul r3.xw, r0.xxxz, r3.yyyy
-  eq r2.xyzw, r0.yyyy, l(0.000000, 1.000000, 2.000000, 3.000000)
-  eq r0.xy, r0.yyyy, l(4.000000, 5.000000, 0.000000, 0.000000)
-  and r0.yzw, r3.yyzw, r0.yyyy
-  movc r0.xyz, r0.xxxx, r3.xzyx, r0.yzwy
-  movc r0.xyz, r2.wwww, r3.zwyz, r0.xyzx
-  movc r0.xyz, r2.zzzz, r3.zyxz, r0.xyzx
-  movc r0.xyz, r2.yyyy, r3.wyzw, r0.xyzx
-  movc r1.xyz, r2.xxxx, r3.yxzy, r0.xyzx
+mul r0.xyzw, r0.xyzw, v1.xyzw  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
+
+#line 15
+sample_indexable(texture2d)(float,float,float,float) r1.xyz, v2.xyxx, t1.xyzw, s0
+add r0.xyz, r0.xyzx, r1.xyzx
+
+#line 19
+resinfo_indexable(texture2d)(float,float,float,float) r1.xy, l(0), t0.xyzw
+mov r1.x, r1.x  // r1.x <- sceneTextureDimensions.x
+mov r1.y, r1.y  // r1.y <- sceneTextureDimensions.y
+
+#line 26
+nop 
+mov r0.xyz, r0.xyzx
+
+#line 8 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\FilterFunctions.hlsli"
+itof r2.x, l(0)  // r2.x <- hsv.x
+
+#line 10
+max r1.z, r0.z, r0.y
+max r2.z, r0.x, r1.z  // r2.z <- Vmax
+
+#line 11
+min r1.z, r0.z, r0.y
+min r1.z, r0.x, r1.z  // r1.z <- Vmin
+
+#line 14
+mov r1.z, -r1.z
+add r1.z, r1.z, r2.z  // r1.z <- delta
+
+#line 18
+mov r2.z, r2.z  // r2.z <- hsv.z
+
+#line 21
+div r2.y, r1.z, r2.z  // r2.y <- hsv.y
+
+#line 24
+lt r1.w, l(0.000000), r2.y
+if_nz r1.w
+
+#line 27
+  eq r1.w, r0.x, r2.z
+  if_nz r1.w
+
+#line 31
+    itof r1.w, l(60)
+    mov r2.w, -r0.z
+    add r2.w, r0.y, r2.w
+    div r2.w, r2.w, r1.z
+    mul r2.x, r1.w, r2.w
+
+#line 33
+  endif 
+
+#line 35
+  eq r1.w, r0.y, r2.z
+  if_nz r1.w
+
+#line 38
+    itof r1.w, l(60)
+    mov r2.w, -r0.x
+    add r2.w, r0.z, r2.w
+    div r2.w, r2.w, r1.z
+    mul r1.w, r1.w, r2.w
+    itof r2.w, l(120)
+    add r2.x, r1.w, r2.w
+
+#line 40
+  endif 
+
+#line 42
+  eq r0.z, r0.z, r2.z
+  if_nz r0.z
+
+#line 45
+    itof r0.z, l(60)
+    mov r0.y, -r0.y
+    add r0.x, r0.y, r0.x
+    div r0.x, r0.x, r1.z
+    mul r0.x, r0.x, r0.z
+    itof r0.y, l(240)
+    add r2.x, r0.y, r0.x
+
+#line 47
+  endif 
+
+#line 49
+  itof r0.x, l(0)
+  lt r0.x, r2.x, r0.x
+  if_nz r0.x
+
+#line 51
+    itof r0.x, l(360)
+    add r2.x, r0.x, r2.x
+
+#line 52
+  endif 
+
+#line 53
 endif 
-mov o0.xyzw, r1.xyzw
+
+#line 54
+mov r2.x, r2.x  // r2.x <- <RGB2HSV return value>.x
+mov r2.y, r2.y  // r2.y <- <RGB2HSV return value>.y
+mov r2.z, r2.z  // r2.z <- <RGB2HSV return value>.z
+
+#line 26 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\FinalpassPS.hlsl"
+mov r2.xyz, r2.xyzx  // r2.x <- color.x; r2.y <- color.y; r2.z <- color.z
+
+#line 29
+add r0.x, r2.x, cb0[0].x  // r0.x <- color.x
+
+#line 32
+mul r0.y, r2.y, cb0[0].y  // r0.y <- color.y
+
+#line 35
+mul r0.z, r2.z, cb0[0].z  // r0.z <- color.z
+
+#line 38
+nop 
+mov r0.x, r0.x
+mov r0.y, r0.y
+mov r0.z, r0.z
+
+#line 64 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\FilterFunctions.hlsli"
+itof r2.xyz, l(0, 0, 0, 0)  // r2.x <- rgb.x; r2.y <- rgb.y; r2.z <- rgb.z
+
+#line 65
+itof r1.z, l(0)
+eq r1.z, r0.y, r1.z
+if_nz r1.z
+
+#line 68
+  mov r2.z, r0.z
+  mov r2.y, r2.z
+  mov r2.x, r2.y
+
+#line 69
+else 
+
+#line 74
+  mov r0.z, r0.z  // r0.z <- Vmax
+
+#line 76
+  itof r1.z, l(360)
+  mul r1.w, r0.x, r1.z
+  mov r2.w, -r1.w
+  ge r1.w, r1.w, r2.w
+  mov r2.w, -r1.z
+  movc r1.z, r1.w, r1.z, r2.w
+  div r1.w, l(1.000000, 1.000000, 1.000000, 1.000000), r1.z
+  mul r0.x, r0.x, r1.w
+  frc r0.x, r0.x
+  mul r0.x, r0.x, r1.z  // r0.x <- hsv.x
+
+#line 77
+  itof r1.z, l(60)
+  div r1.z, r0.x, r1.z
+  ftoi r1.z, r1.z
+  itof r1.z, r1.z  // r1.z <- Huei
+
+#line 78
+  itof r1.w, l(60)
+  div r0.x, r0.x, r1.w
+  mov r1.w, -r1.z
+  add r0.x, r0.x, r1.w  // r0.x <- Huef
+
+#line 79
+  mov r1.w, -r0.y
+  add r1.w, r1.w, l(1.000000)
+  mul r1.w, r0.z, r1.w  // r1.w <- p
+
+#line 80
+  mul r2.w, r0.x, r0.y
+  mov r2.w, -r2.w
+  add r2.w, r2.w, l(1.000000)
+  mul r2.w, r0.z, r2.w  // r2.w <- q
+
+#line 81
+  mov r0.x, -r0.x
+  add r0.x, r0.x, l(1.000000)
+  mul r0.x, r0.x, r0.y
+  mov r0.x, -r0.x
+  add r0.x, r0.x, l(1.000000)
+  mul r0.x, r0.x, r0.z  // r0.x <- t
+
+#line 82
+  itof r0.y, l(0)
+  eq r0.y, r0.y, r1.z
+  if_nz r0.y
+
+#line 84
+    mov r2.x, r0.z
+
+#line 85
+    mov r2.y, r0.x
+
+#line 86
+    mov r2.z, r1.w
+
+#line 87
+  else 
+
+#line 88
+    itof r0.y, l(1)
+    eq r0.y, r0.y, r1.z
+    if_nz r0.y
+
+#line 90
+      mov r2.x, r2.w
+
+#line 91
+      mov r2.y, r0.z
+
+#line 92
+      mov r2.z, r1.w
+
+#line 93
+    else 
+
+#line 94
+      itof r0.y, l(2)
+      eq r0.y, r0.y, r1.z
+      if_nz r0.y
+
+#line 96
+        mov r2.x, r1.w
+
+#line 97
+        mov r2.y, r0.z
+
+#line 98
+        mov r2.z, r0.x
+
+#line 99
+      else 
+
+#line 100
+        itof r0.y, l(3)
+        eq r0.y, r0.y, r1.z
+        if_nz r0.y
+
+#line 102
+          mov r2.x, r1.w
+
+#line 103
+          mov r2.y, r2.w
+
+#line 104
+          mov r2.z, r0.z
+
+#line 106
+        else 
+
+#line 107
+          itof r0.y, l(4)
+          eq r0.y, r0.y, r1.z
+          if_nz r0.y
+
+#line 109
+            mov r2.x, r0.x
+
+#line 110
+            mov r2.y, r1.w
+
+#line 111
+            mov r2.z, r0.z
+
+#line 112
+          else 
+
+#line 113
+            itof r0.x, l(5)
+            eq r0.x, r0.x, r1.z
+            if_nz r0.x
+
+#line 115
+              mov r2.x, r0.z
+
+#line 116
+              mov r2.y, r1.w
+
+#line 117
+              mov r2.z, r2.w
+
+#line 118
+            endif 
+          endif 
+        endif 
+      endif 
+    endif 
+  endif 
+
+#line 120
+endif 
+
+#line 121
+mov r2.xyz, r2.xyzx  // r2.x <- <HSV2RGB return value>.x; r2.y <- <HSV2RGB return value>.y; r2.z <- <HSV2RGB return value>.z
+
+#line 38 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\FinalpassPS.hlsl"
+mov r2.xyz, r2.xyzx  // r2.x <- color.x; r2.y <- color.y; r2.z <- color.z
+
+#line 44
+itof r0.x, l(0)
+lt r0.x, r0.x, cb0[2].z
+if_nz r0.x
+
+#line 47
+  lt r0.x, l(0.500000), cb0[3].z
+  if_nz r0.x
+
+#line 49
+    mov r0.xy, -cb0[2].xyxx
+    add r0.yz, r0.xxyx, v2.xxyx  // r0.y <- vn_vector.x; r0.z <- vn_vector.y
+
+#line 50
+    div r1.z, r1.x, r1.y  // r1.z <- aspect
+
+#line 51
+    mov r1.w, l(-1.000000)
+    add r1.z, r1.w, r1.z
+    mul r1.z, r1.z, cb0[3].x
+    add r1.z, r1.z, l(1.000000)
+    mul r0.x, r0.y, r1.z  // r0.x <- vn_vector.x
+
+#line 52
+    mov r0.y, l(-0.300000)
+    add r0.y, r0.y, l(1.000000)
+    mul r0.y, r0.y, cb0[2].z
+    add r0.y, r0.y, l(0.300000)
+    mov r1.z, -r0.y
+    add r1.z, r1.z, cb0[2].z
+    mul r1.z, r1.z, cb0[3].x
+    add r0.y, r0.y, r1.z  // r0.y <- intensity
+
+#line 53
+    itof r1.z, l(1)
+    mov r0.y, -r0.y
+    add r0.y, r0.y, r1.z
+    dp2 r0.x, r0.xzxx, r0.xzxx
+    sqrt r0.x, r0.x
+    ge r0.x, r0.x, r0.y
+    movc r0.x, r0.x, l(1.000000), l(0)  // r0.x <- factor
+
+#line 54
+    max r0.x, r0.x, l(0.000000)
+    min r0.x, r0.x, l(1.000000)
+    mov r3.xyz, l(-1.000000,-1.000000,-1.000000,-0.000000)
+    add r3.xyz, r3.xyzx, cb0[1].xyzx
+    mul r0.xyz, r0.xxxx, r3.xyzx
+    add r0.xyz, r0.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
+    mul r2.xyz, r0.xyzx, r2.xyzx
+
+#line 55
+  else 
+
+#line 59
+    mov r0.xy, -cb0[2].xyxx
+    add r0.xy, r0.xyxx, v2.xyxx
+    mov r1.zw, -r0.xxxy
+    max r0.xy, r0.xyxx, r1.zwzz
+    mul r0.yz, r0.xxyx, cb0[2].zzzz  // r0.y <- d.x; r0.z <- d.y
+
+#line 61
+    div r1.x, r1.x, r1.y
+    mov r1.y, l(-1.000000)
+    add r1.x, r1.y, r1.x
+    mul r1.x, r1.x, cb0[3].x
+    add r1.x, r1.x, l(1.000000)
+    mul r0.x, r0.y, r1.x  // r0.x <- d.x
+
+#line 62
+    max r0.xy, r0.xzxx, l(0.000000, 0.000000, 0.000000, 0.000000)
+    min r0.xy, r0.xyxx, l(1.000000, 1.000000, 0.000000, 0.000000)
+    log r0.xy, r0.xyxx
+    mul r0.xy, r0.xyxx, cb0[3].yyyy
+    exp r0.xy, r0.xyxx  // r0.x <- d.x; r0.y <- d.y
+
+#line 64
+    dp2 r0.x, r0.xyxx, r0.xyxx
+    mov r0.x, -r0.x
+    add r0.x, r0.x, l(1.000000)
+    max r0.x, r0.x, l(0.000000)
+    min r0.x, r0.x, l(1.000000)
+    log r0.x, r0.x
+    mul r0.x, r0.x, cb0[2].w
+    exp r0.x, r0.x  // r0.x <- factor
+
+#line 65
+    mov r1.xyz, -cb0[1].xyzx
+    add r1.xyz, r1.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
+    mul r0.xyz, r0.xxxx, r1.xyzx
+    add r0.xyz, r0.xyzx, cb0[1].xyzx
+    mul r2.xyz, r0.xyzx, r2.xyzx
+
+#line 66
+  endif 
+
+#line 67
+endif 
+
+#line 69
+mov o0.xyz, r2.xyzx
+mov o0.w, r0.w
 ret 
-// Approximately 56 instruction slots used
+// Approximately 226 instruction slots used

@@ -46,6 +46,29 @@ struct ColorGradingData
 	float dummy;
 };
 
+
+#define	UNIT_VN_01	//	ヴィネット
+#define	UNIT_VN_02	//	アイリス処理
+
+
+#if	defined( UNIT_VN_01 )
+//	ビネット情報
+struct VignetteData
+{
+	DirectX::XMFLOAT4	color = { 0.0f, 0.0f, 0.0f, 1.0f };	//	減光色
+	DirectX::XMFLOAT2	center = { 0.5f, 0.5f };				//	減光中心点
+	float				intensity = 0.5f;							//	強度
+	float				smoothness = 0.2f;							//	滑らかさ
+
+	bool				rounded = false;						//	スクリーンサイズを考慮
+	float				roundness = 1.0f;							//	考慮度合い
+
+#if defined( UNIT_VN_02 )
+	bool				iris = false;						//	アイリス処理
+#endif	//	defined( UNIT_VN_02 )
+};
+#endif	//	defined( UNIT_VN_01 )
+
 // ガウスフィルター計算情報
 struct GaussianFilterData
 {
@@ -128,6 +151,11 @@ struct RenderContext
 
     // シャドウマップ情報
 	ShadowMapData shadowMapData;
+
+#if	defined( UNIT_VN_01 )
+	//	ビネット情報
+	VignetteData			vignetteData;
+#endif	//	defined( UNIT_VN_01 )
 
 	//Microsoft::WRL::ComPtr<ID3D11Buffer> vignette_constant_buffer;
 	//Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;
