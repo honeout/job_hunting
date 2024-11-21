@@ -135,6 +135,8 @@ void Player::Start()
     // エフェクト読み込み
     fire = new Effect("Data/Effect/fire.efk");
 
+    lightningAttack = std::make_unique<Effect>("Data/Effect/sunder.efk");
+
     // 上半身
     bornUpStartPoint = "mixamorig:Spine";
     // 下半身
@@ -207,6 +209,8 @@ void Player::Start()
 
     // 曲がる速度
     turnSpeedAdd = 0;
+
+    
 
 
 
@@ -392,6 +396,8 @@ void Player::Update(float elapsedTime)
 void Player::Render(RenderContext& rc, ModelShader& shader)
 {
     RockOnUI(rc.deviceContext,rc.view,rc.projection);
+
+    rc.colorGradingData = colorGradingData;
 
     Graphics& graphics = Graphics::Instance();
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
@@ -682,6 +688,75 @@ void Player::OnGUI()
         Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
     }
+
+
+    if (ImGui::Button("Samunail"))
+    {
+
+
+        
+
+        // アニメーション再生
+        model->PlayAnimation(
+            Player::Anim_SpecialAttack, false,
+            0.0f, 0.2f
+        );
+
+
+        angleCameraCheck = true;
+
+        //MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+        //float vx = sinf(angle.y) * 6;
+        //float vz = cosf(angle.y) * 6;
+        //p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+
+        //Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+
+
+
+        
+    }
+
+    if (angleCameraCheck)
+    {
+        Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
+
+        DirectX::XMFLOAT3 pPosition =
+        {
+                    pHPosiiton->worldTransform._41,
+                    pHPosiiton->worldTransform._42,
+                    pHPosiiton->worldTransform._43
+        };
+
+
+        // 任意のアニメーション再生区間でのみ衝突判定処理をする
+        float animationTime = model->GetCurrentANimationSeconds();
+
+
+
+        // アニメーション
+        if (animationTime >= 1.6f)
+        {
+            // カメラ振動
+            MessageData::CAMERASHAKEDATA cameraShakeData;
+
+            //float shakeTimer = 0.5f;
+            //float shakePower = 0.8f;
+
+            float shakeTimer2 = 0.3f;
+            cameraShakeData = { shakeTimer2 , shakePower };
+
+            Messenger::Instance().SendData(MessageData::CAMERASHAKE, &cameraShakeData);
+
+            lightningAttack->Play(pPosition);
+            angleCameraCheck = false;
+        }
+    }
+
+    ImGui::SliderFloat("brigthness", &colorGradingData.brigthness,0.0f ,10.0f);
+    ImGui::SliderFloat("hueShift", &colorGradingData.hueShift,0.0f ,10.0f);
+    ImGui::SliderFloat("saturation", &colorGradingData.saturation,0.0f ,10.0f);
 }
 #endif // _DEBUG
 

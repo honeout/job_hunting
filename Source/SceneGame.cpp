@@ -61,6 +61,9 @@ void SceneGame::Initialize()
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
+
+
+
 		actor->AddComponent<StageMain>();
 
 		// これが２Dかの確認
@@ -93,6 +96,17 @@ void SceneGame::Initialize()
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
 		actor->AddComponent<Movement>();
+		DirectX::XMFLOAT3 min, max;
+		min.x = -40;
+		min.y = -3.525f;
+		min.z = -40;
+
+		max.x = 40;
+		max.y = 3.525f;
+		max.z = 40;
+
+		actor->GetComponent<Movement>()->SetArea(min,max);
+
 		actor->AddComponent<HP>();
 		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
 		int life = 0;
@@ -137,6 +151,17 @@ void SceneGame::Initialize()
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f));
 		actor->AddComponent<Movement>();
+
+		DirectX::XMFLOAT3 min, max;
+		min.x = -40;
+		min.y = -3.525f;
+		min.z = -40;
+
+		max.x = 40;
+		max.y = 3.625f;
+		max.z = 40;
+		// 行動範囲設定
+		actor->GetComponent<Movement>()->SetArea(min, max);
 		actor->AddComponent<HP>();
 		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
 		int life = 2;
@@ -1378,13 +1403,25 @@ void SceneGame::Update(float elapsedTime)
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
 
+	// エフェクトしてシェーダーを使う
+	PlayEffectsShaders(elapsedTime);
+
 	// シーン切り替え
 	{
 		
 		for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 		{
+			
 			vignette_smoothness = 0.0f;
 			vignette_intensity = 0.0f;
+
+			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetFlashOn())
+			{
+				bool flashOn = false;
+				PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->SetFlashOn(flashOn);
+				// フラッシュ開始
+				shaderPlayStateTimer = shaderPlayStateTimerMax;
+			}
 			
 			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->HealthPinch() && !PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead())
 			{
@@ -1717,4 +1754,21 @@ void SceneGame::RenderShadowmap()
 		ActorManager::Instance().Render(rc, shader);
 	}
 }
+
+void SceneGame::PlayEffectsShaders(float elapsedTime)
+{
+	shaderPlayStateTimer -= elapsedTime;
+	if (shaderPlayStateTimer > 0)
+	{
+		colorGradingData.brigthness +=  (0.01f + elapsedTime);
+		
+	}
+	else
+	{
+		colorGradingData.brigthness = 0.8f;
+
+		//shaderPlayStateTimer = shaderPlayStateTimerMax;
+	}
+}
+
 

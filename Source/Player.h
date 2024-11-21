@@ -474,6 +474,14 @@ public:
     void SetRockCheck(bool rockCheck) { this->rockCheck = rockCheck; }
 
     void SetFreeCameraCheck(bool freeCameraCheck) { this->freeCameraCheck = freeCameraCheck; }
+
+    // 色
+    void SetColorGradingData(ColorGradingData colorGradingData) { this->colorGradingData = colorGradingData; }
+
+    // fashu
+    void SetFlashOn(bool flashOn) { this->flashOn = flashOn; }
+    bool GetFlashOn() { return flashOn; }
+
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
@@ -520,6 +528,8 @@ private:
     Effect* magicIceHitEffect = nullptr;
     Effect* ImpactEffect = nullptr;
     Effect* desEffect = nullptr;
+
+    std::shared_ptr<Effect> lightningAttack;
 
     Effect* fire = nullptr;
 
@@ -586,6 +596,8 @@ private:
 
     // アニメーションの時間 
     float currentANimationSeconds = 0.0f;
+
+
 
 
     // 弾丸生命時間
@@ -669,12 +681,20 @@ private:
 
 
     // デバッグ用カメラシェイク用
-    float shakeTimer = 3.0f;
-    float shakePower = 3.0f;
+    float shakeTimer = 0.5f;
+    float shakePower = 0.3f;
 
 
     // ロックオン以外の狙いをプレイヤー中心かどうか
     bool freeCameraCheck = true;
+    // デバッグ
+    bool angleCameraCheck = false;
+
+    // 画面の色
+    ColorGradingData       colorGradingData;
+
+
+    bool flashOn = false;
 };
 
 // プレイヤーマネージャー

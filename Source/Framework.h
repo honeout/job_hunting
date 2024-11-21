@@ -24,6 +24,7 @@ public:
 
 private:
 	const HWND				hWnd;
+	HDC						hDC;
 	HighResolutionTimer		timer;
 	Audio					audio;
 	Graphics				graphics;

@@ -86,4 +86,5 @@ void Transform::OnGUI()
     ImGui::InputFloat3("Angle", &angle.x);
     ImGui::InputFloat3("Scale", &scale.x);
 }
+
 #endif // _DEBUG

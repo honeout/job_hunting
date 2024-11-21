@@ -63,7 +63,10 @@ public:
 	bool InvincibleTimerCheck();
 
 	// ƒ_ƒ[ƒWŽž‚ðŽæ“¾
-	bool OnHit(float elapsedTime);
+	bool FlashTime(float elapsedTime);
+
+	// –³“GŽžŠÔ
+	void SetInvincibleTimer(float invincibleTimer) { this->invincibleTimer = invincibleTimer; }
 
 
 private:
@@ -92,4 +95,6 @@ private:
 	// ”½“]—p
 	int blinkingTimeMax = 60;
 	int blinkingTime = blinkingTimeMax;
+
+
 };

@@ -117,7 +117,7 @@ bool HP::InvincibleTimerCheck()
         return true;
 }
 
-bool HP::OnHit(float elapsedTime)
+bool HP::FlashTime(float elapsedTime)
 {
 
     if (onDamage)
@@ -125,12 +125,16 @@ bool HP::OnHit(float elapsedTime)
         blinkingTime = 0;
     }
     onDamage = false;
+    // ƒ`ƒFƒ“ƒWŽžŠÔ
     if (blinkingTime < blinkingTimeMax)
     {
         ++blinkingTime;
 
+
         return true;
     }
+
+
 
 
 

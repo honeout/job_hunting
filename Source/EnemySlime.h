@@ -291,7 +291,7 @@ private:
     int maxHealth = 50;
 
     // 半径
-    float radius = 3.0f;
+    float radius = 3.5f;
 
     // 高さ
     float height = 10.0f;
@@ -324,6 +324,8 @@ private:
 
     // クリア確認
     bool clearCheck = false;
+
+    DirectX::XMFLOAT2 colorGB = { 1,1 };
 
 };
 

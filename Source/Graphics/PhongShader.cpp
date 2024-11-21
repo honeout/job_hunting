@@ -237,6 +237,8 @@ void PhonShader::Begin(const RenderContext& rc)
     // シーン用定数バッファ更新
     CbScene cbScene;
 
+    cbScene.colorGB = rc.color;
+
     DirectX::XMMATRIX V = DirectX::XMLoadFloat4x4(&rc.view);
     DirectX::XMMATRIX P = DirectX::XMLoadFloat4x4(&rc.projection);
     DirectX::XMStoreFloat4x4(&cbScene.viewProjection, V * P);

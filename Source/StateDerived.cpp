@@ -37,8 +37,8 @@ void WanderState::Enter()
 	// アニメーションルール
 	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Reverseplayback);
 
-	//stateTimer = Mathf::RandomRange(6.0f, 8.0f);
-	stateTimer = 60.0f;
+	stateTimer = Mathf::RandomRange(6.0f, 8.0f);
+	//stateTimer = 60.0f;
 
 	// 着地瞬間
 	upOnLading = false;
@@ -1679,6 +1679,8 @@ void PlayerSpecialAttackState::Enter()
 	moveid = owner->GetComponent<Movement>();
 
 
+
+
 	enemyTransform = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>();
 	enemyHpId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<HP>();
 
@@ -1710,6 +1712,9 @@ void PlayerSpecialAttackState::Enter()
 	moveid->SetStopFall(stopFall);
 
 	button = true;
+
+	// フラッシュ
+	flashOn = true;
 }
 
 void PlayerSpecialAttackState::Execute(float elapsedTime)
@@ -1810,16 +1815,26 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 
 		//Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
-		owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+		//owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 
 		/*lightningAttack->SetPosition(lightningAttack->GetEfeHandle(), modelControllid->GetModel()->FindNode("mixamorig:LeftHand")->position);*/
 
 			// 任意のアニメーション再生区間でのみ衝突判定処理をする
 		float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+		
+		
+
+			
 
 		// アニメーション
 		if (animationTime >= 1.6f)
 		{
+			float invincibleTimer = 0.0f;
+			owner->GetComponent<HP>()->SetInvincibleTimer(invincibleTimer);
+
+			owner->GetComponent<Player>()->SetFlashOn(flashOn);
+			
+
 			// カメラ振動
 			MessageData::CAMERASHAKEDATA cameraShakeData;
 
@@ -1859,6 +1874,8 @@ void PlayerSpecialAttackState::Exit()
 	// 落ちるの再開
 	bool stopFall = false;
 	moveid->SetStopFall(stopFall);
+
+
 
 	//rockCheck = false;
 	//owner->GetComponent<Player>()->SetRockCheck(rockCheck);

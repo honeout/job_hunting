@@ -4,6 +4,14 @@
 #include "Component.h"
 #include "Collision.h"
 #include "Transform.h"
+
+// 行動範囲
+struct Area
+{
+	DirectX::XMFLOAT3 min;
+	DirectX::XMFLOAT3 max;
+};
+
 // 移動
 class Movement : public Component
 {
@@ -87,6 +95,25 @@ public:
 	// 重力設定
 	void SetGravity(float gravity) { this->gravity = gravity; }
 
+	// エリア外　行動範囲
+	bool IsOutOfAreaX(const float& positionX);
+	bool IsOutOfAreaZ(const float& positionZ);
+	bool IsOutOfAreaY(const float& positionY);
+
+	// 行動エリア設定
+	void SetArea(DirectX::XMFLOAT3 min, DirectX::XMFLOAT3 max)
+	{
+		// 行動範囲最低
+		area.min.x = min.x;
+		area.min.y = min.y;
+		area.min.z = min.z;
+
+		// 行動範囲最高
+		area.max.x = max.x;
+		area.max.y = max.y;
+		area.max.z = max.z;
+	};
+
 private:
 	float		moveSpeed = 5.0f;
 	float		turnSpeed = 6.28f;
@@ -148,4 +175,7 @@ private:
 
 	// 移動の停止
 	bool stopMove = false;
+
+	// 行動範囲
+	Area area;
 };

@@ -32,12 +32,15 @@ private:
         //DirectX::XMFLOAT3 dummy;
 
         int            spotLightCount;                // スポットライト数
-        DirectX::XMFLOAT2 dummy;
+
+        DirectX::XMFLOAT2 colorGB = {1,1};
+        //DirectX::XMFLOAT2 dummy;
     };
 
     struct CbMesh
     {
         DirectX::XMFLOAT4X4 boneTransforms[MaxBones];
+        
     };
 
     struct CbSubset

@@ -394,10 +394,16 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
         DirectX::XMFLOAT3 start = { position.x, position.y + stepOffSet, position.z };
         // 移動方向分足した奴
         DirectX::XMFLOAT3 end = { position.x + mx, position.y + stepOffSet, position.z + mz };
-
-        // 移動
-        position.x += mx;
-        position.z += mz;
+        if (!IsOutOfAreaX(position.x))
+        {
+            // 移動X
+            position.x += mx;
+        }
+        if (!IsOutOfAreaZ(position.z))
+        {
+            // 移動Z
+            position.z += mz;
+        }
 
         //// レイキャストによる壁判定
         //HitResult hit;
@@ -506,7 +512,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
         //
 
-        if (position.y >= posYMax)
+        if (position.y + FLT_EPSILON >= (area.min.y - FLT_EPSILON))
         {
             // 空中に浮いている
             position.y += my;
@@ -652,4 +658,33 @@ void Movement::UpdateVelocity( float elapsedTime)
         velocity.y = 0;
     }
 
+}
+
+bool Movement::IsOutOfAreaX(const float& positionX)
+{
+    if ((positionX + velocity.x) < area.min.x || (positionX + velocity.x) > area.max.x)
+    {
+        velocity.x = 0;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool Movement::IsOutOfAreaZ( const float& positionZ)
+{
+    if ((positionZ + velocity.z) < area.min.z || (positionZ + velocity.z) > area.max.z)
+    {
+        velocity.z = 0;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool Movement::IsOutOfAreaY(const float& positionY)
+{
+    return positionY < area.min.y || positionY > area.max.y;
 }

@@ -134,6 +134,8 @@ struct RenderContext
 	bool vignette_rounded = false;
 	float vignette_roundness = 1.0f;
 
+	DirectX::XMFLOAT2  color = { 1,1 };
+
 	// F’²•â³î•ñ
 	ColorGradingData colorGradingData;
 

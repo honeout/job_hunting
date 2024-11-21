@@ -49,9 +49,13 @@ private:
 
 	void AfterimageTime(float elapsedTime);
 
+	void PlayEffectsShaders(float elapsedTime);
+
 
 private:
-	
+	// シェーダーをエフェクトして再生
+	float shaderPlayStateTimer = 0;
+	float shaderPlayStateTimerMax = 1.0f;
 
 	// 残像出す間隔最大値
 	float spawnafterimagetimemax = 0.1f;

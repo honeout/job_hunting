@@ -43,7 +43,7 @@
 //   } spotLightData[8];                // Offset:  512 Size:   512 [unused]
 //   int pointLightCount;               // Offset: 1024 Size:     4 [unused]
 //   int spotLightCount;                // Offset: 1028 Size:     4 [unused]
-//   float2 dummy2;                     // Offset: 1032 Size:     8 [unused]
+//   float2 colorGB;                    // Offset: 1032 Size:     8 [unused]
 //
 // }
 //

@@ -31,7 +31,9 @@ cbuffer CbScene : register(b0)
     int                     pointLightCount;  // 点光源数
     //float3                  dummy2;
     int                     spotLightCount; // スポットライト数
-    float2                  dummy2;
+
+    float2                  colorGB;
+    //float2                  dummy2;
     //float2                  dummy2;
 
 

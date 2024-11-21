@@ -21,6 +21,10 @@ Framework::Framework(HWND hWnd)
 {
 	// エフェクトマネージャー初期化
 	EffectManager::Instance().Intialize();
+
+	// フレームワークの速度を一定に
+	hDC = GetDC(hWnd);
+
 	// シーン初期化
 	//sceneGame.Initialize();
 	SceneManager::Instance().ChangeScene(new SceneTitle);
@@ -31,6 +35,9 @@ Framework::~Framework()
 {
 	// シーン終了化
 	SceneManager::Instance().Clear();
+
+	// フレームワーク一定解放
+	ReleaseDC(hWnd, hDC);
 
 	// エフェクトマネージャー終了化
 	EffectManager::Instance().Finalize();
@@ -113,10 +120,11 @@ int Framework::Run()
 		{
 			timer.Tick();
 			CalculateFrameStats();
+				//: syncInterval / 60.0f
 
 			float elapsedTime = syncInterval == 0
 				? timer.TimeInterval()
-				: syncInterval / 60.0f
+				: syncInterval / static_cast<float>(GetDeviceCaps(hDC, VREFRESH))
 				;
 			Update(elapsedTime);
 			Render(elapsedTime);

@@ -199,9 +199,13 @@ void EnemySlime::Render(RenderContext& rc, ModelShader& shader)
         Graphics& graphics = Graphics::Instance();
         //Shader* shader = graphics.GetShader();
         //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+        // 赤色
+        rc.color = colorGB;
+        
         shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
-        if (modelDrawCheck)
+       // if (modelDrawCheck)
+    
         shader.Draw(rc, model);
 
         shader.End(rc);
@@ -842,7 +846,7 @@ void EnemySlime::InputThrowingRuby(DirectX::XMFLOAT3 target)
     float height = 5;
     actor->GetComponent<Transform>()->SetHeight(height);
 
-    float radius = 5;
+    float radius = 6;
     actor->GetComponent<Transform>()->SetRadius(radius);
 
     float lifetimer = 10;
@@ -930,7 +934,7 @@ void EnemySlime::UiControlle(float elapsedTime)
 
 void EnemySlime::OnHit(float elapsedTime)
 {
-    if (hp->OnHit(elapsedTime))
+    if (hp->FlashTime(elapsedTime))
     {
         ++damageStateTime;
         if (damageStateTime >= damageStateTimeMax)
@@ -943,12 +947,16 @@ void EnemySlime::OnHit(float elapsedTime)
         {
             bool onHit = false;
             modelDrawCheck = onHit;
+
+            colorGB = {1,1};
      
         }
         else
         {
             bool onHit = true;
             modelDrawCheck = onHit;
+
+            colorGB = {0.2f,0.2f};
         }
     }
     else
@@ -957,6 +965,8 @@ void EnemySlime::OnHit(float elapsedTime)
 
         bool onHit = true;
         modelDrawCheck = onHit;
+
+        colorGB = { 1,1 };
     }
 }
 

@@ -47,7 +47,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	float blendSeconds = 0.7f;
 };
 
 // 待機ステートオブジェクト
@@ -77,7 +77,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	float blendSeconds = 0.7f;
 };
 
 // 追跡ステートオブジェクト
@@ -115,7 +115,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	float blendSeconds = 0.7f;
 
 	// 数回行動したら疲れるモーションを入れる。
 	int mortionLimit = 0;
@@ -155,7 +155,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	float blendSeconds = 0.7f;
 
 };
 
@@ -191,7 +191,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	float blendSeconds = 0.7f;
 };
 // 射撃弧ステートオブジェクト
 class AttackShotThrowingState : public State
@@ -228,7 +228,7 @@ private:
 	float currentAnimationStartSecondsf = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	float blendSeconds = 0.7f;
 };
 
 // ダメージステートオブジェクト
@@ -262,7 +262,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	float blendSeconds = 0.7f;
 };
 
 // 混乱ステートオブジェクト
@@ -292,7 +292,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	float blendSeconds = 0.7f;
 };
 
 
@@ -328,7 +328,7 @@ private:
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	float blendSeconds = 0.7f;
 
 	// クリア確認
 	bool clearCheck = true;
@@ -837,7 +837,8 @@ private:
 
 	float				turnSpeed = DirectX::XMConvertToRadians(720);
 
-
+	// 一瞬白く
+	bool flashOn = true;
 };
 
 // 魔法ステートオブジェクト

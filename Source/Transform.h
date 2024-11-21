@@ -3,6 +3,7 @@
 
 #include "Component.h"
 
+
 class Transform : public Component
 {
 public:
@@ -55,6 +56,9 @@ public:
     // ‚‚³
     float GetHeight() { return height; }
     void  SetHeight(float height) { this->height = height; }
+
+
+
 private:
 
     // s—ñ’†g
@@ -73,4 +77,7 @@ private:
 
     // ‚‚³
     float height = 1;
+
+
 };
+
