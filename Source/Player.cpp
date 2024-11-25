@@ -707,6 +707,8 @@ void Player::OnGUI()
 
         angleCameraCheck = true;
 
+       
+
         //MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
         //float vx = sinf(angle.y) * 6;
@@ -753,6 +755,8 @@ void Player::OnGUI()
 
             lightningAttack->Play(pPosition);
             angleCameraCheck = false;
+
+            flashOn = true;
         }
     }
 

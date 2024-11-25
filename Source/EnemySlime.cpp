@@ -109,8 +109,7 @@ void EnemySlime::Start()
 void EnemySlime::Update(float elapsedTime)
 {
     // ステート毎の処理
-
-    stateMachine->Update(elapsedTime);
+    //stateMachine->Update(elapsedTime);
 
     // 位置
     position = transform->GetPosition();

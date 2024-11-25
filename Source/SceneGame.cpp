@@ -1781,21 +1781,30 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 	{
 		colorGradingData.brigthness +=  (0.01f + elapsedTime);
 		// 真ん中
-		radialBlurData.center = { graphics.GetScreenWidth() / 2 , graphics.GetScreenHeight() / 2 };
-		float radislBlurRadius = 50;
+		radialBlurData.center = { 0.5f ,0.5f };
+		float radislBlurRadius = 200;
 		radialBlurData.radius = radislBlurRadius;
 
 		float radislBlurSamplingCount = 10;
 		radialBlurData.samplingCount = radislBlurSamplingCount;
-		float radislBlurMaskRadius = 0;
+		float radislBlurMaskRadius = 300;
 		radialBlurData.mask_radius = radislBlurMaskRadius;
 		
 	}
 	else
 	{
-		colorGradingData.brigthness = 0.8f;
+		float colorGradingBrigthness = 0.8f;
+		colorGradingData.brigthness = colorGradingBrigthness + FLT_EPSILON > colorGradingData.brigthness - FLT_EPSILON ? colorGradingBrigthness : colorGradingData.brigthness - (0.01f + elapsedTime);
 
 		//shaderPlayStateTimer = shaderPlayStateTimerMax;
+
+		float radislBlurRadius = 0;
+		radialBlurData.radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radialBlurData.radius - (5 + elapsedTime) : radislBlurRadius;
+
+		//float radislBlurSamplingCount = 10;
+		//radialBlurData.samplingCount = radislBlurSamplingCount;
+		////float radislBlurMaskRadius = 30;
+		////radialBlurData.mask_radius = radislBlurMaskRadius;
 	}
 }
 
