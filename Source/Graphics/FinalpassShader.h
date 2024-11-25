@@ -23,6 +23,17 @@ private:
         float brightness; // 明度調整
         float dummy;
 
+
+        //	ラジアルブラー情報
+        float				rb_radius;
+        int					rb_samplingCount;
+        DirectX::XMFLOAT2	rb_center;
+
+
+        float				rb_mask_radius;
+        DirectX::XMFLOAT3	rb_dummy;
+
+
 #if	defined( UNIT_VN_01 )
         //	ビネット情報
         DirectX::XMFLOAT4	vn_color;

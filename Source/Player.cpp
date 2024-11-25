@@ -65,12 +65,12 @@ Player::~Player()
         delete desEffect;
         desEffect = nullptr;
     }
-    if (fire != nullptr)
-    {
-        fire->Stop(fire->GetEfeHandle());
-        delete fire;
-        fire = nullptr;
-    }
+    //if (hitFire != nullptr)
+    //{
+    //    hitFire->Stop(hitFire->GetEfeHandle());
+    //    delete hitFire;
+    //    hitFire = nullptr;
+    //}
 
     if (cameraControlle != nullptr)
     {
@@ -133,7 +133,9 @@ void Player::Start()
     desEffect = new Effect("Data/Effect/F.efk");
 
     // エフェクト読み込み
-    fire = new Effect("Data/Effect/fire.efk");
+    hitFire = std::make_unique<Effect>("Data/Effect/hit fire.efk");
+    hitThander = std::make_unique<Effect>("Data/Effect/HitThunder.efk");
+    hitIce = std::make_unique<Effect>("Data/Effect/hit Ice.efk");
 
     lightningAttack = std::make_unique<Effect>("Data/Effect/sunder.efk");
 
@@ -1582,9 +1584,28 @@ void Player::CollisionProjectilesVsEnemies()
                     {
                         DirectX::XMFLOAT3 e = enemyPosition;
                         e.y += enemyHeight * 0.5f;
-
+                        if (projectile->GetComponent<ProjectileSunder>())
+                            hitThander->Play(e);
+                        else
+                        {
+                            switch (projectile->GetComponent<ProjectileHoming>()->GetMagicNumber())
+                            {
+                            case (int)ProjectileHoming::MagicNumber::Fire:
+                            {
+                                hitFire->Play(e);
+                                break;
+                            }
+                            case (int)ProjectileHoming::MagicNumber::Ice:
+                            {
+                                hitIce->Play(e);
+                                break;
+                            }
+                            }
+                        }
 
                         hitEffect->Play(e);
+
+
                     }
                     // 当たった時の副次的効果
                     {
@@ -3211,6 +3232,8 @@ bool Player::InputMagicframe()
         actor->AddComponent<ProjectileHoming>();
         const char* effectFilename = "Data/Effect/fire.efk";
         actor->GetComponent<ProjectileHoming>()->SetEffectProgress(effectFilename);
+        int magicNumber = (int)ProjectileHoming::MagicNumber::Fire;
+        actor->GetComponent<ProjectileHoming>()->SetMagicNumber(magicNumber);
         //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
         // これが２Dかの確認
         bool check2d = false;
@@ -3317,6 +3340,9 @@ bool Player::InputMagicIce()
         actor->GetComponent<ProjectileHoming>()->SetEffectProgress(effectFilename);
         //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
 
+        int magicNumber = (int)ProjectileHoming::MagicNumber::Ice;
+        actor->GetComponent<ProjectileHoming>()->SetMagicNumber(magicNumber);
+
         // これが２Dかの確認
         bool check2d = false;
         actor->SetCheck2d(check2d);
@@ -3421,6 +3447,7 @@ bool Player::InputMagicLightning()
         const char* effectFilename = "Data/Effect/lightningStrike.efk";
         actor->GetComponent<ProjectileSunder>()->SetEffectProgress(effectFilename);
         //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
+
 
         // これが２Dかの確認
         bool check2d = false;

@@ -209,9 +209,14 @@ void PostprocessingRenderer::Render(RenderContext rc)
         //}
         //rc.deviceContext->PSSetShader(vignette_pixel_shader.Get(), nullptr, 0);
 
+
+//	ラジアルブラー情報設定
+      //  rc.radialBlurData;
+
+
 #if	defined( UNIT_VN_01 )
 //	ビネット情報設定
-        rc.vignetteData;
+        //rc.vignetteData;
 
 #endif	//	defined( UNIT_VN_01 )
 
@@ -262,14 +267,30 @@ void PostprocessingRenderer::DrawDebugGUI()
 
         }
 
-        if (ImGui::TreeNode("ColorGrading"))
-        {
-            ImGui::SliderFloat("hueShift", &colorGradingData.hueShift, 0.0f, 360.0f);
-            ImGui::SliderFloat("saturation", &colorGradingData.saturation, 0.0f, 2.0f);
-            ImGui::SliderFloat("brigthness", &colorGradingData.brigthness, 0.0f, 2.0f);
-            ImGui::TreePop();
+        //if (ImGui::TreeNode("ColorGrading"))
+        //{
+        //    ImGui::SliderFloat("hueShift", &colorGradingData.hueShift, 0.0f, 360.0f);
+        //    ImGui::SliderFloat("saturation", &colorGradingData.saturation, 0.0f, 2.0f);
+        //    ImGui::SliderFloat("brigthness", &colorGradingData.brigthness, 0.0f, 2.0f);
+        //    ImGui::TreePop();
 
-        }
+        //}
+
+
+//#if	defined( UNIT_RB_01 )
+//        if (ImGui::TreeNode("RadialBlur"))
+//        {
+//            ImGui::SliderFloat("radius", &radialBlurData.radius, 0.0f, 200.0f);
+//            ImGui::SliderInt("samplingCount", &radialBlurData.samplingCount, 0, 10);
+//            ImGui::SliderFloat2("center", &radialBlurData.center.x, 0.0f, 1.0f);
+//
+//#if defined(UNIT_RB_02)
+//            ImGui::SliderFloat("mask radius", &radialBlurData.mask_radius, 0.0f, 600.0f);
+//#endif	//	defined(UNIT_RB_02)
+//            ImGui::TreePop();
+//        }
+//#endif	//	defined( UNIT_RB_01 )
+
         //if (ImGui::TreeNode("vignette"))
         //{
         //    ImGui::ColorEdit3("color", &vignette_data.vignette_color.x);

@@ -47,9 +47,23 @@ struct ColorGradingData
 };
 
 
+
 #define	UNIT_VN_01	//	ヴィネット
 #define	UNIT_VN_02	//	アイリス処理
 
+
+// ラジアルブラー情報
+struct RadialBlurData
+{
+	float radius = 10.0f;					// ブラーの半径
+	int samplingCount = 10;					// サンプルカウント
+	DirectX::XMFLOAT2 center = {0.5f,0.5f}; // ブラー中心点
+
+	float mask_radius = 0;
+	//DirectX::XMFLOAT3	blur_dummy;
+
+
+};
 
 #if	defined( UNIT_VN_01 )
 //	ビネット情報
@@ -153,6 +167,10 @@ struct RenderContext
 
     // シャドウマップ情報
 	ShadowMapData shadowMapData;
+
+	// ラジアルブラー情報
+	RadialBlurData  radialBlurData;
+
 
 #if	defined( UNIT_VN_01 )
 	//	ビネット情報

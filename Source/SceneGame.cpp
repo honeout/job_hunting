@@ -1537,6 +1537,9 @@ void SceneGame::Render()
 		RenderContext rc;
 		
 		rc.deviceContext = dc;
+
+		rc.radialBlurData = radialBlurData;
+
 		rc.colorGradingData = colorGradingData;
 
 
@@ -1548,7 +1551,7 @@ void SceneGame::Render()
 		rc.vignetteData.rounded = vignette_rounded;
 		rc.vignetteData.roundness = vignette_roundness;
 
-		
+	
 
 
 		// ポストプロセスを処理を行う
@@ -1599,6 +1602,20 @@ void SceneGame::Render()
 			ImGui::SliderFloat("hueShift", &colorGradingData.hueShift, 0.0f, +360.0f);
 			ImGui::SliderFloat("saturation", &colorGradingData.saturation, 0.0f, +2.0f);
 			ImGui::SliderFloat("brigtness", &colorGradingData.brigthness, 0.0f, +10.0f);
+
+			ImGui::TreePop();
+		}
+		ImGui::Separator();
+
+
+		if (ImGui::TreeNode("RadialBlur"))
+		{
+			ImGui::SliderFloat("radius", &radialBlurData.radius, 0.0f, 200.0f);
+			ImGui::SliderInt("samplingCount", &radialBlurData.samplingCount, 0, 10);
+			ImGui::SliderFloat2("center", &radialBlurData.center.x, 0.0f, 1.0f);
+
+
+			ImGui::SliderFloat("mask radius", &radialBlurData.mask_radius, 0.0f, 600.0f);
 
 			ImGui::TreePop();
 		}
@@ -1757,10 +1774,21 @@ void SceneGame::RenderShadowmap()
 
 void SceneGame::PlayEffectsShaders(float elapsedTime)
 {
+	Graphics& graphics = Graphics::Instance();
+
 	shaderPlayStateTimer -= elapsedTime;
 	if (shaderPlayStateTimer > 0)
 	{
 		colorGradingData.brigthness +=  (0.01f + elapsedTime);
+		// 真ん中
+		radialBlurData.center = { graphics.GetScreenWidth() / 2 , graphics.GetScreenHeight() / 2 };
+		float radislBlurRadius = 50;
+		radialBlurData.radius = radislBlurRadius;
+
+		float radislBlurSamplingCount = 10;
+		radialBlurData.samplingCount = radislBlurSamplingCount;
+		float radislBlurMaskRadius = 0;
+		radialBlurData.mask_radius = radislBlurMaskRadius;
 		
 	}
 	else

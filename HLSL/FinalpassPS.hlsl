@@ -11,13 +11,34 @@ float4 main(VS_OUT pin) : SV_TARGET
 {
     float4 color = sceneTexture.Sample(sceneSampler, pin.texcoord) * pin.color;
 
-    // ブルームテクスチャを加算する
-    color.rgb += bloomTexture.Sample(sceneSampler, pin.texcoord).rgb;
-
     // メインテクスチャのサイズ情報などを取得
     float2 sceneTextureDimensions;
     sceneTexture.GetDimensions(sceneTextureDimensions.x, sceneTextureDimensions.y);
 
+    // ラジアルブラー処理
+    if (rb_samplingCount > 1)
+    {
+        float4 result_color = color;
+        //	ブラーの中心からピクセル位置へのベクトルを求める
+//	これがブラー方向
+        float2 blur_vector = rb_center - pin.texcoord;
+        //	半径のサイズをテクスチャのサイズで制限をかける
+        blur_vector *= rb_radius / sceneTextureDimensions.xy;
+
+        for (int index = 1; index < rb_samplingCount; ++index)
+        {
+            result_color += sceneTexture.Sample(sceneSampler, pin.texcoord + blur_vector * ((float)index / (float)rb_samplingCount));
+        }
+
+        result_color /= rb_samplingCount;
+        // 指定の範囲内の適応量を徐々に上げていくようにする
+        float mask_radius = rb_mask_radius / min(sceneTextureDimensions.x, sceneTextureDimensions.y);
+        float mask_value = saturate(length(pin.texcoord - rb_center) / mask_radius);
+        color.rgb = lerp(color.rgb, result_color.rgb, mask_value);
+    }
+
+    // ブルームテクスチャを加算する
+    color.rgb += bloomTexture.Sample(sceneSampler, pin.texcoord).rgb;
 
 
     // 色調補正処理

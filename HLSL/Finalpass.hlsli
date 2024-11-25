@@ -1,5 +1,6 @@
 #include "FilterFunctions.hlsli"
 
+
 #define	UNIT_VN_01	//	ヴィネット
 #define	UNIT_VN_02	//	アイリス処理
 
@@ -18,6 +19,17 @@ cbuffer CBFinalpass: register(b0)
     float saturation; // 彩度調整
     float brightness; // 明度調整
     float dummy;
+
+
+    //	ラジアルブラー情報
+    float	rb_radius;			//	ブラーの半径
+    int		rb_samplingCount;	//	サンプルカウント
+    float2  rb_center;          //	ブラーの中心点
+
+
+    float   rb_mask_radius;
+    float3  rb_dummy;
+
 
 #if	defined( UNIT_VN_01 )
     //	ヴィネット情報

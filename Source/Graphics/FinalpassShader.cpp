@@ -204,9 +204,21 @@ void FinalpassShader::Draw(const RenderContext& rc, const Sprite* sprite)
 
 
 	CBFinalpass cbFinalpass;
+	// 色調補正
 	cbFinalpass.hueShift = rc.colorGradingData.hueShift;
 	cbFinalpass.saturation = rc.colorGradingData.saturation;
 	cbFinalpass.brightness = rc.colorGradingData.brigthness;
+
+
+	//	ラジアルブラー
+	cbFinalpass.rb_center = rc.radialBlurData.center;
+	cbFinalpass.rb_radius = rc.radialBlurData.radius;
+	cbFinalpass.rb_samplingCount = rc.radialBlurData.samplingCount;
+
+
+	cbFinalpass.rb_mask_radius = rc.radialBlurData.mask_radius;
+
+
 
 #if	defined( UNIT_VN_01 )
 	//	ビネット情報
@@ -285,5 +297,7 @@ void FinalpassShader::End(const RenderContext& rc)
 {
 	rc.deviceContext->VSSetShader(nullptr, nullptr, 0);
 	rc.deviceContext->PSSetShader(nullptr, nullptr, 0);
+	ID3D11ShaderResourceView* srvs[] = { nullptr };
+	rc.deviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
 	rc.deviceContext->IASetInputLayout(nullptr);
 }

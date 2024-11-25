@@ -55,7 +55,7 @@ private:
 private:
 	// シェーダーをエフェクトして再生
 	float shaderPlayStateTimer = 0;
-	float shaderPlayStateTimerMax = 1.0f;
+	float shaderPlayStateTimerMax = 0.8f;
 
 	// 残像出す間隔最大値
 	float spawnafterimagetimemax = 0.1f;
@@ -84,6 +84,13 @@ private:
 
 	// 画面の色
 	ColorGradingData       colorGradingData;
+
+	// 画面歪み
+	// ラジアルブラー情報
+	RadialBlurData  radialBlurData;
+
+
+
 
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源

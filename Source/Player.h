@@ -531,7 +531,9 @@ private:
 
     std::shared_ptr<Effect> lightningAttack;
 
-    Effect* fire = nullptr;
+    std::shared_ptr<Effect> hitFire;
+    std::shared_ptr<Effect> hitThander;
+    std::shared_ptr<Effect> hitIce;
 
     State                   state = State::Idle;
     State                   stated;

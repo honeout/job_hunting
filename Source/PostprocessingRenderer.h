@@ -88,6 +88,10 @@ private:
     //Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;
 
 
+// ラジアルブラー情報
+    RadialBlurData  radialBlurData;
+
+
 #if	defined( UNIT_VN_01 )
     //	ビネット情報
     VignetteData					vignetteData;

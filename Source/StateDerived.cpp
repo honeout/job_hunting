@@ -1775,7 +1775,7 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 		/*float vx = sinf(angle.y);
 		float vz = cosf(angle.y);*/
 		//p.data.push_back({ 0, {position.x * vx , position.y + 3, position.z - vz }, position });
-		
+
 		// ロックオン
 		//rockCheck = true;
 		//owner->GetComponent<Player>()->SetRockCheck(rockCheck);
@@ -1821,10 +1821,11 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 
 			// 任意のアニメーション再生区間でのみ衝突判定処理をする
 		float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
-		
-		
 
-			
+
+
+		if (animationTime >= 1.4f)
+			owner->GetComponent<Player>()->SetFlashOn(flashOn);
 
 		// アニメーション
 		if (animationTime >= 1.6f)
@@ -1832,15 +1833,15 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			float invincibleTimer = 0.0f;
 			owner->GetComponent<HP>()->SetInvincibleTimer(invincibleTimer);
 
-			owner->GetComponent<Player>()->SetFlashOn(flashOn);
-			
+
+
 
 			// カメラ振動
 			MessageData::CAMERASHAKEDATA cameraShakeData;
 
 			float shakeTimer = 0.5f;
 			float shakePower = 0.8f;
-			cameraShakeData = { shakeTimer , shakePower};
+			cameraShakeData = { shakeTimer , shakePower };
 
 			Messenger::Instance().SendData(MessageData::CAMERASHAKE, &cameraShakeData);
 

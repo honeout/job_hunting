@@ -7,6 +7,9 @@
 #include "ModelControll.h"
 #include "Transform.h"
 #include "Effect.h"
+
+
+
 // ’Ç”ö’eŠÛ
 class ProjectileHoming :public Component
 {
@@ -55,8 +58,21 @@ public:
     void EffectHitUpdate(float elapsedTime);
 
     void SetMovementCheck(bool movementCheck) 
-    { this->movementCheck = movementCheck; };
-  
+    { this->movementCheck = movementCheck; }
+
+    void SetMagicNumber(int magicNumber) { this->magicNumber = magicNumber; }
+
+    int GetMagicNumber() { return magicNumber; }
+
+public:
+    enum class MagicNumber
+    {
+        Unnorne = -1,
+        Fire,
+        Thander,
+        Ice,
+    };
+
 private:
     Model* model = nullptr;
     Effect* effectProgress = nullptr;
@@ -78,6 +94,8 @@ private:
     float scale = 1.0f;
 
     bool movementCheck = true;
+
+    int magicNumber = (int)MagicNumber::Thander;
 
     
 
