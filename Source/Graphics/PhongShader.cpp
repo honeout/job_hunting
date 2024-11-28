@@ -258,6 +258,11 @@ void PhonShader::Begin(const RenderContext& rc)
         sizeof(rc.spotLightData));
     cbScene.spotLightCount = rc.spotLightCount;
 
+    // テクスチャ解像度設定
+    cbScene.texcoordMult = rc.texcoordMult;
+    // スペキュラーオンオフ
+    cbScene.isSpecular = rc.isSpecular;
+
     rc.deviceContext->UpdateSubresource(sceneConstantBuffer.Get(), 0, 0, &cbScene, 0, 0);
 
 

@@ -588,13 +588,26 @@ private:
     DirectX::XMFLOAT3 frontVec = { 0 ,0,0 };
 
     // 上半身更新開始位置
-    char* bornUpStartPoint;
+    //char* bornUpStartPoint;
 
-    // 上半身の何処まで更新するか
+    //// 上半身の何処まで更新するか
+    //char* bornUpEndPoint = "";
+
+    //// 下半身更新終了位置
+    //char* bornDownerEndPoint = "";
+
+    // 上半身スタート再生開始場所
+    char* bornUpStartPoint = "";
+
+    // 上半身エンド再生停止場所
     char* bornUpEndPoint = "";
 
-    // 下半身更新終了位置
+    // 下半身スタート再生開始場所
+    char* bornDownerStartPoint = "";
+
+    // 下半身エンド再生停止場所
     char* bornDownerEndPoint = "";
+
 
     // 当たり判定半径
     //float radius = 0.7f;

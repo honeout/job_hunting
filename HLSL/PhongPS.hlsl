@@ -166,8 +166,11 @@ float4 main(VS_OUT pin) : SV_TARGET
     float4 color = float4(ambient, diffuseColor.a);
     // 影
     color.rgb += diffuseColor.rgb * (directionalDiffuse + pointDiffuse + spotDiffuse);
-    color.rgb += directionalSpecular + pointSpecular + spotSpecular;
-
+    // スペキュラー用
+    if (isSpecular == 1)
+    {
+        color.rgb += directionalSpecular + pointSpecular + spotSpecular;
+    }
     // リムライティング
     color.rgb += CalcRimLight(N, E, L, directionalLightData.color.rgb);
 

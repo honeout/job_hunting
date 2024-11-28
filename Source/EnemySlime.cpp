@@ -94,6 +94,15 @@ void EnemySlime::Start()
     // 下半身
     bornDownerEndPoint = "mixamorig:Spine";
 
+    // 上半身スタート再生開始場所
+    bornUpStartPoint = "body3";
+    // 上半身エンド再生停止場所
+    bornUpEndPoint = "body2";
+    // 下半身スタート再生開始場所
+    bornDownerStartPoint = "body2";
+    // 下半身エンド再生停止場所
+    bornDownerEndPoint = "boss_left_eye";
+
 
     // 当たり判定無効判定
     invalidJudgment = true;
@@ -109,7 +118,7 @@ void EnemySlime::Start()
 void EnemySlime::Update(float elapsedTime)
 {
     // ステート毎の処理
-    //stateMachine->Update(elapsedTime);
+    stateMachine->Update(elapsedTime);
 
     // 位置
     position = transform->GetPosition();
@@ -162,8 +171,8 @@ void EnemySlime::Update(float elapsedTime)
         case UpAnim::Doble:
         {
             // モデル部分アニメーション更新処理
-            model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, true);
-            model->UpdateLowerBodyAnimation(elapsedTime, bornDownerEndPoint, true);
+            model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, bornUpEndPoint, true);
+            model->UpdateLowerBodyAnimation(elapsedTime, bornDownerStartPoint, bornDownerEndPoint, true);
             break;
         }
         // 複数ブレンド再生
@@ -200,6 +209,9 @@ void EnemySlime::Render(RenderContext& rc, ModelShader& shader)
         //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
         // 赤色
         rc.color = colorGB;
+
+        // スペキュラー無効化
+        rc.isSpecular = 0;
         
         shader.Begin(rc);// シェーダーにカメラの情報を渡す
 

@@ -34,6 +34,13 @@ private:
         int            spotLightCount;                // スポットライト数
 
         DirectX::XMFLOAT2 colorGB = {1,1};
+        // テクスチャの貼り付け用
+        int           texcoordMult;
+
+        // スペキュラー用
+        int           isSpecular;
+
+        DirectX::XMFLOAT2 dummy;
         //DirectX::XMFLOAT2 dummy;
     };
 

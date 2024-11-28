@@ -1020,7 +1020,7 @@ void PlayerJumpFlipState::Exit()
 
 void PlayerQuickJabState::Enter()
 {
-	bool loop = false;
+	
 
 	modelControllid = owner->GetComponent<ModelControll>();
 	moveid = owner->GetComponent<Movement>();
@@ -1030,9 +1030,55 @@ void PlayerQuickJabState::Enter()
 
 		//Player::Anim_Slash, loop,
 		// １回
+	
+	if (!moveid->GetOnLadius())
+	{
+		// 再生開始時間 
+		float currentAnimationStartSeconds = 0.3f;
+		float currentAnimationUpperStartSeconds = 0.0f;
 
-		// 再生開始
-		currentAnimationStartSeconds = 0.0f;
+		// ループ
+		bool loop = true;
+		bool loopUpper = false;
+
+		// 再生時間加算分の値
+		float currentAnimationAddSeconds = 0.03f;
+		float currentAnimationUpperAddSeconds = 0.03f;
+
+		float keyFrameEnd = 0.5f;
+
+		// アニメーション再生
+		modelControllid->GetModel()->PlayAnimation(
+			Player::Anim_Jump, loop,
+			currentAnimationStartSeconds, blendSeconds
+			, currentAnimationAddSeconds, keyFrameEnd
+		);
+
+
+		// アニメーション上半身再生
+		modelControllid->GetModel()->PlayUpeerBodyAnimation(
+			Player::Anim_Slash, loopUpper,
+			currentAnimationUpperStartSeconds, blendSeconds
+			
+		);
+		// 攻撃三回で一度強制終了
+		++attackMemory;
+
+		// アニメーション再生
+		owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Doble);
+	}
+	else
+	{
+		// 再生開始時間 
+		float currentAnimationStartSeconds = 0.0f;
+
+		// ループ
+		bool loop = false;
+
+		// 再生時間加算分の値
+		float currentAnimationAddSeconds = 0.03f;
+
+
 		// アニメーション再生
 		modelControllid->GetModel()->PlayAnimation(
 			Player::Anim_Slash, loop,
@@ -1042,7 +1088,9 @@ void PlayerQuickJabState::Enter()
 		// 攻撃三回で一度強制終了
 		++attackMemory;
 
-
+		// アニメーション再生
+		owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	}
 	
 
 	if (!InitializationCheck)
@@ -1057,8 +1105,7 @@ void PlayerQuickJabState::Enter()
 		commandThrede.push_back(GamePad::BTN_B);
 		commandThrede.push_back(GamePad::BTN_B);
 	}
-	// アニメーション再生
-	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+
 
 	
 	//moveid->SetGravity(gravity);
@@ -1202,9 +1249,11 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	}
 
 
-
+	
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+	float animationTime = moveid->GetOnLadius() ? 
+		modelControllid->GetModel()->GetCurrentANimationSeconds() : 
+		modelControllid->GetModel()->GetCurrentAnimationSecondsUpeer();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 
 
@@ -1261,8 +1310,53 @@ void PlayerSideCutState::Enter()
 
 	// 二回
 
-		// 再生開始
-		currentAnimationStartSeconds = 0.2f;
+	if (!moveid->GetOnLadius())
+	{
+		// 再生開始時間 
+		float currentAnimationStartSeconds = 0.2f;
+		float currentAnimationUpperStartSeconds = 0.0f;
+
+		// ループ
+		bool loop = true;
+		bool loopUpper = false;
+
+		// 再生時間加算分の値
+		float currentAnimationAddSeconds = 0.03f;
+		float currentAnimationUpperAddSeconds = 0.03f;
+
+		float keyFrameEnd = 0.5f;
+
+		// アニメーション再生
+		modelControllid->GetModel()->PlayAnimation(
+			Player::Anim_Jump, loop,
+			currentAnimationStartSeconds, blendSeconds
+			, currentAnimationAddSeconds, keyFrameEnd
+		);
+
+
+		// アニメーション上半身再生
+		modelControllid->GetModel()->PlayUpeerBodyAnimation(
+			Player::Anim_SlashBeside, loopUpper,
+			currentAnimationUpperStartSeconds, blendSeconds
+
+		);
+		// 攻撃三回で一度強制終了
+		++attackMemory;
+
+		// アニメーション再生
+		owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Doble);
+	}
+	else
+	{
+		// 再生開始時間 
+		float currentAnimationStartSeconds = 0.2f;
+
+		// ループ
+		bool loop = false;
+
+		// 再生時間加算分の値
+		float currentAnimationAddSeconds = 0.03f;
+
 
 		// アニメーション再生
 		modelControllid->GetModel()->PlayAnimation(
@@ -1270,6 +1364,21 @@ void PlayerSideCutState::Enter()
 			currentAnimationStartSeconds, blendSeconds
 			, currentAnimationAddSeconds
 		);
+		// 攻撃三回で一度強制終了
+		++attackMemory;
+
+		// アニメーション再生
+		owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	}
+		//// 再生開始
+		//currentAnimationStartSeconds = 0.2f;
+
+		//// アニメーション再生
+		//modelControllid->GetModel()->PlayAnimation(
+		//	Player::Anim_SlashBeside, loop,
+		//	currentAnimationStartSeconds, blendSeconds
+		//	, currentAnimationAddSeconds
+		//);
 
 	
 
@@ -1286,7 +1395,7 @@ void PlayerSideCutState::Enter()
 
 	}
 	// アニメーション再生
-	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	//owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
 
 
 	//moveid->SetGravity(gravity);
@@ -1441,8 +1550,11 @@ void PlayerSideCutState::Execute(float elapsedTime)
 	}
 
 
+
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+	float animationTime = moveid->GetOnLadius() ?
+		modelControllid->GetModel()->GetCurrentANimationSeconds() :
+		modelControllid->GetModel()->GetCurrentAnimationSecondsUpeer();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 
 
@@ -1487,14 +1599,75 @@ void PlayerCycloneStrikeState::Enter()
 	moveid = owner->GetComponent<Movement>();
 	transformid = owner->GetComponent<Transform>();
 
-		// 再生開始
-		currentAnimationStartSeconds = 0.7f;
+
+	if (!moveid->GetOnLadius())
+	{
+		// 再生開始時間 
+		float currentAnimationStartSeconds = 0.7f;
+		float currentAnimationUpperStartSeconds = 0.0f;
+
+		// ループ
+		bool loop = true;
+		bool loopUpper = false;
+
+		// 再生時間加算分の値
+		float currentAnimationAddSeconds = 0.03f;
+		float currentAnimationUpperAddSeconds = 0.03f;
+
+		float keyFrameEnd = 0.5f;
+
+		// アニメーション再生
+		modelControllid->GetModel()->PlayAnimation(
+			Player::Anim_Jump, loop,
+			currentAnimationStartSeconds, blendSeconds
+			, currentAnimationAddSeconds, keyFrameEnd
+		);
+
+
+		// アニメーション上半身再生
+		modelControllid->GetModel()->PlayUpeerBodyAnimation(
+			Player::Anim_SlashThree, loopUpper,
+			currentAnimationUpperStartSeconds, blendSeconds
+
+		);
+		// 攻撃三回で一度強制終了
+		++attackMemory;
+
+		// アニメーション再生
+		owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Doble);
+	}
+	else
+	{
+		// 再生開始時間 
+		float currentAnimationStartSeconds = 0.7f;
+
+		// ループ
+		bool loop = false;
+
+		// 再生時間加算分の値
+		float currentAnimationAddSeconds = 0.03f;
+
+
 		// アニメーション再生
 		modelControllid->GetModel()->PlayAnimation(
 			Player::Anim_SlashThree, loop,
 			currentAnimationStartSeconds, blendSeconds
 			, currentAnimationAddSeconds
 		);
+		// 攻撃三回で一度強制終了
+		++attackMemory;
+
+		// アニメーション再生
+		owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	}
+		//// 再生開始
+		//currentAnimationStartSeconds = 0.7f;
+		//// アニメーション再生
+		//modelControllid->GetModel()->PlayAnimation(
+		//	Player::Anim_SlashThree, loop,
+		//	currentAnimationStartSeconds, blendSeconds
+		//	, currentAnimationAddSeconds
+		//);
 
 
 
@@ -1511,7 +1684,7 @@ void PlayerCycloneStrikeState::Enter()
 		commandThrede.push_back(GamePad::BTN_B);
 	}
 	// アニメーション再生
-	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	//owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
 
 	// 重力オフ
 	bool stopFall = true;
@@ -1633,8 +1806,11 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	}
 
 
+
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+	float animationTime = moveid->GetOnLadius() ?
+		modelControllid->GetModel()->GetCurrentANimationSeconds() :
+		modelControllid->GetModel()->GetCurrentAnimationSecondsUpeer();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 
 
@@ -2337,16 +2513,17 @@ void PlayerAvoidanceState::Enter()
 	moveid = owner->GetComponent<Movement>();
 	hpid = owner->GetComponent<HP>();
 
-		//Player::Anim_Slash, loop
+	//Player::Anim_Slash, loop
 	owner->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
 		Player::Anim_Dush, loop
-	,currentAnimationStartSeconds, blendSeconds);
+		, currentAnimationStartSeconds, blendSeconds,
+		currentAnimationAddSeconds);
 
 
 	// 当たり判定の有無
 	owner->GetComponent<Player>()->DmageInvalidJudment(false);
 
-	moveSpeed = 10.0f;
+
 
 	// アニメーション種類 通常
 	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -2355,6 +2532,20 @@ void PlayerAvoidanceState::Enter()
 	bool stopFall = true;
 	moveid->SetStopFall(stopFall);
 
+
+	// エフェクト設定
+	wind = std::make_unique<Effect>("Data/Effect/dashu.efk");
+
+	// エフェクト再生時間
+	wind->Play({ 
+		transformid->GetPosition().x,
+		transformid->GetPosition().y + addHeight,
+		transformid->GetPosition().z
+		});
+
+
+	// 角度変更
+	wind->SetAngle(wind->GetEfeHandle(), transformid->GetAngle());
 }
 
 // 回避更新
@@ -2376,7 +2567,20 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 	
 	// 任意のアニメーション再生区間
 	float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
-	// この時間で
+	
+	// 位置更新
+	wind->SetPosition(wind->GetEfeHandle(),
+		{
+			transformid->GetPosition().x,
+			transformid->GetPosition().y + addHeight,
+			transformid->GetPosition().z
+		});
+
+	//if (animationTime + FLT_EPSILON >= 0.7f + FLT_EPSILON && animationTime <= 0.71f)
+	//if (animationTime + FLT_EPSILON >= 0.7f + FLT_EPSILON && animationTime <= 0.71f)
+
+
+	// ダッシュ時間
 	if (animationTime >= 0.7f && animationTime <= 1.5f)
 	{
 		moveid->Move(dir, moveSpeed, elapsedTime);
@@ -2401,6 +2605,8 @@ void PlayerAvoidanceState::Exit()
 	// 落ちるの停止
 	bool stopFall = false;
 	moveid->SetStopFall(stopFall);
+
+	wind->Stop(wind->GetEfeHandle());
 }
 
 // 反射開始

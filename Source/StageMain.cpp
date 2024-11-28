@@ -52,6 +52,13 @@ void StageMain::Render(RenderContext& rc, ModelShader& shader)
     //Shader* shader = graphics.GetShader();
     //ModelShader* shader = graphics.GetShader(  graphics.GetShader(ModelShaderId::Default);
     //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
+    
+    // スペキュラー無効化
+    rc.isSpecular = 0;
+    
+    // 解消度を上げる。
+    rc.texcoordMult = 20;
+
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
 

@@ -106,28 +106,28 @@ public:
 
 
 	//上半身アニメーション更新処理
-	void UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool blend = false);
+	void UpdateUpeerBodyAnimation(float elapsedTime, const char* start, const char* end, bool blend = false);
 
 	// 上半身用アニメーション更新
-	void ReverseplaybackUpeerBodyAnimation(float elapsedTime, const char* start, bool blend = false);
+	void ReverseplaybackUpeerBodyAnimation(float elapsedTime,  const char* end, bool blend = false);
 
 	//下半身アニメーション更新処理
-	void UpdateLowerBodyAnimation(float elapsedTime, const char* end, bool blend = false);
+	void UpdateLowerBodyAnimation(float elapsedTime, const char* start, const char* end, bool blend = false);
 
 	void ReverseplaybackLowerBodyAnimation(float elapsedTime, const char* end, bool blend = false);
 
 	//アニメーション再生
-	void PlayUpeerBodyAnimation(int index, bool loop, float currentanimationseconds, float blendSeconds = 0.2f);
+	void PlayUpeerBodyAnimation(int index, bool loop, float currentanimationseconds, float blendSeconds = 0.2f , float currentAnimationUpperAddSeconds = 0, float keyFrameEndUpper = 0.0f);
 
 	//アニメーション再生
 	void PlayLowerBodyAnimation(int index, bool loop, float blendSeconds = 0.2f);
 
 
 	// アニメーション再生
-	void PlayAnimation(int index, bool loop,float currentanimationseconds = 0.0f, float blendSeconds = 0.2f, float currentAnimationAddSeconds = 0);
+	void PlayAnimation(int index, bool loop,float currentanimationseconds = 0.0f, float blendSeconds = 0.2f, float currentAnimationAddSeconds = 0 , float keyFrameEnd = 0.0f);
 
 	//逆再生アニメーション
-	void PlayReverseAnimation(int index, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);
+	void PlayReverseAnimation(int index, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f, float keyFrameEnd = 0.0f);
 
 	// 二つのアニメーションブレンド
 	void PlayAnimationBlend(int index,int index2, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);
@@ -172,6 +172,9 @@ private:
 	float rastcurrentAnimationSeconds = 0.67f;
 	float animationSecondsLengthMax = 0.0f;
 
+	float currentAnimationUpperAddSeconds = 0.0f;    //上半身アニメーションの再生用加算用
+	float currentAnimationUpperAddSecondsMin = 0.0f;    //上半身アニメーションの再生用加算用
+
 	//パンチをした即ー１つまりアニメーション終了つまりTポーズに戻る。
 
 	// ループ終了か
@@ -194,6 +197,9 @@ private:
 	float animationBlendTimeUpeer = 0.0f;			//アニメーション補完時間
 	float animationBlendSecondsUpeer = 0.0f;			//〃
 
+	// キーフレームの最後
+	float keyFrameEnd = 0;
+	float keyFrameEndUpper = 0;
 
      // 上半身のキーフレーム時間
 	int keyframeUpper = 0;

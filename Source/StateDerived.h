@@ -526,6 +526,7 @@ private:
 	std::shared_ptr<ModelControll> modelControllid;
 	std::shared_ptr<Movement> moveid;
 	std::shared_ptr<Transform> transformid;
+	
 
 	DirectX::XMFLOAT3 angle; 
 
@@ -545,10 +546,7 @@ private:
 	// 再生ループ
 	bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.03f;
+
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
@@ -635,13 +633,13 @@ private:
 	// 最初の一回だけ呼びたいから
 	bool                InitializationCheck = false;
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.03f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.03f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
@@ -963,6 +961,8 @@ private:
 	std::shared_ptr<ModelControll> modelControllid;
 
 
+
+
 	float				stateTimer = 0.0f;
 
 	// 再生ループ
@@ -995,9 +995,13 @@ private:
 	std::shared_ptr<HP> hpid;
 
 
+	// エフェクト
+	std::unique_ptr<Effect> wind;
+
+
 	float				stateTimer = 0.0f;
 
-	float               moveSpeed = 2.0f;
+	float               moveSpeed = 14.0f;
 
 	// 再生ループ
 	bool  loop = false;
@@ -1005,8 +1009,14 @@ private:
 	// 再生開始時間 
 	float currentAnimationStartSeconds = 0.3f;
 
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.025f;
+
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
+
+	// 可速度
+	float addHeight = 1.0f;
 };
 
 // 反射ステートオブジェクト

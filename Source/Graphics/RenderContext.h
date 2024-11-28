@@ -177,6 +177,11 @@ struct RenderContext
 	VignetteData			vignetteData;
 #endif	//	defined( UNIT_VN_01 )
 
+	// テクスチャずらす
+	int texcoordMult = 1;
+
+	int isSpecular = 1;
+
 	//Microsoft::WRL::ComPtr<ID3D11Buffer> vignette_constant_buffer;
 	//Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;
 };

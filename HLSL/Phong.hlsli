@@ -36,7 +36,9 @@ cbuffer CbScene : register(b0)
     //float2                  dummy2;
     //float2                  dummy2;
 
-
+    int texcoordMult; // テクスチャ入れる奴
+    int isSpecular;
+    float2 dummy;
 
 };
 

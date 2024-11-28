@@ -255,11 +255,25 @@ private:
     // アップデート再生上半身下半身別
     UpAnim  updateanim;
 
-    // 上半身更新開始位置
-    char* bornUpStartPoint;
+    //// 上半身更新開始位置
+    //char* bornUpStartPoint;
 
-    // 下半身更新終了位置
+    //// 下半身更新終了位置
+    //char* bornDownerEndPoint = "";
+
+
+    // 上半身スタート再生開始場所
+    char* bornUpStartPoint = "";
+
+    // 上半身エンド再生停止場所
+    char* bornUpEndPoint = "";
+
+    // 下半身スタート再生開始場所
+    char* bornDownerStartPoint = "";
+
+    // 下半身エンド再生停止場所
     char* bornDownerEndPoint = "";
+
 
     // 縄張り半径
     float territoryRange = 10.0f;

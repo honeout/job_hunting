@@ -31,7 +31,7 @@ VS_OUT main(
 
     vout.binormal = normalize(cross(vout.normal,vout.tangent));
 
-    vout.texcoord = texcoord;
+    vout.texcoord = texcoord * texcoordMult;
 
     // UNIT11
     // シャドウマップで使用する情報を算出

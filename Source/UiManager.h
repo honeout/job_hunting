@@ -62,6 +62,8 @@ public:
         PlayerCommandSpeciulShurashuPushu,
         PlayerCommandSpeciulFrame,
         PlayerCommandSpeciulFramePushu,
+        PlayerCommandSpeciulIce,
+        PlayerCommandSpeciulThander,
         PlayerHPBar,
         EnemyHPBar,
         EnemyHPLife01,

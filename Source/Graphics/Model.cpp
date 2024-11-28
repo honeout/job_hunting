@@ -471,7 +471,9 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 
 	// アニメーションデータからキーフレームデータリストを取得
 	const std::vector<ModelResource::Keyframe>& keyframes = animation.keyframes;
-	int keyCount = static_cast<int> (keyframes.size());
+	// キーフレームの最大値
+	int keyCount = 
+		static_cast<int>(keyFrameEnd) <= 0 ? static_cast<int> (keyframes.size()) : static_cast<int>(keyFrameEnd);
 	for (int keyIndex = 0; keyIndex < keyCount - 1; ++keyIndex)
 	{
 		// 現在の時間がどのキーフレームの間にいるか判定する
@@ -760,7 +762,8 @@ void Model::ReverseplaybackAnimation(float elapsedTime, bool blend)
 
 	//アニメーションデータからキーフレームデータリストを取得
 	const std::vector<ModelResource::Keyframe>& keyframes = animation.keyframes;
-	int keyCount = static_cast<int>(keyframes.size());
+	int keyCount =
+		static_cast<int>(keyFrameEnd) <= 0 ? static_cast<int> (keyframes.size()) : static_cast<int>(keyFrameEnd);
 	for (int keyIndex = keyCount - 1; keyIndex > 0; --keyIndex)
 	{
 
@@ -955,7 +958,8 @@ void Model::Update_blend_animations(float elapsedTime,   bool blend)
 
 
 
-	int keyCount = static_cast<int> (keyframes.size());
+	int keyCount =
+		static_cast<int>(keyFrameEnd) <= 0 ? static_cast<int> (keyframes.size()) : static_cast<int>(keyFrameEnd);
 
 	int keyCountSeconds = static_cast<int> (keyframesSeconds.size());
 	for (int keyIndex = 0; keyIndex < keyCount - 1 && keyIndex < keyCountSeconds - 1; ++keyIndex)
@@ -1143,14 +1147,16 @@ void Model::Update_blend_animations(float elapsedTime,   bool blend)
 
 
 // 上半身用アニメーション
-void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool blend)
+void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, const char* end, bool blend)
 {
-	//int nodeIndexStart = GetNodeIndex(start);
-	//int nodeIndexEnd = GetNodeIndex(end);
+	//int nodeStart = GetNodeIndex(start);
+	//int nodeEnd = GetNodeIndex(end);
 
-	Model::Node* node = FindNode(start);
+	//Model::Node* node = FindNode(start);
+	Model::Node* startNode = FindNode(start);
+	Model::Node* endNode = FindNode(end);
 
-	int nodeIndexStart = node->now;
+	//int nodeIndexStart = node->now;
 	//再生中でないなら処理しない
 	if (!IsPlayUpeerBodyAnimation()) return;
 
@@ -1173,7 +1179,8 @@ void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool 
 
 	//アニメーションデータからキーフレームデータリストを取得
 	const std::vector<ModelResource::Keyframe>& keyframes = animation.keyframes;
-	int keyCount = static_cast<int>(keyframes.size());
+	int keyCount =
+		static_cast<int> (keyFrameEndUpper) <= 0 ? static_cast<int> (keyframes.size()) : static_cast<int> (keyFrameEndUpper);
 	for (int keyIndex = 0; keyIndex < keyCount - 1; ++keyIndex)
 	{
 		//現在の時間がどのキーフレームの間にいるか判定する
@@ -1190,8 +1197,8 @@ void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool 
 
 			// 上半身アニメーション
 			
-			int nodeIndexMax = static_cast<int>(nodes.size());
-			for (int nodeIndex = nodeIndexStart; nodeIndex < nodeIndexMax; ++nodeIndex)
+			int nodeIndexMax = static_cast<int>(endNode->now);
+			for (int nodeIndex = startNode->now; nodeIndex < nodeIndexMax; ++nodeIndex)
 			{
 
 
@@ -1262,7 +1269,8 @@ void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool 
 
 	//時間経過
 	currentAnimationSecondsUpeer += elapsedTime;
-
+	// 時間経過 加算分アニメーションを早めるかどうか
+	currentAnimationSecondsUpeer += currentAnimationUpperAddSeconds > currentAnimationUpperAddSecondsMin ? currentAnimationUpperAddSeconds : elapsedTime;
 	//再生時間が週短時間を超えたら
 	if (currentAnimationSecondsUpeer >= animation.secondsLength)
 	{
@@ -1280,9 +1288,10 @@ void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, bool 
 	}
 }
 
-void Model::ReverseplaybackUpeerBodyAnimation(float elapsedTime, const char* start, bool blend)
+void Model::ReverseplaybackUpeerBodyAnimation(float elapsedTime,  const char* end, bool blend)
 {
-	Model::Node* node = FindNode(start);
+
+	Model::Node* node = FindNode(end);
 
 	//再生中でないなら処理しない
 	if (!IsPlayUpeerBodyAnimation()) return;
@@ -1330,6 +1339,7 @@ void Model::ReverseplaybackUpeerBodyAnimation(float elapsedTime, const char* sta
 
 			// 上半身アニメーション
 			int nodeCount = static_cast<int>(nodes.size());
+			//int nodeCount = static_cast<int>(endNode->now);
 			for (int nodeIndex = node->now; nodeIndex < nodeCount; ++nodeIndex)
 			{
 
@@ -1418,9 +1428,10 @@ void Model::ReverseplaybackUpeerBodyAnimation(float elapsedTime, const char* sta
 	}
 }
 // 下半身用
-void Model::UpdateLowerBodyAnimation(float elapsedTime, const char* end, bool blend)
+void Model::UpdateLowerBodyAnimation(float elapsedTime,const char* start, const char* end, bool blend)
 {
-	Model::Node* node = FindNode(end);
+	Model::Node* startNode = FindNode(start);
+	Model::Node* endNode = FindNode(end);
 	//再生中でないなら処理しない
 	if (!IsPlayAnimation()) return;
 
@@ -1445,7 +1456,7 @@ void Model::UpdateLowerBodyAnimation(float elapsedTime, const char* end, bool bl
 	const std::vector<ModelResource::Keyframe>& keyframes = animation.keyframes;
 
 	// 再生
-	int keyCount = static_cast<int>(keyframes.size());
+	int keyCount = static_cast<int>(keyFrameEnd) <= 0 ? static_cast<int>(keyframes.size()): static_cast<int>(keyFrameEnd);
 	for (int keyIndex = 0; keyIndex < keyCount - 1; ++keyIndex)
 	{
 
@@ -1460,8 +1471,8 @@ void Model::UpdateLowerBodyAnimation(float elapsedTime, const char* end, bool bl
 
 			// 12
 
-			int nodeCount = static_cast<int>(node->now);
-			for (int nodeIndex = 0; nodeIndex < nodeCount; ++nodeIndex)
+			int nodeCount = static_cast<int>(endNode->now);
+			for (int nodeIndex = startNode->now; nodeIndex < nodeCount; ++nodeIndex)
 			{
 				//2つのキーフレーム間の補完計算
 				const ModelResource::NodeKeyData& key0 = keyframe0.nodeKeys.at(nodeIndex);
@@ -1672,7 +1683,7 @@ void Model::ReverseplaybackLowerBodyAnimation(float elapsedTime, const char* end
 	}
 }
 
-void Model::PlayUpeerBodyAnimation(int index, bool loop, float currentanimationseconds, float blendSeconds)
+void Model::PlayUpeerBodyAnimation(int index, bool loop, float currentanimationseconds, float blendSeconds, float currentAnimationUpperAddSeconds, float keyFrameEndUpper)
 {
 	currentAnimationIndexUpeer = index;
 	currentAnimationSecondsUpeer = currentanimationseconds;
@@ -1680,6 +1691,9 @@ void Model::PlayUpeerBodyAnimation(int index, bool loop, float currentanimations
 	animationEndFlagUpeer = false;
 	animationBlendTimeUpeer = 0.0f;
 	animationBlendSecondsUpeer = blendSeconds;
+	this->currentAnimationUpperAddSeconds = currentAnimationUpperAddSeconds;
+
+	this->keyFrameEndUpper = keyFrameEndUpper;
 }
 
 void Model::PlayLowerBodyAnimation(int index, bool loop, float blendSeconds)
@@ -1693,7 +1707,7 @@ void Model::PlayLowerBodyAnimation(int index, bool loop, float blendSeconds)
 }
 
 // アニメーション再生
-void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,float blendSeconds, float currentAnimationAddSeconds)
+void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,float blendSeconds, float currentAnimationAddSeconds, float keyFrameEnd)
 {
 	currentAnimationIndex = index;
 	currentAnimationSeconds = oldcurrentAnimationSeconds = currentanimationseconds;
@@ -1704,9 +1718,11 @@ void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,flo
 	animationBlendSeconds = blendSeconds;
 
 	this->currentAnimationAddSeconds = currentAnimationAddSeconds;
+
+	this->keyFrameEnd = keyFrameEnd;
 }
 
-void Model::PlayReverseAnimation(int index, bool loop,float currentanimationseconds, float blendSeconds)
+void Model::PlayReverseAnimation(int index, bool loop,float currentanimationseconds, float blendSeconds, float keyFrameEnd)
 {
 	//currentAnimationIndex = index;
 	currentAnimationIndex = index;
@@ -1715,6 +1731,8 @@ void Model::PlayReverseAnimation(int index, bool loop,float currentanimationseco
 	animationEndFlag = false;
 	animationBlendTime = 0.0f;
 	animationBlendSeconds = blendSeconds;
+
+	this->keyFrameEnd = keyFrameEnd;
 }
 
 void Model::PlayAnimationBlend(int index,int index2, bool loop, float currentanimationseconds,float blendSeconds)
