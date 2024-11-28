@@ -823,7 +823,7 @@ private:
 	// 再生開始時間 
 	float currentAnimationStartSeconds = 0.0f;
 	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.03f;
+	float currentAnimationAddSeconds = 0.00f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
@@ -919,7 +919,7 @@ private:
 	// 再生開始時間 
 	float currentAnimationStartSeconds = 0.0f;
 	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.03f;
+	float currentAnimationAddSeconds = 0.00f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
@@ -932,6 +932,15 @@ private:
 
 
 	float				turnSpeed = DirectX::XMConvertToRadians(720);
+
+
+	// スタート値
+	float specialMoveWaitStartTime = 0.0f;
+
+	// 魔法打った後の待機時間
+	float specialMoveWaitTime = specialMoveWaitStartTime;
+	float specialMoveWaitTimeMax = 5.0f;
+
 
 
 };

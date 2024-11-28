@@ -1397,14 +1397,15 @@ void SceneGame::Finalize()
 // 更新処理
 void SceneGame::Update(float elapsedTime)
 {
-	
-	ActorManager::Instance().Update(elapsedTime);
+	float dlayTime = dlayTimeCheck ?  elapsedTime / 2 : elapsedTime;
+
+	ActorManager::Instance().Update(dlayTime);
 
 	// エフェクト更新処理
-	EffectManager::Instance().Update(elapsedTime);
+	EffectManager::Instance().Update(dlayTime);
 
 	// エフェクトしてシェーダーを使う
-	PlayEffectsShaders(elapsedTime);
+	PlayEffectsShaders(dlayTime);
 
 	// シーン切り替え
 	{
@@ -1777,35 +1778,98 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 	Graphics& graphics = Graphics::Instance();
 
 	shaderPlayStateTimer -= elapsedTime;
+	// エフェクト
 	if (shaderPlayStateTimer > 0)
 	{
-		colorGradingData.brigthness +=  (0.01f + elapsedTime);
-		// 真ん中
+		// 画面白ボケ開始
+		colorGradingData.brigthness = 
+			(colorGradingData.brigthness + FLT_EPSILON) > (colorGradingDataBrigthnessMax - FLT_EPSILON )?
+			colorGradingData.brigthness : colorGradingData.brigthness + (0.01f + elapsedTime);
+		// 画面真ん中
 		radialBlurData.center = { 0.5f ,0.5f };
+		// 画面ブラー
 		float radislBlurRadius = 200;
-		radialBlurData.radius = radislBlurRadius;
-
+		radialBlurData.radius = 
+			radialBlurData.radius > radialBlurDataRadislBlurRadiusMax?
+			radialBlurData.radius : radialBlurData.radius + (5 + elapsedTime);
+		// 歪み具合
 		float radislBlurSamplingCount = 10;
 		radialBlurData.samplingCount = radislBlurSamplingCount;
+		// 自分が見える範囲
 		float radislBlurMaskRadius = 300;
 		radialBlurData.mask_radius = radislBlurMaskRadius;
 		
 	}
 	else
 	{
+		// 画面白ボケ
 		float colorGradingBrigthness = 0.8f;
 		colorGradingData.brigthness = colorGradingBrigthness + FLT_EPSILON > colorGradingData.brigthness - FLT_EPSILON ? colorGradingBrigthness : colorGradingData.brigthness - (0.01f + elapsedTime);
 
 		//shaderPlayStateTimer = shaderPlayStateTimerMax;
 
+		// ブラー範囲
 		float radislBlurRadius = 0;
-		radialBlurData.radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radialBlurData.radius - (5 + elapsedTime) : radislBlurRadius;
+		radialBlurData.radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radialBlurData.radius - (5 + elapsedTime) : radislBlurRadius - FLT_EPSILON;
 
 		//float radislBlurSamplingCount = 10;
 		//radialBlurData.samplingCount = radislBlurSamplingCount;
-		////float radislBlurMaskRadius = 30;
-		////radialBlurData.mask_radius = radislBlurMaskRadius;
+		//float radislBlurMaskRadius = 30;
+		//radialBlurData.mask_radius = radislBlurMaskRadius;
+		// ブラーのかからない範囲
+		float radislBlurMaskRadiusNormal = 600;
+		float radislBlurMaskRadiusEffectOn = 300;
+		radialBlurData.mask_radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radislBlurMaskRadiusEffectOn : radislBlurMaskRadiusNormal;
 	}
+
+	// 画面スロー
+	bool hitCheck = PlayerManager::Instance().GetPlayer(0)->GetComponent<Player>()->GetHitCheck();
+
+	if (hitCheck)
+	{
+		dlayStateTimer = dlayStateTimerMax;
+		PlayerManager::Instance().GetPlayer(0)->GetComponent<Player>()->SetHitCheck(false);
+	}
+	if (dlayStateTimer - FLT_EPSILON > 0.0f + FLT_EPSILON)
+	{
+		dlayStateTimer -= 0.1f;
+
+		dlayTimeCheck = true;
+
+		float saturationGageMin = 0.0f;
+
+		colorGradingData.saturation = saturationGageMin - FLT_EPSILON > colorGradingData.saturation + FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation - (0.01f + elapsedTime);
+	}
+
+	else
+	{
+		dlayTimeCheck = false;
+
+		float saturationGageMax = 1;
+
+		colorGradingData.saturation = saturationGageMax + FLT_EPSILON < colorGradingData.saturation - FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation + (0.01f + elapsedTime);
+	}
+
+
+	//if (hitCheck)
+	//{
+	//	dlayStateTimer = dlayStateTimerMax;
+
+	//	dlayTimeCheck = true;
+
+	//	float saturationGageMin = 0.0f;
+
+	//	colorGradingData.saturation = saturationGageMin - FLT_EPSILON > colorGradingData.saturation + FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation - (0.01f + elapsedTime);
+	//}
+
+	//else
+	//{
+	//	dlayTimeCheck = false;
+
+	//	float saturationGageMax = 1;
+
+	//	colorGradingData.saturation = saturationGageMax + FLT_EPSILON < colorGradingData.saturation - FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation + (0.01f + elapsedTime);
+	//}
 }
 
 

@@ -157,6 +157,9 @@ public:
     // 特殊攻撃選択
     bool InputSpecialAttackCharge();
     bool InputSpecialShotCharge();
+
+    // 特殊技チャージ出来ました。
+    void ChargeSpecialEnergyMultiple();
  
     bool GetSpecialAttackTime() const { return specialAttackTime; }
     void SetSpecialAttackTime(bool specialAttackTime) { this->specialAttackTime = specialAttackTime; }
@@ -259,6 +262,8 @@ public:
     bool InputMagicIce();
     bool InputMagicLightning();
 
+    void InputSpecialMagicframe();
+
     void AttackCheckUI();
 
    // void Update();
@@ -309,6 +314,9 @@ public:
     // 魔法の量
     void MagicPointUpdate();
 
+    // ダメージ判定
+    void SpecialApplyDamageInRadius();
+
 public:
     // ステート
     enum class State
@@ -324,6 +332,7 @@ public:
         CycloneStrike,
         SpecialAttack,
         Magic,
+        SpecialMagic,
         Damage,
         Death,
         Revive,
@@ -419,7 +428,9 @@ public:
     {
         Normal = -1,
         Attack,
-        MagicFire
+        MagicFire,
+        MagicThander,
+        MagicIce,
     };
 
 private:
@@ -482,6 +493,11 @@ public:
     void SetFlashOn(bool flashOn) { this->flashOn = flashOn; }
     bool GetFlashOn() { return flashOn; }
 
+    void SetHitCheck(bool hitCheck) {  this->hitCheck = hitCheck; }
+    bool GetHitCheck() {  return hitCheck; }
+
+
+
 private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
@@ -529,11 +545,11 @@ private:
     Effect* ImpactEffect = nullptr;
     Effect* desEffect = nullptr;
 
-    std::shared_ptr<Effect> lightningAttack;
+    std::unique_ptr<Effect> lightningAttack;
 
-    std::shared_ptr<Effect> hitFire;
-    std::shared_ptr<Effect> hitThander;
-    std::shared_ptr<Effect> hitIce;
+    std::unique_ptr<Effect> hitFire;
+    std::unique_ptr<Effect> hitThander;
+    std::unique_ptr<Effect> hitIce;
 
     State                   state = State::Idle;
     State                   stated;
@@ -626,6 +642,19 @@ private:
     float specialAttackCharge = 0.0f;
     float specialShotCharge = 0.0f;
 
+    // 特殊技のチャージ
+    int fireEnergyCharge = 0;
+    int ThanderEnergyCharge = 0;
+    int iceEnergyCharge = 0;
+    int energyChargeMax = 4;
+
+    // 特殊技のチャージ完了
+    bool isSpecialChargeComplete = false;
+
+    // 特殊攻撃をためる奴
+    std::stack<int> chargedSpecialMoves;
+
+
     // ステートマシン用
     StateMachine* stateMachine = nullptr;
 
@@ -637,6 +666,8 @@ private:
 
     // 特殊攻撃をためる奴
     std::stack<int> specialAttack;
+
+
 
     // 特殊アクション確認
     bool specialAttackTime;
@@ -697,6 +728,8 @@ private:
 
 
     bool flashOn = false;
+
+    bool hitCheck = false;
 };
 
 // プレイヤーマネージャー

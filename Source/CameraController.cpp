@@ -192,6 +192,7 @@ void CameraController::MotionCamera(float elapsedTime)
 				set = true;
 				float	value = motionData[i + 1].time - motionData[i].time;
 				value = (motionTimer - motionData[i].time) / value;
+				// 時間によって位置の割り出しを変える。
 				newPosition = motionData[i].position;
 				newPosition.x += (motionData[i + 1].position.x - motionData[i].position.x) * value;
 				newPosition.y += (motionData[i + 1].position.y - motionData[i].position.y) * value;
@@ -207,6 +208,7 @@ void CameraController::MotionCamera(float elapsedTime)
 		}
 		if (!set)
 		{
+			// 位置を最後の部分に合わせる。
 			if (motionTimer >= motionData[motionData.size() - 1].time)
 			{
 				newPosition = motionData[motionData.size() - 1].position;

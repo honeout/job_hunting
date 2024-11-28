@@ -172,6 +172,7 @@
     <ClInclude Include="Source\ProjectileStraight.h" />
     <ClInclude Include="Source\ProjectileSunder.h" />
     <ClInclude Include="Source\ProjectileThrowing.h" />
+    <ClInclude Include="Source\ProjectileTornade.h" />
     <ClInclude Include="Source\ResourceManager.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneGame.h" />
@@ -250,6 +251,7 @@
     <ClCompile Include="Source\ProjectileStraight.cpp" />
     <ClCompile Include="Source\ProjectileSunder.cpp" />
     <ClCompile Include="Source\ProjectileThrowing.cpp" />
+    <ClCompile Include="Source\ProjectileTornade.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneGameClear.cpp" />

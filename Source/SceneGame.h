@@ -89,7 +89,11 @@ private:
 	// ラジアルブラー情報
 	RadialBlurData  radialBlurData;
 
+	// 画面の白ボケの最大値
+	float colorGradingDataBrigthnessMax = 1.5f;
 
+	// 画面歪み最大
+	float radialBlurDataRadislBlurRadiusMax = 500.0f;
 
 
 	// シャドウマップ用情報
@@ -115,4 +119,11 @@ private:
 	float vignette_roundness = 1.0f;
 
 	bool sceneChengeCheckDead = false;
+
+	bool dlayTimeCheck = false;
+
+
+	// スロー時間
+	float dlayStateTimer = 0.0f;
+	float dlayStateTimerMax = 4.5f;
 };

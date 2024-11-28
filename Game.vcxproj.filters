@@ -282,6 +282,9 @@
     <ClInclude Include="Source\TransForm2D.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ProjectileTornade.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -504,6 +507,9 @@
       <Filter>Source\Character</Filter>
     </ClCompile>
     <ClCompile Include="Source\TransForm2D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ProjectileTornade.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1684,8 +1684,8 @@ void PlayerSpecialAttackState::Enter()
 	enemyTransform = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>();
 	enemyHpId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<HP>();
 
-	lightning = std::make_unique<Effect>("Data/Effect/lightningStrike.efk");
-	lightningAttack = std::make_unique<Effect>("Data/Effect/sunder.efk");
+	lightning = std::make_unique<Effect>("Data/Effect/sunder.efk");
+	lightningAttack = std::make_unique<Effect>("Data/Effect/HitThunder.efk");
 
 	// アニメーション再生
 	modelControllid->GetModel()->PlayAnimation(
@@ -1715,6 +1715,10 @@ void PlayerSpecialAttackState::Enter()
 
 	// フラッシュ
 	flashOn = true;
+
+
+	// 加速
+	currentAnimationAddSeconds = 0.0f;
 }
 
 void PlayerSpecialAttackState::Execute(float elapsedTime)
@@ -1729,10 +1733,34 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 
 
 
+		//float vx = sinf(angle.y) * 6;
+		//float vz = cosf(angle.y) * 6;
+		//p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+		//p.data.push_back({ 95, {position.x + vx , position.y + 3, position.z + vz }, position });
+
+		//float vx = sinf(angle.y) * 6;
+		//float vz = cosf(angle.y) * 6;
+
+		//float vx2 = sinf(angle.y);
+		//float vz2 = cosf(angle.y);
+		//p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+		//p.data.push_back({ 60, {position.x - vx, position.y + 3, position.z - vz }, position });
+		//p.data.push_back({ 90, {position.x - vx , position.y + 3, position.z - vz }, position });
+
 		float vx = sinf(angle.y) * 6;
 		float vz = cosf(angle.y) * 6;
+
+		float vx2 = sinf(angle.y) - 10;
+		float vz2 = cosf(angle.y) * 7;
+		float vx3 = sinf(angle.y);
+
 		p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-		p.data.push_back({ 95, {position.x + vx , position.y + 3, position.z + vz }, position });
+	    p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
+		p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+		p.data.push_back({ 140, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
+		p.data.push_back({ 200, {position.x + vx3 , position.y + 0.5f, (position.z + 0.1f) - vz2 }, position });
+
+
 
 		Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
@@ -1741,8 +1769,10 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 
 
 		// アニメーション
-		if (!modelControllid->GetModel()->IsPlayAnimation())
+		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON)
 		{
+	
+
 			// アニメーション再生
 			modelControllid->GetModel()->PlayAnimation(
 				Player::Anim_SpecialAttack, loop,
@@ -1755,8 +1785,8 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			lightning->Stop(lightning->GetEfeHandle());
 
 
-			rockCheck = true;
-			owner->GetComponent<Player>()->SetRockCheck(rockCheck);
+			//rockCheck = true;
+			//owner->GetComponent<Player>()->SetRockCheck(rockCheck);
 
 
 			
@@ -1780,7 +1810,7 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 		//rockCheck = true;
 		//owner->GetComponent<Player>()->SetRockCheck(rockCheck);
 
-		owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+		//owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
 		// フリーカメラのロックを外す
 		//bool freeCameraCheck = false;
@@ -1823,11 +1853,13 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 		float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
 
 
-
-		if (animationTime >= 1.4f)
+		// スローモーションと色を明るく
+		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON)
+		{
 			owner->GetComponent<Player>()->SetFlashOn(flashOn);
-
-		// アニメーション
+			owner->GetComponent<Player>()->SetHitCheck(true);
+		}
+		// アニメーション切りつけ
 		if (animationTime >= 1.6f)
 		{
 			float invincibleTimer = 0.0f;
@@ -1857,14 +1889,19 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 
 
 			lightningAttack->Play(pPosition);
-			// 入力確認でステート変更
-			owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 
 
 			enemyHpId->ApplyDamage(10, 0.5f);
-
+			owner->GetComponent<Player>()->SetHitCheck(false);
 
 			//owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+		}
+		// アニメーション終了
+		if (!modelControllid->GetModel()->IsPlayAnimation())
+		{
+			// 入力確認でステート変更
+			owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+
 		}
 	}
 
@@ -1995,19 +2032,20 @@ void PlayerSpecialMagicState::Enter()
 	modelControllid = owner->GetComponent<ModelControll>();
 	moveid = owner->GetComponent<Movement>();
 
-
-	enemyTransform = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>();
-	enemyHpId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<HP>();
-
 	fire = std::make_unique<Effect>("Data/Effect/fire.efk");
 	fireAttack = std::make_unique<Effect>("Data/Effect/hit fire.efk");
+	// 再生開始時間
+	currentAnimationStartSeconds = 0.0f;
 
 	// アニメーション再生
 	modelControllid->GetModel()->PlayAnimation(
-		Player::Anim_MagicSeconde, loop,
+		Player::Anim_SlashThree, loop,
 		currentAnimationStartSeconds, blendSeconds
 		, currentAnimationAddSeconds
 	);
+	// アニメーション再生
+	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+
 
 	Model::Node* pHPosiiton = modelControllid->GetModel()->FindNode("mixamorig:LeftHand");
 
@@ -2019,14 +2057,16 @@ void PlayerSpecialMagicState::Enter()
 	};
 
 	fire->Play(pPosition);
-	// アニメーション再生
-	owner->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
-
 	// 落ちるの停止
 	bool stopFall = true;
 	moveid->SetStopFall(stopFall);
 
 	button = true;
+
+	// スタート値
+	specialMoveWaitTime = specialMoveWaitStartTime;
+
+
 }
 
 void PlayerSpecialMagicState::Execute(float elapsedTime)
@@ -2034,70 +2074,103 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 	if (button)
 	{
 
+		// カメラモーション
 		MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
 		position = transformid->GetPosition();
 		angle = transformid->GetAngle();
 
 
-
+		// モーション記録
 		float vx = sinf(angle.y) * 6;
 		float vz = cosf(angle.y) * 6;
-		p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-		p.data.push_back({ 95, {position.x + vx , position.y + 3, position.z + vz }, position });
+		float vx2 = sinf(angle.y) - 10;
+		float vz2 = cosf(angle.y) * 7;
+		float vx3 = sinf(angle.y);
 
+		p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+		p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
+		p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+		p.data.push_back({ 150, {position.x - vx2, position.y + 5, position.z - vz2 }, position });
+		p.data.push_back({ 170, {position.x + vx, position.y + 3, position.z + vz }, position });
+		p.data.push_back({ 200, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+		p.data.push_back({ 250, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
+		p.data.push_back({ 350, {position.x + vx3 , position.y + 0.5f, (position.z + 0.1f) - vz2 }, position });
+
+		// モーション設定
 		Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
 		// 任意のアニメーション再生区間でのみ衝突判定処理をする
-		float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+		//float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
+		
+		// エフェクト更新
+		if(fire->GetEfeHandle())
+		{
+			Model::Node* pHPosiiton = modelControllid->GetModel()->FindNode("mixamorig:LeftHand");
+
+			DirectX::XMFLOAT3 pPosition =
+			{
+						pHPosiiton->worldTransform._41,
+						pHPosiiton->worldTransform._42,
+						pHPosiiton->worldTransform._43
+			};
+
+			fire->SetPosition(fire->GetEfeHandle(),
+				pPosition);
+		}
+
 
 
 		// アニメーション
 		if (!modelControllid->GetModel()->IsPlayAnimation())
 		{
+			// 再生開始時間
+			currentAnimationStartSeconds = 0.0f;
+
 			// アニメーション再生
 			modelControllid->GetModel()->PlayAnimation(
-				Player::Anim_SpecialAttack, loop,
+				Player::Anim_MagicSeconde, loop,
 				currentAnimationStartSeconds, blendSeconds
 				, currentAnimationAddSeconds
 			);
 			button = false;
 
-
+			// 手の炎エフェクト停止
 			fire->Stop(fire->GetEfeHandle());
 
 
-			rockCheck = true;
-			owner->GetComponent<Player>()->SetRockCheck(rockCheck);
+			//rockCheck = true;
+			//owner->GetComponent<Player>()->SetRockCheck(rockCheck);
 
 
-
+			
 		}
 	}
 	else
 	{
-
-		owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
-
-
-
-		owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
-
-		/*lightningAttack->SetPosition(lightningAttack->GetEfeHandle(), modelControllid->GetModel()->FindNode("mixamorig:LeftHand")->position);*/
-
 			// 任意のアニメーション再生区間でのみ衝突判定処理をする
 		float animationTime = modelControllid->GetModel()->GetCurrentANimationSeconds();
 
 		// アニメーション
-		if (animationTime >= 1.6f)
+		if (animationTime >= 1.1f)
 		{
+
+			owner->GetComponent<Player>()->SetFlashOn(true);
+			//owner->GetComponent<Player>()->SetHitCheck(true);
+
+			// アニメーション停止
+			owner->GetComponent<Player>()->SetUpdateAnim
+			(Player::UpAnim::Stop);
+
+
 			// カメラ振動
 			MessageData::CAMERASHAKEDATA cameraShakeData;
 
+			// カメラ振動値
 			float shakeTimer = 0.5f;
 			float shakePower = 0.8f;
 			cameraShakeData = { shakeTimer , shakePower };
-
+			// カメラ振動設定
 			Messenger::Instance().SendData(MessageData::CAMERASHAKE, &cameraShakeData);
 
 			Model::Node* pHPosiiton = modelControllid->GetModel()->FindNode("mixamorig:LeftHand");
@@ -2110,18 +2183,36 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 			};
 
 
-
-			fireAttack->Play(pPosition);
-			// 入力確認でステート変更
-			owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+			// 魔法発射
+			owner->GetComponent<Player>()->InputSpecialMagicframe();
 
 
-			enemyHpId->ApplyDamage(10, 0.5f);
+			// 必殺技を放った後の経過時間
+			specialMoveWaitTime += elapsedTime;
 
-
-			//owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 		}
 	}
+
+
+
+	// ダメージ判定
+	owner->GetComponent<Player>()->SpecialApplyDamageInRadius();
+
+
+
+	// 待機時間が過ぎたので次のステートへ
+	if (specialMoveWaitTime >= specialMoveWaitTimeMax)
+	{
+		// 次のステートへ
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
+
+
+		return;
+	}
+
+	
+
+
 }
 
 void PlayerSpecialMagicState::Exit()

@@ -12,6 +12,8 @@
 #include "Graphics/Model.h"
 #include "EnemySlime.h"
 
+#include "ProjectileTornade.h"
+
 #include "StateDerived.h"
 
 #include "TransForm2D.h"
@@ -133,6 +135,8 @@ void Player::Start()
     desEffect = new Effect("Data/Effect/F.efk");
 
     // エフェクト読み込み
+    float effectScale = 1.0f;
+
     hitFire = std::make_unique<Effect>("Data/Effect/hit fire.efk");
     hitThander = std::make_unique<Effect>("Data/Effect/HitThunder.efk");
     hitIce = std::make_unique<Effect>("Data/Effect/hit Ice.efk");
@@ -183,6 +187,7 @@ void Player::Start()
     stateMachine->RegisterState(new PlayerCycloneStrikeState(GetActor().get()));
     stateMachine->RegisterState(new PlayerSpecialAttackState(GetActor().get()));
     stateMachine->RegisterState(new PlayerMagicState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerSpecialMagicState(GetActor().get()));
     stateMachine->RegisterState(new PlayerDamageState(GetActor().get()));
     stateMachine->RegisterState(new PlayerDeathState(GetActor().get()));
     stateMachine->RegisterState(new PlayerReviveState(GetActor().get()));
@@ -263,28 +268,7 @@ void Player::Update(float elapsedTime)
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
         }
-        //
-        //// 炎発射
-        //if (selectMagicCheck == (int)Player::CommandMagic::Fire && GetSelectCheck() == (int)Player::CommandAttack::Magic)
-        //{
-        //    // 炎発射
-        //    InputMagicframe();
-        //    //TransitionAttackState();
-        //}
-        //// 雷
-        //if (selectMagicCheck == (int)Player::CommandMagic::Thander && GetSelectCheck() == (int)Player::CommandAttack::Magic)
-        //{
-        //    // 雷発射
-        //    InputMagicLightning();
-        //    //TransitionAttackState();
-        //}
-        //// 氷
-        //if (selectMagicCheck == (int)Player::CommandMagic::Ice && GetSelectCheck() == (int)Player::CommandAttack::Magic)
-        //{
-        //    // 氷発射
-        //    InputMagicIce();
-        //    //TransitionAttackState();
-        //}
+ 
 
         // 特殊攻撃
         if (InputSpecialAttackCharge())
@@ -299,7 +283,10 @@ void Player::Update(float elapsedTime)
         // 特殊魔法
         if (InputSpecialShotCharge())
         {
-            InputProjectile();
+
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagic));
+
+            /*InputProjectile();*/
             // 特殊攻撃の発生条件 解消
             specialAttackTime = false;
         }
@@ -682,9 +669,11 @@ void Player::OnGUI()
     {
         MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-        float vx = sinf(angle.y);
-        float vz = cosf(angle.y);
-        p.data.push_back({ 0, {position.x * vx , position.y + 3, position.z * vz }, position });
+        float vx = sinf(angle.y) * 6;
+        float vz = cosf(angle.y) * 6;
+        p.data.push_back({ 0, {position.x + vx , position.y + 3, position.z + vz }, position });
+        p.data.push_back({ 90, {position.x - vx , position.y + 3, position.z - vz }, position });
+        p.data.push_back({ 180, {position.x - vx , position.y + 3, position.z - vz }, position });
         
 
         Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
@@ -695,8 +684,42 @@ void Player::OnGUI()
     if (ImGui::Button("Samunail"))
     {
 
+        //stateMachine->ChangeState((int)State::SpecialAttack);
 
-        
+        MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+        position = transform->GetPosition();
+        angle = transform->GetAngle();
+
+
+
+        float vx = sinf(angle.y) * 6;
+        float vz = cosf(angle.y) * 6;
+
+        float vx2 = sinf(angle.y) - 10;
+        float vx3 = sinf(angle.y);
+        float vz2 = cosf(angle.y) * 7;
+
+        //float vx2 = sinf(angle.y);
+        //float vz2 = cosf(angle.y);
+
+        //DirectX::XMFLOAT3 ePos = EnemyManager::Instance().GetEnemy(0)->GetComponent<Transform>()->GetPosition();
+
+        //DirectX::XMFLOAT3 pos;
+
+        //pos =
+        //{
+        //     position.x - ePos.x,
+        //     position.y - ePos.y,
+        //     position.z - ePos.z,
+
+        //};
+
+        p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+        p.data.push_back({ 50, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+        p.data.push_back({ 90, {position.x + vx3 , position.y + 2, (position.z + 0.1f) - vz2 }, position });
+
+        Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
         // アニメーション再生
         model->PlayAnimation(
@@ -737,7 +760,10 @@ void Player::OnGUI()
         // 任意のアニメーション再生区間でのみ衝突判定処理をする
         float animationTime = model->GetCurrentANimationSeconds();
 
-
+        if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON)
+        {
+            hitCheck = true;
+        }
 
         // アニメーション
         if (animationTime >= 1.6f)
@@ -757,6 +783,8 @@ void Player::OnGUI()
             angleCameraCheck = false;
 
             flashOn = true;
+
+  
         }
     }
 
@@ -1212,7 +1240,7 @@ bool Player::InputSpecialAttackCharge()
         uiIdSpecialShurashuTransForm2D->SetPosition(pos);
 
     }
-
+    // 技を放つ
     if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::Attack && !specialAttackTime)
     {
      
@@ -1466,6 +1494,45 @@ bool Player::InputSpecialShotCharge()
     return false;
 }
 
+void Player::ChargeSpecialEnergyMultiple()
+{
+    // 技確定
+    std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+    std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
+
+
+    // 炎魔法を一定以上溜めたら
+    if (fireEnergyCharge >= energyChargeMax)
+    {
+        bool drawCheck = true;
+        uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+
+        DirectX::XMFLOAT2 pos;
+        pos = { 94,240 };
+        float add = 30;
+        if (2 < (int)specialAttack.size())
+            pos.y = pos.y - (add * (float)specialAttack.size());
+        uiIdSpecialShurashuTransForm2D->SetPosition(pos);
+    }
+
+    // 雷魔法を一定以上溜めたら
+    if (ThanderEnergyCharge >= energyChargeMax)
+    {
+
+    }
+
+    // 氷魔法を一定以上溜めたら
+    if (iceEnergyCharge >= energyChargeMax)
+    {
+
+    }
+
+
+    // ここまで通ったら魔法がたまった事が分かるので
+    isSpecialChargeComplete = false;
+
+}
+
 DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 {
     // 入力情報を取得
@@ -1613,7 +1680,8 @@ void Player::CollisionProjectilesVsEnemies()
                     }
                     // 当たった時の副次的効果
                     {
-                        specialShotCharge += 0.1f;
+                        //specialShotCharge += 0.1f;
+                        specialShotCharge += 1.5f;
                     }
                     if (projectile->GetComponent<ProjectileHoming>())
                     // 弾丸破棄
@@ -2215,6 +2283,8 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
 
                     ImpactEffect->Play(nodePosition);
 
+                    // ヒット時少しスローに
+                    hitCheck = true;
 
                     //desEffect->Play(e);
 
@@ -2303,6 +2373,8 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
 
                     ImpactEffect->Play(nodePosition);
 
+                    // ヒット時少しスローに
+                    hitCheck = true;
 
                     //desEffect->Play(e);
 
@@ -2403,6 +2475,9 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
 
                     counterCheck = true;
                     projectille->GetComponent<ProjectileThrowing>()->SetCounterCheck(counterCheck);
+
+                    // ヒット時少しスローに
+                    hitCheck = true;
 
                     //desEffect->Play(e);
 
@@ -3481,6 +3556,71 @@ bool Player::InputMagicLightning()
     return false;
 }
 
+void Player::InputSpecialMagicframe()
+{
+    // mp消費
+    //mp->ApplyConsumption(magicConsumption);
+    // 前方向 sinの計算
+    DirectX::XMFLOAT3 dir;
+
+    dir = GetForwerd(angle);
+
+
+    DirectX::XMFLOAT3 target;
+
+    // 一番近くの敵をターゲットにする
+    float dist = FLT_MAX;// float の最大値float全体
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    int enemyCount = enemyManager.GetEnemyCount();
+    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+    {
+        // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
+        std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+
+
+        target = enemy->GetComponent<Transform>()->GetPosition();// 位置を入れる
+
+
+    }
+
+    // 弾丸初期化
+    const char* filename = "Data/Model/Sword/Sword.mdl";
+
+    std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+    actor->AddComponent<ModelControll>();
+    actor->GetComponent<ModelControll>()->LoadModel(filename);
+    actor->SetName("MagicFrameTornade");
+    actor->AddComponent<Transform>();
+    actor->GetComponent<Transform>()->SetPosition(target);
+    actor->GetComponent<Transform>()->SetAngle(angle);
+    actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+    actor->AddComponent<BulletFiring>();
+    actor->AddComponent<ProjectileTornade>();
+    const char* effectFilename = "Data/Effect/fireTornade.efk";
+    actor->GetComponent<ProjectileTornade>()->SetEffectProgress(effectFilename);
+    //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
+
+
+    // これが２Dかの確認
+    bool check2d = false;
+    actor->SetCheck2d(check2d);
+
+    //actor->AddComponent<Collision>();
+    ProjectileManager::Instance().Register(actor);
+    //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
+    std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+
+    float   lifeTimer = 0.5f;
+
+    // 発射
+    projectile->GetComponent<BulletFiring>()->Lanch(dir, target, lifeTimer);
+    projectile->GetComponent<ProjectileTornade>()->SetTarget(target);
+
+    //// 攻撃解除
+    //magicAction = false;
+    //selectMagicCheck = (int)CommandMagic::Normal;
+}
+
 void Player::AttackCheckUI()
 {
     // UIカーソル
@@ -3749,6 +3889,77 @@ void Player::MagicPointUpdate()
 {
     
     
+}
+
+void Player::SpecialApplyDamageInRadius()
+{
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    
+    int enemyCount = enemyManager.GetEnemyCount();
+    // 指定のノードと全ての敵を総当たりで衝突処理
+    for (int i = 0; i < enemyCount; ++i)
+    {
+        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+
+
+        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+        float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
+        float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+        ProjectileManager& projectileManager = ProjectileManager::Instance();
+        for (int ii = 0; ii < projectileManager.GetProjectileCount(); ++ii)
+        {
+            std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(ii);
+            
+            if (projectile->GetComponent<ProjectileTornade>()) return;
+            
+            // 魔法位置
+            DirectX::XMFLOAT3 magicPosition = projectile->GetComponent<Transform>()->GetPosition();
+
+            float magicRadius = projectile->GetComponent<Transform>()->GetRadius();
+
+            float magicHeight = projectile->GetComponent<Transform>()->GetHeight();
+
+            //// 衝突処理
+            DirectX::XMFLOAT3 outPositon;
+            // 下半身
+            // 円柱と円
+            if (Collision::IntersectCylinderVsCylinder(
+                magicPosition,
+                magicRadius,
+                magicHeight,
+                enemyPosition,
+                enemyRudius,
+                enemyHeight,
+                outPositon))
+
+            {
+
+                // ダメージを与える。
+                //enemy->ApplyDamage(1);
+            // ダメージが通ったら消える。TRUEになるから
+                if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
+                {
+
+
+                    // ヒットエフェクト再生
+                    {
+
+
+                        hitEffect->Play(enemyPosition);
+
+                        hitFire->Play(enemyPosition);
+
+
+                    }
+                    // 当たった時の副次的効果
+                    {
+                        //specialAttackCharge += 0.1f;
+                    }
+
+                }
+            }
+        }
+    }
 }
 
 
