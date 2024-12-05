@@ -60,7 +60,7 @@ private:
 	float				rollSpeed = DirectX::XMConvertToRadians(90);
 	float				range = 7.0f;
 	float				maxAngleX = DirectX::XMConvertToRadians(+45);
-	float				minAngleX = DirectX::XMConvertToRadians(0);
+	float				minAngleX = DirectX::XMConvertToRadians(-71);
 	// ÉçÉbÉNÉIÉìèàóù
 	DirectX::XMFLOAT3	newPosition = { 0, 0, 0 };
 	DirectX::XMFLOAT3	newTarget = { 0, 0, 0 };
@@ -81,6 +81,8 @@ private:
 	uint64_t			CAMERACHANGELOCKONMODEKEY;
 	uint64_t			CAMERACHANGEMOTIONMODEKEY;
 	uint64_t			CAMERASHAKEKEY;
+
+	float               minPositionY = -3.525f;
 	
 };
 

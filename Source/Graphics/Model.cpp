@@ -1291,20 +1291,20 @@ void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, const
 	// 時間経過 加算分アニメーションを早めるかどうか
 	currentAnimationSecondsUpeer += currentAnimationUpperAddSeconds > currentAnimationUpperAddSecondsMin ? currentAnimationUpperAddSeconds : elapsedTime;
 	
-	// 通常最大値
-	float animSecondsLength = animation.secondsLength;
+	//// 通常最大値
+	//float animSecondsLength = animation.secondsLength;
 
-	// 再生時間が終端時間を超えたら
-	// 最高を超えた場合のループの場合を作る。
-	if (keyFrameEnd + FLT_EPSILON > 0 + FLT_EPSILON)
-	{
+	//// 再生時間が終端時間を超えたら
+	//// 最高を超えた場合のループの場合を作る。
+	//if (keyFrameEnd + FLT_EPSILON > 0 + FLT_EPSILON)
+	//{
 
-		const ModelResource::Keyframe& keyframe = keyframes.at(keyFrameEnd);
-		animSecondsLength = keyframe.seconds;
-	}
-	
+	//	const ModelResource::Keyframe& keyframe = keyframes.at(keyFrameEnd);
+	//	animSecondsLength = keyframe.seconds;
+	//}
+	//
 	//再生時間が週短時間を超えたら
-	if (currentAnimationSecondsUpeer >= animSecondsLength)
+	if (currentAnimationSecondsUpeer >= animation.secondsLength)
 	{
 		//再生時間を巻き戻す
 		if (animationLoopFlagUpeer)

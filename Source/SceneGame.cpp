@@ -41,7 +41,7 @@ static const UINT SHADOWMAP_SIZE = 2048;
 // 初期化
 void SceneGame::Initialize()
 {
-	//
+
 
 	// ステージ初期化
 	{
@@ -130,7 +130,8 @@ void SceneGame::Initialize()
 
 
 	}
-	
+
+
 	// 敵
 	{
 
@@ -1480,8 +1481,11 @@ void SceneGame::Update(float elapsedTime)
 
 	ActorManager::Instance().Update(dlayTime);
 
+
+
 	// エフェクト更新処理
 	EffectManager::Instance().Update(dlayTime);
+
 
 	// エフェクトしてシェーダーを使う
 	PlayEffectsShaders(dlayTime);

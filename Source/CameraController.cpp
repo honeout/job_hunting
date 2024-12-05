@@ -73,6 +73,13 @@ void CameraController::Update(float elapsedTime)
 		angle.y -= DirectX::XM_2PI;
 	}
 
+	// 新しいカメラの最低位置
+	if(newPosition.y - FLT_EPSILON <= minPositionY + FLT_EPSILON)
+	{
+		newPosition.y  = minPositionY;
+	}
+
+
 	// 徐々に目標に近づける
 	static	constexpr	float	Speed = 1.0f / 8.0f;
 	position.x += (newPosition.x - position.x) * Speed;

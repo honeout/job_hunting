@@ -657,6 +657,7 @@ private:
 
 	float               speed = 10;
 
+
 	float               attackSpeed = 3.0f;
 
 	// Å‰‚Ìˆê‰ñ‚¾‚¯ŒÄ‚Ñ‚½‚¢‚©‚ç

@@ -68,6 +68,8 @@ void EnemySlime::Start()
 
     stateMachine = std::make_shared<StateMachine>();
 
+
+
     //stateMachine = new StateMachine();
 
     // ステートマシンにステート登録

@@ -1362,12 +1362,22 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	}
 
 	// 回避
-	if (owner->GetComponent<Player>()->InputAvoidance())
+	if (owner->GetComponent<Player>()->InputAvoidance() && owner->GetComponent<Player>()->InputMove(elapsedTime))
 	{
+		bool stop = false;
+		moveid->SetStopMove(stop);
+
+		DirectX::XMFLOAT3 vec;
+		vec = owner->GetComponent<Player>()->GetMoveVec(elapsedTime);
+
+		moveid->Turn(vec, turnSpeed,elapsedTime);
+
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 
 		button = false;
 		buttonSeconde = false;
+
+		return;
 	}
 
 	DirectX::XMVECTOR Vector;
@@ -1403,7 +1413,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 
 		//moveid->Move(direction, attackSpeed, elapsedTime);
 	}
-	else
+	else if (!moveid->GetOnLadius())
 	{
 
 		bool stop = true;
@@ -1655,12 +1665,22 @@ void PlayerSideCutState::Execute(float elapsedTime)
 	}
 
 	// 回避
-	if (owner->GetComponent<Player>()->InputAvoidance())
+	if (owner->GetComponent<Player>()->InputAvoidance() && owner->GetComponent<Player>()->InputMove(elapsedTime))
 	{
+		bool stop = false;
+		moveid->SetStopMove(stop);
+
+		DirectX::XMFLOAT3 vec;
+		vec = owner->GetComponent<Player>()->GetMoveVec(elapsedTime);
+
+		moveid->Turn(vec, turnSpeed, elapsedTime);
+
 		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 
 		button = false;
 		buttonSeconde = false;
+
+		return;
 	}
 
 
@@ -1698,7 +1718,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 
 		//moveid->Move(direction, attackSpeed, elapsedTime);
 	}
-	else
+	else if (!moveid->GetOnLadius())
 	{
 	
 		bool stop = true;
@@ -1707,7 +1727,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 	}
 
 	// 回転
-	if (!rotateCheck)
+	if (!rotateCheck && !owner->GetComponent<Player>()->InputAvoidance())
 	{
 		//DirectX::XMVECTOR Vector;
 		//DirectX::XMVECTOR LengthSq;
@@ -1766,6 +1786,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 		modelControllid->GetModel()->GetCurrentAnimationSecondsUpeer();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 
+	//owner->GetComponent<Player>()->InputAvoidance();
 
 	// 2撃目
 	if (animationTime >= 1.1f)
@@ -1971,7 +1992,7 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 
 		//moveid->Move(direction, attackSpeed, elapsedTime);
 	}
-	else
+	else if (!moveid->GetOnLadius())
 	{
 
 		bool stop = true;

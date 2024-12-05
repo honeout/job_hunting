@@ -912,12 +912,20 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
     // ローカルからワールドに行くときにいる奴相手のポジションを渡す。
     DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
 
-    std::shared_ptr<Ui> uiIdSight = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<Ui>();
-    std::shared_ptr<TransForm2D> uiIdSightTransform = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<TransForm2D>();
+    std::shared_ptr<Ui> uiIdSight;
+    std::shared_ptr<TransForm2D> uiIdSightTransform;
 
-    std::shared_ptr<Ui> uiIdSightMove = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
-    std::shared_ptr<TransForm2D> uiIdSightMoveTransform = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<TransForm2D>();
+    std::shared_ptr<Ui> uiIdSightMove; 
+    std::shared_ptr<TransForm2D> uiIdSightMoveTransform;
 
+    int uiCount = UiManager::Instance().GetUiesCount();
+
+    if (uiCount <= 0) return;
+        uiIdSight = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<Ui>();
+        uiIdSightTransform = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<TransForm2D>();
+        uiIdSightMove = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+        uiIdSightMoveTransform = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<TransForm2D>();
+    
     // 全ての敵の頭上にHPゲージを表示
     EnemyManager& enemyManager = EnemyManager::Instance();
     int enemyCount = enemyManager.GetEnemyCount();
@@ -1059,6 +1067,11 @@ bool Player::InputSelectCheck()
     {
         selectCheck = (int)CommandAttack::Magic;
     }
+
+    int uiCount = UiManager::Instance().GetUiesCount();
+    // ui無かったら
+    if (uiCount <= 0) return false;
+
     // UI設定 階層下がる前 選ぶ
     // 攻撃選ぶ
     if (selectCheck == (int)CommandAttack::Attack)
@@ -1143,6 +1156,10 @@ bool Player::InputSelectMagicCheck()
     {
         selectMagicCheck = (int)CommandMagic::Normal;
     }
+
+    int uiCount = UiManager::Instance().GetUiesCount();
+    // ui無かったら
+    if (uiCount <= 0) return false;
 
     // UI設定 炎
     if (selectMagicCheck == (int)CommandMagic::Fire && magicAction)
@@ -1265,6 +1282,10 @@ bool Player::InputShortCutkeyMagic()
 bool Player::InputSpecialAttackCharge()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
+
+    int uiCount = UiManager::Instance().GetUiesCount();
+    // ui無かったら
+    if (uiCount <= 0) return false;
 
     if (specialAttackCharge >= 1.5f)
     {
@@ -1849,6 +1870,10 @@ bool Player::InputSpecialShotCharge()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
 
+    int uiCount = UiManager::Instance().GetUiesCount();
+    // ui無かったら
+    if (uiCount <= 0) return false;
+
     if (specialShotCharge >= 1.5f)
     {
         std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
@@ -1993,6 +2018,9 @@ bool Player::InputSpecialShotCharge()
 void Player::ChargeSpecialEnergyMultiple()
 {
 
+    int uiCount = UiManager::Instance().GetUiesCount();
+    // ui無かったら
+    if (uiCount <= 0) return;
 
     // 炎魔法を一定以上溜めたら
     if (fireEnergyCharge >= energyChargeMax)
@@ -4354,6 +4382,10 @@ void Player::AttackCheckUI()
     // UIカーソル
     //std::shared_ptr<Ui> uiSight = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<Ui>();
     
+    int uiCount = UiManager::Instance().GetUiesCount();
+    // ui無かったら
+    if (uiCount <= 0) return;
+
     EnemyManager& enemyManager = EnemyManager::Instance();
 
     int enemyCount = enemyManager.GetEnemyCount();
@@ -4561,6 +4593,9 @@ void Player::DmageInvalidJudment(bool invalidJudgment)
 
 void Player::UiControlle(float elapsedTime)
 {
+    int uiCount = UiManager::Instance().GetUiesCount();
+    // ui無かったら
+    if (uiCount <= 0) return;
 
     float gaugeWidth = hp->GetMaxHealth() * hp->GetHealth() * 0.1f;
     // hpゲージ
