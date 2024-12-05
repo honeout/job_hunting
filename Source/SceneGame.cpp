@@ -149,7 +149,7 @@ void SceneGame::Initialize()
 			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
 
 		actor->GetComponent<Transform>()->
-			SetScale(DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f));
+			SetScale(DirectX::XMFLOAT3(0.06f, 0.06f, 0.06f));
 		actor->AddComponent<Movement>();
 
 		DirectX::XMFLOAT3 min, max;
@@ -1468,12 +1468,14 @@ void SceneGame::Finalize()
 
 	UiManager::Instance().Clear();
 
+	ProjectileManager::Instance().Clear();
 
 }
 
 // 更新処理
 void SceneGame::Update(float elapsedTime)
 {
+
 	float dlayTime = dlayTimeCheck ?  elapsedTime / 2 : elapsedTime;
 
 	ActorManager::Instance().Update(dlayTime);
@@ -1582,13 +1584,13 @@ void SceneGame::Update(float elapsedTime)
 void SceneGame::Render()
 {
 
-	
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	//// シャドウマップの描画
 	RenderShadowmap();
 
 	Render3DScene();
+
 
 
 	// 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
@@ -1630,7 +1632,7 @@ void SceneGame::Render()
 		rc.vignetteData.roundness = vignette_roundness;
 
 	
-
+		
 
 		// ポストプロセスを処理を行う
 		postprocessingRenderer->Render(rc);

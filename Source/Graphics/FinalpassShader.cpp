@@ -297,7 +297,7 @@ void FinalpassShader::End(const RenderContext& rc)
 {
 	rc.deviceContext->VSSetShader(nullptr, nullptr, 0);
 	rc.deviceContext->PSSetShader(nullptr, nullptr, 0);
-	ID3D11ShaderResourceView* srvs[] = { nullptr };
+	ID3D11ShaderResourceView* srvs[] = { nullptr , nullptr};
 	rc.deviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
 	rc.deviceContext->IASetInputLayout(nullptr);
 }

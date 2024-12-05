@@ -52,6 +52,9 @@ public:
     // 当たり判定宝石と地面
     void CollisionRubyWidthVsOnGraound();
 
+    // 当たり判定ボスとプレイヤー
+    bool CollisionPlayerWithRushEnemy();
+
     void InputImpact(DirectX::XMFLOAT3 pos);
 
     // 宝石飛び出し
@@ -71,7 +74,8 @@ public:
 
 
     // ステートマシーン取得
-    StateMachine* GetStateMachine() { return stateMachine; }
+    //StateMachine* GetStateMachine() { return stateMachine; }
+    std::shared_ptr<StateMachine> GetStateMachine() { return stateMachine; }
 
 
 
@@ -81,6 +85,7 @@ public:
         Wander,
         Idle,
         Pursuit,
+        Jump,
         Attack,
         Shot,
         ShotThrowing,
@@ -114,6 +119,12 @@ public:
         Blend,
         Reverseplayback,
 
+    };
+
+    enum class AttackMode
+    {
+        AssaultAttack,
+        JumpStompAttack,
     };
 public:
     // ステートタイマー設定
@@ -230,6 +241,12 @@ public:
     // クリア確認
     bool GetClearCheck() { return clearCheck; }
     void SetClearCheck(bool clearCheck) { this->clearCheck = clearCheck; }
+
+    void SetMoveCheck(bool moveCheck) { this->moveCheck = moveCheck; }
+
+    // 探す範囲
+    float GetSearchRange() { return searchRange; }
+
 private:
     // モデル情報を確保
     Model* model = nullptr;
@@ -305,15 +322,16 @@ private:
     int maxHealth = 50;
 
     // 半径
-    float radius = 3.5f;
+    float radius = 3.0f;
 
     // 高さ
-    float height = 10.0f;
+    float height = 9.0f;
 
     float territoryarea = 10.0f;
 
     // ステートマシン用
-    StateMachine* stateMachine = nullptr ;
+    //StateMachine* stateMachine = nullptr ;
+    std::shared_ptr<StateMachine> stateMachine;
 
     // 当たり判定無効判定
     bool invalidJudgment = true;
@@ -341,6 +359,9 @@ private:
 
     DirectX::XMFLOAT2 colorGB = { 1,1 };
 
+
+    // 動作チェック
+    bool moveCheck = true;
 };
 
 // エネミーマネージャー

@@ -273,7 +273,8 @@ public:
     DirectX::XMFLOAT3 GetForwerd(DirectX::XMFLOAT3 angle);
 
     // ステートマシーン取得
-    StateMachine* GetStateMachine() { return stateMachine; }
+    //StateMachine* GetStateMachine() { return stateMachine; }
+    std::shared_ptr<StateMachine> GetStateMachine() { return stateMachine; }
 
     // 攻撃方法変更
     void SetSelectCheck(bool selectCheck) { this->selectCheck = selectCheck; }
@@ -333,6 +334,8 @@ public:
         SpecialAttack,
         Magic,
         SpecialMagic,
+        SpecialMagicIce,
+        SpecialMagicThander,
         Damage,
         Death,
         Revive,
@@ -551,6 +554,9 @@ private:
     std::unique_ptr<Effect> hitThander;
     std::unique_ptr<Effect> hitIce;
 
+    // 足もとに竜巻
+    std::unique_ptr<Effect> areWork;
+
     State                   state = State::Idle;
     State                   stated;
     
@@ -637,6 +643,7 @@ private:
     /////////////////// カメラ関係
 
     CameraController* cameraControlle;
+    //std::unique_ptr<CameraController> cameraControlle;
 
     DirectX::XMFLOAT3	cameraAngle = DirectX::XMFLOAT3(0, 0, 0);
     float				cameraRollSpeed = DirectX::XMConvertToRadians(90);
@@ -656,6 +663,7 @@ private:
     float specialShotCharge = 0.0f;
 
     // 特殊技のチャージ
+    int attackEnergyCharge = 0;
     int fireEnergyCharge = 0;
     int ThanderEnergyCharge = 0;
     int iceEnergyCharge = 0;
@@ -669,7 +677,9 @@ private:
 
 
     // ステートマシン用
-    StateMachine* stateMachine = nullptr;
+    //StateMachine* stateMachine = nullptr;
+    std::shared_ptr<StateMachine> stateMachine;
+
 
     // 移動傾き
     float moveSpeedAnimation;
@@ -679,7 +689,7 @@ private:
 
     // 特殊攻撃をためる奴
     std::stack<int> specialAttack;
-
+    //std::vector<int> specialAttack2;
 
 
     // 特殊アクション確認
@@ -717,7 +727,10 @@ private:
 
 
     // ダメージ量
-    int applyDamageNormal = 1;
+    int applyDamageNormal = 5;
+
+    // 必殺技ダメージ量
+    int applyDamageSpecial = 3;
 
     int hitMortion = 0;
     int hitMortionMax = 180;

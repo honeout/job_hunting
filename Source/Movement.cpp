@@ -260,7 +260,7 @@ void Movement::OnLanding()
     }
 }
 
-void Movement::JumpVelocity( float speed)
+void Movement::JumpVelocity(float speed)
 {
     std::shared_ptr<Actor> actor = GetActor();
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);

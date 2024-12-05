@@ -48,7 +48,8 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
 
     // ダメージ処理
     health -= damage;
-
+    // 一定ダメージ数
+    escapeOnFixedDamage += damage;
 
 
     // ライフ最大値から一つ減る。
@@ -139,4 +140,44 @@ bool HP::FlashTime(float elapsedTime)
 
 
     return false;
+}
+
+bool HP::CheckDamageThresholdWithinTime(float elapsedTime,  float damageThreshold, float timeLimit)
+{
+    damageThresholdTime += elapsedTime;
+
+    // 最大値
+    escapeOnFixedDamageMax = damageThreshold;
+
+    // 経過時間一定時間越え
+    if (damageThresholdTime > timeLimit)
+    {
+        damageThresholdTime = damageThresholdStartTime;
+        return false;
+    }
+
+    // 条件達成
+    if (escapeOnFixedDamage > escapeOnFixedDamageMax)
+    {
+        // ダメージ初期化
+        escapeOnFixedDamage = escapeOnFixedDamageStart;
+
+        // 時間初期化
+        damageThresholdTime = damageThresholdStartTime;
+
+        // ダメージが一定以上確認
+        isOverDamageRule = true;
+        return true;
+    }
+    return false;
+}
+
+void HP::ResetOnDamageThresholdTime()
+{
+    // 被ダメチャージ初期化
+    escapeOnFixedDamage = escapeOnFixedDamageStart;
+
+    // 経過時間強制終了
+    damageThresholdTime = damageThresholdStartTime;
+
 }

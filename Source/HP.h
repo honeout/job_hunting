@@ -68,6 +68,14 @@ public:
 	// 無敵時間
 	void SetInvincibleTimer(float invincibleTimer) { this->invincibleTimer = invincibleTimer; }
 
+	// 一定期間ないにダメージを一定数以上食らったら
+	bool CheckDamageThresholdWithinTime(float elapsedTime,float damageThreshold, float timeLimit);
+
+	void ResetOnDamageThresholdTime();
+
+	//  ダメージが設定された限界を超えたこと
+	bool GetIsOverDamageRule() { return isOverDamageRule; }
+	void SetIsOverDamageRule(bool isOverDamageRule) { this->isOverDamageRule = isOverDamageRule; }
 
 private:
 	// 最大値HP
@@ -96,5 +104,16 @@ private:
 	int blinkingTimeMax = 60;
 	int blinkingTime = blinkingTimeMax;
 
+	// ダメージ連続一定以上で 判定
+	float escapeOnFixedDamageStart = 0.0f;
+	float escapeOnFixedDamage = escapeOnFixedDamageStart;
+	float escapeOnFixedDamageMax = 10;
+
+	// ダメージ時の経過時間
+	float damageThresholdStartTime = 0.0f;
+	float damageThresholdTime = damageThresholdStartTime;
+
+	// ダメージが設定された限界を超えたこと
+	bool isOverDamageRule = false;
 
 };

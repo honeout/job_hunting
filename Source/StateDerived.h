@@ -5,6 +5,7 @@
 #include "SceneGameClear.h"
 #include "Actor.h"
 #include "Effect.h"
+#include "ProjectileTornade.h"
 
 
 enum AttackChange
@@ -34,20 +35,38 @@ private:
 	std::shared_ptr<Movement> moveid;
 	//std::shared_ptr<Actor> playerid;
 	
-	float				stateTimer = 0.0f;
+	float				stateTimerEnd = 0.0f;
+	float				stateTimer = stateTimerEnd;
+	float				stateTimerMax = 4.0f;
 
 
 	// 着地瞬間
 	bool                upOnLading = false;
 
+
 	// 再生ループ
-	bool  loop = false;
+	bool  loop = true;
 
 	// 再生開始時間 
 	float currentAnimationStartSeconds = 0.0f;
 
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.06f;
+
+	// キーフレームの終了
+	float keyFrameEnd = 0.0f;
+
 	// アニメーションブレンド
 	float blendSeconds = 0.7f;
+
+	// 歩き速度
+	float moveSpeed = 3;
+
+	// 回転速度
+	float turnSpeed = DirectX::XMConvertToRadians(320);
+
+	// ターゲット位置
+	DirectX::XMFLOAT3 targetPosition;
 };
 
 // 待機ステートオブジェクト
@@ -66,9 +85,14 @@ public:
 	void Exit()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
-	//std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> move;
+	std::shared_ptr<HP> hp;
 	
+	float               stateTimerEnd = 0.0f;
 	float				stateTimer = 0.0f;
+	float				stateTimerMax = 3.0f;
+	float				stateTimerMin = 1.0f;
 
 	// 再生ループ
 	bool  loop = true;
@@ -94,6 +118,7 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
 private:
 	//std::shared_ptr<Actor> playerid;
 	std::shared_ptr<EnemySlime> enemyid;
@@ -121,7 +146,72 @@ private:
 	int mortionLimit = 0;
 	// 行動制限最大数
 	int mortionLimitMax = 5;
+
+	// 行動をランダムで
+	int randamAttack = 0;
 };
+
+
+// 徘徊ステートオブジェクト
+class JumpState : public State
+{
+public:
+	// コンストラクタ
+	JumpState(Actor* enemy) :State(enemy) {};
+	// デストラクタ
+	~JumpState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	std::shared_ptr<EnemySlime> enemyid;
+	std::shared_ptr<ModelControll> modelid;
+	std::shared_ptr<Movement> moveid;
+	std::shared_ptr<HP> hpid;
+	//std::shared_ptr<Actor> playerid;
+
+	//float				stateTimer = 0.0f;
+
+
+
+	// 着地瞬間
+	bool                upOnLading = false;
+
+
+	// 再生ループ
+	bool  loop = true;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 2.0f;
+
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.025f;
+
+	// キーフレームの終了
+	float keyFrameEnd = 0.8f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.7f;
+
+	// 歩き速度
+	float moveSpeed = 10;
+
+	// ジャンプ速度
+	float jumpSpeed = 30.0f;
+
+	// 回転速度
+	float turnSpeed = DirectX::XMConvertToRadians(320);
+
+	// ターゲット位置
+	DirectX::XMFLOAT3 targetPosition;
+
+	// アニメーション終了
+	bool jumpStart = false;
+};
+
 
 // 攻撃ステートオブジェクト
 class AttackState : public State
@@ -253,13 +343,30 @@ private:
 
 
 	float				stateTimer = 0.0f;
+	float				stateTimerMax = 5.0f;
+	float				stateTimerEnd = 0.0f;
 
+
+	//// 再生ループ
+	//bool  loop = false;
+
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+
+	//// アニメーションブレンド
+	//float blendSeconds = 0.7f;
 
 	// 再生ループ
-	bool  loop = false;
+	bool  loop = true;
 
 	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	float currentAnimationStartSeconds = 2.5f;
+
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.025f;
+
+	// キーフレームの終了
+	float keyFrameEnd = 3.0f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.7f;
@@ -284,15 +391,24 @@ private:
 
 
 	float				stateTimer = 0.0f;
+	float				stateTimerMax = 5.0f;
+
+	float				stateTimerEnd = 0.0f;
 
 	// 再生ループ
 	bool  loop = false;
 
 	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	float currentAnimationStartSeconds = 0.426f;
+
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.00f;
+
+	// キーフレームの終了
+	float keyFrameEnd = 70.0f;
 
 	// アニメーションブレンド
-	float blendSeconds = 0.7f;
+	float blendSeconds = 0.35f;
 };
 
 
@@ -526,6 +642,9 @@ private:
 	std::shared_ptr<ModelControll> modelControllid;
 	std::shared_ptr<Movement> moveid;
 	std::shared_ptr<Transform> transformid;
+
+	// 足もとに竜巻
+	//std::unique_ptr<Effect> areWork;
 	
 
 	DirectX::XMFLOAT3 angle; 
@@ -815,16 +934,16 @@ private:
 	std::unique_ptr<Effect> lightning;
 	std::unique_ptr<Effect> lightningAttack;
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 
 
 	bool button = false;
@@ -937,9 +1056,157 @@ private:
 
 	// 魔法打った後の待機時間
 	float specialMoveWaitTime = specialMoveWaitStartTime;
-	float specialMoveWaitTimeMax = 5.0f;
+	float specialMoveWaitTimeMax = 3.0f;
+
+	// 最初だけ魔法を発動するため
+	bool startMagic = false;
+	bool isMagic = false;
+
+};
 
 
+// 必殺技氷魔法
+class PlayerSpecialMagicIceState : public State
+{
+public:
+	// コンストラクタ
+	PlayerSpecialMagicIceState(Actor* player) :State(player) {};
+	// デストラクタ
+	~PlayerSpecialMagicIceState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	enum  AttackMemory
+	{
+		OnePushu = 1,
+		TwoPushu,
+		ThreePushu,
+	};
+private:
+	std::shared_ptr<Transform> transformid;
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
+
+	// エネミー入れ物
+	std::shared_ptr<Transform> enemyTransform;
+	std::shared_ptr<HP> enemyHpId;
+
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT3 angle;
+
+	float				stateTimer = 0.0f;
+
+	std::unique_ptr<Effect> ice;
+	//std::unique_ptr<Effect> fireAttack;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.00f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+
+	bool button = false;
+
+	// ロックオンモード
+	bool rockCheck = true;
+
+
+	float				turnSpeed = DirectX::XMConvertToRadians(720);
+
+
+	// スタート値
+	float specialMoveWaitStartTime = 0.0f;
+
+	// 魔法打った後の待機時間
+	float specialMoveWaitTime = specialMoveWaitStartTime;
+	float specialMoveWaitTimeMax = 3.0f;
+
+	// 最初だけ魔法を発動するため
+	bool startMagic = false;
+	bool isMagic = false;
+
+};
+
+
+// 必殺技雷魔法
+class PlayerSpecialThanderMagicState : public State
+{
+public:
+	// コンストラクタ
+	PlayerSpecialThanderMagicState(Actor* player) :State(player) {};
+	// デストラクタ
+	~PlayerSpecialThanderMagicState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+private:
+	enum  AttackMemory
+	{
+		OnePushu = 1,
+		TwoPushu,
+		ThreePushu,
+	};
+private:
+	std::shared_ptr<Transform> transformid;
+	std::shared_ptr<ModelControll> modelControllid;
+	std::shared_ptr<Movement> moveid;
+
+	// エネミー入れ物
+	std::shared_ptr<Transform> enemyTransform;
+	std::shared_ptr<HP> enemyHpId;
+
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT3 angle;
+
+	float				stateTimer = 0.0f;
+
+	std::unique_ptr<Effect> fire;
+	std::unique_ptr<Effect> fireAttack;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.00f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+
+	bool button = false;
+
+	// ロックオンモード
+	bool rockCheck = true;
+
+
+	float				turnSpeed = DirectX::XMConvertToRadians(720);
+
+
+	// スタート値
+	float specialMoveWaitStartTime = 0.0f;
+
+	// 魔法打った後の待機時間
+	float specialMoveWaitTime = specialMoveWaitStartTime;
+	float specialMoveWaitTimeMax = 3.0f;
+
+	// 最初だけ魔法を発動するため
+	bool startMagic = false;
+	bool isMagic = false;
 
 };
 
@@ -1001,7 +1268,8 @@ private:
 
 	float				stateTimer = 0.0f;
 
-	float               moveSpeed = 14.0f;
+	float               moveSpeed = 8.0f;
+	float               speed = 3.0f;
 
 	// 再生ループ
 	bool  loop = false;

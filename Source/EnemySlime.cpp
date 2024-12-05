@@ -22,17 +22,17 @@
 EnemySlime::~EnemySlime()
 {
    // delete model;
-    if (stateMachine != nullptr)
-    {
-        delete stateMachine;
-        stateMachine = nullptr;
-    }
-    if (movement)
-    movement.reset();
-    if (hp)
-    hp.reset();
-    if (transform)
-    transform.reset();
+    //if (stateMachine != nullptr)
+    //{
+    //    delete stateMachine;
+    //    stateMachine = nullptr;
+    //}
+    //if (movement)
+    //movement.reset();
+    //if (hp)
+    //hp.reset();
+    //if (transform)
+    //transform.reset();
 
 
 }
@@ -66,14 +66,15 @@ void EnemySlime::Start()
 
     //SetTerritory(position, territoryarea);
 
-    //stateMachine = std::make_unique<StateMachine>();
+    stateMachine = std::make_shared<StateMachine>();
 
-    stateMachine = new StateMachine();
+    //stateMachine = new StateMachine();
 
     // ステートマシンにステート登録
     stateMachine->RegisterState(new WanderState(GetActor().get()));
     stateMachine->RegisterState(new IdleState(GetActor().get()));
     stateMachine->RegisterState(new PursuitState(GetActor().get()));
+    stateMachine->RegisterState(new JumpState(GetActor().get()));
     stateMachine->RegisterState(new AttackState(GetActor().get()));
     stateMachine->RegisterState(new AttackShotState(GetActor().get()));
     stateMachine->RegisterState(new AttackShotThrowingState(GetActor().get()));
@@ -89,10 +90,10 @@ void EnemySlime::Start()
     // アニメーションルール
     updateanim = UpAnim::Normal;
 
-    // 上半身
-    bornUpStartPoint = "mixamorig:Spine";
-    // 下半身
-    bornDownerEndPoint = "mixamorig:Spine";
+    //// 上半身
+    //bornUpStartPoint = "mixamorig:Spine";
+    //// 下半身
+    //bornDownerEndPoint = "mixamorig:Spine";
 
     // 上半身スタート再生開始場所
     bornUpStartPoint = "body3";
@@ -112,11 +113,17 @@ void EnemySlime::Start()
 
     // 攻撃右足するかどうか
     attackRightFootRange = 10.5f;
+
+    // 動作チェック
+    moveCheck = true;
 }
 
 // 更新処理
 void EnemySlime::Update(float elapsedTime)
 {
+
+    // 動作するかどうか
+    if (moveCheck)
     // ステート毎の処理
     stateMachine->Update(elapsedTime);
 
@@ -157,6 +164,8 @@ void EnemySlime::Update(float elapsedTime)
     // ダメージ点滅
     OnHit(elapsedTime);
 
+    // 動作するかどうか
+    if (moveCheck)
     // モーション更新処理
     switch (updateanim)
     {
@@ -196,6 +205,8 @@ void EnemySlime::Update(float elapsedTime)
 
     // ゲージ管理
     UiControlle(elapsedTime);
+
+
 }
 
 
@@ -685,6 +696,93 @@ void EnemySlime::CollisionRubyWidthVsOnGraound()
 
         }
     }
+}
+
+bool EnemySlime::CollisionPlayerWithRushEnemy()
+{
+
+
+        int playerCount = PlayerManager::Instance().GetPlayerCount();
+        for (int j = 0; j < playerCount; ++j)
+        {
+            std::shared_ptr<Actor> player = PlayerManager::Instance().GetPlayer(j);
+
+
+            DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
+            float playerRadius = player->GetComponent<Transform>()->GetRadius();
+            float playerHeight = player->GetComponent<Transform>()->GetHeight();
+
+            // 衝突処理
+            DirectX::XMFLOAT3 outPositon;
+            // 球と球
+            if (Collision::IntersectCylinderVsCylinder(
+                position,
+                radius + 0.3f,
+                height,
+                {
+                playerPosition.x,
+                playerPosition.y,
+                playerPosition.z,
+                },
+                playerRadius ,
+                playerHeight,
+                outPositon))
+
+            {
+                // ダメージを与える。
+                if (player->GetComponent<HP>()->ApplyDamage(3, 1.0f))
+                {
+
+                    DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
+                    DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
+                    DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
+                    DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
+                    DirectX::XMFLOAT3 normal;
+                    DirectX::XMStoreFloat3(&normal, N);
+
+                    float jumpSpeed = 5.0f;
+                    // 衝撃
+                    const float power = 10.0f;
+                    DirectX::XMFLOAT3 impulse;
+                    impulse.y = power * 0.5f;
+                    player->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
+
+
+                    //// 吹き飛ばす
+                    {
+                        // 衝動
+                        DirectX::XMFLOAT3 impulse;
+                        // 衝撃
+                        const float power = 20.0f;
+
+                        float vx = playerPosition.x - position.x;
+                        float vz = playerPosition.z - position.z;
+                        float lengthXZ = sqrtf(vx * vx + vz * vz);
+                        vx /= lengthXZ;
+                        vz /= lengthXZ;
+
+                        impulse.x = vx * power;
+                        impulse.y = power * 0.5f;
+                        impulse.z = vz * power;
+
+                        player->GetComponent<Movement>()->AddImpulse(impulse);
+                        // ヒットエフェクト再生
+
+                        playerPosition.y += playerHeight * 0.5f;
+
+                        player->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
+
+                        //hitEffect->Play(e);
+
+                    }
+
+                }
+
+
+            }
+        }
+
+    return false;
 }
 
 void EnemySlime::InputImpact(DirectX::XMFLOAT3 pos)

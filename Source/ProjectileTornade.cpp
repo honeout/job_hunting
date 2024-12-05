@@ -65,6 +65,7 @@ void ProjectileTornade::Update(float elapsedTime)
     if (effectHit)
         effectHit->SetPosition(effectHit->GetEfeHandle(), transform->GetPosition());
 
+    
 }
 
 // •`‰æˆ—

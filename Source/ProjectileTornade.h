@@ -6,6 +6,7 @@
 #include "BulletFiring.h"
 #include "ModelControll.h"
 #include "Transform.h"
+#include "Movement.h"
 #include "Effect.h"
 // ’Ç”ö’eŠÛ
 class ProjectileTornade :public Component
@@ -77,6 +78,7 @@ private:
 
     std::shared_ptr<BulletFiring> bulletFiring;
     std::shared_ptr<Transform> transform;
+    //std::shared_ptr<Movement> move;
 
     float radius = 1.0f;
 

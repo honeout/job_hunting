@@ -178,4 +178,5 @@ private:
 
 	// s“®”ÍˆÍ
 	Area area;
+
 };

@@ -35,18 +35,18 @@
 Player::~Player()
 {
 
-    if (movement)
-        movement.reset();
-    if (hp)
-        hp.reset();
-    if (transform)
-        transform.reset();
+    //if (movement)
+    //    movement.reset();
+    //if (hp)
+    //    hp.reset();
+    //if (transform)
+    //    transform.reset();
 
-    if (stateMachine)
-    {
-        delete stateMachine;
-        stateMachine = nullptr;
-    }
+    //if (stateMachine)
+    //{
+    //    delete stateMachine;
+    //    stateMachine = nullptr;
+    //}
 
     if (hitEffect != nullptr)
     {
@@ -84,7 +84,7 @@ Player::~Player()
 
 
 
-    ProjectileManager::Instance().Clear();
+   // ProjectileManager::Instance().Clear();
   
 }
 
@@ -143,6 +143,10 @@ void Player::Start()
 
     lightningAttack = std::make_unique<Effect>("Data/Effect/sunder.efk");
 
+
+    // エフェクト竜巻
+    areWork = std::make_unique<Effect>("Data/Effect/tornade.efk");
+
     //// 上半身
     //bornUpStartPoint = "mixamorig:Hips";
     //// 下半身
@@ -183,7 +187,8 @@ void Player::Start()
     specialAttackCharge = 0.0f;
 
     // ステートマシン
-    stateMachine = new StateMachine();
+    //stateMachine = new StateMachine();
+    stateMachine = std::make_unique<StateMachine>();
 
     stateMachine->RegisterState(new PlayerIdleState(GetActor().get()));
     stateMachine->RegisterState(new PlayerMovestate(GetActor().get()));
@@ -196,6 +201,8 @@ void Player::Start()
     stateMachine->RegisterState(new PlayerSpecialAttackState(GetActor().get()));
     stateMachine->RegisterState(new PlayerMagicState(GetActor().get()));
     stateMachine->RegisterState(new PlayerSpecialMagicState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerSpecialMagicIceState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerSpecialThanderMagicState(GetActor().get()));
     stateMachine->RegisterState(new PlayerDamageState(GetActor().get()));
     stateMachine->RegisterState(new PlayerDeathState(GetActor().get()));
     stateMachine->RegisterState(new PlayerReviveState(GetActor().get()));
@@ -228,7 +235,6 @@ void Player::Start()
     
 
 
-
 }
 
 // 更新処理
@@ -242,6 +248,11 @@ void Player::Update(float elapsedTime)
     // カメラコントローラー更新処理
     cameraControlle->Update(elapsedTime);
 
+    // エフェクト位置更新
+    if (areWork->GetEfeHandle())
+    {
+        areWork->SetPosition(areWork->GetEfeHandle(), position);
+    }
     
     // コマンド操作
     {
@@ -254,6 +265,11 @@ void Player::Update(float elapsedTime)
 
 
 
+        // 着地時にエフェクト切る
+        if (movement->GetOnLadius())
+        {
+            areWork->Stop(areWork->GetEfeHandle());
+        }
 
         // 攻撃の時にステートを変更
         if (
@@ -266,6 +282,14 @@ void Player::Update(float elapsedTime)
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
 
+
+            
+            // もし地面なら何もしない
+            bool noStart = false;
+            // エフェクト再生
+            areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
+
+            areWork->Play(position);
         }
 
         //　魔法入力処理
@@ -275,29 +299,54 @@ void Player::Update(float elapsedTime)
                 )
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
+
+
+            // もし地面なら何もしない
+            bool noStart = false;
+            // エフェクト再生
+            areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
+
+            areWork->Play(position);
         }
  
 
         // 特殊攻撃
-        if (InputSpecialAttackCharge())
-        {
-            
-            //TransitionAttackState();
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialAttack));
-            // 特殊攻撃の発生条件 解消
-            specialAttackTime = false;
-                
-        }
-        // 特殊魔法
-        if (InputSpecialShotCharge())
-        {
+        InputSpecialAttackCharge();
+        //if (InputSpecialAttackCharge())
+        //{
+        //    
+        //    //TransitionAttackState();
+        //    GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialAttack));
+        //    // 特殊攻撃の発生条件 解消
+        //    specialAttackTime = false;
 
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagic));
 
-            /*InputProjectile();*/
-            // 特殊攻撃の発生条件 解消
-            specialAttackTime = false;
-        }
+        //    // もし地面なら何もしない
+        //    bool noStart = false;
+        //    // エフェクト再生
+        //    areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
+
+        //    areWork->Play(position);
+        //        
+        //}
+        //// 特殊魔法
+        //if (InputSpecialShotCharge())
+        //{
+
+        //    GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagic));
+
+        //    /*InputProjectile();*/
+        //    // 特殊攻撃の発生条件 解消
+        //    specialAttackTime = false;
+
+
+        //    // もし地面なら何もしない
+        //    bool noStart = false;
+        //    // エフェクト再生
+        //    areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
+
+        //    areWork->Play(position);
+        //}
 
     }
 
@@ -646,7 +695,7 @@ void Player::OnGUI()
     ImGui::InputFloat("Move Speed", &moveSpeed);
     ImGui::InputInt("selectCheck", &selectCheck);
     ImGui::InputInt("selectMagicCheck", &selectMagicCheck);
-    ImGui::InputInt("specialAttack.top", &specialAttack.top());
+    //ImGui::InputInt("specialAttack.top", &specialAttack.top());
     ImGui::SliderFloat("specialAttackCharge", &specialAttackCharge,0,1.5f);
     ImGui::SliderFloat("specialShotCharge", &specialShotCharge,0,1.5f);
 
@@ -1228,9 +1277,9 @@ bool Player::InputSpecialAttackCharge()
         //std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
 
 
-        // 一度発動すると初期化
+        //// 一度発動すると初期化
         specialAttackCharge = 0.0f;
-        specialAttack.push((int)SpecialAttack::Attack);
+        //specialAttack.push((int)SpecialAttack::Attack);
 
         bool drawCheck = false;
         uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
@@ -1239,40 +1288,134 @@ bool Player::InputSpecialAttackCharge()
 
         uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
 
+        //for (int i = 0; i < specialAttack.size(); ++i)
+        //{
+        //    specialAttack;
+        //}
+
+            // 剣攻撃を一定以上溜めたら
+            if (attackEnergyCharge >= energyChargeMax)
+            {
+                // 技確定
+                std::shared_ptr<Ui> uiIdAttackSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+                std::shared_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
 
 
-        // 炎魔法を一定以上溜めたら
-        if (fireEnergyCharge >= energyChargeMax)
-        {
-            // 技確定
-            std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
-            std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
+                bool drawCheck = true;
+                uiIdAttackSpecial->SetDrawCheck(drawCheck);
 
 
-            bool drawCheck = true;
-            uiIdSpecialShurashu->SetDrawCheck(drawCheck);
-
-            DirectX::XMFLOAT2 pos;
-            pos = { 94,240 };
-            float add = 30;
-            if (2 < (int)specialAttack.size())
-                pos.y = pos.y - (add * (float)specialAttack.size());
-            uiIdSpecialShurashuTransForm2D->SetPosition(pos);
-        }
-
-        // 雷魔法を一定以上溜めたら
-        if (ThanderEnergyCharge >= energyChargeMax)
-        {
-
-        }
-
-        // 氷魔法を一定以上溜めたら
-        if (iceEnergyCharge >= energyChargeMax)
-        {
-
-        }
+                // 必殺技何が登録されたか 斬撃
+                specialAttack.push((int)SpecialAttack::Attack);
 
 
+                DirectX::XMFLOAT2 pos;
+                pos = { 94,240 };
+                float add = 30;
+
+                if (2 < (int)specialAttack.size())
+                    pos.y = pos.y - (add * (float)specialAttack.size());
+                uiIdSpecialAttackTransForm2D->SetPosition(pos);
+
+                // 一度発動すると初期化
+                specialAttackCharge = 0.0f;
+
+                // 斬撃必殺技チャージ解消
+                attackEnergyCharge = false;
+            }
+
+
+            // 炎魔法を一定以上溜めたら
+            if (fireEnergyCharge >= energyChargeMax)
+            {
+                // 技確定
+                std::shared_ptr<Ui> uiIdSpecialFire = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+                std::shared_ptr<TransForm2D> uiIdSpecialFireTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
+
+
+                bool drawCheck = true;
+                uiIdSpecialFire->SetDrawCheck(drawCheck);
+
+                // 必殺技何が登録されたか 火
+                specialAttack.push((int)SpecialAttack::MagicFire);
+
+                DirectX::XMFLOAT2 pos;
+                pos = { 94,240 };
+                float add = 30;
+                if (2 < (int)specialAttack.size())
+                    pos.y = pos.y - (add * (float)specialAttack.size());
+                uiIdSpecialFireTransForm2D->SetPosition(pos);
+
+                // 一度発動すると初期化
+                specialAttackCharge = 0.0f;
+
+
+                // 火必殺技チャージ解消
+                fireEnergyCharge = false;
+            }
+
+            // 雷魔法を一定以上溜めたら
+            if (ThanderEnergyCharge >= energyChargeMax)
+            {
+
+
+                // 技確定
+                std::shared_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
+                std::shared_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
+
+
+                bool drawCheck = true;
+                uiIdSpecialThander->SetDrawCheck(drawCheck);
+
+                // 必殺技何が登録されたか 斬撃
+                specialAttack.push((int)SpecialAttack::MagicThander);
+
+                DirectX::XMFLOAT2 pos;
+                pos = { 94,240 };
+                float add = 30;
+                if (2 < (int)specialAttack.size())
+                    pos.y = pos.y - (add * (float)specialAttack.size());
+                uiIdSpecialThanderTransForm2D->SetPosition(pos);
+
+                // 一度発動すると初期化
+                specialAttackCharge = 0.0f;
+
+
+                // 雷必殺技チャージ解消
+                ThanderEnergyCharge = false;
+            }
+
+            // 氷魔法を一定以上溜めたら
+            if (iceEnergyCharge >= energyChargeMax)
+            {
+                // 技確定
+                std::shared_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
+                std::shared_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
+
+
+                bool drawCheck = true;
+                uiIdSpecialIce->SetDrawCheck(drawCheck);
+
+                // 必殺技何が登録されたか 氷
+                specialAttack.push((int)SpecialAttack::MagicIce);
+
+                DirectX::XMFLOAT2 pos;
+                pos = { 94,240 };
+                float add = 30;
+                if (2 < (int)specialAttack.size())
+                    pos.y = pos.y - (add * (float)specialAttack.size());
+                uiIdSpecialIceTransForm2D->SetPosition(pos);
+
+
+                // 一度発動すると初期化
+                specialAttackCharge = 0.0f;
+
+
+                // 氷必殺技チャージ解消
+                iceEnergyCharge = false;
+            }
+
+       
 
         //drawCheck = true;
         //uiIdSpecialShurashu->SetDrawCheck(drawCheck);
@@ -1285,32 +1428,197 @@ bool Player::InputSpecialAttackCharge()
         //uiIdSpecialShurashuTransForm2D->SetPosition(pos);
 
     }
+    //if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::Attack && !specialAttackTime)
     // 技を放つ
-    if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::Attack && !specialAttackTime)
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y &&  !specialAttackTime && specialAttack.size() > 0)
     {
 
 
-        // 技確定
-        std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
-        std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
-        std::shared_ptr<TransForm2D> uiIdSpecialShurashuPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<TransForm2D>();
+        //// 技確定
+        //std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+        //std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
+        //std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
+        //std::shared_ptr<TransForm2D> uiIdSpecialShurashuPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<TransForm2D>();
 
-        bool drawCheck = false;
-        uiIdSpecialShurashu->SetDrawCheck(drawCheck);
-        drawCheck = true;
-        uiIdSpecialShurashuPush->SetDrawCheck(drawCheck);
+        //bool drawCheck = false;
+        //uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+        //drawCheck = true;
+        //uiIdSpecialShurashuPush->SetDrawCheck(drawCheck);
 
-        DirectX::XMFLOAT2 pos;
-        pos = { uiIdSpecialShurashuTransForm2D->GetPosition() };
-        //float add = 30;
-        //if (1 < (int)specialAttack.size())
-        //    pos.y = pos.y - (add * (float)specialAttack.size());
-        uiIdSpecialShurashuPushTransForm2D->SetPosition(pos);
+        //DirectX::XMFLOAT2 pos;
+        //pos = { uiIdSpecialShurashuTransForm2D->GetPosition() };
+        ////float add = 30;
+        ////if (1 < (int)specialAttack.size())
+        ////    pos.y = pos.y - (add * (float)specialAttack.size());
+        //uiIdSpecialShurashuPushTransForm2D->SetPosition(pos);
+
+        // エネミー呼ぶ奴
+        EnemyManager& enemyManager = EnemyManager::Instance();
+        int enemyManagerCount = enemyManager.GetEnemyCount();
+
+        // 動作させるかどうか
+        if (enemyManagerCount > 0)
+        {
+
+            std::shared_ptr<EnemySlime> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemySlime>();
+            std::shared_ptr<Movement> enemyMove = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<Movement>();
+
+            bool moveCheck = false;
+            enemy->SetMoveCheck(moveCheck);
+
+            // 速度停止
+            bool stopVelocity = true;
+            enemyMove->SetStopMove(stopVelocity);
+            // 落ちるの停止
+            bool stopFall = true;
+            enemyMove->SetStopFall(stopFall);
+        }
+
+        switch (specialAttack.top())
+        {
+        // 斬撃
+        case (int)SpecialAttack::Attack:
+        {
+
+            // 技確定
+            std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+            std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
+            std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
+            std::shared_ptr<TransForm2D> uiIdSpecialShurashuPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<TransForm2D>();
+
+            bool drawCheck = false;
+            uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+            //drawCheck = true;
+            //uiIdSpecialShurashuPush->SetDrawCheck(drawCheck);
+
+            DirectX::XMFLOAT2 pos;
+            pos = { uiIdSpecialShurashuTransForm2D->GetPosition() };
+            uiIdSpecialShurashuPushTransForm2D->SetPosition(pos);
+
+            specialAttack.pop();
+
+
+
+
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialAttack));
+
+            // もし地面なら何もしない
+            bool noStart = false;
+            // エフェクト再生
+            areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
+
+            areWork->Play(position);
+
+            break;
+        }
+        // 魔法火
+        case (int)SpecialAttack::MagicFire:
+        {
+            // 技確定
+            std::shared_ptr<Ui> uiIdSpecialFrame = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+            std::shared_ptr<Ui> uiIdSpecialFramePush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
+            std::shared_ptr<TransForm2D> uiIdSpecialFrameTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
+            std::shared_ptr<TransForm2D> uiIdSpecialFramePushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
+
+            bool drawCheck = false;
+            uiIdSpecialFrame->SetDrawCheck(drawCheck);
+            //drawCheck = true;
+            //uiIdSpecialFramePush->SetDrawCheck(drawCheck);
+
+            DirectX::XMFLOAT2 pos;
+            pos = { uiIdSpecialFrameTransForm2D->GetPosition() };
+            uiIdSpecialFramePushTransForm2D->SetPosition(pos);
+
+            specialAttack.pop();
+
+
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagic));
+
+            // もし地面なら何もしない
+            bool noStart = false;
+            // エフェクト再生
+            areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
+
+            areWork->Play(position);
+
+            break;
+        }
+        // 魔法氷
+        case (int)SpecialAttack::MagicIce:
+        {
+            // 技確定
+            std::shared_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
+            std::shared_ptr<Ui> uiIdSpecialIceePush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
+            std::shared_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
+            std::shared_ptr<TransForm2D> uiIdSpecialIcePushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
+
+            bool drawCheck = false;
+            uiIdSpecialIce->SetDrawCheck(drawCheck);
+ /*           drawCheck = true;
+            uiIdSpecialIceePush->SetDrawCheck(drawCheck);*/
+
+            DirectX::XMFLOAT2 pos;
+            pos = { uiIdSpecialIceTransForm2D->GetPosition() };
+            uiIdSpecialIcePushTransForm2D->SetPosition(pos);
+
+
+            specialAttack.pop();
+
+
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagicIce));
+
+            // もし地面なら何もしない
+            bool noStart = false;
+            // エフェクト再生
+            areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
+
+            areWork->Play(position);
+
+            break;
+        }
+        // 魔法雷
+        case (int)SpecialAttack::MagicThander:
+        {
+            // 技確定
+            std::shared_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
+            std::shared_ptr<Ui> uiIdSpecialThanderPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
+            std::shared_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
+            std::shared_ptr<TransForm2D> uiIdSpecialThanderPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
+
+            bool drawCheck = false;
+            uiIdSpecialThander->SetDrawCheck(drawCheck);
+            //drawCheck = true;
+            //uiIdSpecialThanderPush->SetDrawCheck(drawCheck);
+
+            DirectX::XMFLOAT2 pos;
+            pos = { uiIdSpecialThanderTransForm2D->GetPosition() };
+            uiIdSpecialThanderPushTransForm2D->SetPosition(pos);
+
+            specialAttack.pop();
+
+
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagic));
+
+            // もし地面なら何もしない
+            bool noStart = false;
+            // エフェクト再生
+            areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
+
+            areWork->Play(position);
+
+            break;
+        }
+        default:
+        {
+            break;
+        }
+        }
+   
+
 
         // 一度発動すると初期化
-        if (specialAttack.top() != (int)SpecialAttack::Normal)
-            specialAttack.pop();
+        //if (specialAttack.top() != (int)SpecialAttack::Normal)
+        //    specialAttack.pop();
         specialAttackTime = true;
 
         return true;
@@ -1320,10 +1628,10 @@ bool Player::InputSpecialAttackCharge()
         specialAttackTime = false;
 
         // 技確定
-        std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
+        //std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
 
-        bool drawCheck = false;
-        uiIdSpecialShurashuPush->SetDrawCheck(drawCheck);
+        //bool drawCheck = false;
+        //uiIdSpecialShurashuPush->SetDrawCheck(drawCheck);
     }
 
 
@@ -1802,80 +2110,194 @@ void Player::CollisionProjectilesVsEnemies()
     // 全ての敵と総当たりで衝突処理
     int projectileCount = projectileManager.GetProjectileCount();
     
+
     for (int i = 0; i < projectileCount; ++i)
     {
-    int enemyCount = EnemyManager::Instance().GetEnemyCount();
-    std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
-        for (int j = 0; j < enemyCount; ++j)
+
+        int enemyCount = enemyManager.GetEnemyCount();
+        // 指定のノードと全ての敵を総当たりで衝突処理
+        for (int i = 0; i < enemyCount; ++i)
         {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(j);
-            
-            DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
-            float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
-            
+            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+
+
             DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-            float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
+            float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
             float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
 
-            // 衝突処理
-            DirectX::XMFLOAT3 outPositon;
-          
-            if (!projectile->GetComponent<ProjectileHoming>() && !projectile->GetComponent<ProjectileSunder>())return;
 
-            // 円柱と円
+
+            Model::Node* nodeHeart = enemy->GetComponent<ModelControll>()->GetModel()->FindNode("body2");
+            Model::Node* nodeLeftArm = enemy->GetComponent<ModelControll>()->GetModel()->FindNode("boss_left_hand2");
+            Model::Node* nodeRightArm = enemy->GetComponent<ModelControll>()->GetModel()->FindNode("boss_right_hand2");
+            // 心臓位置
+            DirectX::XMFLOAT3 nodeHeartPosition;
+            nodeHeartPosition = {
+            nodeHeart->worldTransform._41,
+            nodeHeart->worldTransform._42,
+            nodeHeart->worldTransform._43
+            };
+
+            //  左腕位置
+            DirectX::XMFLOAT3 nodeLeftArmPosition;
+            nodeLeftArmPosition = {
+            nodeLeftArm->worldTransform._41,
+            nodeLeftArm->worldTransform._42,
+            nodeLeftArm->worldTransform._43
+            };
+
+            // 右腕位置
+            DirectX::XMFLOAT3 nodeRightArmPosition;
+            nodeRightArmPosition = {
+            nodeRightArm->worldTransform._41,
+            nodeRightArm->worldTransform._42,
+            nodeRightArm->worldTransform._43
+            };
+            std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+            DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
+            float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
+
+
+
+            //// 衝突処理
+            DirectX::XMFLOAT3 outPositon;
+
+
             if (Collision::IntersectSphereVsCylinder(
                 projectilePosition,
-                projectileRadius,
+                leftHandRadius,
                 {
-                  enemyPosition.x,
-                  enemyPosition.y + enemyHeight / 2,
-                  enemyPosition.z
-                } ,
-                enemyRadius,
-                enemyHeight / 2,
-                outPositon))
+                enemyPosition.x,
+                enemyPosition.y,
+                enemyPosition.z
+                },
+                enemyRudius,
+                enemyHeight,
+                outPositon) ||
+                Collision::IntersectSpherVsSphere(
+                    projectilePosition,
+                    leftHandRadius,
+                    {
+                    nodeHeartPosition.x,
+                    nodeHeartPosition.y,
+                    nodeHeartPosition.z
+                    },
+                    enemyRudius,
+                    outPositon) ||
 
+                Collision::IntersectSphereVsCylinder(
+                    projectilePosition,
+                    leftHandRadius,
+                    {
+                    nodeLeftArmPosition.x,
+                    nodeLeftArmPosition.y,
+                    nodeLeftArmPosition.z
+                    },
+                    enemyRudius,
+                    enemyHeight,
+                    outPositon) ||
+                Collision::IntersectSphereVsCylinder(
+                    projectilePosition,
+                    leftHandRadius,
+                    {
+                      nodeRightArmPosition.x,
+                      nodeRightArmPosition.y,
+                      nodeRightArmPosition.z
+                    },
+                    enemyRudius,
+                    enemyHeight,
+                    outPositon))
             {
 
-                // ダメージを与える。
+                //for (int i = 0; i < projectileCount; ++i)
+                //{
+                //int enemyCount = EnemyManager::Instance().GetEnemyCount();
+                //std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+                //    for (int j = 0; j < enemyCount; ++j)
+                //    {
+                //        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(j);
+                //        
+                //        DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
+                //        float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
+                //        
+                //        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+                //        float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
+                //        float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+
+                //        // 衝突処理
+                //        DirectX::XMFLOAT3 outPositon;
+                //      
+                //        if (!projectile->GetComponent<ProjectileHoming>() && !projectile->GetComponent<ProjectileSunder>())return;
+
+                //        // 円柱と円
+                //        if (Collision::IntersectSphereVsCylinder(
+                //            projectilePosition,
+                //            projectileRadius,
+                //            {
+                //              enemyPosition.x,
+                //              enemyPosition.y + enemyHeight / 2,
+                //              enemyPosition.z
+                //            } ,
+                //            enemyRadius,
+                //            enemyHeight / 2,
+                //            outPositon))
+
+                //        {
+                if (!projectile->GetComponent<ProjectileHoming>() && !projectile->GetComponent<ProjectileSunder>())return;
+                            // ダメージを与える。
                 if (enemy->GetComponent<HP>()->ApplyDamage(3, 0.5f))
                 {
-             
+
+                    if (enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Wander &&
+                        enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Jump && 
+                        enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::IdleBattle)
+                    {
+                        // ダメージステートへ
+                        enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+                    }
+
+
                     // ヒットエフェクト再生
                     {
-                        DirectX::XMFLOAT3 e = enemyPosition;
-                        e.y += enemyHeight * 0.5f;
+                        //DirectX::XMFLOAT3 e = enemyPosition;
+                        //e.y += enemyHeight * 0.5f;
                         if (projectile->GetComponent<ProjectileSunder>())
-                            hitThander->Play(e);
+                        {
+                            ++ThanderEnergyCharge;
+                            hitThander->Play(projectilePosition);
+                        }
                         else
                         {
                             switch (projectile->GetComponent<ProjectileHoming>()->GetMagicNumber())
                             {
                             case (int)ProjectileHoming::MagicNumber::Fire:
                             {
-                                hitFire->Play(e);
+                                ++fireEnergyCharge;
+                                hitFire->Play(projectilePosition);
                                 break;
                             }
                             case (int)ProjectileHoming::MagicNumber::Ice:
                             {
-                                hitIce->Play(e);
+                                ++iceEnergyCharge;
+                                hitIce->Play(projectilePosition);
                                 break;
                             }
                             }
                         }
 
-                        hitEffect->Play(e);
+                        hitEffect->Play(projectilePosition);
 
 
                     }
                     // 当たった時の副次的効果
                     {
+                        specialAttackCharge += 0.2f;
                         //specialShotCharge += 0.1f;
-                        specialShotCharge += 1.5f;
+                        //specialShotCharge += 1.5f;
                     }
                     if (projectile->GetComponent<ProjectileHoming>())
-                    // 弾丸破棄
-                    projectile->GetComponent<BulletFiring>()->Destroy();
+                        // 弾丸破棄
+                        projectile->GetComponent<BulletFiring>()->Destroy();
                 }
             }
         }
@@ -2173,7 +2595,7 @@ void Player::CollisionNodeVsEnemies(
     for (int i = 0; i < enemyCount; ++i)
     {
         std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
-        
+
 
         DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
         float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
@@ -2211,160 +2633,276 @@ void Player::CollisionNodeVsEnemies(
 
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
-        // 下半身
-        // 円柱と円
+
+
         if (Collision::IntersectSphereVsCylinder(
             nodePosition,
-            leftHandRadius, 
+            leftHandRadius,
             {
             enemyPosition.x,
             enemyPosition.y,
-            enemyPosition.z 
+            enemyPosition.z
             },
             enemyRudius,
             enemyHeight,
-            outPositon))
+            outPositon) ||
+            Collision::IntersectSpherVsSphere(
+                nodePosition,
+                leftHandRadius,
+                {
+                nodeHeartPosition.x,
+                nodeHeartPosition.y,
+                nodeHeartPosition.z
+                },
+                enemyRudius,
+                outPositon) ||
 
+            Collision::IntersectSphereVsCylinder(
+                nodePosition,
+                leftHandRadius,
+                {
+                nodeLeftArmPosition.x,
+                nodeLeftArmPosition.y,
+                nodeLeftArmPosition.z
+                },
+                enemyRudius,
+                enemyHeight,
+                outPositon) ||
+            Collision::IntersectSphereVsCylinder(
+                nodePosition,
+                leftHandRadius,
+                {
+                  nodeRightArmPosition.x,
+                  nodeRightArmPosition.y,
+                  nodeRightArmPosition.z
+                },
+                enemyRudius,
+                enemyHeight,
+                outPositon))
         {
-
-            // ダメージを与える。
-            //enemy->ApplyDamage(1);
-        // ダメージが通ったら消える。TRUEになるから
             if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
             {
 
+
+                hitEffect->Play(nodePosition);
+
+                    if (enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Wander &&
+                        enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Jump )
+                    {
+                        // ダメージステートへ
+                        //enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+
+                        // 再生ループ
+                        bool  loop = false;
+
+                        // 再生開始時間 
+                        float currentAnimationStartSeconds = 1.0f;
+
+                        // 再生時間加算分の値
+                        float currentAnimationAddSeconds = 0.00f;
+
+                        // キーフレームの終了
+                        float keyFrameEnd = 153.0f;
+
+                        // アニメーションブレンド
+                        float blendSeconds = 0.35f;
+
+                        // 通常
+                        enemy->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Movie, loop
+                            , currentAnimationStartSeconds, blendSeconds, currentAnimationAddSeconds, keyFrameEnd);
+
+                        
+
+                        // 死んだとき
+                        if (enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() == (int)EnemySlime::State::IdleBattle)
+                        {
+
+                            // 再生開始時間 
+                            currentAnimationStartSeconds = 0.3f;
+
+
+                            // キーフレームの終了
+                            keyFrameEnd = 55.0f;
+
+                            enemy->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Die, loop
+                                , currentAnimationStartSeconds, blendSeconds, currentAnimationAddSeconds, keyFrameEnd);
+                        }
+                     
+
+   
+        
+                    }
+
+                    // 当たった時の副次的効果
+                    specialAttackCharge += 0.1f;
+
+                    // 斬撃チャージ
+                    ++attackEnergyCharge;
+          
+            }
+        }
+    }
+
+        //// 下半身
+        //// 円柱と円
+        //if (Collision::IntersectSphereVsCylinder(
+        //    nodePosition,
+        //    leftHandRadius, 
+        //    {
+        //    enemyPosition.x,
+        //    enemyPosition.y,
+        //    enemyPosition.z 
+        //    },
+        //    enemyRudius,
+        //    enemyHeight,
+        //    outPositon))
+
+        //{
+
+        //    // ダメージを与える。
+        //    //enemy->ApplyDamage(1);
+        //// ダメージが通ったら消える。TRUEになるから
+        //    if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
+        //    {
+
      
-                // ヒットエフェクト再生
-                {
+        //        // ヒットエフェクト再生
+        //        {
       
 
-                    hitEffect->Play(nodePosition);
+        //            hitEffect->Play(nodePosition);
+
+        //            // ダメージステートへ
+        //            enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
 
 
-                }
-                // 当たった時の副次的効果
-                {
-                    specialAttackCharge += 0.1f;
-                }
-           
-            }
-        }
+        //        }
+        //        // 当たった時の副次的効果
+        //        {
+        //            specialAttackCharge += 0.1f;
+        //        }
+        //   
+        //    }
+        //}
      
-        // 胸
-        // 円柱と円
-        if (Collision::IntersectSpherVsSphere(
-            nodePosition,
-            leftHandRadius,
-            {
-            nodeHeartPosition.x,
-            nodeHeartPosition.y,
-            nodeHeartPosition.z
-            },
-            enemyRudius,
-            outPositon))
+       // // 胸
+       // // 円柱と円
+       // if (Collision::IntersectSpherVsSphere(
+       //     nodePosition,
+       //     leftHandRadius,
+       //     {
+       //     nodeHeartPosition.x,
+       //     nodeHeartPosition.y,
+       //     nodeHeartPosition.z
+       //     },
+       //     enemyRudius,
+       //     outPositon))
 
-        {
+       // {
 
-            // ダメージを与える。
-            //enemy->ApplyDamage(1);
-        // ダメージが通ったら消える。TRUEになるから
-            if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
-            {
-
-
-                // ヒットエフェクト再生
-                {
+       //     // ダメージを与える。
+       //     //enemy->ApplyDamage(1);
+       // // ダメージが通ったら消える。TRUEになるから
+       //     if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
+       //     {
 
 
-                    hitEffect->Play(nodePosition);
+       //         // ヒットエフェクト再生
+       //         {
 
 
-                }
-                // 当たった時の副次的効果
-                {
-                    specialAttackCharge += 0.1f;
-                }
-             
-            }
-        }
-        // 左腕
-        // 円柱と円
-        if (Collision::IntersectSphereVsCylinder(
-            nodePosition,
-            leftHandRadius,
-            {
-            nodeLeftArmPosition.x,
-            nodeLeftArmPosition.y,
-            nodeLeftArmPosition.z
-            },
-            enemyRudius,
-            enemyHeight,
-            outPositon))
+       //             hitEffect->Play(nodePosition);
+       //             // ダメージステートへ
+       //             enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
 
-        {
+       //         }
+       //         // 当たった時の副次的効果
+       //         {
+       //             specialAttackCharge += 0.1f;
+       //         }
+       //      
+       //     }
+       // }
+       // // 左腕
+       // // 円柱と円
+       // if (Collision::IntersectSphereVsCylinder(
+       //     nodePosition,
+       //     leftHandRadius,
+       //     {
+       //     nodeLeftArmPosition.x,
+       //     nodeLeftArmPosition.y,
+       //     nodeLeftArmPosition.z
+       //     },
+       //     enemyRudius,
+       //     enemyHeight,
+       //     outPositon))
 
-            // ダメージを与える。
-            //enemy->ApplyDamage(1);
-        // ダメージが通ったら消える。TRUEになるから
-            if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
-            {
+       // {
 
-
-                // ヒットエフェクト再生
-                {
-
-
-
-                    hitEffect->Play(nodePosition);
+       //     // ダメージを与える。
+       //     //enemy->ApplyDamage(1);
+       // // ダメージが通ったら消える。TRUEになるから
+       //     if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
+       //     {
 
 
-                }
-                // 当たった時の副次的効果
-                {
-                    specialAttackCharge += 0.1f;
-                }
-                
-            }
-        }
-
-        // 右腕
-       // 円柱と円
-        if (Collision::IntersectSphereVsCylinder(
-            nodePosition,
-            leftHandRadius,
-            {
-              nodeRightArmPosition.x,
-              nodeRightArmPosition.y,
-              nodeRightArmPosition.z
-            },
-            enemyRudius,
-            enemyHeight,
-            outPositon))
-
-        {
-
-            // ダメージを与える。
-            //enemy->ApplyDamage(1);
-        // ダメージが通ったら消える。TRUEになるから
-            if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
-            {
+       //         // ヒットエフェクト再生
+       //         {
 
 
-                // ヒットエフェクト再生
-                {
+
+       //             hitEffect->Play(nodePosition);
+       //             // ダメージステートへ
+       //             enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+
+       //         }
+       //         // 当たった時の副次的効果
+       //         {
+       //             specialAttackCharge += 0.1f;
+       //         }
+       //         
+       //     }
+       // }
+
+       // // 右腕
+       //// 円柱と円
+       // if (Collision::IntersectSphereVsCylinder(
+       //     nodePosition,
+       //     leftHandRadius,
+       //     {
+       //       nodeRightArmPosition.x,
+       //       nodeRightArmPosition.y,
+       //       nodeRightArmPosition.z
+       //     },
+       //     enemyRudius,
+       //     enemyHeight,
+       //     outPositon))
+
+       // {
+
+       //     // ダメージを与える。
+       //     //enemy->ApplyDamage(1);
+       // // ダメージが通ったら消える。TRUEになるから
+       //     if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
+       //     {
 
 
-                    hitEffect->Play(nodePosition);
+       //         // ヒットエフェクト再生
+       //         {
 
 
-                }
-                // 当たった時の副次的効果
-                {
-                    specialAttackCharge += 0.1f;
-                }
-                
-            }
-        }
+       //             hitEffect->Play(nodePosition);
+       //             // ダメージステートへ
+       //             enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+
+       //         }
+       //         // 当たった時の副次的効果
+       //         {
+       //             specialAttackCharge += 0.1f;
+       //         }
+       //         
+       //     }
+       // }
         //// ダメージ確認
         //if (enemy->GetComponent<HP>()->InvincibleTimerCheck())
         //{
@@ -2394,7 +2932,7 @@ void Player::CollisionNodeVsEnemies(
 
 
  
-}
+
 
 void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius)
 {
@@ -3051,10 +3589,10 @@ void Player::TransitionMoveState()
 
     updateanim = UpAnim::Doble;
 
-    // 上半身
-    bornUpStartPoint = "mixamorig:Spine";
-    // 下半身
-    bornDownerEndPoint = "mixamorig:Spine";
+    //// 上半身
+    //bornUpStartPoint = "mixamorig:Spine";
+    //// 下半身
+    //bornDownerEndPoint = "mixamorig:Spine";
 
 
     // 走りアニメーション再生
@@ -3132,7 +3670,7 @@ void Player::TransitionJumpState()
     state = State::Jump;
 
     // 上半身
-    bornUpStartPoint = "mixamorig:Spine";
+    //bornUpStartPoint = "mixamorig:Spine";
 
     //model->PlayUpeerBodyAnimation(Anim_Jump, false);
     //// ジャンプアニメーション再生
@@ -3285,9 +3823,9 @@ void Player::UpdateAttackState(float elapsedTime)
     {
         updateanim = UpAnim::Doble;
         //上半身
-        bornUpStartPoint = "mixamorig:Spine";
-        // 下半身
-        bornDownerEndPoint = "mixamorig:Spine";
+        //bornUpStartPoint = "mixamorig:Spine";
+        //// 下半身
+        //bornDownerEndPoint = "mixamorig:Spine";
        // model->PlayAnimation(Anim_Attack, false);
     }
 
@@ -4100,7 +4638,7 @@ void Player::SpecialApplyDamageInRadius()
         {
             std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(ii);
             
-            if (projectile->GetComponent<ProjectileTornade>()) return;
+            if (!projectile->GetComponent<ProjectileTornade>()) return;
             
             // 魔法位置
             DirectX::XMFLOAT3 magicPosition = projectile->GetComponent<Transform>()->GetPosition();
@@ -4127,7 +4665,7 @@ void Player::SpecialApplyDamageInRadius()
                 // ダメージを与える。
                 //enemy->ApplyDamage(1);
             // ダメージが通ったら消える。TRUEになるから
-                if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
+                if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageSpecial, 0.5f))
                 {
 
 

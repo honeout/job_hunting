@@ -239,7 +239,7 @@ void PostprocessingRenderer::Render(RenderContext rc)
         //rc.colorGradingData = colorGradingData;
 
 
-
+    
         shader->Draw(rc, renderSprite.get());
 
     

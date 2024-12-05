@@ -555,9 +555,18 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 	// 時間経過 加算分アニメーションを早めるかどうか
 	currentAnimationSeconds += currentAnimationAddSeconds > currentAnimationAddSecondsMin ? currentAnimationAddSeconds : elapsedTime;
 
+	// 通常最大値
+	float animSecondsLength = animation.secondsLength;
+
 	// 再生時間が終端時間を超えたら
 	// 最高を超えた場合のループの場合を作る。
-	if (currentAnimationSeconds >= animation.secondsLength)
+	if (keyFrameEnd + FLT_EPSILON > 0 + FLT_EPSILON)
+	{
+
+		const ModelResource::Keyframe& keyframe = keyframes.at(keyFrameEnd);
+		animSecondsLength = keyframe.seconds;
+	}
+	if (currentAnimationSeconds >= animSecondsLength)
 	{
 		// ループならトゥルー
 		if (animationLoopFlag)
@@ -1098,8 +1107,18 @@ void Model::Update_blend_animations(float elapsedTime,   bool blend)
 
 	// 再生時間が終端時間を超えたら
 	// 最高を超えた場合のループの場合を作る。
-	//if (currentAnimationSeconds >= animationSecondsLength)
-	if (currentAnimationSeconds >= animation.secondsLength)
+	// 通常最大値
+	float animSecondsLength = animation.secondsLength;
+
+	// 再生時間が終端時間を超えたら
+	// 最高を超えた場合のループの場合を作る。
+	if (keyFrameEnd + FLT_EPSILON > 0 + FLT_EPSILON)
+	{
+
+		const ModelResource::Keyframe& keyframe = keyframes.at(keyFrameEnd);
+		animSecondsLength = keyframe.seconds;
+	}
+	if (currentAnimationSeconds >= animSecondsLength)
 	{
 		// ループならトゥルー
 		if (animationLoopFlag)
@@ -1271,8 +1290,21 @@ void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, const
 	currentAnimationSecondsUpeer += elapsedTime;
 	// 時間経過 加算分アニメーションを早めるかどうか
 	currentAnimationSecondsUpeer += currentAnimationUpperAddSeconds > currentAnimationUpperAddSecondsMin ? currentAnimationUpperAddSeconds : elapsedTime;
+	
+	// 通常最大値
+	float animSecondsLength = animation.secondsLength;
+
+	// 再生時間が終端時間を超えたら
+	// 最高を超えた場合のループの場合を作る。
+	if (keyFrameEnd + FLT_EPSILON > 0 + FLT_EPSILON)
+	{
+
+		const ModelResource::Keyframe& keyframe = keyframes.at(keyFrameEnd);
+		animSecondsLength = keyframe.seconds;
+	}
+	
 	//再生時間が週短時間を超えたら
-	if (currentAnimationSecondsUpeer >= animation.secondsLength)
+	if (currentAnimationSecondsUpeer >= animSecondsLength)
 	{
 		//再生時間を巻き戻す
 		if (animationLoopFlagUpeer)
@@ -1536,8 +1568,18 @@ void Model::UpdateLowerBodyAnimation(float elapsedTime,const char* start, const 
 	//時間経過
 	currentAnimationSeconds += elapsedTime;
 
-	//再生時間が週短時間を超えたら
-	if (currentAnimationSeconds >= animation.secondsLength)
+	// 通常最大値
+	float animSecondsLength = animation.secondsLength;
+
+	// 再生時間が終端時間を超えたら
+	// 最高を超えた場合のループの場合を作る。
+	if (keyFrameEnd + FLT_EPSILON > 0 + FLT_EPSILON)
+	{
+
+		const ModelResource::Keyframe& keyframe = keyframes.at(keyFrameEnd);
+		animSecondsLength = keyframe.seconds;
+	}
+	if (currentAnimationSeconds >= animSecondsLength)
 	{
 		//再生時間を巻き戻す
 		if (animationLoopFlag)
