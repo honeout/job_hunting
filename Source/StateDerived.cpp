@@ -27,6 +27,7 @@ void WanderState::Enter()
 {
 	
 	enemyid = owner->GetComponent<EnemySlime>();
+	modelid = owner->GetComponent<ModelControll>();
 
 
 	moveid = owner->GetComponent<Movement>();
@@ -99,7 +100,39 @@ void WanderState::Execute(float elapsedTime)
 	moveid->Move(direction ,moveSpeed, elapsedTime);
 
 	// 当たり判定
-	enemyid->CollisionPlayerWithRushEnemy();
+	{
+		Model::Node * bossLeftFoot = modelid->GetModel()->FindNode("boss_left_foot1");
+		Model::Node* bossRightFoot = modelid->GetModel()->FindNode("boss_right_foot1");
+		Model::Node* bossRightHand = modelid->GetModel()->FindNode("boss_right_hand1");
+		Model::Node* bossLeftHand = modelid->GetModel()->FindNode("boss_left_hand1");
+
+		// ノード位置取得
+		// 左足
+		DirectX::XMFLOAT3 bossLeftFootPosition;
+		bossLeftFootPosition = modelid->GetModel()->ConvertLocalToWorld(bossLeftFoot);
+
+		enemyid->DetectHitByBodyPart(bossLeftFootPosition);
+
+		// 右足
+		DirectX::XMFLOAT3 bossRightFootPosition;
+		bossRightFootPosition = modelid->GetModel()->ConvertLocalToWorld(bossRightFoot);
+
+		enemyid->DetectHitByBodyPart(bossRightFootPosition);
+
+		// 右腕
+		DirectX::XMFLOAT3 bossRightHandPosition;
+		bossRightHandPosition = modelid->GetModel()->ConvertLocalToWorld(bossRightHand);
+
+		enemyid->DetectHitByBodyPart(bossRightHandPosition);
+
+		// 左腕
+		DirectX::XMFLOAT3 bossLeftHandPosition;
+		bossLeftHandPosition = modelid->GetModel()->ConvertLocalToWorld(bossLeftHand);
+
+		enemyid->DetectHitByBodyPart(bossLeftHandPosition);
+
+	}
+	//enemyid->CollisionPlayerWithRushEnemy();
 
 	//// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	//float animationTime = owner->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
@@ -448,6 +481,11 @@ void JumpState::Execute(float elapsedTime)
 
 	if (animationTime <= 0.8f && !jumpStart)
 	{
+		bool blurCheck = true;
+		enemyid->SetBlurCheck(blurCheck);
+
+		enemyid->CollisionPlayerWithRushEnemy();
+
 		moveid->JumpVelocity(jumpSpeed);
 
 		jumpStart = true;
@@ -1165,12 +1203,22 @@ void PlayerLandState::Execute(float elapsedTime)
 	// ロックオン処理
 	owner->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
+	if (owner->GetComponent<Player>()->InputMove(elapsedTime))
+	{
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+	}
 
+		// 回避
+	if (owner->GetComponent<Player>()->InputAvoidance())
+	{
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+	}
 
+	// 待機
 	if (!modelControllid->GetModel()->IsPlayAnimation())
 	{
-		//moveid->SetOnLadius(false);
-		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+		
+		owner->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 
 	}
@@ -2092,6 +2140,7 @@ void PlayerSpecialAttackState::Enter()
 
 	lightning = std::make_unique<Effect>("Data/Effect/sunder.efk");
 	lightningAttack = std::make_unique<Effect>("Data/Effect/HitThunder.efk");
+	lightningHit = std::make_unique<Effect>("Data/Effect/lightningStrike.efk");
 
 
 	if (!moveid->GetOnLadius())
@@ -2204,6 +2253,7 @@ void PlayerSpecialAttackState::Enter()
 	pos = 
 	{0,0,0};
 	float length;
+	float endLength = 8.0f;
 
 	length = 10.0f;
 
@@ -2226,9 +2276,14 @@ void PlayerSpecialAttackState::Enter()
 
 
 
-	p.data.push_back({ 170, {position.x + ( pos.x * length) ,
+	p.data.push_back({ 190, {position.x + ( pos.x * length) ,
 		position.y + (pos.y* length) + 1,
 		position.z +  (pos.z *  length) }, position });
+
+
+	//p.data.push_back({ 180, {position.x + (pos.x * length) ,
+	//position.y + (pos.y * endLength) + 1,
+	//position.z + (pos.z * endLength) }, position });
 
 	//p.data.push_back({ 180, position, {(position.x * pos.x) * length ,
 	//	(position.y * pos.y) * length ,
@@ -2488,11 +2543,15 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			};
 
 
-
 			lightningAttack->Play(pPosition);
+			
 
 
-			enemyHpId->ApplyDamage(10, 0.5f);
+			if (enemyHpId->ApplyDamage(10, 0.5f)) 
+			{
+				
+				lightningHit->Play(pPosition);
+			}
 			owner->GetComponent<Player>()->SetHitCheck(false);
 
 			//owner->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
@@ -2753,7 +2812,7 @@ void PlayerSpecialMagicState::Enter()
 
 
 
-	p.data.push_back({ 300,{position.x + (pos.x * length) ,
+	p.data.push_back({ 330,{position.x + (pos.x * length) ,
 		position.y + (pos.y * length) + 1,
 		position.z + (pos.z * length) }, position });
 
@@ -3299,6 +3358,11 @@ void PlayerDamageState::Enter()
 
 	bool loop = false;
 
+	bool stopMove = false;
+	owner->GetComponent<Movement>()->SetStopMove(stopMove);
+	bool stopFall = false;
+	owner->GetComponent<Movement>()->SetStopFall(stopFall);
+
 		//Player::Anim_Pain, loop,
 	modelControllid->GetModel()->PlayAnimation(
 		Player::Anim_Pain, loop,
@@ -3481,9 +3545,9 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 		moveid->Move(dir, moveSpeed, elapsedTime);
 	}
 	// 空中ダッシュ
-	if (animationTime >= 0.7f  && animationTime <= 0.8f)
+	if (animationTime >= 0.7f  && animationTime <= 0.8f && ! moveid->GetOnLadius())
 	{
-		//moveid->Move(dir, moveSpeed, elapsedTime);
+		moveid->Move(dir, moveSpeed, elapsedTime);
 
 		DirectX::XMFLOAT3 impulse =
 		{
@@ -3492,7 +3556,7 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 			dir.z * speed,
 		};
 	
-		moveid->AddImpulse(impulse);
+		//moveid->AddImpulse(impulse);
 		
 	}
 

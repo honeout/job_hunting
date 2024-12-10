@@ -393,11 +393,11 @@ public:
         Anim_Counter,
         Anim_Running,
         Anim_SlashThree,
-        Anim_Land,
         Anim_Dush,
         Anim_Magic,
         Anim_MagicSeconde,
-        Anim_SpecialAttack
+        Anim_SpecialAttack,
+        Anim_Land
 
     };
 

@@ -55,6 +55,9 @@ public:
     // 当たり判定ボスとプレイヤー
     bool CollisionPlayerWithRushEnemy();
 
+    // 当たり判定右端
+    void DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition);
+
     void InputImpact(DirectX::XMFLOAT3 pos);
 
     // 宝石飛び出し
@@ -247,6 +250,11 @@ public:
     // 探す範囲
     float GetSearchRange() { return searchRange; }
 
+    // ブラーをかける
+    bool GetBlurCheck() { return blurCheck; }
+
+    void SetBlurCheck(bool blurCheck) {  this->blurCheck = blurCheck; }
+
 private:
     // モデル情報を確保
     Model* model = nullptr;
@@ -312,7 +320,7 @@ private:
     // 探す半径
     float searchRange = 5.0f;
     // 攻撃半径
-    float attackRange = 1.5f;
+    float attackRange = 5.5f;
 
 
     // Hp
@@ -362,6 +370,9 @@ private:
 
     // 動作チェック
     bool moveCheck = true;
+
+    // ブラーかける
+    bool blurCheck = false;
 };
 
 // エネミーマネージャー

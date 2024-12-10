@@ -33,7 +33,10 @@ EnemySlime::~EnemySlime()
     //hp.reset();
     //if (transform)
     //transform.reset();
-
+    if (stateMachine)
+    {
+        stateMachine;
+    }
 
 }
 
@@ -124,9 +127,9 @@ void EnemySlime::Start()
 void EnemySlime::Update(float elapsedTime)
 {
 
-    // 動作するかどうか
+    //// 動作するかどうか
     if (moveCheck)
-    // ステート毎の処理
+    //// ステート毎の処理
     stateMachine->Update(elapsedTime);
 
     // 位置
@@ -719,7 +722,7 @@ bool EnemySlime::CollisionPlayerWithRushEnemy()
             // 球と球
             if (Collision::IntersectCylinderVsCylinder(
                 position,
-                radius + 0.3f,
+                attackRange,
                 height,
                 {
                 playerPosition.x,
@@ -785,6 +788,89 @@ bool EnemySlime::CollisionPlayerWithRushEnemy()
         }
 
     return false;
+}
+
+void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
+{
+
+    int playerCount = PlayerManager::Instance().GetPlayerCount();
+    for (int j = 0; j < playerCount; ++j)
+    {
+        std::shared_ptr<Actor> player = PlayerManager::Instance().GetPlayer(j);
+
+
+        DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
+        float playerRadius = player->GetComponent<Transform>()->GetRadius();
+        float playerHeight = player->GetComponent<Transform>()->GetHeight();
+
+        // 衝突処理
+        DirectX::XMFLOAT3 outPositon;
+        // 球と球
+        if (Collision::IntersectSphereVsCylinder(
+            partBodyPosition,
+            radius,
+            {
+            playerPosition.x,
+            playerPosition.y,
+            playerPosition.z,
+            },
+            playerRadius,
+            playerHeight,
+            outPositon))
+
+        {
+            // ダメージを与える。
+            if (player->GetComponent<HP>()->ApplyDamage(3, 1.0f))
+            {
+
+                DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
+                DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
+                DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
+                DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
+                DirectX::XMFLOAT3 normal;
+                DirectX::XMStoreFloat3(&normal, N);
+
+                float jumpSpeed = 5.0f;
+                // 衝撃
+                const float power = 10.0f;
+                DirectX::XMFLOAT3 impulse;
+                impulse.y = power * 0.5f;
+                player->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
+
+
+                //// 吹き飛ばす
+                {
+                    // 衝動
+                    DirectX::XMFLOAT3 impulse;
+                    // 衝撃
+                    const float power = 20.0f;
+
+                    float vx = playerPosition.x - position.x;
+                    float vz = playerPosition.z - position.z;
+                    float lengthXZ = sqrtf(vx * vx + vz * vz);
+                    vx /= lengthXZ;
+                    vz /= lengthXZ;
+
+                    impulse.x = vx * power;
+                    impulse.y = power * 0.5f;
+                    impulse.z = vz * power;
+
+                    player->GetComponent<Movement>()->AddImpulse(impulse);
+                    // ヒットエフェクト再生
+
+                    playerPosition.y += playerHeight * 0.5f;
+
+                    player->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
+
+                    //hitEffect->Play(e);
+
+                }
+
+            }
+
+
+        }
+    }
 }
 
 void EnemySlime::InputImpact(DirectX::XMFLOAT3 pos)

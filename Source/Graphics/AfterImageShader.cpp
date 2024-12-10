@@ -249,7 +249,7 @@ void AfterImageShader::Draw(const RenderContext& rc, const Model* model)
 			//CbAlphaset cbAlphaset;
 			//cbAlphaset.changeAlpha = alpha;
 			//dc->UpdateSubresource(alphasetConstantBuffer.Get(), 0, 0, &cbAlphaset, 0, 0);
-			 rc.deviceContext->PSSetShaderResources(0, 1, subset.material->shaderResourceView.GetAddressOf());
+			 rc.deviceContext->PSSetShaderResources(0, 1, subset.material->diffuse_map.GetAddressOf());
 			 rc.deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
 			 rc.deviceContext->DrawIndexed(subset.indexCount, subset.startIndex, 0);
 		}

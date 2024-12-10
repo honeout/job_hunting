@@ -277,7 +277,8 @@ void Player::Update(float elapsedTime)
             (int)Player::CommandAttack::Attack &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::SideCut)&&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::CycloneStrike)
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::CycloneStrike)&&
+                GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage)
             )
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
@@ -295,7 +296,8 @@ void Player::Update(float elapsedTime)
         //　魔法入力処理
         if (InputAttack() && GetSelectCheck() == (int)Player::CommandAttack::Magic &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Magic) && 
-            !mp->GetMpEmpth()
+            !mp->GetMpEmpth() &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage)
                 )
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
@@ -641,7 +643,8 @@ void Player::UpdateCameraState(float elapsedTime)
     }
     else if(freeCameraCheck)
     {
-        Model::Node* PRock = model->FindNode("mixamorig:Hips");
+        Model::Node* PRock = model->FindNode("mixamorig:Spine1");
+        //Model::Node* PRock = model->FindNode("mixamorig:Hips");
         //Model::Node* PRock = model->FindNode("mixamorig:Neck");
         DirectX::XMFLOAT3 pPosition =
         {
@@ -862,9 +865,13 @@ bool Player::InputMove(float elapsedTime)
     moveVec = GetMoveVec(elapsedTime);
 
     
-
     // 進行ベクトルがゼロベクトルでない場合は入力された
+    if(GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
     return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
+
+    return false;
+    
+
 }
 bool Player::InputRockOn()
 {

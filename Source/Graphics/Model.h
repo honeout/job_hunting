@@ -143,6 +143,9 @@ public:
 	// ノード検索
 	Node* FindNode(const char* name);
 
+	// ボーンをワールド位置
+	DirectX::XMFLOAT3 ConvertLocalToWorld(Node* node);
+
 	// 現在のアニメーション再生時間取得
 	float GetCurrentANimationSeconds()const { return currentAnimationSeconds; }
 

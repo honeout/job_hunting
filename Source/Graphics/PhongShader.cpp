@@ -326,8 +326,8 @@ void PhonShader::Draw(const RenderContext& rc, const Model* model)
             //rc.deviceContext->PSSetShaderResources(0, 1, subset.material->diffuse_map.GetAddressOf());
             ID3D11ShaderResourceView* srvs[] =
             {
-                subset.material->shaderResourceView.Get(),
-                //subset.material->diffuse_map.Get(),
+                //subset.material->shaderResourceView.Get(),
+                subset.material->diffuse_map.Get(),
                 subset.material->normal_map.Get(),
             };
             rc.deviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);

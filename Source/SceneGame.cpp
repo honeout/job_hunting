@@ -1419,7 +1419,7 @@ void SceneGame::Initialize()
 	// 点光源を追加
 	{
 		Light* light = new Light(LightType::Point);
-		light->SetPosition(DirectX::XMFLOAT3(0, 1, 0));
+		light->SetPosition(DirectX::XMFLOAT3(1, -3, 1));
 		light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
 		LightManager::Instanes().Register(light);
 	}
@@ -1511,6 +1511,17 @@ void SceneGame::Update(float elapsedTime)
 			{
 				vignette_smoothness = 0.5f;
 				vignette_intensity = 0.4f;
+			}
+
+			// ブラーを×
+			int enemyCount = EnemyManager::Instance().GetEnemyCount();
+			if (enemyCount > 0)
+			{
+				std::shared_ptr<EnemySlime> enemyid = EnemyManager::Instance().GetEnemy(enemyCount - 1)->GetComponent<EnemySlime>();
+				shaderBlurStateTimer = enemyid->GetBlurCheck() ? shaderBlurStateTimerMax : shaderBlurStartStateTimer;
+				bool blurCheck = false;
+				enemyid->SetBlurCheck(blurCheck);
+
 			}
 			
 			// 死んだ瞬間
@@ -1674,6 +1685,7 @@ void SceneGame::Render()
 			ImGui::SliderFloat("DrawRect", &shadowDrawRect, 1.0f, 2048.0f);
 			ImGui::ColorEdit3("Color", &shadowColor.x);
 			ImGui::SliderFloat("Bias", &shadowBias, 0.0f, 0.1f);
+			ImGui::SliderFloat("lightPosition", &lightPositionScale, -13.0f, 13.0f);
 			ImGui::Text("texture");
 			ImGui::Image(shadowmapDepthStencil->GetShaderResourceView().Get(), { 256,256 }, { 0,0 }, { 1,1 },
 				{ 1,1,1,1 });
@@ -1705,6 +1717,8 @@ void SceneGame::Render()
 		}
 		ImGui::Separator();
 	}
+
+	LightManager::Instanes().DrawDebugGUI();
 
 		postprocessingRenderer->DrawDebugGUI();
 		//	ImGui::Separator();
@@ -1817,7 +1831,7 @@ void SceneGame::RenderShadowmap()
 	if (!mainDirectionalLight)
 		return;
 
-	dc->OMSetRenderTargets(1, &rtv, dsv);
+	dc->OMSetRenderTargets(0, &rtv, dsv);
 
 	// ビューポートの設定
 	D3D11_VIEWPORT vp = {};
@@ -1836,6 +1850,7 @@ void SceneGame::RenderShadowmap()
 		// 平行光源からカメラ位置を作成し、そこから原点の位置を見るように視線行列を生成
 		DirectX::XMVECTOR LightPosition = DirectX::XMLoadFloat3(&mainDirectionalLight->GetDirection());
 		LightPosition = DirectX::XMVectorScale(LightPosition, -3.0f);
+		//LightPosition = DirectX::XMVectorScale(LightPosition, lightPositionScale);
 		DirectX::XMMATRIX V = DirectX::XMMatrixLookAtLH(LightPosition,
 			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 			DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
@@ -1873,8 +1888,9 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 		// 画面ブラー
 		float radislBlurRadius = 200;
 		radialBlurData.radius = 
-			radialBlurData.radius > radialBlurDataRadislBlurRadiusMax?
+			radialBlurData.radius + FLT_EPSILON > radislBlurRadius - FLT_EPSILON ?
 			radialBlurData.radius : radialBlurData.radius + (5 + elapsedTime);
+			//radialBlurData.radius + (5 + elapsedTime) : radialBlurData.radius;
 		// 歪み具合
 		float radislBlurSamplingCount = 10;
 		radialBlurData.samplingCount = radislBlurSamplingCount;
@@ -1931,6 +1947,39 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 		float saturationGageMax = 1;
 
 		colorGradingData.saturation = saturationGageMax + FLT_EPSILON < colorGradingData.saturation - FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation + (0.01f + elapsedTime);
+	}
+
+
+	// ブラーエフェクト
+	if (shaderBlurStateTimer > 0)
+	{
+		shaderBlurStateTimer -= elapsedTime;
+
+		// 画面真ん中
+		radialBlurData.center = { 0.5f ,0.5f };
+		// 画面ブラー
+		float radislBlurRadius = 200;
+		radialBlurData.radius =
+			radialBlurData.radius > radialBlurDataRadislBlurRadiusMax ?
+			radialBlurData.radius : radialBlurData.radius + (5 + elapsedTime);
+		// 歪み具合
+		float radislBlurSamplingCount = 10;
+		radialBlurData.samplingCount = radislBlurSamplingCount;
+		// 自分が見える範囲
+		float radislBlurMaskRadius = 300;
+		radialBlurData.mask_radius = radislBlurMaskRadius;
+
+	}
+	else
+	{
+
+		// ブラー範囲
+		float radislBlurRadius = 0;
+		radialBlurData.radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radialBlurData.radius - (5 + elapsedTime) : radislBlurRadius - FLT_EPSILON;
+		// ブラーのかからない範囲
+		float radislBlurMaskRadiusNormal = 600;
+		float radislBlurMaskRadiusEffectOn = 300;
+		radialBlurData.mask_radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radislBlurMaskRadiusEffectOn : radislBlurMaskRadiusNormal;
 	}
 
 

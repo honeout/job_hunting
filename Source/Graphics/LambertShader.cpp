@@ -233,7 +233,7 @@ void LambertShader::Draw(const RenderContext& rc, const Model* model)
 			CbSubset cbSubset;
 			cbSubset.materialColor = subset.material->color;
 			rc.deviceContext->UpdateSubresource(subsetConstantBuffer.Get(), 0, 0, &cbSubset, 0, 0);
-			rc.deviceContext->PSSetShaderResources(0, 1, subset.material->shaderResourceView.GetAddressOf());
+			rc.deviceContext->PSSetShaderResources(0, 1, subset.material->diffuse_map.GetAddressOf());
 			rc.deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
 			rc.deviceContext->DrawIndexed(subset.indexCount, subset.startIndex, 0);
 		}

@@ -57,6 +57,11 @@ private:
 	float shaderPlayStateTimer = 0;
 	float shaderPlayStateTimerMax = 0.8f;
 
+	// シェーダーをエフェクトして再生揺れ
+	float shaderBlurStateTimer = 0;
+	float shaderBlurStartStateTimer = 0;
+	float shaderBlurStateTimerMax = 0.9f;
+
 	// 残像出す間隔最大値
 	float spawnafterimagetimemax = 0.1f;
 
@@ -72,6 +77,9 @@ private:
 	float reduceMax = 0.4f;
 	// 残像消えるまで
 	float reduce = reduceMax;
+
+	// デバッグ用ライトポジション
+	float lightPositionScale = -250.0f;
 
 
 	// オフスクリーンレンダリング用描画ターゲット

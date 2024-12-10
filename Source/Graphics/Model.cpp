@@ -1830,6 +1830,18 @@ Model::Node* Model::FindNode(const char* name)
 	return nullptr;
 }
 
+DirectX::XMFLOAT3 Model::ConvertLocalToWorld(Node* node)
+{
+	DirectX::XMFLOAT3 nodePosition;
+	nodePosition = {
+		node->worldTransform._41,
+		node->worldTransform._42,
+		node->worldTransform._43
+	};
+
+	return nodePosition;
+}
+
 int Model::GetNodeIndex(const char* name) const
 {
 	for (size_t nodeIndex = 0; nodeIndex < nodes.size(); ++nodeIndex)

@@ -202,7 +202,8 @@ void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
 		// ディフューズマップテクスチャ読み込み
 		HRESULT hr = LoadTexture(device, filename, nullptr, true, material.diffuse_map.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
+		//HRESULT hr = LoadTexture(device, filename, nullptr, true, material.shaderResourceView.GetAddressOf());
+		//_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 		
 
 		//hr = LoadTexture(device, filename, nullptr, true, material.normal_map.GetAddressOf());
@@ -217,8 +218,7 @@ void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
 		LoadTexture(device, filename, "_N", true, material.normal_map.GetAddressOf(), 0xFFFF7F7F);
 
 		
-		hr = LoadTexture(device, filename, nullptr, true, material.shaderResourceView.GetAddressOf());
-		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+
 
 		//// マルチバイト文字からワイド文字へ変換
 		//wchar_t wfilename[256];

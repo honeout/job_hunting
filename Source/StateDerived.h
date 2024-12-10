@@ -577,6 +577,13 @@ private:
 	// 再生開始時間 
 	float currentAnimationStartSeconds = 0.5f;
 
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.00f;
+
+	// キーフレームの終了
+	float keyFrameEnd = 40.0f;
+
+
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
 };
@@ -934,6 +941,7 @@ private:
 
 	std::unique_ptr<Effect> lightning;
 	std::unique_ptr<Effect> lightningAttack;
+	std::unique_ptr<Effect> lightningHit;
 
 	//// 再生ループ
 	//bool  loop = false;
