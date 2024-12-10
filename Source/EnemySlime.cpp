@@ -128,9 +128,9 @@ void EnemySlime::Update(float elapsedTime)
 {
 
     //// 動作するかどうか
-    if (moveCheck)
-    //// ステート毎の処理
-    stateMachine->Update(elapsedTime);
+    //if (moveCheck)
+    ////// ステート毎の処理
+    //stateMachine->Update(elapsedTime);
 
     // 位置
     position = transform->GetPosition();
@@ -155,11 +155,11 @@ void EnemySlime::Update(float elapsedTime)
     // 当たり判定横
     CollisionRubyWidthVsPlayer();
 
-    // 地面と弾丸の当たり判定
-    if (pushuThrow)
-    {
-        CollisionRubyWidthVsOnGraound();
-    }
+    //// 地面と弾丸の当たり判定
+    //if (pushuThrow)
+    //{
+    //    CollisionRubyWidthVsOnGraound();
+    //}
 
     // 削除
     ProjectileManager::Instance().DeleteUpdate(elapsedTime);//todo いるの？

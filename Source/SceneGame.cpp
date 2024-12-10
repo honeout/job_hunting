@@ -1888,8 +1888,9 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 		// 画面ブラー
 		float radislBlurRadius = 200;
 		radialBlurData.radius = 
-			radialBlurData.radius + FLT_EPSILON > radislBlurRadius - FLT_EPSILON ?
+			radialBlurData.radius + FLT_EPSILON > radialBlurDataRadislBlurRadiusMax - FLT_EPSILON ?
 			radialBlurData.radius : radialBlurData.radius + (5 + elapsedTime);
+			//radialBlurData.radius + FLT_EPSILON > radislBlurRadius - FLT_EPSILON ?
 			//radialBlurData.radius + (5 + elapsedTime) : radialBlurData.radius;
 		// 歪み具合
 		float radislBlurSamplingCount = 10;
@@ -1897,6 +1898,15 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 		// 自分が見える範囲
 		float radislBlurMaskRadius = 300;
 		radialBlurData.mask_radius = radislBlurMaskRadius;
+		if (!radialBlurData.radius + FLT_EPSILON > radialBlurDataRadislBlurRadiusMax - FLT_EPSILON)
+		{
+			radialBlurData.radius;
+		}
+
+		if (radialBlurData.radius + FLT_EPSILON > radialBlurDataRadislBlurRadiusMax - FLT_EPSILON)
+		{
+			radialBlurData.radius;
+		}
 		
 	}
 	else
@@ -1951,7 +1961,7 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 
 
 	// ブラーエフェクト
-	if (shaderBlurStateTimer > 0)
+	if (shaderBlurStateTimer > 0 )
 	{
 		shaderBlurStateTimer -= elapsedTime;
 
@@ -1970,7 +1980,7 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 		radialBlurData.mask_radius = radislBlurMaskRadius;
 
 	}
-	else
+	else if(shaderPlayStateTimer < 0)
 	{
 
 		// ブラー範囲

@@ -338,7 +338,6 @@ private:
     float territoryarea = 10.0f;
 
     // ステートマシン用
-    //StateMachine* stateMachine = nullptr ;
     std::shared_ptr<StateMachine> stateMachine;
 
     // 当たり判定無効判定
