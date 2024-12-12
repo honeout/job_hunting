@@ -18,7 +18,7 @@
 class EnemySlime : public Component
 {
 public:
-    EnemySlime() {};
+    EnemySlime() {}
     ~EnemySlime() override;
 
     // 名前取得
@@ -78,7 +78,7 @@ public:
 
     // ステートマシーン取得
     //StateMachine* GetStateMachine() { return stateMachine; }
-    std::shared_ptr<StateMachine> GetStateMachine() { return stateMachine; }
+    StateMachine*GetStateMachine() { return stateMachine.get(); }
 
 
 
@@ -330,7 +330,7 @@ private:
     int maxHealth = 50;
 
     // 半径
-    float radius = 3.0f;
+    float radius = 1.5f;
 
     // 高さ
     float height = 9.0f;
@@ -338,7 +338,8 @@ private:
     float territoryarea = 10.0f;
 
     // ステートマシン用
-    std::shared_ptr<StateMachine> stateMachine;
+    std::unique_ptr <StateMachine> stateMachine;
+    //StateMachine* stateMachine;
 
     // 当たり判定無効判定
     bool invalidJudgment = true;

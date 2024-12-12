@@ -38,6 +38,13 @@ public:
         const DirectX::XMFLOAT3& start,
         const DirectX::XMFLOAT3& end,
         HitResult& hit) ;
+
+    // スペキュラー
+    void SetIsSpecular(int isSpecular) { isSpecular = isSpecular; }
+    // 解消度を上げる
+    void SetTexcoordMult(int texcoordMult) { texcoordMult = texcoordMult; }
+    // リムライト
+    void SetIsRimRightning(int isRimRightning) { this->isRimRightning = isRimRightning; }
 private:
     //Model* model;
     //std::shared_ptr<ModelControll> model;
@@ -45,6 +52,15 @@ private:
     //std::unique_ptr<Model>	model;
 
     std::shared_ptr<Transform> transformid;
+
+    // スペキュラー無効化
+    int isSpecular = 0;
+
+    // 解消度を上げる。
+    int texcoordMult = 20;
+
+    // リムライト
+    int isRimRightning = 1;
 };
 
 // ステージマネージャー

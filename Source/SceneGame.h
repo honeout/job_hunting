@@ -134,4 +134,15 @@ private:
 	// スロー時間
 	float dlayStateTimer = 0.0f;
 	float dlayStateTimerMax = 4.5f;
+
+	float lightRange = 130;
+	//float lightRange = 186.400;
+
+	// ブルーム用
+	BloomData bloomData;
+
+	// 行動範囲
+	DirectX::XMFLOAT3 minPos, maxPos;
+
+
 };

@@ -46,7 +46,8 @@
 //   float2 colorGB;                    // Offset: 1032 Size:     8 [unused]
 //   int texcoordMult;                  // Offset: 1040 Size:     4
 //   int isSpecular;                    // Offset: 1044 Size:     4 [unused]
-//   float2 dummy;                      // Offset: 1048 Size:     8 [unused]
+//   int isRimLighting;                 // Offset: 1048 Size:     4 [unused]
+//   float dummy;                       // Offset: 1052 Size:     4 [unused]
 //
 // }
 //
@@ -261,7 +262,7 @@ mul r2.xyz, r1.wwww, r4.xyzx  // r2.x <- vout.tangent.x; r2.y <- vout.tangent.y;
 #line 30
 mul r3.xyzw, v4.xyzw, cb2[0].xyzw  // r3.x <- vout.color.x; r3.y <- vout.color.y; r3.z <- vout.color.z; r3.w <- vout.color.w
 
-#line 32
+#line 33
 mul r4.xyz, r1.yzxy, r2.zxyz
 mul r6.xyz, r1.zxyz, r2.yzxy
 mov r6.xyz, -r6.xyzx
@@ -270,11 +271,11 @@ dp3 r1.w, r4.xyzx, r4.xyzx
 rsq r1.w, r1.w
 mul r4.xyz, r1.wwww, r4.xyzx  // r4.x <- vout.binormal.x; r4.y <- vout.binormal.y; r4.z <- vout.binormal.z
 
-#line 34
+#line 35
 itof r6.xy, cb0[65].xxxx
 mul r6.xy, r6.xyxx, v3.xyxx  // r6.x <- vout.texcoord.x; r6.y <- vout.texcoord.y
 
-#line 38
+#line 39
 nop 
 mov r5.x, r5.x
 mov r5.y, r5.y
@@ -318,10 +319,10 @@ add r7.xy, r6.zwzz, l(0.500000, 0.500000, 0.000000, 0.000000)  // r7.y <- worldV
 mov r7.xy, r7.xyxx  // r7.x <- <CalcShadowTexcoord return value>.x; r7.y <- <CalcShadowTexcoord return value>.y
 mov r7.z, r7.z  // r7.z <- <CalcShadowTexcoord return value>.z
 
-#line 38 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongVS.hlsl"
+#line 39 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongVS.hlsl"
 mov r7.xyz, r7.xyzx  // r7.x <- vout.shadowTexcoord.x; r7.y <- vout.shadowTexcoord.y; r7.z <- vout.shadowTexcoord.z
 
-#line 39
+#line 40
 mov o0.xyzw, r0.xyzw
 mov o6.xyzw, r3.xyzw
 mov o1.xyz, r5.xyzx

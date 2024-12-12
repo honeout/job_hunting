@@ -67,8 +67,10 @@ float4 main(VS_OUT pin) : SV_TARGET
         // 平行光源の影なので、平行光源に退位して影を適応
     float3 shadow = CalcShadowColorPCFFilter(shadowMap, shadowMapSamplerState, pin.shadowTexcoord, shadowColor,
         shadowBias);
-    directionalDiffuse *= shadow;
-    directionalSpecular *= shadow;
+
+        directionalDiffuse *= shadow;
+        directionalSpecular *= shadow;
+    
     //float4 color = float4(ambient,diffuseColor.a);
     //color.rgb += diffuseColor.rgb*directionalDiffuse;
     //color.rgb += directionalSpecular;
@@ -171,8 +173,10 @@ float4 main(VS_OUT pin) : SV_TARGET
     {
         color.rgb += directionalSpecular + pointSpecular + spotSpecular;
     }
-    // リムライティング
-    color.rgb += CalcRimLight(N, E, L, directionalLightData.color.rgb);
-
+    if (isRimLighting)
+    {
+        // リムライティング
+        color.rgb += CalcRimLight(N, E, L, directionalLightData.color.rgb);
+    }
     return color;
 }

@@ -20,7 +20,7 @@ class WanderState : public State
 {
 public:
 	// コンストラクタ
-	WanderState(Actor* enemy) :State(enemy) {};
+	WanderState(std::weak_ptr<Actor> enemy) :State(enemy) {};
 	// デストラクタ
 	~WanderState() {}
 	// ステートに入った時のメソッド
@@ -29,11 +29,16 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
-	std::shared_ptr<ModelControll> modelid;
+	//std::shared_ptr<ModelControll> modelid;
 	std::shared_ptr<Movement> moveid;
 	//std::shared_ptr<Actor> playerid;
+
+	Model* model;
 	
 	float				stateTimerEnd = 0.0f;
 	float				stateTimer = stateTimerEnd;
@@ -74,7 +79,7 @@ class IdleState : public State
 {
 public:
 	// コンストラクタ
-	IdleState(Actor* enemy) :State(enemy) {};
+	IdleState(std::weak_ptr<Actor> enemy) :State(enemy) {};
 	// デストラクタ
 	~IdleState() {}
 	// ステートに入った時のメソッド
@@ -83,9 +88,13 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model*  model;
 	std::shared_ptr<Movement> move;
 	std::shared_ptr<HP> hp;
 	
@@ -109,7 +118,7 @@ class PursuitState : public State
 {
 public:
 	// コンストラクタ
-	PursuitState(Actor* enemy) :State(enemy) {};
+	PursuitState(std::weak_ptr<Actor> enemy) :State(enemy) {};
 	// デストラクタ
 	~PursuitState() {}
 	// ステートに入った時のメソッド
@@ -119,6 +128,8 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
+	// 終了処理
+	void End()override;
 private:
 	//std::shared_ptr<Actor> playerid;
 	std::shared_ptr<EnemySlime> enemyid;
@@ -157,7 +168,7 @@ class JumpState : public State
 {
 public:
 	// コンストラクタ
-	JumpState(Actor* enemy) :State(enemy) {};
+	JumpState(std::weak_ptr<Actor> enemy) :State(enemy) {};
 	// デストラクタ
 	~JumpState() {}
 	// ステートに入った時のメソッド
@@ -166,16 +177,19 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
-	std::shared_ptr<ModelControll> modelid;
+	//std::shared_ptr<ModelControll> modelid;
 	std::shared_ptr<Movement> moveid;
 	std::shared_ptr<HP> hpid;
 	//std::shared_ptr<Actor> playerid;
 
 	//float				stateTimer = 0.0f;
 
-
+	Model* model;
 
 	// 着地瞬間
 	bool                upOnLading = false;
@@ -218,7 +232,7 @@ class AttackState : public State
 {
 public:
 	// コンストラクタ
-	AttackState(Actor* enemy) :State(enemy) {};
+	AttackState(std::weak_ptr<Actor> enemy) :State(enemy) {};
 	// デストラクタ
 	~AttackState() {}
 	// ステートに入った時のメソッド
@@ -227,6 +241,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
 
@@ -254,7 +271,7 @@ class AttackShotState : public State
 {
 public:
 	// コンストラクタ
-	AttackShotState(Actor* enemy) :State(enemy) {};
+	AttackShotState(std::weak_ptr<Actor> enemy) :State(enemy) {};
 	// デストラクタ
 	~AttackShotState() {}
 	// ステートに入った時のメソッド
@@ -263,6 +280,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
 
@@ -288,7 +308,7 @@ class AttackShotThrowingState : public State
 {
 public:
 	// コンストラクタ
-	AttackShotThrowingState(Actor* enemy) :State(enemy) {};
+	AttackShotThrowingState(std::weak_ptr<Actor> enemy) :State(enemy) {};
 	// デストラクタ
 	~AttackShotThrowingState() {}
 	// ステートに入った時のメソッド
@@ -297,6 +317,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
 
@@ -326,7 +349,7 @@ class DamageState : public State
 {
 public:
 	// コンストラクタ
-	DamageState(Actor* enemy) :State(enemy) {};
+	DamageState(std::weak_ptr<Actor> enemy) :State(enemy) {};
 	// デストラクタ
 	~DamageState() {}
 	// ステートに入った時のメソッド
@@ -335,6 +358,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
 
@@ -377,7 +403,7 @@ class ConfusionState : public State
 {
 public:
 	// コンストラクタ
-	ConfusionState(Actor* enemy) :State(enemy) {};
+	ConfusionState(std::weak_ptr<Actor> enemy) :State(enemy) {};
 	// デストラクタ
 	~ConfusionState() {}
 	// ステートに入った時のメソッド
@@ -386,6 +412,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
 
@@ -418,7 +447,7 @@ class DeathState : public State
 {
 public:
 	// コンストラクタ
-	DeathState(Actor* enemy) :State(enemy) {};
+	DeathState(std::weak_ptr<Actor> enemy) :State(enemy) {};
 	// デストラクタ
 	~DeathState() {}
 	// ステートに入った時のメソッド
@@ -427,6 +456,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	std::shared_ptr<EnemySlime> enemyid;
 
@@ -462,7 +494,7 @@ class PlayerIdleState : public State
 {
 public:
 	// コンストラクタ
-	PlayerIdleState(Actor* player) :State(player) {};
+	PlayerIdleState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerIdleState() {}
 	// ステートに入った時のメソッド
@@ -471,6 +503,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	//std::shared_ptr<Actor> playerid;
 	std::shared_ptr<Movement> moveid;
@@ -492,7 +527,7 @@ class PlayerMovestate : public State
 {
 public:
 	// コンストラクタ
-	PlayerMovestate(Actor* player) :State(player) {};
+	PlayerMovestate(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerMovestate() {}
 	// ステートに入った時のメソッド
@@ -501,6 +536,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 
 	std::shared_ptr<Movement> moveid;
@@ -514,6 +552,9 @@ private:
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
+
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.05f;
 };
 
 
@@ -522,7 +563,7 @@ class PlayerJumpState : public State
 {
 public:
 	// コンストラクタ
-	PlayerJumpState(Actor* player) :State(player) {};
+	PlayerJumpState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerJumpState() {}
 	// ステートに入った時のメソッド
@@ -531,8 +572,12 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 
 	float				stateTimer = 0.0f;
@@ -556,7 +601,7 @@ class PlayerLandState : public State
 {
 public:
 	// コンストラクタ
-	PlayerLandState(Actor* player) :State(player) {};
+	PlayerLandState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerLandState() {}
 	// ステートに入った時のメソッド
@@ -565,8 +610,12 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 
 	float				stateTimer = 0.0f;
@@ -575,7 +624,7 @@ private:
 	bool  loop = false;
 
 	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.5f;
+	float currentAnimationStartSeconds = 0.35f;
 
 	// 再生時間加算分の値
 	float currentAnimationAddSeconds = 0.00f;
@@ -593,7 +642,7 @@ class PlayerJumpFlipState : public State
 {
 public:
 	// コンストラクタ
-	PlayerJumpFlipState(Actor* player) :State(player) {};
+	PlayerJumpFlipState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerJumpFlipState() {}
 	// ステートに入った時のメソッド
@@ -602,8 +651,12 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 
 	float				stateTimer = 0.0f;
@@ -629,7 +682,7 @@ class PlayerQuickJabState : public State
 {
 public:
 	// コンストラクタ
-	PlayerQuickJabState(Actor* player) :State(player) {};
+	PlayerQuickJabState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerQuickJabState() {}
 	// ステートに入った時のメソッド
@@ -638,6 +691,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -646,7 +702,8 @@ private:
 		ThreePushu,
 	};
 private:
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 	std::shared_ptr<Transform> transformid;
 
@@ -724,7 +781,7 @@ class PlayerSideCutState : public State
 {
 public:
 	// コンストラクタ
-	PlayerSideCutState(Actor* player) :State(player) {};
+	PlayerSideCutState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerSideCutState() {}
 	// ステートに入った時のメソッド
@@ -733,6 +790,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -741,7 +801,8 @@ private:
 		ThreePushu,
 	};
 private:
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 	std::shared_ptr<Transform> transformid;
 
@@ -817,7 +878,7 @@ class PlayerCycloneStrikeState : public State
 {
 public:
 	// コンストラクタ
-	PlayerCycloneStrikeState(Actor* player) :State(player) {};
+	PlayerCycloneStrikeState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerCycloneStrikeState() {}
 	// ステートに入った時のメソッド
@@ -826,6 +887,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -834,7 +898,8 @@ private:
 		ThreePushu,
 	};
 private:
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 	std::shared_ptr<Transform> transformid;
 
@@ -909,7 +974,7 @@ class PlayerSpecialAttackState : public State
 {
 public:
 	// コンストラクタ
-	PlayerSpecialAttackState(Actor* player) :State(player) {};
+	PlayerSpecialAttackState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerSpecialAttackState() {}
 	// ステートに入った時のメソッド
@@ -918,6 +983,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -927,7 +995,8 @@ private:
 	};
 private:
 	std::shared_ptr<Transform> transformid;
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 
 	// エネミー入れ物
@@ -972,7 +1041,7 @@ class PlayerMagicState : public State
 {
 public:
 	// コンストラクタ
-	PlayerMagicState(Actor* player) :State(player) {};
+	PlayerMagicState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerMagicState() {}
 	// ステートに入った時のメソッド
@@ -982,8 +1051,12 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
+	// 終了処理
+	void End()override;
+
 private:
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 
 	// 再生ループ
@@ -1006,7 +1079,7 @@ class PlayerSpecialMagicState : public State
 {
 public:
 	// コンストラクタ
-	PlayerSpecialMagicState(Actor* player) :State(player) {};
+	PlayerSpecialMagicState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerSpecialMagicState() {}
 	// ステートに入った時のメソッド
@@ -1015,6 +1088,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -1024,7 +1100,8 @@ private:
 	};
 private:
 	std::shared_ptr<Transform> transformid;
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 
 	// エネミー入れ物
@@ -1079,7 +1156,7 @@ class PlayerSpecialMagicIceState : public State
 {
 public:
 	// コンストラクタ
-	PlayerSpecialMagicIceState(Actor* player) :State(player) {};
+	PlayerSpecialMagicIceState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerSpecialMagicIceState() {}
 	// ステートに入った時のメソッド
@@ -1088,6 +1165,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -1097,7 +1177,8 @@ private:
 	};
 private:
 	std::shared_ptr<Transform> transformid;
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 
 	// エネミー入れ物
@@ -1152,7 +1233,7 @@ class PlayerSpecialThanderMagicState : public State
 {
 public:
 	// コンストラクタ
-	PlayerSpecialThanderMagicState(Actor* player) :State(player) {};
+	PlayerSpecialThanderMagicState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerSpecialThanderMagicState() {}
 	// ステートに入った時のメソッド
@@ -1161,6 +1242,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -1170,7 +1254,8 @@ private:
 	};
 private:
 	std::shared_ptr<Transform> transformid;
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<Movement> moveid;
 
 	// エネミー入れ物
@@ -1224,7 +1309,7 @@ class PlayerDamageState : public State
 {
 public:
 	// コンストラクタ
-	PlayerDamageState(Actor* player) :State(player) {};
+	PlayerDamageState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerDamageState() {}
 	// ステートに入った時のメソッド
@@ -1233,9 +1318,12 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-private:
-	std::shared_ptr<ModelControll> modelControllid;
 
+	// 終了処理
+	void End()override;
+private:
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 
 
 
@@ -1256,7 +1344,7 @@ class PlayerAvoidanceState : public State
 {
 public:
 	// コンストラクタ
-	PlayerAvoidanceState(Actor* player) :State(player) {};
+	PlayerAvoidanceState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerAvoidanceState() {}
 	// ステートに入った時のメソッド
@@ -1265,6 +1353,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	std::shared_ptr<Transform> transformid;
 	std::shared_ptr<Movement> moveid;
@@ -1277,8 +1368,10 @@ private:
 
 	float				stateTimer = 0.0f;
 
-	float               moveSpeed = 8.0f;
-	float               speed = 3.0f;
+	float               moveSpeed = 10.0f;
+	float               speed = 4.5f;
+	float               flySpeed = 3.0f;
+
 
 	// 再生ループ
 	bool  loop = false;
@@ -1301,7 +1394,7 @@ class PlayerReflectionState : public State
 {
 public:
 	// コンストラクタ
-	PlayerReflectionState(Actor* player) :State(player) {};
+	PlayerReflectionState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerReflectionState() {}
 	// ステートに入った時のメソッド
@@ -1310,6 +1403,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	
 
@@ -1330,7 +1426,7 @@ class PlayerDeathState : public State
 {
 public:
 	// コンストラクタ
-	PlayerDeathState(Actor* player) :State(player) {};
+	PlayerDeathState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerDeathState() {}
 	// ステートに入った時のメソッド
@@ -1339,8 +1435,12 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
-	std::shared_ptr<ModelControll> modelControllid;
+	//std::shared_ptr<ModelControll> model;
+	Model* model;
 	std::shared_ptr<HP> hpid;
 	std::shared_ptr<Transform> transformid;
 	float				stateTimer = 0.0f;
@@ -1364,7 +1464,7 @@ class PlayerReviveState : public State
 {
 public:
 	// コンストラクタ
-	PlayerReviveState(Actor* player) :State(player) {};
+	PlayerReviveState(std::weak_ptr<Actor> player) :State(player) {};
 	// デストラクタ
 	~PlayerReviveState() {}
 	// ステートに入った時のメソッド
@@ -1373,6 +1473,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	// 終了処理
+	void End()override;
 private:
 	float				stateTimer = 0.0f;
 

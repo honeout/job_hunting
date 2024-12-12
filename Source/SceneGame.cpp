@@ -41,6 +41,17 @@ static const UINT SHADOWMAP_SIZE = 2048;
 // 初期化
 void SceneGame::Initialize()
 {
+	// 行動範囲
+	{
+		
+		minPos.x = -30;
+		minPos.y = -3.525f;
+		minPos.z = -30;
+
+		maxPos.x = 30;
+		maxPos.y = 3.625f;
+		maxPos.z = 30;
+	}
 
 
 	// ステージ初期化
@@ -66,6 +77,9 @@ void SceneGame::Initialize()
 
 		actor->AddComponent<StageMain>();
 
+		// 影シェーダー
+		actor->GetComponent<StageMain>()->SetIsRimRightning(0);
+
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
@@ -73,6 +87,78 @@ void SceneGame::Initialize()
 		StageManager::Instance().Register(actor);
 
 	}
+
+
+
+	//// ステージ地面初期化
+	//{
+	//	const char* filename = "Data/Model/ExampleStage/stage.mdl";
+	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+	//	actor->AddComponent<ModelControll>();
+	//	actor->GetComponent<ModelControll>()->LoadModel(filename);
+	//	actor->SetName("StageMain");
+	//	actor->AddComponent<Transform>();
+
+	//	actor->GetComponent<Transform>()->
+	//		SetPosition(DirectX::XMFLOAT3(0, -17.85f, 0));
+
+	//	actor->GetComponent<Transform>()->
+	//		SetAngle(DirectX::XMFLOAT3(0, 0, 0));
+
+	//	actor->GetComponent<Transform>()->
+	//		SetScale(DirectX::XMFLOAT3(1, 1, 1));
+
+
+
+
+	//	actor->AddComponent<StageMain>();
+
+
+	//	// これが２Dかの確認
+	//	bool check2d = false;
+	//	actor->SetCheck2d(check2d);
+
+	//	StageManager::Instance().Register(actor);
+
+
+
+	//}
+
+
+
+	//// ステージ屋根初期化
+	//{
+	//	const char* filename = "Data/Model/ExampleStage/stageRoof.mdl";
+	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+	//	actor->AddComponent<ModelControll>();
+	//	actor->GetComponent<ModelControll>()->LoadModel(filename);
+	//	actor->SetName("StageRoof");
+	//	actor->AddComponent<Transform>();
+
+	//	actor->GetComponent<Transform>()->
+	//		SetPosition(DirectX::XMFLOAT3(0, -25, 0));
+
+	//	actor->GetComponent<Transform>()->
+	//		SetAngle(DirectX::XMFLOAT3(0, 0, 0));
+
+	//	actor->GetComponent<Transform>()->
+	//		SetScale(DirectX::XMFLOAT3(1, 1, 1));
+
+
+
+
+	//	actor->AddComponent<StageMain>();
+
+	//	// 影シェーダー
+	//	actor->GetComponent<StageMain>()->SetIsShadowShader(0);
+
+	//	// これが２Dかの確認
+	//	bool check2d = false;
+	//	actor->SetCheck2d(check2d);
+
+	//	StageManager::Instance().Register(actor);
+
+	//}
 
 
 	////player = new Player;
@@ -96,16 +182,9 @@ void SceneGame::Initialize()
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
 		actor->AddComponent<Movement>();
-		DirectX::XMFLOAT3 min, max;
-		min.x = -40;
-		min.y = -3.525f;
-		min.z = -40;
 
-		max.x = 40;
-		max.y = 3.525f;
-		max.z = 40;
 
-		actor->GetComponent<Movement>()->SetArea(min,max);
+		actor->GetComponent<Movement>()->SetArea(minPos, maxPos);
 
 		actor->AddComponent<HP>();
 		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
@@ -153,16 +232,9 @@ void SceneGame::Initialize()
 			SetScale(DirectX::XMFLOAT3(0.06f, 0.06f, 0.06f));
 		actor->AddComponent<Movement>();
 
-		DirectX::XMFLOAT3 min, max;
-		min.x = -40;
-		min.y = -3.525f;
-		min.z = -40;
-
-		max.x = 40;
-		max.y = 3.625f;
-		max.z = 40;
+	
 		// 行動範囲設定
-		actor->GetComponent<Movement>()->SetArea(min, max);
+		actor->GetComponent<Movement>()->SetArea(minPos, maxPos);
 		actor->AddComponent<HP>();
 		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
 		int life = 2;
@@ -1419,9 +1491,34 @@ void SceneGame::Initialize()
 	// 点光源を追加
 	{
 		Light* light = new Light(LightType::Point);
-		light->SetPosition(DirectX::XMFLOAT3(1, -3, 1));
+		light->SetPosition(DirectX::XMFLOAT3(-40.000, -3, 1));
 		light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+		light->SetRange(lightRange);
 		LightManager::Instanes().Register(light);
+
+		Light* lightOne = new Light(LightType::Point);
+		lightOne->SetPosition(DirectX::XMFLOAT3(40.000, -3, 1));
+		lightOne->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+		lightOne->SetRange(lightRange);
+		LightManager::Instanes().Register(lightOne);
+
+
+		Light* lightSeconde = new Light(LightType::Point);
+		lightSeconde->SetPosition(DirectX::XMFLOAT3(1, -3, -40.000));
+		lightSeconde->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+		lightSeconde->SetRange(lightRange);
+		LightManager::Instanes().Register(lightSeconde);
+
+
+		Light* lightTherd = new Light(LightType::Point);
+		lightTherd->SetPosition(DirectX::XMFLOAT3(1, -3, 40.000));
+		lightTherd->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+		lightTherd->SetRange(lightRange);
+		LightManager::Instanes().Register(lightTherd);
+
+
+
+
 	}
 
 	// 新しい描画ターゲットの生成
@@ -1447,8 +1544,17 @@ void SceneGame::Initialize()
 		srvData.srv = renderTarget->GetShaderResourceView();
 		srvData.width = renderTarget->GetWidth();
 		srvData.height = renderTarget->GetHeight();
+		//srvData.width = 100;
+		//srvData.height = 100;
 		postprocessingRenderer->SetSceneData(srvData);
 	}
+
+
+	bloomData.luminanceExtractionData.threshold = 0.41f;
+	bloomData.luminanceExtractionData.intensity = 1.6f;
+
+	bloomData.gaussianFilterData.kernelSize = 15;
+	bloomData.gaussianFilterData.deviation = 8.3f;
 
 }
 
@@ -1637,6 +1743,8 @@ void SceneGame::Render()
 
 		rc.colorGradingData = colorGradingData;
 
+		rc.bloomData = bloomData;
+
 
 		// 周辺減光
 		rc.vignetteData.color = vignette_color;
@@ -1714,6 +1822,17 @@ void SceneGame::Render()
 			ImGui::SliderFloat("mask radius", &radialBlurData.mask_radius, 0.0f, 600.0f);
 
 			ImGui::TreePop();
+		}
+		ImGui::Separator();
+
+		if (ImGui::TreeNode("BloomData"))
+		{
+			ImGui::SliderFloat("threshold", &bloomData.luminanceExtractionData.threshold, 0.0f, 1.0f);
+			ImGui::SliderFloat("intensity", &bloomData.luminanceExtractionData.intensity, 0.0f, 10.0f);
+			ImGui::SliderInt("kernelSize", &bloomData.gaussianFilterData.kernelSize, 1, MaxkernelSize - 1);
+			ImGui::SliderFloat("deviation", &bloomData.gaussianFilterData.deviation, 1.0f, 10.0f);
+			ImGui::TreePop();
+
 		}
 		ImGui::Separator();
 	}
@@ -1906,6 +2025,15 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 		if (radialBlurData.radius + FLT_EPSILON > radialBlurDataRadislBlurRadiusMax - FLT_EPSILON)
 		{
 			radialBlurData.radius;
+		}
+
+		// ブルーム関係
+		{
+			bloomData.luminanceExtractionData.threshold;
+			bloomData.luminanceExtractionData.intensity;
+
+			bloomData.gaussianFilterData.kernelSize;
+			bloomData.gaussianFilterData.deviation;
 		}
 		
 	}

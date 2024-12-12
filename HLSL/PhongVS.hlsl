@@ -29,6 +29,7 @@ VS_OUT main(
     vout.tangent = normalize(t);
     vout.color = color * materialColor;
 
+    // 法線マップの計算
     vout.binormal = normalize(cross(vout.normal,vout.tangent));
 
     vout.texcoord = texcoord * texcoordMult;

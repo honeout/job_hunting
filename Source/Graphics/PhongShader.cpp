@@ -262,6 +262,9 @@ void PhonShader::Begin(const RenderContext& rc)
     cbScene.texcoordMult = rc.texcoordMult;
     // スペキュラーオンオフ
     cbScene.isSpecular = rc.isSpecular;
+    // 影シェーダー
+    cbScene.isRimRightning = rc.isRimRightning;
+
 
     rc.deviceContext->UpdateSubresource(sceneConstantBuffer.Get(), 0, 0, &cbScene, 0, 0);
 
@@ -341,6 +344,7 @@ void PhonShader::Draw(const RenderContext& rc, const Model* model)
 // 描画終了
 void PhonShader::End(const RenderContext& rc)
 {
+
     rc.deviceContext->VSSetShader(nullptr, nullptr, 0);
     rc.deviceContext->PSSetShader(nullptr, nullptr, 0);
     rc.deviceContext->IASetInputLayout(nullptr);

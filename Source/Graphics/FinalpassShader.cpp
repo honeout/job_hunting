@@ -202,7 +202,6 @@ void FinalpassShader::Begin(const RenderContext& rc)
 void FinalpassShader::Draw(const RenderContext& rc, const Sprite* sprite)
 {
 
-
 	CBFinalpass cbFinalpass;
 	// êFí≤ï‚ê≥
 	cbFinalpass.hueShift = rc.colorGradingData.hueShift;

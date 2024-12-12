@@ -190,24 +190,24 @@ void Player::Start()
     //stateMachine = new StateMachine();
     stateMachine = std::make_unique<StateMachine>();
 
-    stateMachine->RegisterState(new PlayerIdleState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerMovestate(GetActor().get()));
-    stateMachine->RegisterState(new PlayerJumpState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerLandState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerJumpFlipState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerQuickJabState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerSideCutState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerCycloneStrikeState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerSpecialAttackState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerMagicState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerSpecialMagicState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerSpecialMagicIceState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerSpecialThanderMagicState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerDamageState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerDeathState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerReviveState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerAvoidanceState(GetActor().get()));
-    stateMachine->RegisterState(new PlayerReflectionState(GetActor().get()));
+    stateMachine->RegisterState(new PlayerIdleState(GetActor()));
+    stateMachine->RegisterState(new PlayerMovestate(GetActor()));
+    stateMachine->RegisterState(new PlayerJumpState(GetActor()));
+    stateMachine->RegisterState(new PlayerLandState(GetActor()));
+    stateMachine->RegisterState(new PlayerJumpFlipState(GetActor()));
+    stateMachine->RegisterState(new PlayerQuickJabState(GetActor()));
+    stateMachine->RegisterState(new PlayerSideCutState(GetActor()));
+    stateMachine->RegisterState(new PlayerCycloneStrikeState(GetActor()));
+    stateMachine->RegisterState(new PlayerSpecialAttackState(GetActor()));
+    stateMachine->RegisterState(new PlayerMagicState(GetActor()));
+    stateMachine->RegisterState(new PlayerSpecialMagicState(GetActor()));
+    stateMachine->RegisterState(new PlayerSpecialMagicIceState(GetActor()));
+    stateMachine->RegisterState(new PlayerSpecialThanderMagicState(GetActor()));
+    stateMachine->RegisterState(new PlayerDamageState(GetActor()));
+    stateMachine->RegisterState(new PlayerDeathState(GetActor()));
+    stateMachine->RegisterState(new PlayerReviveState(GetActor()));
+    stateMachine->RegisterState(new PlayerAvoidanceState(GetActor()));
+    stateMachine->RegisterState(new PlayerReflectionState(GetActor()));
 
     // ステートセット
     stateMachine->SetState(static_cast<int>(State::Idle));
@@ -449,6 +449,9 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
 
     // スペキュラー無効化
     rc.isSpecular = 0;
+
+    // 影オンオフ
+    rc.isRimRightning = 1;
 
     Graphics& graphics = Graphics::Instance();
     shader.Begin(rc);// シェーダーにカメラの情報を渡す

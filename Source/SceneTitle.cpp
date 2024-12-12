@@ -11,7 +11,8 @@ void SceneTitle::Initialize()
 {
     // スプライト初期化
 
-    sprite = std::make_unique<Sprite>("Data/Sprite/Title.png");
+    //sprite = std::make_unique<Sprite>("Data/Sprite/Title.png");
+    sprite = std::make_unique<Sprite>("Data/Sprite/タイトル.png");
 
 }
 // 終了化

@@ -102,6 +102,16 @@ struct LuminanceExtractionData
 	DirectX::XMFLOAT2 dummy2;
 };
 
+
+// ブルーム情報
+struct BloomData
+{
+	// 高輝度抽出用情報
+	LuminanceExtractionData luminanceExtractionData;
+	// ガウスブラー用情報
+	GaussianFilterData gaussianFilterData;
+};
+
 // ポストエフェクトの最終パス用情報
 struct FinalpassnData
 {
@@ -171,6 +181,9 @@ struct RenderContext
 	// ラジアルブラー情報
 	RadialBlurData  radialBlurData;
 
+	// ブルームデータ
+	BloomData bloomData;
+
 
 #if	defined( UNIT_VN_01 )
 	//	ビネット情報
@@ -181,6 +194,9 @@ struct RenderContext
 	int texcoordMult = 1;
 
 	int isSpecular = 1;
+
+	// リムライトをつける
+	int isRimRightning = 1;
 
 	//Microsoft::WRL::ComPtr<ID3D11Buffer> vignette_constant_buffer;
 	//Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;

@@ -4,6 +4,7 @@ StateMachine::~StateMachine()
 {
 	for (State* state : statePool)
 	{
+		//state->End();
 		delete state;
 	}
 	statePool.clear();

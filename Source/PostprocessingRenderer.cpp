@@ -93,8 +93,10 @@ void PostprocessingRenderer::Render(RenderContext rc)
 
     //RenderContext rc;
     
-    rc.luminanceExtractionData = bloomData.luminanceExtractionData;
-    rc.gaussianFilterData = bloomData.gaussianFilterData;
+    rc.luminanceExtractionData = rc.bloomData.luminanceExtractionData;
+    rc.gaussianFilterData = rc.bloomData.gaussianFilterData;
+
+    rc.gaussianFilterData.textureSize = bloomData.gaussianFilterData.textureSize;
 
     // 高輝度抽出用バッファに描画先を変更して高輝度抽出
     {
@@ -257,15 +259,15 @@ void PostprocessingRenderer::DrawDebugGUI()
 {
     if (ImGui::TreeNode("PostProcess"))
     {
-        if (ImGui::TreeNode("Bloom"))
-        {
-            ImGui::SliderFloat("threshold", &bloomData.luminanceExtractionData.threshold, 0.0f,1.0f);
-            ImGui::SliderFloat("intensity", &bloomData.luminanceExtractionData.intensity, 0.0f,10.0f);
-            ImGui::SliderInt("kernelSize", &bloomData.gaussianFilterData.kernelSize, 1, MaxkernelSize-1);
-            ImGui::SliderFloat("deviation", &bloomData.gaussianFilterData.deviation, 1.0f, 10.0f);
-            ImGui::TreePop();
+        //if (ImGui::TreeNode("Bloom"))
+        //{
+        //    ImGui::SliderFloat("threshold", &bloomData.luminanceExtractionData.threshold, 0.0f,1.0f);
+        //    ImGui::SliderFloat("intensity", &bloomData.luminanceExtractionData.intensity, 0.0f,10.0f);
+        //    ImGui::SliderInt("kernelSize", &bloomData.gaussianFilterData.kernelSize, 1, MaxkernelSize-1);
+        //    ImGui::SliderFloat("deviation", &bloomData.gaussianFilterData.deviation, 1.0f, 10.0f);
+        //    ImGui::TreePop();
 
-        }
+        //}
 
         //if (ImGui::TreeNode("ColorGrading"))
         //{

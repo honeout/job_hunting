@@ -59,6 +59,11 @@ void StageMain::Render(RenderContext& rc, ModelShader& shader)
     // 解消度を上げる。
     rc.texcoordMult = 20;
 
+    
+    // 影オンオフ
+    rc.isRimRightning = 0;
+
+
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
 

@@ -40,7 +40,10 @@ private:
         // スペキュラー用
         int           isSpecular;
 
-        DirectX::XMFLOAT2 dummy;
+        // リムライト
+        int           isRimRightning;
+
+        float dummy;
         //DirectX::XMFLOAT2 dummy;
     };
 

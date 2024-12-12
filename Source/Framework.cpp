@@ -70,8 +70,12 @@ void Framework::Render(float elapsedTime/*Elapsed seconds from last frame*/)
 	// IMGUIデモウインドウ描画（IMGUI機能テスト用）
 	//ImGui::ShowDemoWindow();
 
-	// IMGUI描画
+#ifdef _DEBUG
+// GUI描画
+		// IMGUI描画
 	graphics.GetImGuiRenderer()->Render(dc);
+#endif // _DEBUG
+
 
 	// バックバッファに描画した画を画面に表示する。
 	graphics.GetSwapChain()->Present(syncInterval, 0);

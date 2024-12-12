@@ -33,15 +33,13 @@ EnemySlime::~EnemySlime()
     //hp.reset();
     //if (transform)
     //transform.reset();
-    if (stateMachine)
-    {
-        stateMachine;
-    }
+    
 
 }
 
 void EnemySlime::Start()
 {
+  
     // ムーブメント関数を使えるように
     movement = GetActor()->GetComponent<Movement>();
 
@@ -55,7 +53,6 @@ void EnemySlime::Start()
     //model = std::make_unique<Model>(GetActor()->GetComponent<ModelControll>()->GetModel());
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
     
-
     hp->SetHealth(health);
 
     hp->SetMaxHealth(maxHealth);
@@ -69,27 +66,30 @@ void EnemySlime::Start()
 
     //SetTerritory(position, territoryarea);
 
-    stateMachine = std::make_shared<StateMachine>();
+
+    stateMachine = std::make_unique<StateMachine>();
 
 
 
     //stateMachine = new StateMachine();
 
     // ステートマシンにステート登録
-    stateMachine->RegisterState(new WanderState(GetActor().get()));
-    stateMachine->RegisterState(new IdleState(GetActor().get()));
-    stateMachine->RegisterState(new PursuitState(GetActor().get()));
-    stateMachine->RegisterState(new JumpState(GetActor().get()));
-    stateMachine->RegisterState(new AttackState(GetActor().get()));
-    stateMachine->RegisterState(new AttackShotState(GetActor().get()));
-    stateMachine->RegisterState(new AttackShotThrowingState(GetActor().get()));
-    stateMachine->RegisterState(new ConfusionState(GetActor().get()));
-    stateMachine->RegisterState(new DamageState(GetActor().get()));
-    stateMachine->RegisterState(new DeathState(GetActor().get()));
+    stateMachine->RegisterState(new WanderState(GetActor()));
+    stateMachine->RegisterState(new IdleState(GetActor()));
+    stateMachine->RegisterState(new PursuitState(GetActor()));
+    stateMachine->RegisterState(new JumpState(GetActor()));
+    stateMachine->RegisterState(new AttackState(GetActor()));
+    stateMachine->RegisterState(new AttackShotState(GetActor()));
+    stateMachine->RegisterState(new AttackShotThrowingState(GetActor()));
+    stateMachine->RegisterState(new ConfusionState(GetActor()));
+    stateMachine->RegisterState(new DamageState(GetActor()));
+    stateMachine->RegisterState(new DeathState(GetActor()));
     
-
     // ステートセット
     stateMachine->SetState(static_cast<int>(State::Idle));
+    //stateMachine->SetState((int) State::Idle);
+   
+
 
 
     // アニメーションルール
@@ -117,7 +117,7 @@ void EnemySlime::Start()
     counterJudgment = false;
 
     // 攻撃右足するかどうか
-    attackRightFootRange = 10.5f;
+    attackRightFootRange = 1.5f;
 
     // 動作チェック
     moveCheck = true;
@@ -126,10 +126,10 @@ void EnemySlime::Start()
 // 更新処理
 void EnemySlime::Update(float elapsedTime)
 {
-
+    
     //// 動作するかどうか
     //if (moveCheck)
-    ////// ステート毎の処理
+    //// ステート毎の処理
     //stateMachine->Update(elapsedTime);
 
     // 位置
@@ -219,7 +219,7 @@ void EnemySlime::Update(float elapsedTime)
 void EnemySlime::Render(RenderContext& rc, ModelShader& shader)
 {
  
-    
+  
         Graphics& graphics = Graphics::Instance();
         //Shader* shader = graphics.GetShader();
         //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
@@ -228,6 +228,9 @@ void EnemySlime::Render(RenderContext& rc, ModelShader& shader)
 
         // スペキュラー無効化
         rc.isSpecular = 0;
+
+        // 影オンオフ
+        rc.isRimRightning = 0;
         
         shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
@@ -808,7 +811,7 @@ void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
         // 球と球
         if (Collision::IntersectSphereVsCylinder(
             partBodyPosition,
-            radius,
+            attackRightFootRange,
             {
             playerPosition.x,
             playerPosition.y,

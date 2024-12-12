@@ -10,7 +10,7 @@ class State
 {
 public:
 	// コンストラクタ
-	State(Actor* actor) :owner(actor) {}
+	State(std::weak_ptr<Actor> actor) :owner(actor) {}
 	virtual ~State() {}
 	// 全て継承先で実装させる必要があるため純粋仮想関数で実装
 	// ステートに入った時のメソッド
@@ -20,7 +20,9 @@ public:
 	// ステートから出ていくときのメソッド
 	virtual void Exit() = 0;
 
+	virtual void End() = 0;
+
 
 protected:
-	Actor* owner;
+	std::weak_ptr<Actor> owner;
 };

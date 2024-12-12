@@ -274,7 +274,7 @@ public:
 
     // ステートマシーン取得
     //StateMachine* GetStateMachine() { return stateMachine; }
-    std::shared_ptr<StateMachine> GetStateMachine() { return stateMachine; }
+    StateMachine* GetStateMachine() { return stateMachine.get(); }
 
     // 攻撃方法変更
     void SetSelectCheck(bool selectCheck) { this->selectCheck = selectCheck; }
@@ -397,7 +397,8 @@ public:
         Anim_Magic,
         Anim_MagicSeconde,
         Anim_SpecialAttack,
-        Anim_Land
+        Anim_Land,
+        Anim_Roll
 
     };
 
@@ -678,7 +679,7 @@ private:
 
     // ステートマシン用
     //StateMachine* stateMachine = nullptr;
-    std::shared_ptr<StateMachine> stateMachine;
+    std::unique_ptr<StateMachine> stateMachine;
 
 
     // 移動傾き
