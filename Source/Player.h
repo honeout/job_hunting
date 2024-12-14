@@ -133,6 +133,10 @@ public:
     // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
     DirectX::XMFLOAT3 GetMoveVec(float elapsedTime) const;
 
+    DirectX::XMFLOAT3 GetMagicMoveVec(float elapsedTime) const;
+
+
+
 
     // 移動入力処理
     bool InputMove(float elapsedTime);
@@ -487,6 +491,7 @@ public:
 
     // ロックオン入力確認
     void SetRockCheck(bool rockCheck) { this->rockCheck = rockCheck; }
+    bool GetRockCheck() { return this->rockCheck; }
 
     void SetFreeCameraCheck(bool freeCameraCheck) { this->freeCameraCheck = freeCameraCheck; }
 
@@ -652,6 +657,8 @@ private:
     float				cameraMinPitch = DirectX::XMConvertToRadians(-45);
     float				cameraRange = 100.0f;
     float				characterHeight = 10.0f;
+
+
 
     // 攻撃方法の選択
     int selectCheck = 0;

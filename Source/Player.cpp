@@ -863,14 +863,58 @@ void Player::OnGUI()
 // 移動入力処理
 bool Player::InputMove(float elapsedTime)
 {
-    // 進行ベクトル取得
-    //DirectX::XMFLOAT3 moveVec = GetMoveVec();
-    moveVec = GetMoveVec(elapsedTime);
 
-    
-    // 進行ベクトルがゼロベクトルでない場合は入力された
-    if(GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
-    return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
+    // 入力情報を取得
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    float ax = gamePad.GetAxisLX();
+    float ay = gamePad.GetAxisLY();
+
+    // 直進弾丸発射　rボタンを押したら
+  
+    if (ax + FLT_EPSILON != 0.0f + FLT_EPSILON &&
+        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
+    {
+
+        return true;
+    }
+
+    if (ay + FLT_EPSILON != 0.0f + FLT_EPSILON &&
+        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
+    {
+
+        return true;
+    }
+
+    //if (gamePad.GetButtonDown() & GamePad::BTN_DOWN &&
+    //    GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
+    //{
+
+    //    return true;
+    //}
+
+    //if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT &&
+    //    GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
+    //{
+
+    //    return true;
+    //}
+
+    //if (gamePad.GetButtonDown() & GamePad::BTN_LEFT &&
+    //    GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
+    //{
+
+    //    return true;
+    //}
+
+
+    //// 進行ベクトル取得
+    ////DirectX::XMFLOAT3 moveVec = GetMoveVec();
+    //moveVec = GetMoveVec(elapsedTime);
+
+    //
+    //// 進行ベクトルがゼロベクトルでない場合は入力された
+    //if(GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
+    //return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
 
     return false;
     
@@ -2133,6 +2177,70 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
     return vec;
 
+}
+
+DirectX::XMFLOAT3 Player::GetMagicMoveVec(float elapsedTime) const
+{
+    // 入力情報を取得
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    float ax = gamePad.GetAxisLX();
+    float ay = gamePad.GetAxisLY();
+
+    // カメラ方向とスティックの入力値によって進行方向を計算する
+    Camera& camera = Camera::Instance();
+    const DirectX::XMFLOAT3& cameraRight = camera.GetRight();
+    const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
+
+    // 移動ベクトルはXZ平面に水平なベクトルになるようにする
+
+    // カメラ右方向ベクトルはＸＺ平面に水平なベクトルに変換
+    float cameraRightX = cameraRight.x;
+    float cameraRightZ = cameraRight.z;
+    // y成分を取らずに　矢印の長さを取得
+    float cameraRightLength = sqrtf(cameraRightX * cameraRightX + cameraRightZ * cameraRightZ);
+
+    // 何故Y方向を消してるか　右方向が斜めでも真っ直ぐ進んでほしいYを０
+    //　にする少し距離が変わるだから単位ベクトルにする１．０に
+    if (cameraRightLength > 0.0f)
+    {
+        // 単位ベクトル化
+        // 右方向の単位ベクトル 
+        cameraRightX = cameraRightX / cameraRightLength;
+        cameraRightZ = cameraRightZ / cameraRightLength;
+
+    }
+
+
+
+    // カメラ前方向ベクトルをXZ単位ベクトルに変換
+    float cameraFrontX = cameraFront.x;
+    float cameraFrontZ = cameraFront.z;
+    float cameraFrontLength = sqrtf(cameraFrontX * cameraFrontX + cameraFrontZ * cameraFrontZ);
+    if (cameraFrontLength > 0.0f)
+    {
+        // 単位ベクトル化
+        cameraFrontX = cameraFrontX / cameraFrontLength;
+        cameraFrontZ = cameraFrontZ / cameraFrontLength;
+
+    }
+
+    // スティックの水平入力値をカメラ右方向に反映し、
+    // スティックの垂直入力値をカメラ前方向に反映し、
+    // 進行ベクトルを計算する
+    DirectX::XMFLOAT3 vec;// 移動方向進むべき方向進行ベクトル
+    vec.x = (cameraRightX * ax) + (cameraFrontX * ay);// 右方向
+    vec.z = (cameraRightZ * ax) + (cameraFrontZ * ay);// ますっぐ
+    // Y軸方向には移動しない
+    vec.y = 0.0f;
+
+    if (vec.x != 0 || vec.y != 0 || vec.z != 0)
+    {
+        movement->Move(vec, moveSpeed, elapsedTime);
+    }
+
+
+
+    return vec;
 }
 
 

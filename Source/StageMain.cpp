@@ -54,14 +54,14 @@ void StageMain::Render(RenderContext& rc, ModelShader& shader)
     //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
     
     // スペキュラー無効化
-    rc.isSpecular = 0;
+    rc.isSpecular = isSpecular;
     
     // 解消度を上げる。
-    rc.texcoordMult = 20;
+    rc.texcoordMult = texcoordMult;
 
     
     // 影オンオフ
-    rc.isRimRightning = 0;
+    rc.isRimRightning = isRimRightning;
 
 
     shader.Begin(rc);// シェーダーにカメラの情報を渡す

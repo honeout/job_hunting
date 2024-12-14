@@ -198,6 +198,10 @@ struct RenderContext
 	// リムライトをつける
 	int isRimRightning = 1;
 
+
+	//// ブルームの有無
+	//int is_bl = 1;
+
 	//Microsoft::WRL::ComPtr<ID3D11Buffer> vignette_constant_buffer;
 	//Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;
 };

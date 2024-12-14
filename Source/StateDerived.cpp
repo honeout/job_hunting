@@ -1135,7 +1135,7 @@ void PlayerIdleState::End()
 
 void PlayerMovestate::Enter()
 {
-	owner.lock()->GetComponent<Player>() = owner.lock()->GetComponent<Player>();
+	//owner.lock()->GetComponent<Player>() = owner.lock()->GetComponent<Player>();
 
 	moveid = owner.lock()->GetComponent<Movement>();
 
@@ -1165,6 +1165,9 @@ void PlayerMovestate::Enter()
 
 void PlayerMovestate::Execute(float elapsedTime)
 {
+	// 移動値
+	owner.lock()->GetComponent<Player>()->GetMoveVec(elapsedTime);
+
 	// ロックオン処理
 	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
@@ -1229,6 +1232,13 @@ void PlayerJumpState::Execute(float elapsedTime)
 	// ロックオン処理
 	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
+	// 移動
+	if (owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	{
+		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+	}
+
+
 	// ジャンプ入力処理
 	if (owner.lock()->GetComponent<Player>()->InputJump())
 	{
@@ -1252,11 +1262,7 @@ void PlayerJumpState::Execute(float elapsedTime)
 	}
 
 
-	//// 移動
-	//if (owner.lock()->GetComponent<Player>()->InputMove(elapsedTime) && moveid->GetOnLadius())
-	//{
-	//	owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
-	//}
+
 
 
 }
@@ -1346,7 +1352,10 @@ void PlayerJumpFlipState::Execute(float elapsedTime)
 	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 	// 移動
 	if (owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	{
+		
 		bool afterimagemove = true;
+	}
 	// ジャンプ入力処理
 	if (!model->IsPlayAnimation())
 	{
@@ -1548,34 +1557,42 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 
 		LengthSq = DirectX::XMVector3Length(Vector);
 
+		Vector = DirectX::XMVector3Normalize(Vector);
+
 		DirectX::XMStoreFloat3(&vector, Vector);
 
 		DirectX::XMStoreFloat(&length, LengthSq);
 	}
-	if (length > attackCheckRangeMin)
-	{
-		bool stop = false;
-		moveid->SetStopMove(stop);
+	//// 相手の方を向く
+	//if (length > attackCheckRangeMin && length < attackCheckRange && moveid->GetOnLadius())
+	//{
+	//	bool stop = false;
+	//	moveid->SetStopMove(stop);
 
-		angle = transformid->GetAngle();
+	//	//rotateCheck = true;
 
-		DirectX::XMFLOAT3 direction;
-		direction.x = sinf(angle.y) * 6;
-		direction.y = 0;
-		direction.z = cosf(angle.y) * 6;
+	//	//angle = transformid->GetAngle();
 
-		//moveid->Move(direction, attackSpeed, elapsedTime);
-	}
-	else if (!moveid->GetOnLadius())
-	{
+	//	DirectX::XMFLOAT3 direction = vector;
 
-		bool stop = true;
-		moveid->SetStopMove(stop);
+	//	//direction.x = sinf(angle.y) * 6;
+	//	//direction.y = 0;
+	//	//direction.z = cosf(angle.y) * 6;
 
-	}
+	//	moveid->Turn(direction,turnSpeed,elapsedTime);
+
+	//	//moveid->Move(direction, attackSpeed, elapsedTime);
+	//}
+	//else
+	//{
+
+	//	bool stop = true;
+	//	moveid->SetStopMove(stop);
+
+	//}
 
 
-
+	// 相手の方を向く
 	// 回転
 	if (!rotateCheck)
 	{
@@ -1583,11 +1600,13 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 			// 距離
 			if (length < attackCheckRange && length > attackCheckRangeMin
 				&& moveid->TurnCheck(
-					vector, angleRange, elapsedTime))
+					vector, angleRange, elapsedTime)&&
+				moveid->GetOnLadius())
 			{
 				//bool stop = false;
 				//moveid->SetStopMove(stop);
-				
+				bool stop = false;
+				moveid->SetStopMove(stop);
 				// 正面
 				if (moveid->Turn(vector, turnSpeed, elapsedTime))
 				{
@@ -1601,7 +1620,9 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 			else
 			{
 
-			
+
+				bool stop = true;
+				moveid->SetStopMove(stop);
 
 				rotateCheck = true;
 			}
@@ -2359,61 +2380,7 @@ void PlayerSpecialAttackState::Enter()
 	flashOn = true;
 
 
-
-	MessageData::CAMERACHANGEMOTIONMODEDATA	p;
-
-	position = transformid->GetPosition();
-	angle = transformid->GetAngle();
-
-	float vx = sinf(angle.y) * 6;
-	float vz = cosf(angle.y) * 6;
-
-	float vx2 = sinf(angle.y) - 10;
-	float vz2 = cosf(angle.y) * 7;
-	float vx3 = sinf(angle.y);
-
-	p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
-	p.data.push_back({ 140, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
-
-	// エネミー呼ぶ奴
-	EnemyManager& enemyManager = EnemyManager::Instance();
-	int enemyManagerCount = enemyManager.GetEnemyCount();
-
-	DirectX::XMFLOAT3 pos;
-	DirectX::XMVECTOR posVec;
-
-
-	pos = 
-	{0,0,0};
-	float length;
-	float endLength = 8.0f;
-
-	length = 10.0f;
-
-	//　カメラ移動　ベクトル獲得
-	if (enemyManagerCount > 0)
-	{
-
-		std::shared_ptr<EnemySlime> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemySlime>();
-
-		DirectX::XMVECTOR positionVec = DirectX::XMLoadFloat3(&position);
-		DirectX::XMVECTOR ePositionVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
-
-		posVec = DirectX::XMVectorSubtract(positionVec , ePositionVec);
-
-		posVec = DirectX::XMVector3Normalize(posVec);
-
-		DirectX::XMStoreFloat3(&pos, posVec);
-
-	}
-
-
-
-	p.data.push_back({ 190, {position.x + ( pos.x * length) ,
-		position.y + (pos.y* length) + 1,
-		position.z +  (pos.z *  length) }, position });
+	
 
 
 	//p.data.push_back({ 180, {position.x + (pos.x * length) ,
@@ -2426,9 +2393,9 @@ void PlayerSpecialAttackState::Enter()
 
 
 
-	Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
-
+	// 回転許可
+	isRotate = true;
 
 	//// 加速
 	//currentAnimationAddSeconds = 0.0f;
@@ -2436,73 +2403,109 @@ void PlayerSpecialAttackState::Enter()
 
 void PlayerSpecialAttackState::Execute(float elapsedTime)
 {
+	// エネミーの前に向く
+	{
+		DirectX::XMVECTOR Vector;
+		DirectX::XMVECTOR LengthSq;
+
+		DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner.lock()->GetComponent<Transform>()->GetPosition());
+		EnemyManager& enemyManager = EnemyManager::Instance();
+		int enemyCount = enemyManager.GetEnemyCount();
+		for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+		{
+			DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
+
+
+			Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+
+			LengthSq = DirectX::XMVector3Length(Vector);
+
+			Vector = DirectX::XMVector3Normalize(Vector);
+
+			DirectX::XMStoreFloat3(&vector, Vector);
+
+			DirectX::XMStoreFloat(&length, LengthSq);
+		}
+		// 相手の方を向く
+		// 回転
+		if (isRotate)
+		{
+			//length < attackCheckRangeMax && length > attackCheckRangeMin&&
 	
+			if (moveid->Turn(vector, turnSpeed, elapsedTime))
+			{
+				// カメラ向き
+				{
+					MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+					position = transformid->GetPosition();
+					angle = transformid->GetAngle();
+
+					float vx = sinf(angle.y) * 6;
+					float vz = cosf(angle.y) * 6;
+
+					float vx2 = sinf(angle.y) - 10;
+					float vz2 = cosf(angle.y) * 7;
+					float vx3 = sinf(angle.y);
+
+					p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+					p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
+					p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+					p.data.push_back({ 140, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
+
+					// エネミー呼ぶ奴
+					EnemyManager& enemyManager = EnemyManager::Instance();
+					int enemyManagerCount = enemyManager.GetEnemyCount();
+
+					DirectX::XMFLOAT3 pos;
+					DirectX::XMVECTOR posVec;
+
+
+					pos =
+					{ 0,0,0 };
+					float length;
+					float endLength = 8.0f;
+
+					length = 10.0f;
+
+					//　カメラ移動　ベクトル獲得
+					if (enemyManagerCount > 0)
+					{
+
+						std::shared_ptr<EnemySlime> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemySlime>();
+
+						DirectX::XMVECTOR positionVec = DirectX::XMLoadFloat3(&position);
+						DirectX::XMVECTOR ePositionVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
+
+						posVec = DirectX::XMVectorSubtract(positionVec, ePositionVec);
+
+						posVec = DirectX::XMVector3Normalize(posVec);
+
+						DirectX::XMStoreFloat3(&pos, posVec);
+
+					}
+
+
+
+					p.data.push_back({ 190, {position.x + (pos.x * length) ,
+						position.y + (pos.y * length) + 1,
+						position.z + (pos.z * length) }, position });
+
+
+					Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+				}
+			}
+			//　必殺技の対象に向いた後
+			else
+			{
+	
+				isRotate = false;
+				
+			}
+		}
+	}
 	if (button)
 	{
-
-
-
-
-		//float vx = sinf(angle.y) * 6;
-		//float vz = cosf(angle.y) * 6;
-		//p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-		//p.data.push_back({ 95, {position.x + vx , position.y + 3, position.z + vz }, position });
-
-		//float vx = sinf(angle.y) * 6;
-		//float vz = cosf(angle.y) * 6;
-
-		//float vx2 = sinf(angle.y);
-		//float vz2 = cosf(angle.y);
-		//p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-		//p.data.push_back({ 60, {position.x - vx, position.y + 3, position.z - vz }, position });
-		//p.data.push_back({ 90, {position.x - vx , position.y + 3, position.z - vz }, position });
-
-		//float vx = sinf(angle.y) * 6;
-		//float vz = cosf(angle.y) * 6;
-
-		//float vx2 = sinf(angle.y) - 10;
-		//float vz2 = cosf(angle.y) * 7;
-		//float vx3 = sinf(angle.y);
-
-		//p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-	 //   p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
-		//p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
-		//p.data.push_back({ 140, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
-
-		//// エネミー呼ぶ奴
-		//EnemyManager& enemyManager = EnemyManager::Instance();
-		//int enemyManagerCount = enemyManager.GetEnemyCount();
-
-		//// 動作させるかどうか
-		//if (enemyManagerCount > 0)
-		//{
-
-		//	std::shared_ptr<EnemySlime> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemySlime>();
-		//	std::shared_ptr<Movement> enemyMove = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<Movement>();
-
-		//	bool moveCheck = true;
-		//	enemy->SetMoveCheck(moveCheck);
-
-		//	// 速度停止
-		//	bool stopVelocity = false;
-		//	enemyMove->SetStopMove(stopVelocity);
-		//	// 落ちるの停止
-		//	bool stopFall = false;
-		//	enemyMove->SetStopFall(stopFall);
-		//}
-
-		//DirectX::XMFLOAT3 pos;
-
-		//pos = 
-		//{
-		//	position.x
-		//};
-
-		//p.data.push_back({ 200, {position.x + vx3 , position.y + 0.5f, (position.z + 0.1f) - vz2 }, position });
-
-
-
-		//Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
 					// 任意のアニメーション再生区間でのみ衝突判定処理をする
 		float animationTime = moveid->GetOnLadius() ?
@@ -2585,61 +2588,7 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 	}
 	else
 	{
-		// 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
-		//MessageData::CAMERACHANGEMOTIONMODEDATA	p;
-
-		//DirectX::XMFLOAT3 position = transformid->GetPosition();
-		//DirectX::XMFLOAT3 angle = transformid->GetAngle();
-
-
-
-		/*float vx = sinf(angle.y);
-		float vz = cosf(angle.y);*/
-		//p.data.push_back({ 0, {position.x * vx , position.y + 3, position.z - vz }, position });
-
-		// ロックオン
-		//rockCheck = true;
-		//owner.lock()->GetComponent<Player>()->SetRockCheck(rockCheck);
-
-		//owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
-
-		// フリーカメラのロックを外す
-		//bool freeCameraCheck = false;
-		//owner.lock()->GetComponent<Player>()->SetFreeCameraCheck(freeCameraCheck);
-
-		//position = transformid->GetPosition();
-		//angle = transformid->GetAngle();
-
-
-		//DirectX::XMVECTOR PPosition = DirectX::XMLoadFloat3(&position);
-		//DirectX::XMVECTOR EPosition = DirectX::XMLoadFloat3(&enemyTransform->GetPosition());
-
-		//DirectX::XMVECTOR vector = DirectX::XMVectorSubtract(EPosition,PPosition);
-		//vector = DirectX::XMVector3Normalize(vector);
-
-		//DirectX::XMFLOAT3 direction;
-		//DirectX::XMStoreFloat3(&direction, vector);
-
-		//DirectX::XMFLOAT3 pPosition;
-
-		//pPosition =
-		//{
-		//	position.x * direction.x ,
-		//	position.y * direction.y,
-		//	position.z * direction.z
-		//};
-		//MessageData::CAMERACHANGEMOTIONMODEDATA	p;
-		//p.data.push_back({ 0, pPosition, position });
-		//Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
-
-
-
-		//Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
-
-		//owner.lock()->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
-
-		/*lightningAttack->SetPosition(lightningAttack->GetEfeHandle(), model->GetModel()->FindNode("mixamorig:LeftHand")->position);*/
-
+	
 			// 任意のアニメーション再生区間でのみ衝突判定処理をする
 			float animationTime = moveid->GetOnLadius() ?
 				model->GetCurrentANimationSeconds() :
@@ -2714,6 +2663,7 @@ void PlayerSpecialAttackState::Exit()
 	bool stopFall = false;
 	moveid->SetStopFall(stopFall);
 
+
 	// エネミー呼ぶ奴
 	EnemyManager& enemyManager = EnemyManager::Instance();
 	int enemyManagerCount = enemyManager.GetEnemyCount();
@@ -2727,6 +2677,7 @@ void PlayerSpecialAttackState::Exit()
 
 		bool moveCheck = true;
 		enemy->SetMoveCheck(moveCheck);
+
 
 		// 速度停止
 		bool stopVelocity = false;
@@ -2789,11 +2740,17 @@ void PlayerMagicState::Enter()
 	moveid->SetStopFall(stopFall);
 
 
+	// 回転許可
+	isRotate = true;
 
+	// 移動許可
+	isMove = false;
+	
 }
 
 void PlayerMagicState::Execute(float elapsedTime)
 {
+
 
 	// ロックオン処理
 	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
@@ -2803,6 +2760,82 @@ void PlayerMagicState::Execute(float elapsedTime)
 	// アニメーション終わったら通る
 
 
+	DirectX::XMVECTOR vectorXM;
+	DirectX::XMVECTOR lengthSqXM;
+
+	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner.lock()->GetComponent<Transform>()->GetPosition());
+	EnemyManager& enemyManager = EnemyManager::Instance();
+	int enemyCount = enemyManager.GetEnemyCount();
+	for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+	{
+		DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
+
+
+		vectorXM = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+
+		lengthSqXM = DirectX::XMVector3Length(vectorXM);
+
+		vectorXM = DirectX::XMVector3Normalize(vectorXM);
+
+		DirectX::XMStoreFloat3(&vector, vectorXM);
+
+		DirectX::XMStoreFloat(&length, lengthSqXM);
+	}
+
+	// 魔法内ながら移動
+	if (owner.lock()->GetComponent<Player>()->InputMove(elapsedTime) && !isMove)
+	{
+
+
+
+		bool stop = false;
+		moveid->SetStopMove(stop);
+
+		// 移動値
+		owner.lock()->GetComponent<Player>()->GetMagicMoveVec(elapsedTime);
+	}
+	else
+	{
+		// 入った瞬間から移動していないといみなし
+		isMove = true;
+	}
+
+
+
+	
+
+	// 相手の方を向く
+	// 回転
+	if (isRotate)
+	{
+
+		// 距離
+		if (moveid->TurnCheck(
+				vector, angleRange, elapsedTime) &&
+			owner.lock()->GetComponent<Player>()->GetRockCheck())
+		{
+			//bool stop = false;
+			//moveid->SetStopMove(stop);
+
+			// 正面
+			moveid->Turn(vector,turnSpeed,elapsedTime);
+			//stop = true;
+			//moveid->SetStopMove(stop);
+		}
+		else
+		{
+
+
+			//bool stop = true;
+			//moveid->SetStopMove(stop);
+
+			isRotate = false;
+		}
+
+
+
+
+	}
 
 	// 魔法の種類で終わりを帰る。
 	switch (magicType)
@@ -2904,108 +2937,189 @@ void PlayerSpecialMagicState::Enter()
 	// 最初だけ魔法を発動するため
 	startMagic = false;
 
+	// カメラ回転処理を開始
+	isRotate = true;
 
 
+	//MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-	MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+	//position = transformid->GetPosition();
+	//angle = transformid->GetAngle();
 
-	position = transformid->GetPosition();
-	angle = transformid->GetAngle();
+	//// モーション記録
+	//float vx = sinf(angle.y) * 6;
+	//float vz = cosf(angle.y) * 6;
+	//float vx2 = sinf(angle.y) - 10;
+	//float vz2 = cosf(angle.y) * 7;
+	//float vx3 = sinf(angle.y);
 
-	// モーション記録
-	float vx = sinf(angle.y) * 6;
-	float vz = cosf(angle.y) * 6;
-	float vx2 = sinf(angle.y) - 10;
-	float vz2 = cosf(angle.y) * 7;
-	float vx3 = sinf(angle.y);
+	//p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+	//p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
+	//p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+	//p.data.push_back({ 150, {position.x - vx2, position.y + 5, position.z - vz2 }, position });
+	//p.data.push_back({ 170, {position.x + vx, position.y + 3, position.z + vz }, position });
+	//p.data.push_back({ 200, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+	//p.data.push_back({ 250, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
 
-	p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
-	p.data.push_back({ 150, {position.x - vx2, position.y + 5, position.z - vz2 }, position });
-	p.data.push_back({ 170, {position.x + vx, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 200, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
-	p.data.push_back({ 250, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
+	//// エネミー呼ぶ奴
+	//EnemyManager& enemyManager = EnemyManager::Instance();
+	//int enemyManagerCount = enemyManager.GetEnemyCount();
 
-	// エネミー呼ぶ奴
-	EnemyManager& enemyManager = EnemyManager::Instance();
-	int enemyManagerCount = enemyManager.GetEnemyCount();
-
-	DirectX::XMFLOAT3 pos;
-	DirectX::XMVECTOR posVec;
-
-
-	pos =
-	{ 0,0,0 };
-	float length;
-
-	length = 10.0f;
-
-	//　カメラ移動　ベクトル獲得
-	if (enemyManagerCount > 0)
-	{
-
-		std::shared_ptr<EnemySlime> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemySlime>();
-
-		DirectX::XMVECTOR positionVec = DirectX::XMLoadFloat3(&position);
-		DirectX::XMVECTOR ePositionVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
-
-		posVec = DirectX::XMVectorSubtract(positionVec, ePositionVec);
-
-		posVec = DirectX::XMVector3Normalize(posVec);
-
-		DirectX::XMStoreFloat3(&pos, posVec);
-
-	}
+	//DirectX::XMFLOAT3 pos;
+	//DirectX::XMVECTOR posVec;
 
 
+	//pos =
+	//{ 0,0,0 };
+	//float length;
 
+	//length = 10.0f;
 
-	p.data.push_back({ 330,{position.x + (pos.x * length) ,
-		position.y + (pos.y * length) + 1,
-		position.z + (pos.z * length) }, position });
+	////　カメラ移動　ベクトル獲得
+	//if (enemyManagerCount > 0)
+	//{
+
+	//	std::shared_ptr<EnemySlime> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemySlime>();
+
+	//	DirectX::XMVECTOR positionVec = DirectX::XMLoadFloat3(&position);
+	//	DirectX::XMVECTOR ePositionVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
+
+	//	posVec = DirectX::XMVectorSubtract(positionVec, ePositionVec);
+
+	//	posVec = DirectX::XMVector3Normalize(posVec);
+
+	//	DirectX::XMStoreFloat3(&pos, posVec);
+
+	//}
 
 
 
 
-	Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+	//p.data.push_back({ 330,{position.x + (pos.x * length) ,
+	//	position.y + (pos.y * length) + 1,
+	//	position.z + (pos.z * length) }, position });
+
+
+
+
+	//Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
 
 }
 
 void PlayerSpecialMagicState::Execute(float elapsedTime)
 {
+
+	// エネミーの前に向く
+	{
+		DirectX::XMVECTOR Vector;
+		DirectX::XMVECTOR LengthSq;
+
+		DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner.lock()->GetComponent<Transform>()->GetPosition());
+		EnemyManager& enemyManager = EnemyManager::Instance();
+		int enemyCount = enemyManager.GetEnemyCount();
+		for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+		{
+			DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
+
+
+			Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
+
+			LengthSq = DirectX::XMVector3Length(Vector);
+
+			Vector = DirectX::XMVector3Normalize(Vector);
+
+			DirectX::XMStoreFloat3(&vector, Vector);
+
+			DirectX::XMStoreFloat(&length, LengthSq);
+		}
+		// 相手の方を向く
+		// 回転
+		if (isRotate)
+		{
+			//length < attackCheckRangeMax && length > attackCheckRangeMin&&
+
+			if (moveid->Turn(vector, turnSpeed, elapsedTime))
+			{
+				// カメラ向き
+				{
+					MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+					position = transformid->GetPosition();
+					angle = transformid->GetAngle();
+
+					// モーション記録
+					float vx = sinf(angle.y) * 6;
+					float vz = cosf(angle.y) * 6;
+					float vx2 = sinf(angle.y) - 10;
+					float vz2 = cosf(angle.y) * 7;
+					float vx3 = sinf(angle.y);
+
+					p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+					p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
+					p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+					p.data.push_back({ 150, {position.x - vx2, position.y + 5, position.z - vz2 }, position });
+					p.data.push_back({ 170, {position.x + vx, position.y + 3, position.z + vz }, position });
+					p.data.push_back({ 200, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+					p.data.push_back({ 250, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
+
+					// エネミー呼ぶ奴
+					EnemyManager& enemyManager = EnemyManager::Instance();
+					int enemyManagerCount = enemyManager.GetEnemyCount();
+
+					DirectX::XMFLOAT3 pos;
+					DirectX::XMVECTOR posVec;
+
+
+					pos =
+					{ 0,0,0 };
+					float length;
+
+					length = 10.0f;
+
+					//　カメラ移動　ベクトル獲得
+					if (enemyManagerCount > 0)
+					{
+
+						std::shared_ptr<EnemySlime> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemySlime>();
+
+						DirectX::XMVECTOR positionVec = DirectX::XMLoadFloat3(&position);
+						DirectX::XMVECTOR ePositionVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
+
+						posVec = DirectX::XMVectorSubtract(positionVec, ePositionVec);
+
+						posVec = DirectX::XMVector3Normalize(posVec);
+
+						DirectX::XMStoreFloat3(&pos, posVec);
+
+					}
+
+
+
+
+					p.data.push_back({ 330,{position.x + (pos.x * length) ,
+						position.y + (pos.y * length) + 1,
+						position.z + (pos.z * length) }, position });
+
+
+
+
+					Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+				}
+			}
+			////　必殺技の対象に向いた後
+			else
+			{
+			
+				isRotate = false;
+
+			}
+		}
+	}
 	if (button)
 	{
 
-		//// カメラモーション
-		//MessageData::CAMERACHANGEMOTIONMODEDATA	p;
-
-		//position = transformid->GetPosition();
-		//angle = transformid->GetAngle();
-
-
-		//// モーション記録
-		//float vx = sinf(angle.y) * 6;
-		//float vz = cosf(angle.y) * 6;
-		//float vx2 = sinf(angle.y) - 10;
-		//float vz2 = cosf(angle.y) * 7;
-		//float vx3 = sinf(angle.y);
-
-		//p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-		//p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
-		//p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
-		//p.data.push_back({ 150, {position.x - vx2, position.y + 5, position.z - vz2 }, position });
-		//p.data.push_back({ 170, {position.x + vx, position.y + 3, position.z + vz }, position });
-		//p.data.push_back({ 200, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
-		//p.data.push_back({ 250, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
-		//p.data.push_back({ 350, {position.x + vx3 , position.y + 0.5f, (position.z + 0.1f) - vz2 }, position });
-
-		//// モーション設定
-		//Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
-
-		// 任意のアニメーション再生区間でのみ衝突判定処理をする
-		//float animationTime = model->GetModel()->GetCurrentANimationSeconds();
+		
 		
 		// エフェクト更新
 		if(fire->GetEfeHandle())
@@ -3665,7 +3779,7 @@ void PlayerAvoidanceState::Enter()
 
 
 	// 当たり判定の有無
-	owner.lock()->GetComponent<Player>()->DmageInvalidJudment(false);
+	//owner.lock()->GetComponent<Player>()->DmageInvalidJudment(false);
 
 
 
@@ -3754,6 +3868,12 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 		
 	}
 
+	// アニメーションダッシュ後通常移動
+	if (animationTime >= 1.0f && owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	{
+
+		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+	}
 	
 	// アニメーション終了
 	//if (!owner.lock()->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
@@ -3761,7 +3881,7 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 	{
 
 		// 当たり判定の有無
-		owner.lock()->GetComponent<Player>()->DmageInvalidJudment(true);
+		//owner.lock()->GetComponent<Player>()->DmageInvalidJudment(true);
 		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 

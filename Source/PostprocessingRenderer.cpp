@@ -14,6 +14,9 @@ PostprocessingRenderer::PostprocessingRenderer()
         UINT width = static_cast<UINT>(graphics.GetScreenWidth()) / 2;
         UINT height = static_cast<UINT>(graphics.GetScreenHeight()) / 2;
 
+        //UINT width = static_cast<float>(50);
+        //UINT height = static_cast<float>(50);
+
         // 高輝度抽出用動画ターゲットを生成
         luminanceExtractRenderTarget = std::make_unique<RenderTarget>(width, height,
             DXGI_FORMAT_R8G8B8A8_UNORM);
@@ -109,6 +112,8 @@ void PostprocessingRenderer::Render(RenderContext rc)
         D3D11_VIEWPORT viewport{};
         viewport.Width = static_cast<float>(luminanceExtractRenderTarget->GetWidth());
         viewport.Height = static_cast<float>(luminanceExtractRenderTarget->GetHeight());
+        //viewport.Width = static_cast<float>(50);
+        //viewport.Height = static_cast<float>(50);
         viewport.MinDepth = 0.0f;
         viewport.MaxDepth = 1.0f;
         rc.deviceContext->RSSetViewports(cachedViewportCount, cachedViewports);
@@ -141,6 +146,8 @@ void PostprocessingRenderer::Render(RenderContext rc)
         D3D11_VIEWPORT viewport{};
         viewport.Width = static_cast<float>(luminanceExtractBokehRenderTarget->GetWidth());
         viewport.Height = static_cast<float>(luminanceExtractBokehRenderTarget->GetHeight());
+        //viewport.Width = static_cast<float>(100);
+        //viewport.Height = static_cast<float>(100);
         viewport.MinDepth = 0.0f;
         viewport.MaxDepth = 1.0f;
         rc.deviceContext->RSSetViewports(cachedViewportCount, cachedViewports);

@@ -43,4 +43,5 @@ cbuffer CBFinalpass: register(b0)
     float	vn_iris;
     float	vn_dummy;
 #endif	//	defined( UNIT_VN_01 )
+    //int     is_bl;
 }

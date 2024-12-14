@@ -37,6 +37,7 @@ float4 main(VS_OUT pin) : SV_TARGET
         color.rgb = lerp(color.rgb, result_color.rgb, mask_value);
     }
 
+
     // ブルームテクスチャを加算する
     color.rgb += bloomTexture.Sample(sceneSampler, pin.texcoord).rgb;
 

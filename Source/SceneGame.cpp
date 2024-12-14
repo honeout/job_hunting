@@ -53,10 +53,54 @@ void SceneGame::Initialize()
 		maxPos.z = 30;
 	}
 
+	//// ステージ初期化
+	//{
+	//	const char* filename = "Data/Model/ExampleStage/M_stage .mdl";
+	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+	//	actor->AddComponent<ModelControll>();
+	//	actor->GetComponent<ModelControll>()->LoadModel(filename);
+	//	actor->SetName("StageMain");
+	//	actor->AddComponent<Transform>();
+
+	//	actor->GetComponent<Transform>()->
+	//		SetPosition(DirectX::XMFLOAT3(0, -25, 0));
+
+	//	actor->GetComponent<Transform>()->
+	//		SetAngle(DirectX::XMFLOAT3(0, 0, 0));
+
+	//	actor->GetComponent<Transform>()->
+	//		SetScale(DirectX::XMFLOAT3(1, 1, 1));
+
+
+
+
+	//	actor->AddComponent<StageMain>();
+
+	//	// 影シェーダー
+	//	actor->GetComponent<StageMain>()->SetIsRimRightning(0);
+
+	//	// 解像度
+	//	actor->GetComponent<StageMain>()->SetTexcoordMult(20);
+
+	//	// スペキュラー
+	//	actor->GetComponent<StageMain>()->SetIsSpecular(0);
+
+
+	//	// これが２Dかの確認
+	//	bool check2d = false;
+	//	actor->SetCheck2d(check2d);
+
+	//	StageManager::Instance().Register(actor);
+
+
+
+
+	//}
+
 
 	// ステージ初期化
 	{
-		const char* filename = "Data/Model/ExampleStage/M_stage .mdl";
+		const char* filename = "Data/Model/ExampleStage/stageNotRuby.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
@@ -80,85 +124,69 @@ void SceneGame::Initialize()
 		// 影シェーダー
 		actor->GetComponent<StageMain>()->SetIsRimRightning(0);
 
+		// 解像度
+		actor->GetComponent<StageMain>()->SetTexcoordMult(20);
+
+		// スペキュラー
+		actor->GetComponent<StageMain>()->SetIsSpecular(0);
+
+
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
 
 		StageManager::Instance().Register(actor);
 
+
+
+
 	}
 
 
 
-	//// ステージ地面初期化
-	//{
-	//	const char* filename = "Data/Model/ExampleStage/stage.mdl";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->AddComponent<ModelControll>();
-	//	actor->GetComponent<ModelControll>()->LoadModel(filename);
-	//	actor->SetName("StageMain");
-	//	actor->AddComponent<Transform>();
+	// ステージルビー初期化
+	{
+		const char* filename = "Data/Model/ExampleStage/RubyStage.mdl";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->AddComponent<ModelControll>();
+		actor->GetComponent<ModelControll>()->LoadModel(filename);
+		actor->SetName("StageRuby");
+		actor->AddComponent<Transform>();
 
-	//	actor->GetComponent<Transform>()->
-	//		SetPosition(DirectX::XMFLOAT3(0, -17.85f, 0));
+		actor->GetComponent<Transform>()->
+			SetPosition(DirectX::XMFLOAT3(0, -17.85f, 0));
 
-	//	actor->GetComponent<Transform>()->
-	//		SetAngle(DirectX::XMFLOAT3(0, 0, 0));
+		actor->GetComponent<Transform>()->
+			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
 
-	//	actor->GetComponent<Transform>()->
-	//		SetScale(DirectX::XMFLOAT3(1, 1, 1));
-
-
-
-
-	//	actor->AddComponent<StageMain>();
-
-
-	//	// これが２Dかの確認
-	//	bool check2d = false;
-	//	actor->SetCheck2d(check2d);
-
-	//	StageManager::Instance().Register(actor);
-
-
-
-	//}
-
-
-
-	//// ステージ屋根初期化
-	//{
-	//	const char* filename = "Data/Model/ExampleStage/stageRoof.mdl";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->AddComponent<ModelControll>();
-	//	actor->GetComponent<ModelControll>()->LoadModel(filename);
-	//	actor->SetName("StageRoof");
-	//	actor->AddComponent<Transform>();
-
-	//	actor->GetComponent<Transform>()->
-	//		SetPosition(DirectX::XMFLOAT3(0, -25, 0));
-
-	//	actor->GetComponent<Transform>()->
-	//		SetAngle(DirectX::XMFLOAT3(0, 0, 0));
-
-	//	actor->GetComponent<Transform>()->
-	//		SetScale(DirectX::XMFLOAT3(1, 1, 1));
+		actor->GetComponent<Transform>()->
+			SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
 
 
 
-	//	actor->AddComponent<StageMain>();
+		actor->AddComponent<StageMain>();
 
-	//	// 影シェーダー
-	//	actor->GetComponent<StageMain>()->SetIsShadowShader(0);
+		// 影シェーダー
+		actor->GetComponent<StageMain>()->SetIsRimRightning(1);
 
-	//	// これが２Dかの確認
-	//	bool check2d = false;
-	//	actor->SetCheck2d(check2d);
+		// 解像度
+		actor->GetComponent<StageMain>()->SetTexcoordMult(1);
 
-	//	StageManager::Instance().Register(actor);
+		// スペキュラー
+		actor->GetComponent<StageMain>()->SetIsSpecular(1);
 
-	//}
+
+		// これが２Dかの確認
+		bool check2d = false;
+		actor->SetCheck2d(check2d);
+
+		StageManager::Instance().Register(actor);
+
+
+
+	}
+
 
 
 	////player = new Player;

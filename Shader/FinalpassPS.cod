@@ -143,11 +143,11 @@ if_nz r1.z
 #line 38
 endif 
 
-#line 41
+#line 42
 sample_indexable(texture2d)(float,float,float,float) r2.xyz, v2.xyxx, t1.xyzw, s0
 add r0.xyz, r0.xyzx, r2.xyzx
 
-#line 47
+#line 48
 nop 
 mov r0.xyz, r0.xyzx
 
@@ -242,19 +242,19 @@ mov r2.x, r2.x  // r2.x <- <RGB2HSV return value>.x
 mov r2.y, r2.y  // r2.y <- <RGB2HSV return value>.y
 mov r2.z, r2.z  // r2.z <- <RGB2HSV return value>.z
 
-#line 47 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\FinalpassPS.hlsl"
+#line 48 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\FinalpassPS.hlsl"
 mov r2.xyz, r2.xyzx  // r2.x <- color.x; r2.y <- color.y; r2.z <- color.z
 
-#line 50
+#line 51
 add r0.x, r2.x, cb0[0].x  // r0.x <- color.x
 
-#line 53
+#line 54
 mul r0.y, r2.y, cb0[0].y  // r0.y <- color.y
 
-#line 56
+#line 57
 mul r0.z, r2.z, cb0[0].z  // r0.z <- color.z
 
-#line 59
+#line 60
 nop 
 mov r0.x, r0.x
 mov r0.y, r0.y
@@ -435,33 +435,33 @@ endif
 #line 121
 mov r2.xyz, r2.xyzx  // r2.x <- <HSV2RGB return value>.x; r2.y <- <HSV2RGB return value>.y; r2.z <- <HSV2RGB return value>.z
 
-#line 59 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\FinalpassPS.hlsl"
+#line 60 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\FinalpassPS.hlsl"
 mov r2.xyz, r2.xyzx  // r2.x <- color.x; r2.y <- color.y; r2.z <- color.z
 
-#line 65
+#line 66
 itof r0.x, l(0)
 lt r0.x, r0.x, cb0[4].z
 if_nz r0.x
 
-#line 68
+#line 69
   lt r0.x, l(0.500000), cb0[5].z
   if_nz r0.x
 
-#line 70
+#line 71
     mov r0.xy, -cb0[4].xyxx
     add r0.yz, r0.xxyx, v2.xxyx  // r0.y <- vn_vector.x; r0.z <- vn_vector.y
 
-#line 71
+#line 72
     div r1.z, r1.x, r1.y  // r1.z <- aspect
 
-#line 72
+#line 73
     mov r1.w, l(-1.000000)
     add r1.z, r1.w, r1.z
     mul r1.z, r1.z, cb0[5].x
     add r1.z, r1.z, l(1.000000)
     mul r0.x, r0.y, r1.z  // r0.x <- vn_vector.x
 
-#line 73
+#line 74
     mov r0.y, l(-0.300000)
     add r0.y, r0.y, l(1.000000)
     mul r0.y, r0.y, cb0[4].z
@@ -471,7 +471,7 @@ if_nz r0.x
     mul r1.z, r1.z, cb0[5].x
     add r0.y, r0.y, r1.z  // r0.y <- intensity
 
-#line 74
+#line 75
     itof r1.z, l(1)
     mov r0.y, -r0.y
     add r0.y, r0.y, r1.z
@@ -480,7 +480,7 @@ if_nz r0.x
     ge r0.x, r0.x, r0.y
     movc r0.x, r0.x, l(1.000000), l(0)  // r0.x <- factor
 
-#line 75
+#line 76
     max r0.x, r0.x, l(0.000000)
     min r0.x, r0.x, l(1.000000)
     mov r3.xyz, l(-1.000000,-1.000000,-1.000000,-0.000000)
@@ -489,17 +489,17 @@ if_nz r0.x
     add r0.xyz, r0.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
     mul r2.xyz, r0.xyzx, r2.xyzx
 
-#line 76
+#line 77
   else 
 
-#line 80
+#line 81
     mov r0.xy, -cb0[4].xyxx
     add r0.xy, r0.xyxx, v2.xyxx
     mov r1.zw, -r0.xxxy
     max r0.xy, r0.xyxx, r1.zwzz
     mul r0.yz, r0.xxyx, cb0[4].zzzz  // r0.y <- d.x; r0.z <- d.y
 
-#line 82
+#line 83
     div r1.x, r1.x, r1.y
     mov r1.y, l(-1.000000)
     add r1.x, r1.y, r1.x
@@ -507,14 +507,14 @@ if_nz r0.x
     add r1.x, r1.x, l(1.000000)
     mul r0.x, r0.y, r1.x  // r0.x <- d.x
 
-#line 83
+#line 84
     max r0.xy, r0.xzxx, l(0.000000, 0.000000, 0.000000, 0.000000)
     min r0.xy, r0.xyxx, l(1.000000, 1.000000, 0.000000, 0.000000)
     log r0.xy, r0.xyxx
     mul r0.xy, r0.xyxx, cb0[5].yyyy
     exp r0.xy, r0.xyxx  // r0.x <- d.x; r0.y <- d.y
 
-#line 85
+#line 86
     dp2 r0.x, r0.xyxx, r0.xyxx
     mov r0.x, -r0.x
     add r0.x, r0.x, l(1.000000)
@@ -524,20 +524,20 @@ if_nz r0.x
     mul r0.x, r0.x, cb0[4].w
     exp r0.x, r0.x  // r0.x <- factor
 
-#line 86
+#line 87
     mov r1.xyz, -cb0[3].xyzx
     add r1.xyz, r1.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
     mul r0.xyz, r0.xxxx, r1.xyzx
     add r0.xyz, r0.xyzx, cb0[3].xyzx
     mul r2.xyz, r0.xyzx, r2.xyzx
 
-#line 87
+#line 88
   endif 
 
-#line 88
+#line 89
 endif 
 
-#line 90
+#line 91
 mov o0.xyz, r2.xyzx
 mov o0.w, r0.w
 ret 

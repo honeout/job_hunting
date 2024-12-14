@@ -133,16 +133,24 @@ bool Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapse
 
     GetActor()->GetComponent<Transform>()->SetAngle(angle);
 
-    if (dot >= 0.93f)
+    //if ((dot + FLT_EPSILON) >= -(0.1f - FLT_EPSILON) && 
+    //    dot - FLT_EPSILON <= (0.1f + FLT_EPSILON))
+    //{
+    //    return true;
+    //}
+
+    if (dot + FLT_EPSILON >= -(0.9f - FLT_EPSILON))
     {
         return true;
     }
 
-    else if (dot <= 0.1f)
+    else if (dot - FLT_EPSILON <= (0.9f + FLT_EPSILON))
     {
         return true;
     }
+
     return false;
+   
 }
 bool Movement::TurnCheck(const DirectX::XMFLOAT3& direction, DirectX::XMFLOAT2 angleRange, float elapsedTime)
 {

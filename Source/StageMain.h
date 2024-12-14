@@ -38,13 +38,13 @@ public:
         const DirectX::XMFLOAT3& start,
         const DirectX::XMFLOAT3& end,
         HitResult& hit) ;
-
     // スペキュラー
-    void SetIsSpecular(int isSpecular) { isSpecular = isSpecular; }
+    void SetIsSpecular(int isSpecular) { this->isSpecular = isSpecular; }
     // 解消度を上げる
-    void SetTexcoordMult(int texcoordMult) { texcoordMult = texcoordMult; }
+    void SetTexcoordMult(int texcoordMult) { this->texcoordMult = texcoordMult; }
     // リムライト
     void SetIsRimRightning(int isRimRightning) { this->isRimRightning = isRimRightning; }
+
 private:
     //Model* model;
     //std::shared_ptr<ModelControll> model;
@@ -57,7 +57,7 @@ private:
     int isSpecular = 0;
 
     // 解消度を上げる。
-    int texcoordMult = 20;
+    int texcoordMult = 0;
 
     // リムライト
     int isRimRightning = 1;

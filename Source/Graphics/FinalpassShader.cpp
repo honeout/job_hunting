@@ -244,6 +244,8 @@ void FinalpassShader::Draw(const RenderContext& rc, const Sprite* sprite)
 	cbFinalpass.vn_roundness = 6.0f * (1.0f - rc.vignetteData.roundness) + rc.vignetteData.roundness;
 #endif	//	defined( UNIT_VN_01 )
 
+	// ブルームのオンオフ
+	//cbFinalpass.is_bl = rc.is_bl;
 
 	rc.deviceContext->UpdateSubresource(finalpassConstatBuffer.Get(), 0, 0, &cbFinalpass, 0, 0);
 	// Todo周辺減光をcolorGradingといっしょに使うための施行錯誤

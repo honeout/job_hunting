@@ -66,6 +66,8 @@ void EnemySlime::Start()
 
     //SetTerritory(position, territoryarea);
 
+    //moveAttackEffect = std::make_unique<Effect>("Data/Effect/enemyMoveAttackHit.efk");
+
 
     stateMachine = std::make_unique<StateMachine>();
 
@@ -128,9 +130,9 @@ void EnemySlime::Update(float elapsedTime)
 {
     
     //// 動作するかどうか
-    //if (moveCheck)
+    if (moveCheck)
     //// ステート毎の処理
-    //stateMachine->Update(elapsedTime);
+    stateMachine->Update(elapsedTime);
 
     // 位置
     position = transform->GetPosition();
@@ -866,6 +868,8 @@ void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
                     player->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
 
                     //hitEffect->Play(e);
+
+                    //moveAttackEffect->Play(playerPosition);
 
                 }
 

@@ -745,9 +745,9 @@ private:
 
 
 	// 攻撃サポート範囲
-	float attackCheckRange = 9;
+	float attackCheckRange = 4.5f;
 
-	float attackCheckRangeMin = 7;
+	float attackCheckRangeMin = 2.6f;
 
 	float gravity = -0.2f;
 
@@ -1034,6 +1034,23 @@ private:
 
 	// 一瞬白く
 	bool flashOn = true;
+
+	// 回転確認
+	bool isRotate = false;
+
+	// 向き
+	DirectX::XMFLOAT3 vector;
+	// 距離
+	float length;
+
+	// 距離の最大値
+	float attackCheckRangeMax = 10.5f;
+	// 距離の最低値
+	float attackCheckRangeMin = 2.6f;
+
+	// 最大の回転
+	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
+
 };
 
 // 魔法ステートオブジェクト
@@ -1070,6 +1087,27 @@ private:
 
 	// 魔法発射種類
 	int                       magicType = 0;
+
+	// 回転速度
+	float				turnSpeed = DirectX::XMConvertToRadians(720);
+
+	// 歩く速度
+	float moveSpeed = 5.0f;
+
+	// 回転許可
+	bool                      isRotate;
+
+	// 向き
+	DirectX::XMFLOAT3 vector;
+	// 距離
+    float length;
+
+	// 角度範囲
+	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
+
+	// 移動許可
+	bool isMove = false;
+
 
 };
 
@@ -1147,6 +1185,23 @@ private:
 	// 最初だけ魔法を発動するため
 	bool startMagic = false;
 	bool isMagic = false;
+
+
+	// 回転確認
+	bool isRotate = false;
+
+	// 向き
+	DirectX::XMFLOAT3 vector;
+	// 距離
+	float length;
+
+	// 距離の最大値
+	float attackCheckRangeMax = 10.5f;
+	// 距離の最低値
+	float attackCheckRangeMin = 2.6f;
+
+	// 最大の回転
+	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
 
 };
 

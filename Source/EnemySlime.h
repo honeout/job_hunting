@@ -9,6 +9,7 @@
 
 #include "StateMachine.h"
 #include "StageMain.h"
+#include "Effect.h"
 // ステート
 
 
@@ -245,7 +246,8 @@ public:
     bool GetClearCheck() { return clearCheck; }
     void SetClearCheck(bool clearCheck) { this->clearCheck = clearCheck; }
 
-    void SetMoveCheck(bool moveCheck) { this->moveCheck = moveCheck; }
+    void SetMoveCheck(bool moveCheck) 
+    { this->moveCheck = moveCheck; }
 
     // 探す範囲
     float GetSearchRange() { return searchRange; }
@@ -267,6 +269,9 @@ private:
     std::shared_ptr<Movement>	movement;
     std::shared_ptr<HP>	hp;
     std::shared_ptr<Transform>	transform;
+
+    // プレイヤーに与ダメエフェ
+    std::unique_ptr<Effect> moveAttackEffect;
 
 
 

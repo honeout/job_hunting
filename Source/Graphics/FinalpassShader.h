@@ -47,6 +47,9 @@ private:
         float				vn_dummy;
 #endif	//	defined( UNIT_VN_01 )
 
+        // ブルームのオンオフ
+        //int is_bl;
+
     };
 
     //// 周辺減光
