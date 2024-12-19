@@ -48,6 +48,8 @@ Player::~Player()
     //    stateMachine = nullptr;
     //}
 
+    
+
     if (hitEffect != nullptr)
     {
         hitEffect->Stop(hitEffect->GetEfeHandle());
@@ -266,7 +268,7 @@ void Player::Update(float elapsedTime)
 
 
         // 着地時にエフェクト切る
-        if (movement->GetOnLadius())
+        if (movement->GetOnLadius() || GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
         {
             areWork->Stop(areWork->GetEfeHandle());
         }
@@ -278,7 +280,8 @@ void Player::Update(float elapsedTime)
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::SideCut)&&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::CycloneStrike)&&
-                GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage)
+                GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) && 
+                    GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death)
             )
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
@@ -311,7 +314,8 @@ void Player::Update(float elapsedTime)
             areWork->Play(position);
         }
  
-
+        if(GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
         // 特殊攻撃
         InputSpecialAttackCharge();
         //if (InputSpecialAttackCharge())
@@ -2570,39 +2574,48 @@ void Player::CollisionPlayerVsEnemies()
                     DirectX::XMFLOAT3 normal;
                     DirectX::XMStoreFloat3(&normal, N);
 
-                    if (normal.y > 0.8f)
-                    {
+                    position = outPositon;
+                    //position = {
+                    //    position.x * -normal.x * power,
+                    //    position.y,
+                    //    position.z * -normal.z * power
+                    //};
 
-                        //小ジャンプ
-                        //Jump(jumpSpeed * 0.5f);
-                       // movement->JumpVelocity(jumpSpeed * 0.5f);
+                    transform->SetPosition(position);
+
+                    //if (normal.y > 0.8f)
+                    //{
+
+                    //    //小ジャンプ
+                    //    //Jump(jumpSpeed * 0.5f);
+                    //   // movement->JumpVelocity(jumpSpeed * 0.5f);
 
 
-                    }
-                    else
-                    {
-                        
-                        // 押し出し後の位置設定　
-                        //enemy->GetComponent<Transform>()->SetPosition(outPositon);
-                        //position = outPositon;
-                        //position = outPositon;
-                        const float power = 1.3f;
+                    //}
+                    //else
+                    //{
+                    //    
+                    //    // 押し出し後の位置設定　
+                    //    //enemy->GetComponent<Transform>()->SetPosition(outPositon);
+                    //    //position = outPositon;
+                    //    //position = outPositon;
+                    //    const float power = 1.3f;
 
-                        //position = {
-                        //    position.x * -normal.x * power,
-                        //    position.y * -normal.y * power,
-                        //    position.z * -normal.z * power
-                        //};
-                        position = outPositon;
+                    //    position = outPositon;
+                    //    //position = {
+                    //    //    position.x * -normal.x * power,
+                    //    //    position.y,
+                    //    //    position.z * -normal.z * power
+                    //    //};
 
-                        transform->SetPosition(position);
-                        //DirectX::XMFLOAT3 impulse;
-                        //impulse.x = normal.x * power;
-                        //impulse.y = power * normal.y;
-                        //impulse.z = normal.z * power;
+                    //    transform->SetPosition(position);
+                    //    //DirectX::XMFLOAT3 impulse;
+                    //    //impulse.x = normal.x * power;
+                    //    //impulse.y = power * normal.y;
+                    //    //impulse.z = normal.z * power;
    
-                        //movement->AddImpulse(impulse);
-                    }
+                    //    //movement->AddImpulse(impulse);
+                    //}
                 
             }
             

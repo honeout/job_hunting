@@ -17,6 +17,11 @@ public:
 	// ’âŽ~
 	void Stop();
 
+	// ƒ{ƒŠƒ…[ƒ€•ÏX
+	void SetVolume(float volume) { sourceVoice->SetVolume(volume); }
+
+	
+
 private:
 	IXAudio2SourceVoice*			sourceVoice = nullptr;
 	std::shared_ptr<AudioResource>	resource;

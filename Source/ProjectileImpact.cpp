@@ -54,6 +54,8 @@ void ProjectileImpact::Start()
     if (effectProgress)
         effectProgress->Play(transform->GetPosition(), scale);
 
+    //lifeTimer = 3.0f;
+
 }
 
 // XVˆ—

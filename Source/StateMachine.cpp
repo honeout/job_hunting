@@ -35,6 +35,8 @@ void StateMachine::ChangeState(int newState)
 // ステート登録
 void StateMachine::RegisterState(State* state)
 {
+	
+
 	// 親ステート登録
 	statePool.emplace_back(state);
 }

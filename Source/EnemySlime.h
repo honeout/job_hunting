@@ -56,6 +56,9 @@ public:
     // 当たり判定ボスとプレイヤー
     bool CollisionPlayerWithRushEnemy();
 
+    // 衝撃波判定
+    void CollisionInpact();
+
     // 当たり判定右端
     void DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition);
 
@@ -273,6 +276,8 @@ private:
     // プレイヤーに与ダメエフェ
     std::unique_ptr<Effect> moveAttackEffect;
 
+    std::unique_ptr<Effect> inpactEffect;
+
 
 
     // どのステートで動くか
@@ -354,6 +359,18 @@ private:
 
     // 近距離攻撃時の当たり判定
     float attackRightFootRange = 0;
+
+    // 衝撃波起こる範囲外側
+    float radiusInpactOutSide = 0.3f;
+
+    // 衝撃波起こる範囲内側
+    float radiusInpactInSide = 0.3f;
+
+    // 衝撃波高さ
+    float radiusInpactHeight = 0.0f;
+
+    // 衝撃波有無
+    bool IsInpact = false;
 
     bool pushuThrow = false;
 

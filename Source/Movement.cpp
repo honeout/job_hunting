@@ -41,14 +41,14 @@ void Movement::OnGUI()
 // ワールド移動
 void Movement::Move(const DirectX::XMFLOAT3& direction,float speed ,float elapsedTime)
 {
-	std::shared_ptr<Actor> actor = GetActor();
+	std::weak_ptr<Actor> actor = GetActor();
    // moveSpeed = speed * elapsedTime;
     maxMoveSpeed = speed;
 	//DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
 	//DirectX::XMVECTOR Velocity = DirectX::XMVectorScale(Direction, moveSpeed);
 
-    collision = GetActor()->GetComponent<Collision>();
-    transformid = GetActor()->GetComponent<Transform>();
+    collision = actor.lock()->GetComponent<Collision>();
+    transformid = actor.lock()->GetComponent<Transform>();
 
     //DirectX::XMStoreFloat3(&velocity, Velocity);
 
@@ -87,9 +87,9 @@ bool Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapse
 {
     speed = speed * elapsedTime;
 
-    std::shared_ptr<Actor> actor = GetActor();
+    std::weak_ptr<Actor> actor = GetActor();
 
-    DirectX::XMFLOAT3 angle = GetActor()->GetComponent<Transform>()->GetAngle();
+    DirectX::XMFLOAT3 angle = actor.lock()->GetComponent<Transform>()->GetAngle();
 
     // 進行ベクトルが0ベクトルの場合は処理する必要なし
     if (direction.x == 0 && direction.z == 0)
@@ -131,7 +131,7 @@ bool Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapse
         angle.y += rot;
     }
 
-    GetActor()->GetComponent<Transform>()->SetAngle(angle);
+    actor.lock()->GetComponent<Transform>()->SetAngle(angle);
 
     //if ((dot + FLT_EPSILON) >= -(0.1f - FLT_EPSILON) && 
     //    dot - FLT_EPSILON <= (0.1f + FLT_EPSILON))
@@ -154,9 +154,9 @@ bool Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapse
 }
 bool Movement::TurnCheck(const DirectX::XMFLOAT3& direction, DirectX::XMFLOAT2 angleRange, float elapsedTime)
 {
-    std::shared_ptr<Actor> actor = GetActor();
+    std::weak_ptr<Actor> actor = GetActor();
 
-    DirectX::XMFLOAT3 angle = GetActor()->GetComponent<Transform>()->GetAngle();
+    DirectX::XMFLOAT3 angle = actor.lock()->GetComponent<Transform>()->GetAngle();
 
     // 進行ベクトルが0ベクトルの場合は処理する必要なし
     if (direction.x == 0 && direction.z == 0)
@@ -253,7 +253,7 @@ bool Movement::TurnCheck(const DirectX::XMFLOAT3& direction, DirectX::XMFLOAT2 a
 // ワールド移動
 void Movement::OnLanding()
 {
-    std::shared_ptr<Actor> actor = GetActor();
+    std::weak_ptr<Actor> actor = GetActor();
     
     
     // 着地したからリセット
@@ -301,13 +301,13 @@ void Movement::AddImpulse(const DirectX::XMFLOAT3& impulse)
 
 void Movement::UpdateHorizontalVelocity( float elapsedFrame)
 {
-    std::shared_ptr<Actor> actor = GetActor();
+    std::weak_ptr<Actor> actor = GetActor();
     //speed = moveSpeed * elapsedFrame;
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
 
 
     
-    DirectX::XMFLOAT3 position = GetActor()->GetComponent<Transform>()->GetPosition();
+    DirectX::XMFLOAT3 position = actor.lock()->GetComponent<Transform>()->GetPosition();
 
 
     // XZ平面の速力を減速する 速度の長さ
@@ -382,10 +382,10 @@ void Movement::UpdateHorizontalVelocity( float elapsedFrame)
 
 void Movement::UpdateHorizontalMove( float elapsedTime)
 {
-    std::shared_ptr<Actor> actor = GetActor();
+    std::weak_ptr<Actor> actor = GetActor();
     //speed = moveSpeed * elapsedTime;
     //DirectX::XMFLOAT3 velocity = Mathf::Scale(direction, speed);
-    DirectX::XMFLOAT3 position = GetActor()->GetComponent<Transform>()->GetPosition();
+    DirectX::XMFLOAT3 position = actor.lock()->GetComponent<Transform>()->GetPosition();
     //float stepOffSet = actor->GetStepOffset();
 
 
@@ -494,11 +494,11 @@ void Movement::UpdateVerticalVelocity( float elapsedFrame)
 
 void Movement::UpdateVerticalMove( float elapsedTime)
 {
-    std::shared_ptr<Actor> actor = GetActor();
+    std::weak_ptr<Actor> actor = GetActor();
 
-    DirectX::XMFLOAT3 position = GetActor()->GetComponent<Transform>()->GetPosition();
+    DirectX::XMFLOAT3 position = actor.lock()->GetComponent<Transform>()->GetPosition();
 
-    DirectX::XMFLOAT3 angle = { GetActor()->GetComponent<Transform>()->GetAngle()};
+    DirectX::XMFLOAT3 angle = { actor.lock()->GetComponent<Transform>()->GetAngle()};
 
     // 垂直方向の移動量
     float my = velocity.y * elapsedTime;
@@ -625,8 +625,8 @@ void Movement::UpdateVerticalMove( float elapsedTime)
 
     }
 
-    GetActor()->GetComponent<Transform>()->SetPosition(position);
-    GetActor()->GetComponent<Transform>()->SetAngle(angle);
+    actor.lock()->GetComponent<Transform>()->SetPosition(position);
+    actor.lock()->GetComponent<Transform>()->SetAngle(angle);
 }
 
 void Movement::UpdateVelocity( float elapsedTime)

@@ -1,4 +1,4 @@
-#include "Source\Graphics\Shader.h"
+#include "Shader.h"
 #include "misc.h"
 
 #include <memory>

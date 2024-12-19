@@ -13,6 +13,7 @@ void SpriteControll::OnGUI()
 {
 }
 #endif // _DEBUG
+// スプライトの読み込み
 void SpriteControll::LoadSprite(const char* filename)
 {
     sprite = std::make_unique<Sprite>(filename);

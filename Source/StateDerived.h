@@ -33,12 +33,12 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	std::shared_ptr<EnemySlime> enemyid;
-	//std::shared_ptr<ModelControll> modelid;
-	std::shared_ptr<Movement> moveid;
-	//std::shared_ptr<Actor> playerid;
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	////std::shared_ptr<ModelControll> modelid;
+	//std::shared_ptr<Movement> moveid = nullptr;
+	////std::shared_ptr<Actor> playerid;
 
-	Model* model;
+	//Model* model = nullptr;
 	
 	float				stateTimerEnd = 0.0f;
 	float				stateTimer = stateTimerEnd;
@@ -71,7 +71,7 @@ private:
 	float turnSpeed = DirectX::XMConvertToRadians(320);
 
 	// ターゲット位置
-	DirectX::XMFLOAT3 targetPosition;
+	DirectX::XMFLOAT3 targetPosition = {.0f,.0f,.0f};
 };
 
 // 待機ステートオブジェクト
@@ -92,11 +92,11 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	std::shared_ptr<EnemySlime> enemyid;
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
 	//std::shared_ptr<ModelControll> model;
-	Model*  model;
-	std::shared_ptr<Movement> move;
-	std::shared_ptr<HP> hp;
+	//Model*  model = nullptr;
+	//std::shared_ptr<Movement> move = nullptr;
+	//std::shared_ptr<HP> hp = nullptr;
 	
 	float               stateTimerEnd = 0.0f;
 	float				stateTimer = 0.0f;
@@ -132,8 +132,8 @@ public:
 	void End()override;
 private:
 	//std::shared_ptr<Actor> playerid;
-	std::shared_ptr<EnemySlime> enemyid;
-	std::shared_ptr<HP> hpid;
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<HP> hpid = nullptr;
 	
 
 	float				stateTimer = 0.0f;
@@ -181,15 +181,15 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	std::shared_ptr<EnemySlime> enemyid;
-	//std::shared_ptr<ModelControll> modelid;
-	std::shared_ptr<Movement> moveid;
-	std::shared_ptr<HP> hpid;
-	//std::shared_ptr<Actor> playerid;
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	////std::shared_ptr<ModelControll> modelid;
+	//std::shared_ptr<Movement> moveid = nullptr;
+	//std::shared_ptr<HP> hpid = nullptr;
+	////std::shared_ptr<Actor> playerid;
 
-	//float				stateTimer = 0.0f;
+	////float				stateTimer = 0.0f;
 
-	Model* model;
+	//Model* model = nullptr;
 
 	// 着地瞬間
 	bool                upOnLading = false;
@@ -220,7 +220,7 @@ private:
 	float turnSpeed = DirectX::XMConvertToRadians(320);
 
 	// ターゲット位置
-	DirectX::XMFLOAT3 targetPosition;
+	DirectX::XMFLOAT3 targetPosition = { .0f,.0f,.0f };
 
 	// アニメーション終了
 	bool jumpStart = false;
@@ -245,9 +245,9 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	std::shared_ptr<EnemySlime> enemyid;
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
 
-	std::shared_ptr<HP> hpid;
+	//std::shared_ptr<HP> hpid = nullptr;
 
 	float				stateTimer = 0.0f;
 
@@ -284,9 +284,9 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	std::shared_ptr<EnemySlime> enemyid;
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
 
-	std::shared_ptr<HP> hpid;
+	//std::shared_ptr<HP> hpid = nullptr;
 	//std::shared_ptr<ProjectileRuby> projectileRubyid;
 
 	float				stateTimer = 0.0f;
@@ -321,9 +321,9 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	std::shared_ptr<EnemySlime> enemyid;
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
 
-	std::shared_ptr<Transform> transformid;
+	//std::shared_ptr<Transform> transformid = nullptr;
 
 
 	float				stateTimer = 0.0f;
@@ -362,7 +362,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	std::shared_ptr<EnemySlime> enemyid;
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
 
 	//std::shared_ptr<Transform> transformid;
 
@@ -416,7 +416,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	std::shared_ptr<EnemySlime> enemyid;
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
 
 
 	float				stateTimer = 0.0f;
@@ -460,9 +460,9 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	std::shared_ptr<EnemySlime> enemyid;
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
 
-	std::shared_ptr<Transform> transformid;
+	//std::shared_ptr<Transform> transformid = nullptr;
 
 
 
@@ -508,7 +508,7 @@ public:
 	void End()override;
 private:
 	//std::shared_ptr<Actor> playerid;
-	std::shared_ptr<Movement> moveid;
+	//std::shared_ptr<Movement> moveid;
 
 	float				stateTimer = 0.0f;
 
@@ -541,7 +541,7 @@ public:
 	void End()override;
 private:
 
-	std::shared_ptr<Movement> moveid;
+	//std::shared_ptr<Movement> moveid;
 
 
 	// 再生ループ
@@ -577,8 +577,8 @@ public:
 	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
 
 	float				stateTimer = 0.0f;
 	float				attackRange = 1.5f;
@@ -656,8 +656,8 @@ public:
 	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
 
 	float				stateTimer = 0.0f;
 
@@ -703,9 +703,9 @@ private:
 	};
 private:
 	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
-	std::shared_ptr<Transform> transformid;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
+	//std::shared_ptr<Transform> transformid;
 
 	// 足もとに竜巻
 	//std::unique_ptr<Effect> areWork;
@@ -802,9 +802,9 @@ private:
 	};
 private:
 	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
-	std::shared_ptr<Transform> transformid;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
+	//std::shared_ptr<Transform> transformid;
 
 	DirectX::XMFLOAT3 angle;
 
@@ -899,9 +899,9 @@ private:
 	};
 private:
 	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
-	std::shared_ptr<Transform> transformid;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
+	//std::shared_ptr<Transform> transformid;
 
 	DirectX::XMFLOAT3 angle;
 
@@ -994,14 +994,14 @@ private:
 		ThreePushu,
 	};
 private:
-	std::shared_ptr<Transform> transformid;
-	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
+	//std::shared_ptr<Transform> transformid;
+	////std::shared_ptr<ModelControll> model;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
 
-	// エネミー入れ物
-	std::shared_ptr<Transform> enemyTransform;
-	std::shared_ptr<HP> enemyHpId;
+	//// エネミー入れ物
+	//std::shared_ptr<Transform> enemyTransform;
+	//std::shared_ptr<HP> enemyHpId;
 
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 angle;
@@ -1073,8 +1073,8 @@ public:
 
 private:
 	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
 
 	// 再生ループ
 	bool  loop = false;
@@ -1137,14 +1137,14 @@ private:
 		ThreePushu,
 	};
 private:
-	std::shared_ptr<Transform> transformid;
-	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
+	//std::shared_ptr<Transform> transformid;
+	////std::shared_ptr<ModelControll> model;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
 
 	// エネミー入れ物
-	std::shared_ptr<Transform> enemyTransform;
-	std::shared_ptr<HP> enemyHpId;
+	//std::shared_ptr<Transform> enemyTransform;
+	//std::shared_ptr<HP> enemyHpId;
 
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 angle;
@@ -1231,14 +1231,14 @@ private:
 		ThreePushu,
 	};
 private:
-	std::shared_ptr<Transform> transformid;
+	//std::shared_ptr<Transform> transformid;
 	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
 
 	// エネミー入れ物
-	std::shared_ptr<Transform> enemyTransform;
-	std::shared_ptr<HP> enemyHpId;
+	//std::shared_ptr<Transform> enemyTransform;
+	//std::shared_ptr<HP> enemyHpId;
 
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 angle;
@@ -1308,14 +1308,14 @@ private:
 		ThreePushu,
 	};
 private:
-	std::shared_ptr<Transform> transformid;
-	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
+	//std::shared_ptr<Transform> transformid;
+	////std::shared_ptr<ModelControll> model;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
 
-	// エネミー入れ物
-	std::shared_ptr<Transform> enemyTransform;
-	std::shared_ptr<HP> enemyHpId;
+	//// エネミー入れ物
+	//std::shared_ptr<Transform> enemyTransform;
+	//std::shared_ptr<HP> enemyHpId;
 
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 angle;
@@ -1378,6 +1378,7 @@ public:
 	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
+	std::shared_ptr<Movement> moveid;
 	Model* model;
 
 
@@ -1412,9 +1413,9 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	std::shared_ptr<Transform> transformid;
-	std::shared_ptr<Movement> moveid;
-	std::shared_ptr<HP> hpid;
+	//std::shared_ptr<Transform> transformid;
+	//std::shared_ptr<Movement> moveid;
+	//std::shared_ptr<HP> hpid;
 
 
 	// エフェクト
@@ -1495,10 +1496,10 @@ public:
 	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<HP> hpid;
-	std::shared_ptr<Transform> transformid;
-	float				stateTimer = 0.0f;
+	//Model* model;
+	//std::shared_ptr<HP> hpid;
+	//std::shared_ptr<Transform> transformid;
+	//float				stateTimer = 0.0f;
 
 	// 再生ループ
 	bool  loop = false;
@@ -1510,6 +1511,7 @@ private:
 	float blendSeconds = 0.5f;
 
 	// 経過時間最大
+	float stateTimer = 0.0f;
 	float stateTimerMax = 40;
 	//float stateTimerMax = 240;
 };

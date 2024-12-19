@@ -92,7 +92,8 @@ void EnemySlime::Start()
     //stateMachine->SetState((int) State::Idle);
    
 
-
+    // エフェクト
+    inpactEffect = std::make_unique<Effect>("Data/Effect/hit fire.efk");
 
     // アニメーションルール
     updateanim = UpAnim::Normal;
@@ -123,6 +124,16 @@ void EnemySlime::Start()
 
     // 動作チェック
     moveCheck = true;
+
+
+    // 衝撃波起こる範囲外側
+    radiusInpactOutSide = 0.3f;
+
+    // 衝撃波起こる範囲内側
+    radiusInpactInSide = 0.3f;
+
+    // 衝撃波高さ
+    radiusInpactHeight = 0.3f;
 }
 
 // 更新処理
@@ -795,6 +806,114 @@ bool EnemySlime::CollisionPlayerWithRushEnemy()
     return false;
 }
 
+// 衝撃波
+void EnemySlime::CollisionInpact()
+{
+    // 衝撃波の有無
+    if (!IsInpact) return;
+
+    PlayerManager& playerManager = PlayerManager::Instance();
+
+    ProjectileManager& projectileManager = ProjectileManager::Instance();
+
+    // 左足のボーン名
+    Model::Node* bossLeftFoot = model->FindNode("boss_left_foot1");
+
+
+    // ノード位置取得
+    // 左足
+    DirectX::XMFLOAT3 bossLeftFootPosition;
+    bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
+
+    DetectHitByBodyPart(bossLeftFootPosition);
+
+    // 当たり判定増大
+    radiusInpactInSide += 0.3f;
+
+    // 当たり判定増大
+    radiusInpactOutSide += 0.3f;
+
+    // 当たり判定増大高さ
+    radiusInpactHeight += 0.3f;
+
+
+
+
+    // 全ての敵と総当たりで衝突処理
+    int playerCount = PlayerManager::Instance().GetPlayerCount();//todo 外
+    int projectileCount = projectileManager.GetProjectileCount();
+    for (int j = 0; j < playerCount; ++j)
+    {
+        std::weak_ptr<Actor> player = playerManager.GetPlayer(j);//外ループの方が軽い
+
+        DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
+        float playerRadius = player.lock()->GetComponent<Transform>()->GetRadius();
+        float playerHeight = player.lock()->GetComponent<Transform>()->GetHeight();
+
+        // 衝突処理
+        DirectX::XMFLOAT3 outPositon;
+        // 円柱と円
+        if (Collision::IntersectSphereVsCylinder(
+            bossLeftFootPosition,
+            radiusInpactOutSide,
+            playerPosition,
+            playerRadius,
+            playerHeight,
+            outPositon) &&
+            !Collision::IntersectSphereVsCylinder(
+                bossLeftFootPosition,
+                radiusInpactInSide,
+                playerPosition,
+                playerRadius,
+                playerHeight,
+                outPositon))
+
+        {
+            // 高さが一定以下なら通る
+            if (bossLeftFootPosition.y + radiusInpactHeight < playerPosition.y) return;
+            // ダメージを与える。
+            if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 0.5f))
+            {
+                player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+
+                // 吹き飛ばす
+                {
+                    // 衝動
+                    DirectX::XMFLOAT3 impulse;
+                    // 衝撃
+                    const float power = 10.0f;
+
+                    float vx = playerPosition.x - bossLeftFootPosition.x;
+                    float vz = playerPosition.z - bossLeftFootPosition.z;
+                    float lengthXZ = sqrtf(vx * vx + vz * vz);
+                    vx /= lengthXZ;
+                    vz /= lengthXZ;
+
+                    impulse.x = vx * power;
+                    impulse.y = power * 0.5f;
+                    impulse.z = vz * power;
+
+                    player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
+                }
+                // ヒットエフェクト再生
+                {
+                    playerPosition.y += playerHeight * 0.5f;
+
+
+                    //hitEffect->Play(e);
+                }
+
+                // 弾丸破棄
+                //projectile->GetComponent<ProjectileImpact>()->Destoroy();
+
+            }
+
+        }
+
+
+    }
+}
+
 void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
 {
 
@@ -850,8 +969,8 @@ void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
                     // 衝撃
                     const float power = 20.0f;
 
-                    float vx = playerPosition.x - position.x;
-                    float vz = playerPosition.z - position.z;
+                    float vx = outPositon.x - position.x;
+                    float vz = outPositon.z - position.z;
                     float lengthXZ = sqrtf(vx * vx + vz * vz);
                     vx /= lengthXZ;
                     vz /= lengthXZ;
@@ -860,12 +979,14 @@ void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
                     impulse.y = power * 0.5f;
                     impulse.z = vz * power;
 
+
+                    player->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
+
+
                     player->GetComponent<Movement>()->AddImpulse(impulse);
                     // ヒットエフェクト再生
 
                     playerPosition.y += playerHeight * 0.5f;
-
-                    player->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
 
                     //hitEffect->Play(e);
 

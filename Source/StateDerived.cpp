@@ -26,21 +26,24 @@
 void WanderState::Enter()
 {
 	
-	enemyid = owner.lock()->GetComponent<EnemySlime>();
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
 
-	moveid = owner.lock()->GetComponent<Movement>();
+	// owner呼び出し
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+
+	//moveid = owner.lock()->GetComponent<Movement>();
 	// 縄張り
-	enemyid->SetRandomTargetPosition();
+	enemyid.lock()->SetRandomTargetPosition();
 
 	// アニメーション再生
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->
+	model->
 		PlayAnimation(EnemySlime::Animation::Anim_Walk,
 			loop, currentAnimationStartSeconds, blendSeconds, 
 			currentAnimationAddSeconds);
 	// アニメーションルール
-	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Normal);
+	enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Normal);
 
 	stateTimer = stateTimerMax;
 	//stateTimer = 60.0f;
@@ -59,12 +62,18 @@ void WanderState::Execute(float elapsedTime)
 {
 	stateTimer -= elapsedTime;
 
+	// owner呼び出し
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
+
 	// 目標地点ををプレイヤー位置に設定
 	targetPosition = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1)->GetComponent<Transform>()->GetPosition();
 
 
 
-	enemyid->SetTargetPosition(targetPosition);
+	enemyid.lock()->SetTargetPosition(targetPosition);
 	
 	//// 目的地点までのXZ平面での距離判定
 	//float vx = targetPosition.x - enemyid->GetPosition().x;
@@ -79,7 +88,7 @@ void WanderState::Execute(float elapsedTime)
 	//};
 
 	DirectX::XMVECTOR targetPositionVec = DirectX::XMLoadFloat3(&targetPosition);
-	DirectX::XMVECTOR enemyPositionVec = DirectX::XMLoadFloat3(&enemyid->GetPosition());
+	DirectX::XMVECTOR enemyPositionVec = DirectX::XMLoadFloat3(&enemyid.lock()->GetPosition());
 
 	DirectX::XMVECTOR directionVec = DirectX::XMVectorSubtract(targetPositionVec, enemyPositionVec);
 
@@ -87,17 +96,17 @@ void WanderState::Execute(float elapsedTime)
 
 	DirectX::XMStoreFloat3(&direction, directionVec);
 
-	moveid->Turn(direction, turnSpeed, elapsedTime);
+	moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
 
 	// 目的地へ着いた
 	if (stateTimer <= stateTimerEnd)
 	{
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Idle));
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Idle));
 	}
 	// 目的地にこの半径入ったら
-	float radius = enemyid->GetAttackRightFootRange();
+	float radius = enemyid.lock()->GetAttackRightFootRange();
 
-	moveid->Move(direction ,moveSpeed, elapsedTime);
+	moveid.lock()->Move(direction ,moveSpeed, elapsedTime);
 
 	// 当たり判定
 	{
@@ -111,25 +120,25 @@ void WanderState::Execute(float elapsedTime)
 		DirectX::XMFLOAT3 bossLeftFootPosition;
 		bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
 
-		enemyid->DetectHitByBodyPart(bossLeftFootPosition);
+		enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
 
 		// 右足
 		DirectX::XMFLOAT3 bossRightFootPosition;
 		bossRightFootPosition = model->ConvertLocalToWorld(bossRightFoot);
 
-		enemyid->DetectHitByBodyPart(bossRightFootPosition);
+		enemyid.lock()->DetectHitByBodyPart(bossRightFootPosition);
 
 		// 右腕
 		DirectX::XMFLOAT3 bossRightHandPosition;
 		bossRightHandPosition = model->ConvertLocalToWorld(bossRightHand);
 
-		enemyid->DetectHitByBodyPart(bossRightHandPosition);
+		enemyid.lock()->DetectHitByBodyPart(bossRightHandPosition);
 
 		// 左腕
 		DirectX::XMFLOAT3 bossLeftHandPosition;
 		bossLeftHandPosition = model->ConvertLocalToWorld(bossLeftHand);
 
-		enemyid->DetectHitByBodyPart(bossLeftHandPosition);
+		enemyid.lock()->DetectHitByBodyPart(bossLeftHandPosition);
 
 	}
 	//enemyid->CollisionPlayerWithRushEnemy();
@@ -189,26 +198,24 @@ void WanderState::End()
 // 初期化
 void IdleState::Enter()
 {
-
-	enemyid = owner.lock()->GetComponent<EnemySlime>();
-
-	
-	
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	// owner呼び出し
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	//model = owner.lock()->GetComponent<ModelControll>();
 	//move = owner->GetComponent<Movement>();
-	hp = owner.lock()->GetComponent<HP>();
+	std::weak_ptr<HP> hp = owner.lock()->GetComponent<HP>();
+
 	//model = owner->GetComponent<ModelControll>();
 	model->PlayAnimation(EnemySlime::Anim_Standby, loop, currentAnimationStartSeconds,blendSeconds);
 	// アニメーションルール
-	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Normal);
+	enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Normal);
 	
 	// 待機処理
 	//stateTimer = stateTimerMax;
 	stateTimer = Mathf::RandomRange(stateTimerMin, stateTimerMax);
 
 	// 逃げる条件初期化
-	hp->ResetOnDamageThresholdTime();
+	hp.lock()->ResetOnDamageThresholdTime();
 }
 
 // update
@@ -216,32 +223,39 @@ void IdleState::Execute(float elapsedTime)
 {
 	 stateTimer -= elapsedTime;
 
+
+	 std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	 Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	 std::weak_ptr<HP> hp = owner.lock()->GetComponent<HP>();
+
 	if (stateTimer <= stateTimerEnd)
 	{
 		// TODO 03 
 		// 待機時間が経過したとき徘徊ステートへ遷移しなさい
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
 	}
 	// 一定ダメージの最大値
 	float damageThreshold = 10;
 	float timeLimit = 5;
-	if (hp->CheckDamageThresholdWithinTime(elapsedTime, damageThreshold, timeLimit))
+	if (hp.lock()->CheckDamageThresholdWithinTime(elapsedTime, damageThreshold, timeLimit))
 	{
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Jump));
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Jump));
 	}
 
 	// ダメージモーション対策
 	if (!model->IsPlayAnimation())
 	{
-		owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Anim_Standby, loop, currentAnimationStartSeconds, blendSeconds);
+		model->PlayAnimation(EnemySlime::Anim_Standby, loop, currentAnimationStartSeconds, blendSeconds);
 	}
 }
 
 // 最後にやりたい処理全般
 void IdleState::Exit()
 {
+	std::weak_ptr<HP> hp = owner.lock()->GetComponent<HP>();
+
 	// 逃げる条件初期化
-	hp->ResetOnDamageThresholdTime();
+	hp.lock()->ResetOnDamageThresholdTime();
 }
 void IdleState::End()
 {
@@ -255,13 +269,14 @@ void PursuitState::Enter()
 	//playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1)->GetComponent<Player>();
 
 	--mortionLimit;
+
 	// エネミーアクセス用
-	enemyid = owner.lock()->GetComponent<EnemySlime>();
-	enemyid->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	enemyid.lock()->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
 		EnemySlime::Animation::Anim_Standby, loop,currentAnimationStartSeconds,  blendSeconds);
 
 	// アニメーションルール
-	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Normal);
+	enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Normal);
 
 	// 数秒間追跡するタイマーをランダム設定
 	stateTimer = Mathf::RandomRange(3.0f, 5.0f);
@@ -306,12 +321,15 @@ void PursuitState::Execute(float elapsedTime)
 {
 	// 目標地点をプレイヤー位置に設定
 		// プレイヤーid
+
+	// エネミーアクセス用
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
 	
 	// 目標地点ををプレイヤー位置に設定
 	DirectX::XMFLOAT3 targetPosition = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1)->GetComponent<Transform>()->GetPosition();
 
 
-	enemyid->SetTargetPosition(targetPosition);
+	enemyid.lock()->SetTargetPosition(targetPosition);
 
 	if (mortionLimit < 0)
 	{
@@ -319,7 +337,7 @@ void PursuitState::Execute(float elapsedTime)
 		//mortionLimit = Mathf::RandomRange(3.0f, mortionLimitMax);
 		mortionLimit = rand() % mortionLimitMax + 3;
 		// 限界がきたので休憩
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::IdleBattle));
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::IdleBattle));
 		return;
 	}
 
@@ -327,28 +345,28 @@ void PursuitState::Execute(float elapsedTime)
 	stateTimer -= elapsedTime;
 
 
-	float vx = targetPosition.x - enemyid->GetPosition().x;
-	float vy = targetPosition.y - enemyid->GetPosition().y;
-	float vz = targetPosition.z - enemyid->GetPosition().z;
+	float vx = targetPosition.x - enemyid.lock()->GetPosition().x;
+	float vy = targetPosition.y - enemyid.lock()->GetPosition().y;
+	float vz = targetPosition.z - enemyid.lock()->GetPosition().z;
 	float dist = sqrtf(vx * vx + vy * vy + vz * vz);
 
 	// TODO 03 
 	// 攻撃範囲に入ったとき攻撃ステートへ遷移しなさい
 	if (dist < attackRange)
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Attack));
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Attack));
 
 
 	switch (randamAttack)
 	{
 	case (int)EnemySlime::AttackMode::AssaultAttack:
 	{
-		enemyid->GetStateMachine()->ChangeState(
+		enemyid.lock()->GetStateMachine()->ChangeState(
 			static_cast<int>(EnemySlime::State::Wander));
 		break;
 	}
 	case (int)EnemySlime::AttackMode::JumpStompAttack:
 	{
-		enemyid->GetStateMachine()->ChangeState(
+		enemyid.lock()->GetStateMachine()->ChangeState(
 			static_cast<int>(EnemySlime::State::Jump));
 		break;
 	}
@@ -424,15 +442,14 @@ void PursuitState::End()
 // 初期化
 void JumpState::Enter()
 {
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
 
-	enemyid = owner.lock()->GetComponent<EnemySlime>();
 
-
-	moveid = owner.lock()->GetComponent<Movement>();
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	hpid = owner.lock()->GetComponent<HP>();
+	//moveid = owner.lock()->GetComponent<Movement>();
+	Model* model =  owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
 	// 縄張り
-	enemyid->SetRandomTargetPosition();
+	enemyid.lock()->SetRandomTargetPosition();
 
 	// アニメーション再生
 	model->
@@ -440,7 +457,7 @@ void JumpState::Enter()
 			loop, currentAnimationStartSeconds, blendSeconds,
 			currentAnimationAddSeconds, keyFrameEnd);
 	// アニメーションルール
-	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Reverseplayback);
+	enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Reverseplayback);
 
 	//stateTimer = Mathf::RandomRange(6.0f, 8.0f);
 	//stateTimer = 60.0f;
@@ -456,15 +473,15 @@ void JumpState::Enter()
 		PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1)->GetComponent<Transform>()->GetPosition();
 
 	// もし逃走するならこっち
-	if (hpid->GetIsOverDamageRule())
+	if (hpid.lock()->GetIsOverDamageRule())
 	{
-		targetPosition = { 0,enemyid->GetPosition().y,0 };
-		targetPosition.x += Mathf::RandomRange(-enemyid->GetSearchRange(), enemyid->GetSearchRange());
-		targetPosition.z += Mathf::RandomRange(-enemyid->GetSearchRange(), enemyid->GetSearchRange());
+		targetPosition = { 0,enemyid.lock()->GetPosition().y,0 };
+		targetPosition.x += Mathf::RandomRange(-enemyid.lock()->GetSearchRange(), enemyid.lock()->GetSearchRange());
+		targetPosition.z += Mathf::RandomRange(-enemyid.lock()->GetSearchRange(), enemyid.lock()->GetSearchRange());
 
 		// 一定ダメージ確認解除
 		bool isOverDamageRule = false;
-		hpid->SetIsOverDamageRule(isOverDamageRule);
+		hpid.lock()->SetIsOverDamageRule(isOverDamageRule);
 	}
 
 }
@@ -473,14 +490,19 @@ void JumpState::Execute(float elapsedTime)
 {
 	//stateTimer -= elapsedTime;
 
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
 
 
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
 
-	enemyid->SetTargetPosition(targetPosition);
+
+	enemyid.lock()->SetTargetPosition(targetPosition);
 
 
 	DirectX::XMVECTOR targetPositionVec = DirectX::XMLoadFloat3(&targetPosition);
-	DirectX::XMVECTOR enemyPositionVec = DirectX::XMLoadFloat3(&enemyid->GetPosition());
+	DirectX::XMVECTOR enemyPositionVec = DirectX::XMLoadFloat3(&enemyid.lock()->GetPosition());
 
 	DirectX::XMVECTOR directionVec = DirectX::XMVectorSubtract(targetPositionVec, enemyPositionVec);
 
@@ -494,7 +516,7 @@ void JumpState::Execute(float elapsedTime)
 	//	enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Idle));
 	//}
 	// 目的地にこの半径入ったら
-	float radius = enemyid->GetAttackRightFootRange();
+	float radius = enemyid.lock()->GetAttackRightFootRange();
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = model->GetCurrentANimationSeconds();
@@ -502,31 +524,31 @@ void JumpState::Execute(float elapsedTime)
 	if (animationTime <= 0.8f && !jumpStart)
 	{
 		bool blurCheck = true;
-		enemyid->SetBlurCheck(blurCheck);
+		enemyid.lock()->SetBlurCheck(blurCheck);
 
-		enemyid->CollisionPlayerWithRushEnemy();
+		enemyid.lock()->CollisionPlayerWithRushEnemy();
 
-		moveid->JumpVelocity(jumpSpeed);
+		moveid.lock()->JumpVelocity(jumpSpeed);
 
 		jumpStart = true;
 
 		return;
 	}
 
-	if (!moveid->GetOnLadius())
+	if (!moveid.lock()->GetOnLadius())
 	{
-		moveid->Move(direction, moveSpeed, elapsedTime);
-		moveid->Turn(direction, turnSpeed, elapsedTime);
+		moveid.lock()->Move(direction, moveSpeed, elapsedTime);
+		moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
 	}
 
-	if (moveid->GetOnLadius() && jumpStart)
+	if (moveid.lock()->GetOnLadius() && jumpStart)
 	{
 		
 		//enemyid->InputProjectile();
-		enemyid->InputImpact(enemyid->GetPosition());
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Idle));
+		enemyid.lock()->InputImpact(enemyid.lock()->GetPosition());
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Idle));
 	}
-	enemyid->CollisitionNodeVsPlayer("boss_left_foot1",enemyid->GetRadius());
+	enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1",enemyid.lock()->GetRadius());
 }
 // 終了処理
 void JumpState::Exit()
@@ -544,21 +566,22 @@ void JumpState::End()
 // 初期化
 void AttackState::Enter()
 {
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
 
-	enemyid = owner.lock()->GetComponent<EnemySlime>();
+	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
 
-	hpid = owner.lock()->GetComponent<HP>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
 	currentAnimationStartSeconds = 0.0f;
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Attack, loop, currentAnimationStartSeconds, blendSeconds);
+	model->PlayAnimation(EnemySlime::Animation::Anim_Attack, loop, currentAnimationStartSeconds, blendSeconds);
 	
 
 	// アニメーションルール
-	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Normal);
+	enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Normal);
 
 		// ライフ
 	int life;
-	life = hpid->GetLife();
+	life = hpid.lock()->GetLife();
 
 	switch (life)
 	{
@@ -585,7 +608,8 @@ void AttackState::Enter()
 // update
 void AttackState::Execute(float elapsedTime)
 {
-
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
 	// 攻撃モーションが終了したとき追跡ステートへ移行
 	if (!owner.lock()->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation() && attackMemory < attackMemoryMax)
@@ -600,7 +624,7 @@ void AttackState::Execute(float elapsedTime)
 	// 繰り返し踏みつけ最後
 	else if (attackMemory == attackMemoryMax)
 	{
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
 		
 		int attackMemoryStart = 0;
 		attackMemory = attackMemoryStart;
@@ -611,7 +635,7 @@ void AttackState::Execute(float elapsedTime)
 	if (animationTime >= 1.0f && animationTime <= 2.0f)
 	{
 		// 左足ノードとプレイヤーの衝突処理
-		enemyid->CollisitionNodeVsPlayer("boss_left_foot1", 2);
+		enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1", 2);
 	}
 
 	if (animationTime >= 1.30f && animationTime <= 1.33f)
@@ -622,7 +646,7 @@ void AttackState::Execute(float elapsedTime)
 			node->worldTransform._42,
 			node->worldTransform._43
 		);
-		enemyid->InputImpact(pos);
+		enemyid.lock()->InputImpact(pos);
 	}
 
 
@@ -641,20 +665,20 @@ void AttackState::End()
 // 初期設定
 void AttackShotState::Enter()
 {
-	enemyid = owner.lock()->GetComponent<EnemySlime>();
-	//modelid = owner.lock()->GetComponent<ModelControll>();
-	hpid = owner.lock()->GetComponent<HP>();
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
 	
 
 	currentAnimationStartSeconds = 0.0f;
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Shot, loop, currentAnimationStartSeconds, blendSeconds);
+	model->PlayAnimation(EnemySlime::Animation::Anim_Shot, loop, currentAnimationStartSeconds, blendSeconds);
 
 	// アニメーションルール
-	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Normal);
+	enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Normal);
 
 	// ライフ
 	int life;
-	life = hpid->GetLife();
+	life = hpid.lock()->GetLife();
 
 	switch (life)
 	{
@@ -683,30 +707,33 @@ void AttackShotState::Enter()
 // 更新処理
 void AttackShotState::Execute(float elapsedTime)
 {
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
 
 	// 攻撃モーションが終了したとき追跡ステートへ移行
-	if (!owner.lock()->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
+	if (model->IsPlayAnimation())
 	{
 		// アニメ再生
 		currentAnimationStartSeconds = 0.1f;
-		owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Shot, loop, currentAnimationStartSeconds ,blendSeconds);
+		model->PlayAnimation(EnemySlime::Animation::Anim_Shot, loop, currentAnimationStartSeconds ,blendSeconds);
 		++attackCount;
 
 
 	}
 	if (attackCount >= attackCountMax)
 	{
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
 		attackCount = 0;
 	}
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = owner.lock()->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	float animationTime = model->GetCurrentANimationSeconds();
 	// efekt設定
 	if (animationTime >= 0.1f && animationTime <= 0.11f)
 	{
 		//	// 左足ノードとプレイヤーの衝突処理
-		enemyid->InputProjectile();
+		enemyid.lock()->InputProjectile();
 
 	}
 
@@ -738,28 +765,37 @@ void AttackShotState::End()
 // 初期処理
 void AttackShotThrowingState::Enter()
 {
-	enemyid = owner.lock()->GetComponent<EnemySlime>();
-	transformid = owner.lock()->GetComponent<Transform>();
+	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+
+	//std::shared_ptr<Transform> transformid = nullptr;
+
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	//std::shared_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	currentAnimationStartSecondsf = 0.0f;
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayReverseAnimation(EnemySlime::Animation::Anim_jewelattack, loop,currentAnimationStartSecondsf,blendSeconds);
+	model->PlayReverseAnimation(EnemySlime::Animation::Anim_jewelattack, loop,currentAnimationStartSecondsf,blendSeconds);
 	// アニメーションルール
-	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Reverseplayback);
+	enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Reverseplayback);
 
 	// 投げる
 	turnPermission = false;
 
 	// 地面判定一度消す
 	bool pushuThrow = false;
-	enemyid->SetPushuThrow(pushuThrow);
+	enemyid.lock()->SetPushuThrow(pushuThrow);
 
 }
 // 更新処理
 void AttackShotThrowingState::Execute(float elapsedTime)
 {
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
 	// 正面
 	//DirectX::XMFLOAT3 direction;
-	DirectX::XMFLOAT3 angle = transformid->GetAngle();
+	DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
 	// プレイヤーid
 	std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
 	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid->GetComponent<Transform>()->GetPosition());
@@ -789,7 +825,7 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = owner.lock()->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	float animationTime = model->GetCurrentANimationSeconds();
 	// 宝石取って設定
 	if (animationTime <= 3.9f && animationTime >= 3.89f && !turnPermission)
 	{
@@ -801,7 +837,7 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 
 		 
 		//	遠距離攻撃登録
-		enemyid->InputThrowingRuby(playerid->GetComponent<Transform>()->GetPosition());
+		enemyid.lock()->InputThrowingRuby(playerid->GetComponent<Transform>()->GetPosition());
 
 		
 
@@ -810,8 +846,8 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 	if (animationTime <= 3.6f && animationTime >= 3.0f && !turnPermission)
 	{
 
-		enemyid->SetTargetPosition(playerid->GetComponent<Transform>()->GetPosition());
-		enemyid->TurnToTarget(elapsedTime, turnSpeed);
+		enemyid.lock()->SetTargetPosition(playerid->GetComponent<Transform>()->GetPosition());
+		enemyid.lock()->TurnToTarget(elapsedTime, turnSpeed);
 
 
 
@@ -825,9 +861,9 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 				
 				projectileManager->GetComponent<Transform>()->SetPosition(
 					{ 
-						transformid->GetPosition().x,
-						transformid->GetPosition().y + transformid->GetHeight(),
-						transformid->GetPosition().z
+						transformid.lock()->GetPosition().x,
+						transformid.lock()->GetPosition().y + transformid.lock()->GetHeight(),
+						transformid.lock()->GetPosition().z
 
 					});
 
@@ -867,16 +903,16 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 	{
 		// 強制アニメーション終了
 		bool end = true;
-		owner.lock()->GetComponent<ModelControll>()->GetModel()->SetAnimationEndFlag(end);
+		model->SetAnimationEndFlag(end);
 		//bool blend = false;
 
-		owner.lock()->GetComponent<ModelControll>()->GetModel()->ReverseplaybackAnimation(elapsedTime);
+		model->ReverseplaybackAnimation(elapsedTime);
 		// アニメーション再生時間
 		currentAnimationStartSecondsf = 0.7f;
 
-		owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Shot, loop, currentAnimationStartSecondsf, blendSeconds);
+		model->PlayAnimation(EnemySlime::Animation::Anim_Shot, loop, currentAnimationStartSecondsf, blendSeconds);
 		// アニメーションルール
-		enemyid->SetUpdateAnim(EnemySlime::UpAnim::Normal);
+		enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Normal);
 
 
 		turnPermission = true;
@@ -886,7 +922,7 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 	{
 		// 地面判定発生
 		bool pushuThrow = true;
-		enemyid->SetPushuThrow(pushuThrow);
+		enemyid.lock()->SetPushuThrow(pushuThrow);
 		// 球発射
 		bool movementCheck = true;
 		for (int i = 0; i < ProjectileManager::Instance().GetProjectileCount(); ++i)
@@ -899,7 +935,7 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 		}
 		
 		// 終了アニメーション
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
 	}
 
 
@@ -919,16 +955,17 @@ void AttackShotThrowingState::End()
 
 void DamageState::Enter()
 {
-	enemyid = owner.lock()->GetComponent<EnemySlime>();
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
 
-	owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->
+	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
+	Model* momdel = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	momdel->
 		PlayAnimation(
 			EnemySlime::Animation::Anim_Die, loop,
 			currentAnimationStartSeconds,currentAnimationAddSeconds,
 			keyFrameEnd);
 	// アニメーションルール
-	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Normal);
+	enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Normal);
 
 	stateTimer = stateTimerMax;
 
@@ -939,8 +976,10 @@ void DamageState::Execute(float elapsedTime)
 
 	--stateTimer;
 
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+
 		if (stateTimer < stateTimerEnd)
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Idle));
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Idle));
 
 }
 
@@ -957,14 +996,16 @@ void DamageState::End()
 // 混乱開始
 void ConfusionState::Enter()
 {
-	enemyid = owner.lock()->GetComponent<EnemySlime>();
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
+	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
+	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Die, loop, currentAnimationStartSeconds, blendSeconds,
+	model->PlayAnimation(EnemySlime::Animation::Anim_Die, loop, currentAnimationStartSeconds, blendSeconds,
 		currentAnimationAddSeconds, keyFrameEnd);
 	// アニメーションルール
-	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Normal);
+	enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Normal);
 
 	// ステート待機時間
 	stateTimer = stateTimerMax;
@@ -977,10 +1018,13 @@ void ConfusionState::Execute(float elapsedTime)
 {
 	stateTimer -= elapsedTime;
 
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
 	if (stateTimer < stateTimerEnd)
 	{
 		// ステート変更
-		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Pursuit));
 	}
 
 	//// 任意のアニメーション再生区間でのみ衝突判定処理をする
@@ -993,8 +1037,8 @@ void ConfusionState::Execute(float elapsedTime)
 
 	//}
 
-	if (!owner.lock()->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
-		owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Die, loop, currentAnimationStartSeconds, blendSeconds,
+	if (!model->IsPlayAnimation())
+		model->PlayAnimation(EnemySlime::Animation::Anim_Die, loop, currentAnimationStartSeconds, blendSeconds,
 			currentAnimationAddSeconds, keyFrameEnd);
 
 }
@@ -1012,16 +1056,18 @@ void ConfusionState::End()
 
 void DeathState::Enter()
 {
-	enemyid = owner.lock()->GetComponent<EnemySlime>();
-	transformid = owner.lock()->GetComponent<Transform>();
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	//std::shared_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
+	Model* model;
 
-	owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->
+	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
+	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	model->
 		PlayAnimation(
 			EnemySlime::Animation::Anim_Die, loop);
 	// アニメーションルール
-	enemyid->SetUpdateAnim(EnemySlime::UpAnim::Normal);
+	enemyid.lock()->SetUpdateAnim(EnemySlime::UpAnim::Normal);
 
 	stateTimer = 3;
 
@@ -1036,12 +1082,16 @@ void DeathState::Execute(float elapsedTime)
 {
 
 	stateTimer -= elapsedTime; 
+
+	std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+
 	// 死亡時はそれっぽいカメラアングルで死亡
 // 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
 	MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-	DirectX::XMFLOAT3 position = transformid->GetPosition();
-	DirectX::XMFLOAT3 angle = transformid->GetAngle();
+	DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+	DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
 
 
 
@@ -1055,7 +1105,7 @@ void DeathState::Execute(float elapsedTime)
 	if (stateTimer < 0)
 	{
 
-		enemyid->SetClearCheck(clearCheck);
+		enemyid.lock()->SetClearCheck(clearCheck);
 	}
 }
 
@@ -1075,47 +1125,53 @@ void PlayerIdleState::Enter()
 {
 	//playerid = owner.lock()->GetComponent<Player>();
 
-	moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
 
 	//modelid = owner.lock()->GetComponent<ModelControll>();
 
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+	model->PlayAnimation(
 		Player::Anim_Idle, loop,currentAnimationStartSeconds,blendSeconds
 	);
 	
 	// アニメーションルール
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 	
 
 	// 落ちる
 	bool stop = false;
-	moveid->SetStopMove(stop);
+	moveid.lock()->SetStopMove(stop);
 }
 
 void PlayerIdleState::Execute(float elapsedTime)
 {
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
 	// ロックオン処理
-	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+	playerid.lock()->UpdateCameraState(elapsedTime);
 
 	// 移動入力処理
-	if (owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	if (playerid.lock()->InputMove(elapsedTime))
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 		//TransitionMoveState();
 	}
 
 	// 反射入力処理
-	if (owner.lock()->GetComponent<Player>()->InputAvoidance())
+	if (playerid.lock()->InputAvoidance())
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Reflection));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Reflection));
 
 	}
 
 
 	// ジャンプ入力処理
-	if (owner.lock()->GetComponent<Player>()->InputJump())
+	if (playerid.lock()->InputJump())
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Jump));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Jump));
 		//TransitionJumpState();
 	}
 
@@ -1137,12 +1193,18 @@ void PlayerMovestate::Enter()
 {
 	//owner.lock()->GetComponent<Player>() = owner.lock()->GetComponent<Player>();
 
-	moveid = owner.lock()->GetComponent<Movement>();
+
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+
 
 	//modelid = owner.lock()->GetComponent<ModelControll>();
 
 		//Player::Anim_Move, loop,
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+	model->PlayAnimation(
 		Player::Anim_Running, loop,
 		currentAnimationStartSeconds, blendSeconds
 	);
@@ -1155,42 +1217,49 @@ void PlayerMovestate::Enter()
 
 
 	// アニメーションルール
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
 
 	// 落ちる
 	bool stop = false;
-	moveid->SetStopMove(stop);
+	moveid.lock()->SetStopMove(stop);
 }
 
 void PlayerMovestate::Execute(float elapsedTime)
 {
+
+
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	//std::shared_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
 	// 移動値
-	owner.lock()->GetComponent<Player>()->GetMoveVec(elapsedTime);
+	playerid.lock()->GetMoveVec(elapsedTime);
 
 	// ロックオン処理
-	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+	playerid.lock()->UpdateCameraState(elapsedTime);
 
 	// 移動入力処理
-	if (!owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	if (!playerid.lock()->InputMove(elapsedTime))
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 		//TransitionIdleState();
 	}
 
 
 	// 回避入力処理
-	if (owner.lock()->GetComponent<Player>()->InputAvoidance())
+	if (playerid.lock()->InputAvoidance())
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 
 	}
 
 	// ジャンプ入力処理
-	if (owner.lock()->GetComponent<Player>()->InputJump())
+	if (playerid.lock()->InputJump())
 	{
 
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Jump));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Jump));
 		
 	}
 
@@ -1210,55 +1279,65 @@ void PlayerMovestate::End()
 
 void PlayerJumpState::Enter()
 {
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	//model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	//moveid = owner.lock()->GetComponent<Movement>();
 
 	model->PlayAnimation(
 		Player::Anim_Jump, loop,
 	currentAnimationStartSeconds, blendSeconds);
 
 	// アニメーションルール
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
 
 	// 落ちる
 	bool stop = false;
-	moveid->SetStopMove(stop);
+	moveid.lock()->SetStopMove(stop);
 }
 
 void PlayerJumpState::Execute(float elapsedTime)
 {
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	//Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
 
 	// ロックオン処理
-	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+	playerid.lock()->UpdateCameraState(elapsedTime);
 
 	// 移動
-	if (owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	if (playerid.lock()->InputMove(elapsedTime))
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 	}
 
 
 	// ジャンプ入力処理
-	if (owner.lock()->GetComponent<Player>()->InputJump())
+	if (playerid.lock()->InputJump())
 	{
 		
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::JumpFlip));
 	}
 
 
 
 
 	// 回避
-	if (owner.lock()->GetComponent<Player>()->InputAvoidance())
+	if (playerid.lock()->InputAvoidance())
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 	}
 
 	// 着地
-	if (moveid->GetOnLadius())
+	if (moveid.lock()->GetOnLadius())
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Land));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Land));
 	}
 
 
@@ -1279,8 +1358,12 @@ void PlayerJumpState::End()
 
 void PlayerLandState::Enter()
 {
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	//std::shared_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	//model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	//moveid = owner.lock()->GetComponent<Movement>();
 	//moveid->SetOnLadius(false);
 
 	model->PlayAnimation(
@@ -1289,35 +1372,39 @@ void PlayerLandState::Enter()
 	);
 
 	// アニメーションルール
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 }
 
 void PlayerLandState::Execute(float elapsedTime)
 {
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
 	// ロックオン処理
-	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+	playerid.lock()->UpdateCameraState(elapsedTime);
 
 	//// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	//float animationTime = model->GetCurrentANimationSeconds();
 	//// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 
 	// 歩き
-	if (owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	if (playerid.lock()->InputMove(elapsedTime))
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 	}
 
 		// 回避
-	if (owner.lock()->GetComponent<Player>()->InputAvoidance())
+	if (playerid.lock()->InputAvoidance())
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 	}
 
 	// 待機
 	if (!model->IsPlayAnimation())
 	{
 		
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 
 	}
@@ -1335,7 +1422,12 @@ void PlayerLandState::End()
 
 void PlayerJumpFlipState::Enter()
 {
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	//std::shared_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	/*model = owner.lock()->GetComponent<ModelControll>()->GetModel();*/
 	//moveid = owner.lock()->GetComponent<Movement>();
 
 	model->PlayAnimation(
@@ -1343,15 +1435,19 @@ void PlayerJumpFlipState::Enter()
 		currentAnimationStartSeconds , blendSeconds);
 
 	// アニメーションルール
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 }
 
 void PlayerJumpFlipState::Execute(float elapsedTime)
 {
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
 	// ロックオン処理
-	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+	playerid.lock()->UpdateCameraState(elapsedTime);
 	// 移動
-	if (owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	if (playerid.lock()->InputMove(elapsedTime))
 	{
 		
 		bool afterimagemove = true;
@@ -1360,13 +1456,13 @@ void PlayerJumpFlipState::Execute(float elapsedTime)
 	if (!model->IsPlayAnimation())
 	{
 
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Jump));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Jump));
 	}
 
 	// 回避
-	if (owner.lock()->GetComponent<Player>()->InputAvoidance())
+	if (playerid.lock()->InputAvoidance())
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 	}
 
 }
@@ -1385,18 +1481,21 @@ void PlayerJumpFlipState::End()
 
 void PlayerQuickJabState::Enter()
 {
-	
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	moveid = owner.lock()->GetComponent<Movement>();
-	transformid = owner.lock()->GetComponent<Transform>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	//model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	//moveid = owner.lock()->GetComponent<Movement>();
+	//transformid = owner.lock()->GetComponent<Transform>();
 
 	//std::shared_ptr<Player> playerId = owner.lock()->GetComponent<Player>();
 
 		//Player::Anim_Slash, loop,
 		// １回
 	
-	if (!moveid->GetOnLadius())
+	if (!moveid.lock()->GetOnLadius())
 	{
 		// 再生開始時間 
 		float currentAnimationStartSeconds = 0.6f;
@@ -1431,7 +1530,7 @@ void PlayerQuickJabState::Enter()
 		++attackMemory;
 
 		// アニメーション再生
-		owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Doble);
+		playerid.lock()->SetUpdateAnim(Player::UpAnim::Doble);
 
 		// エフェクト竜巻
 		//areWork = std::make_unique<Effect>("Data/Effect/tornade.efk");
@@ -1461,7 +1560,7 @@ void PlayerQuickJabState::Enter()
 		++attackMemory;
 
 		// アニメーション再生
-		owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+		playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 	}
 	
 
@@ -1483,7 +1582,7 @@ void PlayerQuickJabState::Enter()
 	//moveid->SetGravity(gravity);
 	// 重力オフ
 	bool stopFall = true;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 
 
@@ -1506,13 +1605,21 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 {
 	GamePad& gamePad = Input::Instance().GetGamePad();
 
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+
 	// ロックオン処理
-	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+	playerid.lock()->UpdateCameraState(elapsedTime);
 
 
 
-	if (owner.lock()->GetComponent<Player>()->InputAttack() && 
-		owner.lock()->GetComponent<Player>()->GetSelectCheck() ==
+	if (playerid.lock()->InputAttack() && 
+		playerid.lock()->GetSelectCheck() ==
 		(int)Player::CommandAttack::Attack)
 	{
 		// コマンド確認2弾攻撃
@@ -1524,17 +1631,17 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	}
 
 	// 回避
-	if (owner.lock()->GetComponent<Player>()->InputAvoidance() && owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	if (playerid.lock()->InputAvoidance() && playerid.lock()->InputMove(elapsedTime))
 	{
 		bool stop = false;
-		moveid->SetStopMove(stop);
+		moveid.lock()->SetStopMove(stop);
 
 		DirectX::XMFLOAT3 vec;
-		vec = owner.lock()->GetComponent<Player>()->GetMoveVec(elapsedTime);
+		vec = playerid.lock()->GetMoveVec(elapsedTime);
 
-		moveid->Turn(vec, turnSpeed,elapsedTime);
+		moveid.lock()->Turn(vec, turnSpeed,elapsedTime);
 
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 
 		button = false;
 		buttonSeconde = false;
@@ -1545,7 +1652,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	DirectX::XMVECTOR Vector;
 	DirectX::XMVECTOR LengthSq;
 
-	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner.lock()->GetComponent<Transform>()->GetPosition());
+	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&transformid.lock()->GetPosition());
 	EnemyManager& enemyManager = EnemyManager::Instance();
 	int enemyCount = enemyManager.GetEnemyCount();
 	for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
@@ -1599,19 +1706,19 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 
 			// 距離
 			if (length < attackCheckRange && length > attackCheckRangeMin
-				&& moveid->TurnCheck(
+				&& moveid.lock()->TurnCheck(
 					vector, angleRange, elapsedTime)&&
-				moveid->GetOnLadius())
+				moveid.lock()->GetOnLadius())
 			{
 				//bool stop = false;
 				//moveid->SetStopMove(stop);
 				bool stop = false;
-				moveid->SetStopMove(stop);
+				moveid.lock()->SetStopMove(stop);
 				// 正面
-				if (moveid->Turn(vector, turnSpeed, elapsedTime))
+				if (moveid.lock()->Turn(vector, turnSpeed, elapsedTime))
 				{
 
-					moveid->Move(vector, speed, elapsedTime);
+					moveid.lock()->Move(vector, speed, elapsedTime);
 					
 				}
 				//stop = true;
@@ -1622,7 +1729,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 
 
 				bool stop = true;
-				moveid->SetStopMove(stop);
+				moveid.lock()->SetStopMove(stop);
 
 				rotateCheck = true;
 			}
@@ -1634,7 +1741,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	if (attackMemory > attackMemoryMax)
 	{
 		// 入力確認でステート変更
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 
 		// 攻撃最大値調整
@@ -1644,7 +1751,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 
 	
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = moveid->GetOnLadius() ? 
+	float animationTime = moveid.lock()->GetOnLadius() ? 
 		model->GetCurrentANimationSeconds() : 
 		model->GetCurrentAnimationSecondsUpeer();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
@@ -1656,32 +1763,35 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 		// １回目の攻撃なら
 		oneAttackCheck = false;
 
-		owner.lock()->GetComponent<Player>()->SetAttackCollisionFlag(false);
+		playerid.lock()->SetAttackCollisionFlag(false);
 		deleteCheck = false;
 		// 入力確認でステート変更
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(button  ? Player::State::SideCut : Player::State::Move));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(button  ? Player::State::SideCut : Player::State::Move));
 		return;
 	}
 
 
 
-	owner.lock()->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+	playerid.lock()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 }
 
 void PlayerQuickJabState::Exit()
 {
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
 	// 移動の停止
-	moveid->SetGravity(
-		owner.lock()->GetComponent<Player>()->GetGravity());
+	moveid.lock()->SetGravity(
+		playerid.lock()->GetGravity());
 
 
 	// 歩き許可
 	bool stopMove = false;
-	moveid->SetStopMove(stopMove);
+	moveid.lock()->SetStopMove(stopMove);
 
 	// 重力オフ
 	bool stopFall = false;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 	if (deleteCheck )
 	{
 		// ダメージ食らったかどうか
@@ -1705,13 +1815,14 @@ void PlayerSideCutState::Enter()
 {
 	bool loop = false;
 
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	moveid = owner.lock()->GetComponent<Movement>();
-	transformid = owner.lock()->GetComponent<Transform>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	// 二回
 
-	if (!moveid->GetOnLadius())
+	if (!moveid.lock()->GetOnLadius())
 	{
 		// 再生開始時間 
 		float currentAnimationStartSeconds = 0.6f;
@@ -1745,7 +1856,7 @@ void PlayerSideCutState::Enter()
 		++attackMemory;
 
 		// アニメーション再生
-		owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Doble);
+		playerid.lock()->SetUpdateAnim(Player::UpAnim::Doble);
 	}
 	else
 	{
@@ -1769,7 +1880,7 @@ void PlayerSideCutState::Enter()
 		++attackMemory;
 
 		// アニメーション再生
-		owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	    playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 	}
 		//// 再生開始
 		//currentAnimationStartSeconds = 0.2f;
@@ -1802,7 +1913,7 @@ void PlayerSideCutState::Enter()
 	//moveid->SetGravity(gravity);
 	// 重力オフ
 	bool stopFall = true;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 	// 移動の停止
 	//bool stopMove = true;
@@ -1819,8 +1930,14 @@ void PlayerSideCutState::Execute(float elapsedTime)
 {
 	GamePad& gamePad = Input::Instance().GetGamePad();
 
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+
 	// ロックオン処理
-	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+	playerid.lock()->UpdateCameraState(elapsedTime);
 
 
 
@@ -1833,8 +1950,8 @@ void PlayerSideCutState::Execute(float elapsedTime)
 
 	//moveid->Move(direction, attackSpeed, elapsedTime);
 
-	if (owner.lock()->GetComponent<Player>()->InputAttack() &&
-		owner.lock()->GetComponent<Player>()->GetSelectCheck() ==
+	if (playerid.lock()->InputAttack() &&
+		playerid.lock()->GetSelectCheck() ==
 		(int)Player::CommandAttack::Attack)
 	{
 		// コマンド確認3弾攻撃
@@ -1847,17 +1964,17 @@ void PlayerSideCutState::Execute(float elapsedTime)
 	}
 
 	// 回避
-	if (owner.lock()->GetComponent<Player>()->InputAvoidance() && owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	if (playerid.lock()->InputAvoidance() && playerid.lock()->InputMove(elapsedTime))
 	{
 		bool stop = false;
-		moveid->SetStopMove(stop);
+		moveid.lock()->SetStopMove(stop);
 
 		DirectX::XMFLOAT3 vec;
 		vec = owner.lock()->GetComponent<Player>()->GetMoveVec(elapsedTime);
 
-		moveid->Turn(vec, turnSpeed, elapsedTime);
+		moveid.lock()->Turn(vec, turnSpeed, elapsedTime);
 
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 
 		button = false;
 		buttonSeconde = false;
@@ -1869,7 +1986,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 	DirectX::XMVECTOR Vector;
 	DirectX::XMVECTOR LengthSq;
 
-	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner.lock()->GetComponent<Transform>()->GetPosition());
+	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&transformid.lock()->GetPosition());
 	EnemyManager& enemyManager = EnemyManager::Instance();
 	int enemyCount = enemyManager.GetEnemyCount();
 	for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
@@ -1889,9 +2006,9 @@ void PlayerSideCutState::Execute(float elapsedTime)
 	if (length > attackCheckRangeMin)
 	{
 		bool stop = false;
-		moveid->SetStopMove(stop);
+		moveid.lock()->SetStopMove(stop);
 
-		angle = transformid->GetAngle();
+		angle = transformid.lock()->GetAngle();
 
 		DirectX::XMFLOAT3 direction;
 		direction.x = sinf(angle.y) * 6;
@@ -1900,16 +2017,16 @@ void PlayerSideCutState::Execute(float elapsedTime)
 
 		//moveid->Move(direction, attackSpeed, elapsedTime);
 	}
-	else if (!moveid->GetOnLadius())
+	else if (!moveid.lock()->GetOnLadius())
 	{
 	
 		bool stop = true;
-		moveid->SetStopMove(stop);
+		moveid.lock()->SetStopMove(stop);
 
 	}
 
 	// 回転
-	if (!rotateCheck && !owner.lock()->GetComponent<Player>()->InputAvoidance())
+	if (!rotateCheck && !playerid.lock()->InputAvoidance())
 	{
 		//DirectX::XMVECTOR Vector;
 		//DirectX::XMVECTOR LengthSq;
@@ -1931,17 +2048,17 @@ void PlayerSideCutState::Execute(float elapsedTime)
 		//	DirectX::XMStoreFloat(&length, LengthSq);
 			// 距離
 			if (length < attackCheckRange && length > attackCheckRangeMin
-				&& moveid->TurnCheck(
+				&& moveid.lock()->TurnCheck(
 					vector, angleRange, elapsedTime))
 			{
 				//bool stop = false;
 				//moveid->SetStopMove(stop);
 
 				// 正面
-				if (moveid->Turn(vector, turnSpeed, elapsedTime))
+				if (moveid.lock()->Turn(vector, turnSpeed, elapsedTime))
 				{
 
-					moveid->Move(vector, speed, elapsedTime);
+					moveid.lock()->Move(vector, speed, elapsedTime);
 
 				}
 				//stop = true;
@@ -1963,7 +2080,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = moveid->GetOnLadius() ?
+	float animationTime = moveid.lock()->GetOnLadius() ?
 		model->GetCurrentANimationSeconds() :
 		model->GetCurrentAnimationSecondsUpeer();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
@@ -1973,36 +2090,39 @@ void PlayerSideCutState::Execute(float elapsedTime)
 	// 2撃目
 	if (animationTime >= 1.1f)
 	{
-		owner.lock()->GetComponent<Player>()->SetAttackCollisionFlag(false);
+		playerid.lock()->SetAttackCollisionFlag(false);
 		deleteCheck = false;
 
 
 
 		// 入力確認でステート変更
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(buttonSeconde ? Player::State::CycloneStrike : Player::State::Move));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(buttonSeconde ? Player::State::CycloneStrike : Player::State::Move));
 
 		return;
 	}
 
 
-	owner.lock()->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+	playerid.lock()->CollisionNodeVsEnemies("mixamorig:LeftHand",playerid.lock()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 
 }
 
 void PlayerSideCutState::Exit()
 {
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
 	// 移動の停止
-	moveid->SetGravity(
-		owner.lock()->GetComponent<Player>()->GetGravity());
+	moveid.lock()->SetGravity(
+		playerid.lock()->GetGravity());
 
 
 	// 歩き許可
 	bool stopMove = false;
-	moveid->SetStopMove(stopMove);
+	moveid.lock()->SetStopMove(stopMove);
 
 	// 重力オフ
 	bool stopFall = false;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 	
 }
 
@@ -2017,12 +2137,14 @@ void PlayerCycloneStrikeState::Enter()
 {
 	bool loop = false;
 
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	moveid = owner.lock()->GetComponent<Movement>();
-	transformid = owner.lock()->GetComponent<Transform>();
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 
-	if (!moveid->GetOnLadius())
+	if (!moveid.lock()->GetOnLadius())
 	{
 		// 再生開始時間 
 		float currentAnimationStartSeconds = 0.6f;
@@ -2056,7 +2178,7 @@ void PlayerCycloneStrikeState::Enter()
 		++attackMemory;
 
 		// アニメーション再生
-		owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Doble);
+		playerid.lock()->SetUpdateAnim(Player::UpAnim::Doble);
 	}
 	else
 	{
@@ -2080,7 +2202,7 @@ void PlayerCycloneStrikeState::Enter()
 		++attackMemory;
 
 		// アニメーション再生
-		owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+		playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 	}
 		//// 再生開始
 		//currentAnimationStartSeconds = 0.7f;
@@ -2110,7 +2232,7 @@ void PlayerCycloneStrikeState::Enter()
 
 	// 重力オフ
 	bool stopFall = true;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 	//// 移動の停止
 	//bool stopMove = true;
@@ -2127,8 +2249,15 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 {
 	GamePad& gamePad = Input::Instance().GetGamePad();
 
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+
+
 	// ロックオン処理
-	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+	playerid.lock()->UpdateCameraState(elapsedTime);
 
 
 	//angle = transformid->GetAngle();
@@ -2141,9 +2270,9 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	//moveid->Move(direction, attackSpeed, elapsedTime);
 
 	// 回避
-	if (owner.lock()->GetComponent<Player>()->InputAvoidance())
+	if (playerid.lock()->InputAvoidance())
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 
 		button = false;
 		buttonSeconde = false;
@@ -2153,7 +2282,7 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	DirectX::XMVECTOR Vector;
 	DirectX::XMVECTOR LengthSq;
 
-	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner.lock()->GetComponent<Transform>()->GetPosition());
+	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&transformid.lock()->GetPosition());
 	EnemyManager& enemyManager = EnemyManager::Instance();
 	int enemyCount = enemyManager.GetEnemyCount();
 	for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
@@ -2173,9 +2302,9 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	if (length > attackCheckRangeMin)
 	{
 		bool stop = false;
-		moveid->SetStopMove(stop);
+		moveid.lock()->SetStopMove(stop);
 
-		angle = transformid->GetAngle();
+		angle = transformid.lock()->GetAngle();
 
 		DirectX::XMFLOAT3 direction;
 		direction.x = sinf(angle.y) * 6;
@@ -2184,11 +2313,11 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 
 		//moveid->Move(direction, attackSpeed, elapsedTime);
 	}
-	else if (!moveid->GetOnLadius())
+	else if (!moveid.lock()->GetOnLadius())
 	{
 
 		bool stop = true;
-		moveid->SetStopMove(stop);
+		moveid.lock()->SetStopMove(stop);
 
 	}
 
@@ -2198,17 +2327,17 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 
 			// 距離
 			if (length < attackCheckRange && length > attackCheckRangeMin
-				&& moveid->TurnCheck(
+				&& moveid.lock()->TurnCheck(
 					vector, angleRange, elapsedTime))
 			{
 				//bool stop = false;
 				//moveid->SetStopMove(stop);
 
 				// 正面
-				if (moveid->Turn(vector, turnSpeed, elapsedTime))
+				if (moveid.lock()->Turn(vector, turnSpeed, elapsedTime))
 				{
 
-					moveid->Move(vector, speed, elapsedTime);
+					moveid.lock()->Move(vector, speed, elapsedTime);
 
 				}
 				//stop = true;
@@ -2230,7 +2359,7 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = moveid->GetOnLadius() ?
+	float animationTime = moveid.lock()->GetOnLadius() ?
 		model->GetCurrentANimationSeconds() :
 		model->GetCurrentAnimationSecondsUpeer();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
@@ -2239,36 +2368,40 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	// 3撃目
 	if (animationTime >= 2.7f )
 	{
-		owner.lock()->GetComponent<Player>()->SetAttackCollisionFlag(false);
+		playerid.lock()->SetAttackCollisionFlag(false);
 		deleteCheck = false;
 
 
 
 		// 入力確認でステート変更
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 		return;
 	}
 
 
-	owner.lock()->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
+	playerid.lock()->CollisionNodeVsEnemies("mixamorig:LeftHand", playerid.lock()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 
 }
 
 void PlayerCycloneStrikeState::Exit()
 {
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
 	// 移動の停止
-	moveid->SetGravity(
-		owner.lock()->GetComponent<Player>()->GetGravity());
+	moveid.lock()->SetGravity(
+		playerid.lock()->GetGravity());
 
 
 
 	// 歩き許可
 	bool stopMove = false;
-	moveid->SetStopMove(stopMove);
+	moveid.lock()->SetStopMove(stopMove);
 
 	// 重力オフ
 	bool stopFall = false;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 }
 
@@ -2281,15 +2414,20 @@ void PlayerCycloneStrikeState::End()
 
 void PlayerSpecialAttackState::Enter()
 {
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	transformid = owner.lock()->GetComponent<Transform>();
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	moveid = owner.lock()->GetComponent<Movement>();
+	//transformid = owner.lock()->GetComponent<Transform>();
+	//model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	//moveid = owner.lock()->GetComponent<Movement>();
 
 
 
-	enemyTransform = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>();
-	enemyHpId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<HP>();
+	std::weak_ptr<Transform> enemyTransform = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>();
+	std::weak_ptr<HP> enemyHpId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<HP>();
 
 	lightning = std::make_unique<Effect>("Data/Effect/sunder.efk");
 	lightningAttack = std::make_unique<Effect>("Data/Effect/HitThunder.efk");
@@ -2298,7 +2436,7 @@ void PlayerSpecialAttackState::Enter()
 
 
 
-	if (!moveid->GetOnLadius())
+	if (!moveid.lock()->GetOnLadius())
 	{
 		// 再生開始時間 
 		float currentAnimationStartSeconds = 0.6f;
@@ -2333,7 +2471,7 @@ void PlayerSpecialAttackState::Enter()
 		);
 
 		// アニメーション上半身下半身再生
-		owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Doble);
+		playerid.lock()->SetUpdateAnim(Player::UpAnim::Doble);
 	}
 	else
 	{
@@ -2355,7 +2493,7 @@ void PlayerSpecialAttackState::Enter()
 		);
 
 		// アニメーション再生
-		owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+		playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
 	}
 
@@ -2372,7 +2510,7 @@ void PlayerSpecialAttackState::Enter()
 
 	// 落ちるの停止
 	bool stopFall = true;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 	button = true;
 
@@ -2403,18 +2541,26 @@ void PlayerSpecialAttackState::Enter()
 
 void PlayerSpecialAttackState::Execute(float elapsedTime)
 {
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<HP> enemyHpId ;
+
 	// エネミーの前に向く
 	{
 		DirectX::XMVECTOR Vector;
 		DirectX::XMVECTOR LengthSq;
 
-		DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner.lock()->GetComponent<Transform>()->GetPosition());
+		DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&transformid.lock()->GetPosition());
 		EnemyManager& enemyManager = EnemyManager::Instance();
 		int enemyCount = enemyManager.GetEnemyCount();
 		for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
 		{
 			DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition());
 
+			enemyHpId = enemyManager.GetEnemy(i)->GetComponent<HP>();
 
 			Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
 
@@ -2432,14 +2578,14 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 		{
 			//length < attackCheckRangeMax && length > attackCheckRangeMin&&
 	
-			if (moveid->Turn(vector, turnSpeed, elapsedTime))
+			if (moveid.lock()->Turn(vector, turnSpeed, elapsedTime))
 			{
 				// カメラ向き
 				{
 					MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-					position = transformid->GetPosition();
-					angle = transformid->GetAngle();
+					position = transformid.lock()->GetPosition();
+					angle = transformid.lock()->GetAngle();
 
 					float vx = sinf(angle.y) * 6;
 					float vz = cosf(angle.y) * 6;
@@ -2508,7 +2654,7 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 	{
 
 					// 任意のアニメーション再生区間でのみ衝突判定処理をする
-		float animationTime = moveid->GetOnLadius() ?
+		float animationTime = moveid.lock()->GetOnLadius() ?
 			model->GetCurrentANimationSeconds() :
 			model->GetCurrentAnimationSecondsUpeer();
 
@@ -2516,7 +2662,7 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON)
 		{
 
-			if (!moveid->GetOnLadius())
+			if (!moveid.lock()->GetOnLadius())
 			{
 				// 再生開始時間 
 				float currentAnimationStartSeconds = 0.6f;
@@ -2590,15 +2736,15 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 	{
 	
 			// 任意のアニメーション再生区間でのみ衝突判定処理をする
-			float animationTime = moveid->GetOnLadius() ?
+			float animationTime = moveid.lock()->GetOnLadius() ?
 				model->GetCurrentANimationSeconds() :
 				model->GetCurrentAnimationSecondsUpeer();
 
 		// スローモーションと色を明るく
 		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON)
 		{
-			owner.lock()->GetComponent<Player>()->SetFlashOn(flashOn);
-			owner.lock()->GetComponent<Player>()->SetHitCheck(true);
+			playerid.lock()->SetFlashOn(flashOn);
+			playerid.lock()->SetHitCheck(true);
 		}
 		// アニメーション切りつけ
 		if (animationTime >= 1.6f)
@@ -2631,17 +2777,17 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			lightningAttack->Play(pPosition);
 			
 
-
-			if (enemyHpId->ApplyDamage(10, 0.5f)) 
+			
+			if (enemyHpId.lock()->ApplyDamage(10, 0.5f)) 
 			{
 				
 				lightningHit->Play(pPosition);
 			}
-			owner.lock()->GetComponent<Player>()->SetHitCheck(false);
+			playerid.lock()->SetHitCheck(false);
 
 			//owner.lock()->GetComponent<Player>()->CollisionNodeVsEnemies("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 		}
-		bool animationEnd = moveid->GetOnLadius() ?
+		bool animationEnd = moveid.lock()->GetOnLadius() ?
 			model->IsPlayAnimation() :
 			model->IsPlayUpeerBodyAnimation();
 
@@ -2649,7 +2795,7 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 		if (!animationEnd)
 		{
 			// 入力確認でステート変更
-			owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+			playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 
 		}
 	}
@@ -2658,10 +2804,12 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 
 void PlayerSpecialAttackState::Exit()
 {
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 
 	// 落ちるの再開
 	bool stopFall = false;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 
 	// エネミー呼ぶ奴
@@ -2705,12 +2853,13 @@ void PlayerSpecialAttackState::End()
 void PlayerMagicState::Enter()
 {
 
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 
 
 	// サンダー系
-	if (owner.lock()->GetComponent<Player>()->GetSelectMagicCheck() ==
+	if (playerid.lock()->GetSelectMagicCheck() ==
 		(int)Player::CommandMagic::Thander)
 	{
 		// アニメーション再生
@@ -2737,7 +2886,7 @@ void PlayerMagicState::Enter()
 	magicType = owner.lock()->GetComponent<Player>()->GetSelectMagicCheck();
 	// 落ちるの停止
 	bool stopFall = true;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 
 	// 回転許可
@@ -2750,10 +2899,13 @@ void PlayerMagicState::Enter()
 
 void PlayerMagicState::Execute(float elapsedTime)
 {
-
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	// ロックオン処理
-	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+	playerid.lock()->UpdateCameraState(elapsedTime);
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = model->GetCurrentANimationSeconds();
@@ -2763,7 +2915,7 @@ void PlayerMagicState::Execute(float elapsedTime)
 	DirectX::XMVECTOR vectorXM;
 	DirectX::XMVECTOR lengthSqXM;
 
-	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&owner.lock()->GetComponent<Transform>()->GetPosition());
+	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&transformid.lock()->GetPosition());
 	EnemyManager& enemyManager = EnemyManager::Instance();
 	int enemyCount = enemyManager.GetEnemyCount();
 	for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
@@ -2783,16 +2935,16 @@ void PlayerMagicState::Execute(float elapsedTime)
 	}
 
 	// 魔法内ながら移動
-	if (owner.lock()->GetComponent<Player>()->InputMove(elapsedTime) && !isMove)
+	if (playerid.lock()->InputMove(elapsedTime) && !isMove)
 	{
 
 
 
 		bool stop = false;
-		moveid->SetStopMove(stop);
+		moveid.lock()->SetStopMove(stop);
 
 		// 移動値
-		owner.lock()->GetComponent<Player>()->GetMagicMoveVec(elapsedTime);
+		playerid.lock()->GetMagicMoveVec(elapsedTime);
 	}
 	else
 	{
@@ -2810,15 +2962,15 @@ void PlayerMagicState::Execute(float elapsedTime)
 	{
 
 		// 距離
-		if (moveid->TurnCheck(
+		if (moveid.lock()->TurnCheck(
 				vector, angleRange, elapsedTime) &&
-			owner.lock()->GetComponent<Player>()->GetRockCheck())
+			playerid.lock()->GetRockCheck())
 		{
 			//bool stop = false;
 			//moveid->SetStopMove(stop);
 
 			// 正面
-			moveid->Turn(vector,turnSpeed,elapsedTime);
+			moveid.lock()->Turn(vector,turnSpeed,elapsedTime);
 			//stop = true;
 			//moveid->SetStopMove(stop);
 		}
@@ -2879,12 +3031,14 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 void PlayerMagicState::Exit()
 {
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
 	// 魔法の選択をゼロに
 	owner.lock()->GetComponent<Player>()->SetSelectCheck((int)Player::CommandMagic::Normal);
 
 	// 落ちるの再開
 	bool stopFall = false;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 }
 
 void PlayerMagicState::End()
@@ -2895,10 +3049,10 @@ void PlayerMagicState::End()
 
 void PlayerSpecialMagicState::Enter()
 {
-
-	transformid = owner.lock()->GetComponent<Transform>();
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 
 	fire = std::make_unique<Effect>("Data/Effect/fire.efk");
 	fireAttack = std::make_unique<Effect>("Data/Effect/hit fire.efk");
@@ -2912,7 +3066,7 @@ void PlayerSpecialMagicState::Enter()
 		, currentAnimationAddSeconds
 	);
 	// アニメーション再生
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
 
 	Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
@@ -2927,7 +3081,7 @@ void PlayerSpecialMagicState::Enter()
 	fire->Play(pPosition);
 	// 落ちるの停止
 	bool stopFall = true;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 	button = true;
 
@@ -3009,6 +3163,10 @@ void PlayerSpecialMagicState::Enter()
 
 void PlayerSpecialMagicState::Execute(float elapsedTime)
 {
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	// エネミーの前に向く
 	{
@@ -3039,14 +3197,14 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 		{
 			//length < attackCheckRangeMax && length > attackCheckRangeMin&&
 
-			if (moveid->Turn(vector, turnSpeed, elapsedTime))
+			if (moveid.lock()->Turn(vector, turnSpeed, elapsedTime))
 			{
 				// カメラ向き
 				{
 					MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-					position = transformid->GetPosition();
-					angle = transformid->GetAngle();
+					position = transformid.lock()->GetPosition();
+					angle = transformid.lock()->GetAngle();
 
 					// モーション記録
 					float vx = sinf(angle.y) * 6;
@@ -3173,11 +3331,11 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 		if (animationTime >= 1.1f)
 		{
 
-			owner.lock()->GetComponent<Player>()->SetFlashOn(true);
+			playerid.lock()->SetFlashOn(true);
 			//owner.lock()->GetComponent<Player>()->SetHitCheck(true);
 
 			// アニメーション停止
-			owner.lock()->GetComponent<Player>()->SetUpdateAnim
+			playerid.lock()->SetUpdateAnim
 			(Player::UpAnim::Stop);
 
 
@@ -3204,7 +3362,7 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 
 			// 魔法発射のタイミング
 			if (!startMagic)
-			owner.lock()->GetComponent<Player>()->
+			playerid.lock()->
 				InputSpecialMagicframe();
 
 			// 最初だけ魔法を発動するため
@@ -3222,7 +3380,7 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 
 
 	// ダメージ判定
-	owner.lock()->GetComponent<Player>()->SpecialApplyDamageInRadius();
+	playerid.lock()->SpecialApplyDamageInRadius();
 
 
 
@@ -3240,7 +3398,7 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 		}
 
 		// 次のステートへ
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 
 		return;
@@ -3253,9 +3411,11 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 
 void PlayerSpecialMagicState::Exit()
 {
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
 	// 落ちるの再開
 	bool stopFall = false;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 
 	// エネミー呼ぶ奴
@@ -3291,10 +3451,11 @@ void PlayerSpecialMagicState::End()
 
 void PlayerSpecialMagicIceState::Enter()
 {
-
-	transformid = owner.lock()->GetComponent<Transform>();
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	moveid = owner.lock()->GetComponent<Movement>();
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 
 	ice = std::make_unique<Effect>("Data/Effect/brezerd.efk");
 	//fireAttack = std::make_unique<Effect>("Data/Effect/hit fire.efk");
@@ -3308,7 +3469,7 @@ void PlayerSpecialMagicIceState::Enter()
 		, currentAnimationAddSeconds
 	);
 	// アニメーション再生
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
 
 	Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
@@ -3323,7 +3484,7 @@ void PlayerSpecialMagicIceState::Enter()
 	ice->Play(pPosition);
 	// 落ちるの停止
 	bool stopFall = true;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 	button = true;
 
@@ -3336,8 +3497,8 @@ void PlayerSpecialMagicIceState::Enter()
 
 	MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-	position = transformid->GetPosition();
-	angle = transformid->GetAngle();
+	position = transformid.lock()->GetPosition();
+	angle = transformid.lock()->GetAngle();
 
 
 	// モーション記録
@@ -3395,6 +3556,11 @@ void PlayerSpecialMagicIceState::Enter()
 
 void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 {
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 	if (button)
 	{
 
@@ -3479,11 +3645,11 @@ void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 		if (animationTime >= 1.1f)
 		{
 
-			owner.lock()->GetComponent<Player>()->SetFlashOn(true);
+			playerid.lock()->SetFlashOn(true);
 			//owner.lock()->GetComponent<Player>()->SetHitCheck(true);
 
 			// アニメーション停止
-			owner.lock()->GetComponent<Player>()->SetUpdateAnim
+			playerid.lock()->SetUpdateAnim
 			(Player::UpAnim::Stop);
 
 
@@ -3510,7 +3676,7 @@ void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 
 			// 魔法発射のタイミング
 			if (!startMagic)
-				owner.lock()->GetComponent<Player>()->
+				playerid.lock()->
 				InputSpecialMagicframe();
 
 			// 最初だけ魔法を発動するため
@@ -3528,7 +3694,7 @@ void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 
 
 	// ダメージ判定
-	owner.lock()->GetComponent<Player>()->SpecialApplyDamageInRadius();
+	playerid.lock()->SpecialApplyDamageInRadius();
 
 
 
@@ -3546,7 +3712,7 @@ void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 		}
 
 		// 次のステートへ
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 
 		return;
@@ -3555,9 +3721,13 @@ void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 
 void PlayerSpecialMagicIceState::Exit()
 {
+	// コンポネント取得
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
 	// 落ちるの再開
 	bool stopFall = false;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 	// エネミー呼ぶ奴
 	EnemyManager& enemyManager = EnemyManager::Instance();
@@ -3599,9 +3769,10 @@ void PlayerSpecialThanderMagicState::Execute(float elapsedTime)
 
 void PlayerSpecialThanderMagicState::Exit()
 {
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 	// 落ちるの再開
 	bool stopFall = false;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 	// エネミー呼ぶ奴
 	EnemyManager& enemyManager = EnemyManager::Instance();
@@ -3635,31 +3806,47 @@ void PlayerSpecialThanderMagicState::End()
 
 void PlayerDamageState::Enter()
 {
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	//std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
+	//moveid = owner.lock()->GetComponent<Movement>();
+
+	//model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
 	bool loop = false;
 
+	// 歩き許可
 	bool stopMove = false;
-	owner.lock()->GetComponent<Movement>()->SetStopMove(stopMove);
+	moveid.lock()->SetStopMove(stopMove);
+
+	// 重力オフ
 	bool stopFall = false;
-	owner.lock()->GetComponent<Movement>()->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
+
 
 		//Player::Anim_Pain, loop,
 	model->PlayAnimation(
 		Player::Anim_Pain, loop,
 		currentAnimationStartSeconds, blendSeconds);
 
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 }
 
 void PlayerDamageState::Execute(float elapsedTime)
 {
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
 	// ロックオン処理
-	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
+	playerid.lock()->UpdateCameraState(elapsedTime);
 
 	if (!model->IsPlayAnimation())
 	{
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 	}
 }
@@ -3676,16 +3863,21 @@ void PlayerDamageState::End()
 
 void PlayerDeathState::Enter()
 {
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	hpid = owner.lock()->GetComponent<HP>();
-	transformid = owner.lock()->GetComponent<Transform>();
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	
+	float				stateTimer = 0.0f;
+
+
 		//Player::Anim_Deth, loop,
 	model->PlayAnimation(
 		Player::Anim_Deth, loop,
 		currentAnimationStartSeconds ,blendSeconds
 	);
 
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
 	stateTimer = 0.0f;
 
@@ -3694,11 +3886,16 @@ void PlayerDeathState::Enter()
 
 void PlayerDeathState::Execute(float elapsedTime)
 {
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	if (stateTimer >= stateTimerMax)
 	{
 
-		hpid->SetDead(false);
+		hpid.lock()->SetDead(false);
 
 	}
 
@@ -3706,8 +3903,8 @@ void PlayerDeathState::Execute(float elapsedTime)
     // 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
     MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-	DirectX::XMFLOAT3 position = transformid->GetPosition();
-	DirectX::XMFLOAT3 angle = transformid->GetAngle();
+	DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+	DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
 
 
 
@@ -3719,7 +3916,7 @@ void PlayerDeathState::Execute(float elapsedTime)
     Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = owner.lock()->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	float animationTime = model->GetCurrentANimationSeconds();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 	//bool CollisionFlag = animationTime >= 1.5f && animationTime <= 1.6f;
 	bool CollisionFlag = animationTime >= 0.5f && animationTime <= 1.6f;
@@ -3727,7 +3924,7 @@ void PlayerDeathState::Execute(float elapsedTime)
 	{
 		++stateTimer;
 		
-		owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Stop);
+		playerid.lock()->SetUpdateAnim(Player::UpAnim::Stop);
 
 
 	}
@@ -3767,12 +3964,15 @@ void PlayerReviveState::End()
 // 回避初期化
 void PlayerAvoidanceState::Enter()
 {
-	transformid = owner.lock()->GetComponent<Transform>();
-	moveid = owner.lock()->GetComponent<Movement>();
-	hpid = owner.lock()->GetComponent<HP>();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
 
 	//Player::Anim_Slash, loop
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+	model->PlayAnimation(
 		Player::Anim_Dush, loop
 		, currentAnimationStartSeconds, blendSeconds,
 		currentAnimationAddSeconds);
@@ -3784,11 +3984,11 @@ void PlayerAvoidanceState::Enter()
 
 
 	// アニメーション種類 通常
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
 	// 落ちるの停止
 	bool stopFall = true;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 
 	// エフェクト設定
@@ -3796,31 +3996,36 @@ void PlayerAvoidanceState::Enter()
 
 	// エフェクト再生時間
 	wind->Play({ 
-		transformid->GetPosition().x,
-		transformid->GetPosition().y + addHeight,
-		transformid->GetPosition().z
+		transformid.lock()->GetPosition().x,
+		transformid.lock()->GetPosition().y + addHeight,
+		transformid.lock()->GetPosition().z
 		});
 
 
 	// 角度変更
-	wind->SetAngle(wind->GetEfeHandle(), transformid->GetAngle());
+	wind->SetAngle(wind->GetEfeHandle(), transformid.lock()->GetAngle());
 }
 
 // 回避更新
 void PlayerAvoidanceState::Execute(float elapsedTime)
 {
+	// コンポーネント呼び出し
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
 	// 動き自由
 	bool stopMove = false;
-	moveid->SetStopMove(stopMove);
+	moveid.lock()->SetStopMove(stopMove);
 
 	// ロックオン処理
 	owner.lock()->GetComponent<Player>()->UpdateCameraState(elapsedTime);
 
 	// 転がりダッシュ
 	DirectX::XMFLOAT3 dir;
-	dir.x = sinf(transformid->GetAngle().y);
-	dir.y = cosf(transformid->GetAngle().x);
-	dir.z = cosf(transformid->GetAngle().y);
+	dir.x = sinf(transformid.lock()->GetAngle().y);
+	dir.y = cosf(transformid.lock()->GetAngle().x);
+	dir.z = cosf(transformid.lock()->GetAngle().y);
 
 	
 	// 任意のアニメーション再生区間
@@ -3829,9 +4034,9 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 	// 位置更新
 	wind->SetPosition(wind->GetEfeHandle(),
 		{
-			transformid->GetPosition().x,
-			transformid->GetPosition().y + addHeight,
-			transformid->GetPosition().z
+			transformid.lock()->GetPosition().x,
+			transformid.lock()->GetPosition().y + addHeight,
+			transformid.lock()->GetPosition().z
 		});
 
 	//if (animationTime + FLT_EPSILON >= 0.7f + FLT_EPSILON && animationTime <= 0.71f)
@@ -3839,7 +4044,7 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 
 	
 	// 地上ダッシュ
-	if (animationTime >= 0.7f && animationTime <= 0.8f && moveid->GetOnLadius())
+	if (animationTime >= 0.7f && animationTime <= 0.8f && moveid.lock()->GetOnLadius())
 	{
 		DirectX::XMFLOAT3 impulse =
 		{
@@ -3848,12 +4053,12 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 			dir.z * speed,
 		};
 
-		moveid->AddImpulse(impulse);
+		moveid.lock()->AddImpulse(impulse);
 
 		//moveid->Move(dir, moveSpeed, elapsedTime);
 	}
 	// 空中ダッシュ
-	if (animationTime >= 0.7f  && animationTime <= 0.8f && !moveid->GetOnLadius())
+	if (animationTime >= 0.7f  && animationTime <= 0.8f && !moveid.lock()->GetOnLadius())
 	{
 		//moveid->Move(dir, moveSpeed, elapsedTime);
 
@@ -3864,7 +4069,7 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 			dir.z * flySpeed,
 		};
 	
-		moveid->AddImpulse(impulse);
+		moveid.lock()->AddImpulse(impulse);
 		
 	}
 
@@ -3892,9 +4097,12 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 // 回避終了
 void PlayerAvoidanceState::Exit()
 {
+	// コンポーネント呼び出し
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
 	// 落ちるの停止
 	bool stopFall = false;
-	moveid->SetStopFall(stopFall);
+	moveid.lock()->SetStopFall(stopFall);
 
 	wind->Stop(wind->GetEfeHandle());
 }
@@ -3908,15 +4116,23 @@ void PlayerAvoidanceState::End()
 // 反射開始
 void PlayerReflectionState::Enter()
 {
+
+
+	// コンポーネント呼び出し
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
 	bool loop = false;
 
+
+
 		//Player::Anim_Counter, loop,
-	owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
+	model->PlayAnimation(
 		Player::Anim_Counter, loop,
 		currentAnimationStartSeconds, blendSeconds);
 
 	// アニメーション種類 通常
-	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
 
 }
@@ -3924,25 +4140,31 @@ void PlayerReflectionState::Enter()
 // 反射更新
 void PlayerReflectionState::Execute(float elapsedTime)
 {
-	if (!owner.lock()->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation())
+	// コンポーネント呼び出し
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	if (!model->IsPlayAnimation())
 	{
 		// 当たり判定の有無
-		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 
 	}
 
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = owner.lock()->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	float animationTime = model->GetCurrentANimationSeconds();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 	bool CollisionFlag = animationTime >= 0.2f && animationTime <= 0.4f;
 
 	if (CollisionFlag)
 	{
 		// 左手ノードとエネミーの衝突処理
-		owner.lock()->GetComponent<Player>()->CollisionNodeVsEnemiesCounter("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius());
-		owner.lock()->GetComponent<Player>()->CollisionNodeVsRubyCounter("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius());
-		owner.lock()->GetComponent<Player>()->CollisionNodeVsRubyCounterBulletFring("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius());
+		playerid.lock()->CollisionNodeVsEnemiesCounter("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius());
+		playerid.lock()->CollisionNodeVsRubyCounter("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius());
+		playerid.lock()->CollisionNodeVsRubyCounterBulletFring("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius());
 		
 	}
 }

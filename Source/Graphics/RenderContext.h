@@ -199,6 +199,8 @@ struct RenderContext
 	int isRimRightning = 1;
 
 
+
+
 	//// ƒuƒ‹[ƒ€‚Ì—L–³
 	//int is_bl = 1;
 

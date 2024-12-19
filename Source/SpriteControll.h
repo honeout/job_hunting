@@ -3,7 +3,7 @@
 #include "Component.h"
 #include "Graphics\Sprite.h"
 
-// モデルコントローラー
+// スプライトコントローラー
 class SpriteControll : public Component
 {
 public:
