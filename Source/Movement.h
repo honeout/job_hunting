@@ -120,8 +120,8 @@ private:
 	float		turnSpeed = 6.28f;
 	float       jumpSpeed = 0;
 
-	std::shared_ptr<Collision>	collision;
-	std::shared_ptr<Transform> transformid;
+	//std::shared_ptr<Collision>	collision;
+	//std::shared_ptr<Transform> transformid;
 	// Å‘åƒWƒƒƒ“ƒv”
 	int jumpCount = 0;
 

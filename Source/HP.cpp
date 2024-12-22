@@ -35,7 +35,8 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     // ダメージが０の場合は健康状態を変更する必要がない
     if (damage == 0) return false;
 
-    std::shared_ptr<Actor> actor = GetActor();
+    std::weak_ptr<Actor> actor = GetActor();
+   // std::shared_ptr<Actor> actor = GetActor();
   /*  int health = actor->GetHealth();*/
 
 

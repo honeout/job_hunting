@@ -47,9 +47,10 @@ void BulletFiring::Move(float speed,float elapsedTime)
 bool BulletFiring::Turn(float turnspeed,const DirectX::XMFLOAT3 &target, float elapedTime)
 {
 
-   std::shared_ptr<Actor> actor = GetActor();
+   std::weak_ptr<Actor> actor = GetActor();
+   std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
    
-    DirectX::XMFLOAT3 angle = actor->GetComponent<Transform>()->GetAngle();
+    DirectX::XMFLOAT3 angle = actor.lock()->GetComponent<Transform>()->GetAngle();
 
     //// 正面の向きベクトル
     direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
@@ -118,7 +119,7 @@ bool BulletFiring::Turn(float turnspeed,const DirectX::XMFLOAT3 &target, float e
             DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationAxis(Axis, rot);
 
             // 現在の行列を回転させる　自分自身の姿勢
-            DirectX::XMMATRIX Transformmid = DirectX::XMLoadFloat4x4(&transformid->GetTransform());
+            DirectX::XMMATRIX Transformmid = DirectX::XMLoadFloat4x4(&transformid.lock()->GetTransform());
             Transformmid = DirectX::XMMatrixMultiply(Transformmid, Rotation); // 同じだからただ×だけ  Transform*Rotation
             //// DirectX::XMMatrixMultrixMultiply
             //// 回転後の前方方向を取り出し、単位ベクトル化する
@@ -126,7 +127,7 @@ bool BulletFiring::Turn(float turnspeed,const DirectX::XMFLOAT3 &target, float e
             DirectX::XMStoreFloat3(&direction, Direction);
 
 
-            actor->GetComponent<Transform>()->SetDirection(direction);
+            actor.lock()->GetComponent<Transform>()->SetDirection(direction);
 
             //DirectX::XMStoreFloat4x4(&transform, Transform);
 
@@ -146,9 +147,10 @@ bool BulletFiring::Turn(float turnspeed,const DirectX::XMFLOAT3 &target, float e
 
 void BulletFiring::TurnFull(float speed, const DirectX::XMFLOAT3& target, float elapedTime)
 {
-    std::shared_ptr<Actor> actor = GetActor();
+    std::weak_ptr<Actor> actor = GetActor();
+    std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
 
-    DirectX::XMFLOAT3 angle = actor->GetComponent<Transform>()->GetAngle();
+    DirectX::XMFLOAT3 angle = actor.lock()->GetComponent<Transform>()->GetAngle();
 
     //// 正面の向きベクトル
     direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
@@ -217,7 +219,7 @@ void BulletFiring::TurnFull(float speed, const DirectX::XMFLOAT3& target, float 
             DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationAxis(Axis, rot);
 
             // 現在の行列を回転させる　自分自身の姿勢
-            DirectX::XMMATRIX Transformmid = DirectX::XMLoadFloat4x4(&transformid->GetTransform());
+            DirectX::XMMATRIX Transformmid = DirectX::XMLoadFloat4x4(&transformid.lock()->GetTransform());
             Transformmid = DirectX::XMMatrixMultiply(Transformmid, Rotation); // 同じだからただ×だけ  Transform*Rotation
             //// DirectX::XMMatrixMultrixMultiply
             //// 回転後の前方方向を取り出し、単位ベクトル化する
@@ -228,7 +230,7 @@ void BulletFiring::TurnFull(float speed, const DirectX::XMFLOAT3& target, float 
 
             //DirectX::XMStoreFloat4x4(&transform, Transform);
 
-            actor->GetComponent<Transform>()->SetDirection(direction);
+            actor.lock()->GetComponent<Transform>()->SetDirection(direction);
 
             
 
@@ -248,6 +250,7 @@ bool BulletFiring::Turn2D(float speed, DirectX::XMFLOAT3& direction, float elape
 {
 
     std::shared_ptr<Actor> actor = GetActor();
+
 
     DirectX::XMFLOAT3 angle = GetActor()->GetComponent<Transform>()->GetAngle();
 
@@ -315,6 +318,8 @@ bool BulletFiring::Turn2D(float speed, DirectX::XMFLOAT3& direction, float elape
 
 void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime)
 {
+    std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
+
     //　寿命処理 
     lifeTimer -= elapsedTime;
     if (lifeTimer <= 0.0f)// 寿命が尽きたら自害
@@ -398,7 +403,7 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
                
 
                 // 現在の行列を回転させる　自分自身の姿勢
-                DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transformid->GetTransform());
+                DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transformid.lock()->GetTransform());
                 Transform = DirectX::XMMatrixMultiply(Transform, Rotation); // 同じだからただ×だけ  Transform*Rotation
                 // DirectX::XMMatrixMultrixMultiply
                 // 回転後の前方方向を取り出し、単位ベクトル化する
@@ -419,8 +424,8 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
         }
     }
 
-    transformid->SetDirection(direction);
-    transformid->SetPosition(position);
+    transformid.lock()->SetDirection(direction);
+    transformid.lock()->SetPosition(position);
 
     //transformid->UpdateTransformProjectile();
 
@@ -435,6 +440,8 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
 
 void BulletFiring::JumpOut(float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime)
 {
+    std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
+
     //　寿命処理 
     lifeTimer -= elapsedTime;
     if (lifeTimer <= 0.0f)// 寿命が尽きたら自害
@@ -461,7 +468,7 @@ void BulletFiring::JumpOut(float speed, float turnSpeed, DirectX::XMFLOAT3 targe
 
 
         if (position.y <= -3.5f)
-            transformid->SetPosition(position);
+            transformid.lock()->SetPosition(position);
     }
 }
 
@@ -476,6 +483,7 @@ void BulletFiring::PushDown(float speed, float turnSpeed,  float elapsedTime)
 
 
     //}
+    std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
 
     ProjectileManager::Instance().DeleteUpdate(elapsedTime);
     // 移動　　秒じゃなくとフレームに
@@ -495,39 +503,43 @@ void BulletFiring::PushDown(float speed, float turnSpeed,  float elapsedTime)
     position.z -= bulletspeed * direction.z;
 
 
-    transformid->SetPosition(position);
+    transformid.lock()->SetPosition(position);
         if (position.y <= -5.5f)
             Destroy();
 }
 
-void BulletFiring::Sunder(DirectX::XMFLOAT3 target,  float elapsedTime)
+void BulletFiring::Sunder(DirectX::XMFLOAT3 target, float elapsedTime)
 {
+    std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
+
     //　寿命処理 
-lifeTimer -= elapsedTime;
-if (lifeTimer <= 0.0f)// 寿命が尽きたら自害
-{
-    // 自分を削除
-    Destroy();
+    lifeTimer -= elapsedTime;
+    if (lifeTimer <= 0.0f)// 寿命が尽きたら自害
+    {
+        // 自分を削除
+        Destroy();
 
 
-}
+    }
 
-DirectX::XMFLOAT3 pos;
-pos =
-{
-    target.x,
-    target.y,
-    target.z
+    DirectX::XMFLOAT3 pos;
+    pos =
+    {
+        target.x,
+        target.y,
+        target.z
 
-};
-transformid->SetPosition(pos);
-//float bulletspeed = speed * elapsedTime;
+    };
+    transformid.lock()->SetPosition(pos);
+    //float bulletspeed = speed * elapsedTime;
 
 }
 
 
 void BulletFiring::Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 target, bool turnPermission,float elapsedTime)
 {
+    std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
+
     //　寿命処理 
     lifeTimer -= elapsedTime;
     if (lifeTimer <= 0.0f)// 寿命が尽きたら自害
@@ -610,7 +622,7 @@ void BulletFiring::Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 targ
 
 
                 // 現在の行列を回転させる　自分自身の姿勢
-                DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transformid->GetTransform());
+                DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transformid.lock()->GetTransform());
                 Transform = DirectX::XMMatrixMultiply(Transform, Rotation); // 同じだからただ×だけ  Transform*Rotation
                 // DirectX::XMMatrixMultrixMultiply
                 // 回転後の前方方向を取り出し、単位ベクトル化する
@@ -643,7 +655,7 @@ void BulletFiring::Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 targ
     if (position.y >= 0)
         direction.x += -0.01f;
 
-    transformid->SetDirection(direction);
+    transformid.lock()->SetDirection(direction);
 
 
 
@@ -653,7 +665,7 @@ void BulletFiring::Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 targ
     position.z += bulletspeed * direction.z;
 
     // if (position.y <= 0)
-    transformid->SetPosition(position);
+    transformid.lock()->SetPosition(position);
 
 }
 
@@ -795,6 +807,9 @@ void BulletFiring::Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 targ
 
 void BulletFiring::Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position, float   lifeTimer)
 {
+    // トランスフォーム取得
+    std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
+
     // direction 方向　正規化して入れる差もなきゃスピード変わる
     this->direction = direction;
     this->position = position;
@@ -802,10 +817,10 @@ void BulletFiring::Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFL
 
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
-    // トランスフォーム取得
-    transformid = GetActor()->GetComponent<Transform>();
+    //// トランスフォーム取得
+    //transformid = GetActor()->GetComponent<Transform>();
 
-    transformid->SetDirection(direction);
+    transformid.lock()->SetDirection(direction);
 
 }
 

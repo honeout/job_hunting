@@ -44,7 +44,7 @@ public:
     void OnGUI() override;
 #endif // _DEBUG
 private:
-    std::shared_ptr<Transform> transformid;
+    //std::shared_ptr<Transform> transformid;
     // ˆÊ’u
     DirectX::XMFLOAT3 position = { 0,0,0 };
     // Œü‚«

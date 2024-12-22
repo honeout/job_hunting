@@ -60,13 +60,13 @@ void EnemySlime::Start()
     //model = std::make_unique<Model>(GetActor()->GetComponent<ModelControll>()->GetModel());
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
     
-    hp->SetHealth(health);
+    hp.lock()->SetHealth(health);
 
-    hp->SetMaxHealth(maxHealth);
+    hp.lock()->SetMaxHealth(maxHealth);
 
-    transform->SetRadius(radius);
+    transform.lock()->SetRadius(radius);
 
-    transform->SetHeight(height);
+    transform.lock()->SetHeight(height);
 
     // 徘徊ステートへ遷移
     //TransitionWanderState();
@@ -158,16 +158,16 @@ void EnemySlime::Update(float elapsedTime)
     stateMachine->Update(elapsedTime);
 
     // 位置
-    position = transform->GetPosition();
+    position = transform.lock()->GetPosition();
     // 向き
-    angle = transform->GetAngle();
+    angle = transform.lock()->GetAngle();
     // 大きさ
-    scale = transform->GetScale();
+    scale = transform.lock()->GetScale();
 
     // 速力処理更新
-    movement->UpdateVelocity(elapsedTime);
+    movement.lock()->UpdateVelocity(elapsedTime);
     // 無敵時間更新
-    hp->UpdateInbincibleTimer(elapsedTime);
+    hp.lock()->UpdateInbincibleTimer(elapsedTime);
 
     //DrawDebugPrimitive();
 
@@ -189,7 +189,7 @@ void EnemySlime::Update(float elapsedTime)
     // 削除
     ProjectileManager::Instance().DeleteUpdate(elapsedTime);//todo いるの？
 
-    transform->UpdateTransform();
+    transform.lock()->UpdateTransform();
 
     // ダメージ点滅
     OnHit(elapsedTime);
@@ -230,7 +230,7 @@ void EnemySlime::Update(float elapsedTime)
     }
 
 
-    model->UpdateTransform(transform->GetTransform());
+    model->UpdateTransform(transform.lock()->GetTransform());
     
 
     // ゲージ管理
@@ -340,28 +340,29 @@ void EnemySlime::CollisionImpactVsPlayer()
     int projectileCount = projectileManager.GetProjectileCount();
     for (int j = 0; j < playerCount; ++j)
     {
-        std::shared_ptr<Actor> player = playerManager.GetPlayer(j);//外ループの方が軽い
+        std::weak_ptr<Actor> player = playerManager.GetPlayer(j);//外ループの方が軽い
 
     for (int i = 0; i < projectileCount; ++i)
     {
-        std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        //std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
 
-            if (projectile->GetComponent<ProjectileImpact>())
+            if (projectile.lock()->GetComponent<ProjectileImpact>())
             {
 
-                DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
+                DirectX::XMFLOAT3 projectilePosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
                 
                 // 身長
                 float height = 1.0f;
-                projectile->GetComponent<Transform>()->SetHeight(height);
-                float projectileHeight = projectile->GetComponent<Transform>()->GetHeight();
+                projectile.lock()->GetComponent<Transform>()->SetHeight(height);
+                float projectileHeight = projectile.lock()->GetComponent<Transform>()->GetHeight();
 
-                float projectileRadiusOutLine = projectile->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
-                float projectileRadiusInLine = projectile->GetComponent<ProjectileImpact>()->GetRadiusInSide();
+                float projectileRadiusOutLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
+                float projectileRadiusInLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusInSide();
 
-                DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
-                float playerRadius = player->GetComponent<Transform>()->GetRadius();
-                float playerHeight = player->GetComponent<Transform>()->GetHeight();
+                DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
+                float playerRadius = player.lock()->GetComponent<Transform>()->GetRadius();
+                float playerHeight = player.lock()->GetComponent<Transform>()->GetHeight();
 
                 // 衝突処理
                 DirectX::XMFLOAT3 outPositon;
@@ -385,9 +386,9 @@ void EnemySlime::CollisionImpactVsPlayer()
                     // 高さが一定以下なら通る
                     if (projectilePosition.y + projectileHeight < playerPosition.y) return;
                     // ダメージを与える。
-                    if (player->GetComponent<HP>()->ApplyDamage(3, 0.5f))
+                    if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 0.5f))
                     {
-                        player->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+                        player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
 
                         // 吹き飛ばす
                         {
@@ -406,7 +407,7 @@ void EnemySlime::CollisionImpactVsPlayer()
                             impulse.y = power * 0.5f;
                             impulse.z = vz * power;
 
-                            player->GetComponent<Movement>()->AddImpulse(impulse);
+                            player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
                         }
                         // ヒットエフェクト再生
                         {
@@ -441,20 +442,21 @@ void EnemySlime::CollisionRubyVsPlayer()
     for (int i = 0; i < projectileCount; ++i)
     {
         int playerCount = PlayerManager::Instance().GetPlayerCount();
-        std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        //std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
         for (int j = 0; j < playerCount; ++j)
         {
-            if (projectile->GetComponent<ProjectileRuby>())
+            if (projectile.lock()->GetComponent<ProjectileRuby>())
             {
-                std::shared_ptr<Actor> player = playerManager.GetPlayer(j);
+                std::weak_ptr<Actor> player = playerManager.GetPlayer(j);
 
-                DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
-                float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
-                float projectileHeight = projectile->GetComponent<Transform>()->GetHeight();
+                DirectX::XMFLOAT3 projectilePosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
+                float projectileRadius = projectile.lock()->GetComponent<Transform>()->GetRadius();
+                float projectileHeight = projectile.lock()->GetComponent<Transform>()->GetHeight();
 
-                DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
-                float playerRadius = player->GetComponent<Transform>()->GetRadius();
-                float playerHeight = player->GetComponent<Transform>()->GetHeight();
+                DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
+                float playerRadius = player.lock()->GetComponent<Transform>()->GetRadius();
+                float playerHeight = player.lock()->GetComponent<Transform>()->GetHeight();
 
                 // 衝突処理
                 DirectX::XMFLOAT3 outPositon;
@@ -470,9 +472,9 @@ void EnemySlime::CollisionRubyVsPlayer()
 
                 {
                     // ダメージを与える。
-                    if (player->GetComponent<HP>()->ApplyDamage(3, 0.5f))
+                    if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 0.5f))
                     {
-                        player->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+                        player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
                         
                         DirectX::XMVECTOR ProjectileP = DirectX::XMLoadFloat3(&projectilePosition);
                         DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
@@ -488,7 +490,7 @@ void EnemySlime::CollisionRubyVsPlayer()
                             const float power = 10.0f;
                             DirectX::XMFLOAT3 impulse;
                             impulse.y = power * 0.5f;
-                            player->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
+                            player.lock()->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
 
                         }
                         //// 吹き飛ばす
@@ -509,7 +511,7 @@ void EnemySlime::CollisionRubyVsPlayer()
                             impulse.y = power * 0.5f;
                             impulse.z = vz * power;
 
-                            player->GetComponent<Movement>()->AddImpulse(impulse);
+                            player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
                             // ヒットエフェクト再生
 
                             playerPosition.y += playerHeight * 0.5f;
@@ -541,7 +543,7 @@ void EnemySlime::CollisionRubyVsPlayer()
                             const float power = 10.0f;
                             DirectX::XMFLOAT3 impulse;
                             impulse.y = power * 0.5f;
-                            player->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
+                            player.lock()->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
 
                         }
                         //// 吹き飛ばす
@@ -562,7 +564,7 @@ void EnemySlime::CollisionRubyVsPlayer()
                             impulse.y = power * 0.5f;
                             impulse.z = vz * power;
 
-                            player->GetComponent<Movement>()->AddImpulse(impulse);
+                            player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
                             // ヒットエフェクト再生
 
                             playerPosition.y += playerHeight * 0.5f;
@@ -590,22 +592,22 @@ void EnemySlime::CollisionRubyWidthVsPlayer()
     for (int i = 0; i < projectileCount; ++i)
     {
         int playerCount = PlayerManager::Instance().GetPlayerCount();
-        std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
         for (int j = 0; j < playerCount; ++j)
         {
-            std::shared_ptr<Actor> player = playerManager.GetPlayer(j);
-            if (!projectile->GetComponent<ProjectileThrowing>())return;
+            std::weak_ptr<Actor> player = playerManager.GetPlayer(j);
+            if (!projectile.lock()->GetComponent<ProjectileThrowing>())return;
 
 
-            DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
-            float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
-            float projectileHeight = projectile->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 projectilePosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
+            float projectileRadius = projectile.lock()->GetComponent<Transform>()->GetRadius();
+            float projectileHeight = projectile.lock()->GetComponent<Transform>()->GetHeight();
 
-            DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
-            float playerRadius = player->GetComponent<Transform>()->GetRadius();
-            float playerHeight = player->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
+            float playerRadius = player.lock()->GetComponent<Transform>()->GetRadius();
+            float playerHeight = player.lock()->GetComponent<Transform>()->GetHeight();
 
-            bool counterCheck = projectile->GetComponent<ProjectileThrowing>()->GetCounterCheck();
+            bool counterCheck = projectile.lock()->GetComponent<ProjectileThrowing>()->GetCounterCheck();
 
             // 衝突処理
             DirectX::XMFLOAT3 outPositon;
@@ -619,7 +621,7 @@ void EnemySlime::CollisionRubyWidthVsPlayer()
 
             {
                 // ダメージを与える。
-                if (player->GetComponent<HP>()->ApplyDamage(3, 0.5f))
+                if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 0.5f))
                 {
 
                     DirectX::XMVECTOR ProjectileP = DirectX::XMLoadFloat3(&projectilePosition);
@@ -636,7 +638,7 @@ void EnemySlime::CollisionRubyWidthVsPlayer()
                         const float power = 10.0f;
                         DirectX::XMFLOAT3 impulse;
                         impulse.y = power * 0.5f;
-                        player->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
+                        player.lock()->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
 
                     }
                     //// 吹き飛ばす
@@ -657,7 +659,7 @@ void EnemySlime::CollisionRubyWidthVsPlayer()
                         impulse.y = power * 0.5f;
                         impulse.z = vz * power;
 
-                        player->GetComponent<Movement>()->AddImpulse(impulse);
+                        player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
                         // ヒットエフェクト再生
 
                         playerPosition.y += playerHeight * 0.5f;
@@ -671,7 +673,7 @@ void EnemySlime::CollisionRubyWidthVsPlayer()
                     // 地面判定一度消す
                     pushuThrow = false;
                     // 弾丸破棄
-                    projectile->GetComponent<BulletFiring>()->Destroy();
+                    projectile.lock()->GetComponent<BulletFiring>()->Destroy();
 
                 }
 
@@ -698,17 +700,17 @@ void EnemySlime::CollisionRubyWidthVsOnGraound()
     for (int i = 0; i < projectileCount; ++i)
     {
         int playerCount = PlayerManager::Instance().GetPlayerCount();
-        std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
         for (int j = 0; j < playerCount; ++j)
         {
-            if (!projectile->GetComponent<ProjectileThrowing>())return;
+            if (!projectile.lock()->GetComponent<ProjectileThrowing>())return;
 
 
-            DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
-            float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
-            float projectileHeight = projectile->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 projectilePosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
+            float projectileRadius = projectile.lock()->GetComponent<Transform>()->GetRadius();
+            float projectileHeight = projectile.lock()->GetComponent<Transform>()->GetHeight();
 
-            bool counterCheck = projectile->GetComponent<ProjectileThrowing>()->GetCounterCheck();
+            bool counterCheck = projectile.lock()->GetComponent<ProjectileThrowing>()->GetCounterCheck();
 
 
 
@@ -740,12 +742,12 @@ bool EnemySlime::CollisionPlayerWithRushEnemy()
         int playerCount = PlayerManager::Instance().GetPlayerCount();
         for (int j = 0; j < playerCount; ++j)
         {
-            std::shared_ptr<Actor> player = PlayerManager::Instance().GetPlayer(j);
+            std::weak_ptr<Actor> player = PlayerManager::Instance().GetPlayer(j);
 
 
-            DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
-            float playerRadius = player->GetComponent<Transform>()->GetRadius();
-            float playerHeight = player->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
+            float playerRadius = player.lock()->GetComponent<Transform>()->GetRadius();
+            float playerHeight = player.lock()->GetComponent<Transform>()->GetHeight();
 
             // 衝突処理
             DirectX::XMFLOAT3 outPositon;
@@ -765,7 +767,7 @@ bool EnemySlime::CollisionPlayerWithRushEnemy()
 
             {
                 // ダメージを与える。
-                if (player->GetComponent<HP>()->ApplyDamage(3, 1.0f))
+                if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 1.0f))
                 {
 
                     DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
@@ -780,7 +782,7 @@ bool EnemySlime::CollisionPlayerWithRushEnemy()
                     const float power = 10.0f;
                     DirectX::XMFLOAT3 impulse;
                     impulse.y = power * 0.5f;
-                    player->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
+                    player.lock()->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
 
 
                     //// 吹き飛ばす
@@ -800,12 +802,12 @@ bool EnemySlime::CollisionPlayerWithRushEnemy()
                         impulse.y = power * 0.5f;
                         impulse.z = vz * power;
 
-                        player->GetComponent<Movement>()->AddImpulse(impulse);
+                        player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
                         // ヒットエフェクト再生
 
                         playerPosition.y += playerHeight * 0.5f;
 
-                        player->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
+                        player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
 
                         //hitEffect->Play(e);
 
@@ -934,12 +936,13 @@ void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
     int playerCount = PlayerManager::Instance().GetPlayerCount();
     for (int j = 0; j < playerCount; ++j)
     {
-        std::shared_ptr<Actor> player = PlayerManager::Instance().GetPlayer(j);
+        std::weak_ptr<Actor> player = PlayerManager::Instance().GetPlayer(j);
+        //Actor* player = PlayerManager::Instance().GetPlayer(j).get();
 
 
-        DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
-        float playerRadius = player->GetComponent<Transform>()->GetRadius();
-        float playerHeight = player->GetComponent<Transform>()->GetHeight();
+        DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
+        float playerRadius = player.lock()->GetComponent<Transform>()->GetRadius();
+        float playerHeight = player.lock()->GetComponent<Transform>()->GetHeight();
 
         // 衝突処理
         DirectX::XMFLOAT3 outPositon;
@@ -958,7 +961,7 @@ void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
 
         {
             // ダメージを与える。
-            if (player->GetComponent<HP>()->ApplyDamage(3, 1.0f))
+            if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 1.0f))
             {
 
                 DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
@@ -994,14 +997,14 @@ void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
                     impulse.z = vz * power;
 
 
-                    player->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
+                    player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
 
 
-                    player->GetComponent<Movement>()->AddImpulse(impulse);
+                    player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
 
                     // エフェクト発生位置
                     DirectX::XMFLOAT3 efcPos = playerPosition;
-                    efcPos.y += player->GetComponent<Transform>()->GetHeight();
+                    efcPos.y += player.lock()->GetComponent<Transform>()->GetHeight();
 
 
                     // ヒットエフェクト再生
@@ -1035,33 +1038,33 @@ void EnemySlime::InputImpact(DirectX::XMFLOAT3 pos)
         // 弾丸初期化
         const char* filename = "Data/Model/SpikeBall/SpikeBall.mdl";
 
-        std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-        actor->AddComponent<ModelControll>();
-        actor->GetComponent<ModelControll>()->LoadModel(filename);
-        actor->SetName("ProjectileImpact");
-        actor->AddComponent<Transform>();
-        actor->GetComponent<Transform>()->SetPosition(pos);
-        actor->GetComponent<Transform>()->SetAngle(angle);
-        actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+        std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+        actor.lock()->AddComponent<ModelControll>();
+        actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+        actor.lock()->SetName("ProjectileImpact");
+        actor.lock()->AddComponent<Transform>();
+        actor.lock()->GetComponent<Transform>()->SetPosition(pos);
+        actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+        actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
 
 
 
         //actor->AddComponent<BulletFiring>();
-        actor->AddComponent<ProjectileImpact>();
+        actor.lock()->AddComponent<ProjectileImpact>();
         const char* effectFilename = "Data/Effect/inpact.efk";
-        actor->GetComponent<ProjectileImpact>()->SetEffectProgress(effectFilename);
+        actor.lock()->GetComponent<ProjectileImpact>()->SetEffectProgress(effectFilename);
         // 生存時間
         float lifeTimer = 50.0f;
-        actor->GetComponent<ProjectileImpact>()->SetLifeTimer(lifeTimer);
+        actor.lock()->GetComponent<ProjectileImpact>()->SetLifeTimer(lifeTimer);
 
         
         //actor->GetComponent<ProjectileImpact>()->EffectProgressPlay();
         // これが２Dかの確認
         bool check2d = false;
-        actor->SetCheck2d(check2d);
+        actor.lock()->SetCheck2d(check2d);
 
         //actor->AddComponent<Collision>();
-        ProjectileManager::Instance().Register(actor);
+        ProjectileManager::Instance().Register(actor.lock());
         //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
         //std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
@@ -1093,10 +1096,11 @@ void EnemySlime::InputProjectile()
     int playerCount = playerManager.GetPlayerCount();
     for (int i = 0; i < playerCount; ++i)//float 最大値ないにいる敵に向かう
     {
-        std::shared_ptr<Actor> player = PlayerManager::Instance().GetPlayer(i);
+        //std::shared_ptr<Actor> player = PlayerManager::Instance().GetPlayer(i);
+        std::weak_ptr<Actor> player = PlayerManager::Instance().GetPlayer(i);
         // 位置
 
-        pos = player->GetComponent<Transform>()->GetPosition();
+        pos = player.lock()->GetComponent<Transform>()->GetPosition();
         pos.y -= 15;
 
     }
@@ -1105,39 +1109,39 @@ void EnemySlime::InputProjectile()
     const char* filename = "Data/Model/Bullet/Bullet.mdl";
     //const char* filename = "Data/Model/Sword/Sword.mdl";
 
-    std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-    actor->AddComponent<ModelControll>();
-    actor->GetComponent<ModelControll>()->LoadModel(filename);
-    actor->SetName("ProjectileRuby");
-    actor->AddComponent<Transform>();
-    actor->GetComponent<Transform>()->SetPosition(pos);
-    actor->GetComponent<Transform>()->SetAngle(angle);
-    actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+    std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+    actor.lock()->AddComponent<ModelControll>();
+    actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+    actor.lock()->SetName("ProjectileRuby");
+    actor.lock()->AddComponent<Transform>();
+    actor.lock()->GetComponent<Transform>()->SetPosition(pos);
+    actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+    actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
     float height = 5;
-    actor->GetComponent<Transform>()->SetHeight(height);
+    actor.lock()->GetComponent<Transform>()->SetHeight(height);
     float lifetimer = 3;
 
-    actor->AddComponent<BulletFiring>();
-    actor->GetComponent<BulletFiring>()->Lanch(dir, pos, lifetimer);
+    actor.lock()->AddComponent<BulletFiring>();
+    actor.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifetimer);
 
 
-    actor->AddComponent<ProjectileRuby>();
+    actor.lock()->AddComponent<ProjectileRuby>();
     const char* effectFilename = "Data/Effect/smorker.efk";
-    actor->GetComponent<ProjectileRuby>()->SetEffectProgress(effectFilename);
+    actor.lock()->GetComponent<ProjectileRuby>()->SetEffectProgress(effectFilename);
     //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
     // これが２Dかの確認
     bool check2d = false;
-    actor->SetCheck2d(check2d);
+    actor.lock()->SetCheck2d(check2d);
     // 移動処理の有無
     bool movementCheck = true;
-    actor->GetComponent<ProjectileRuby>()->SetMovementCheck(movementCheck);
+    actor.lock()->GetComponent<ProjectileRuby>()->SetMovementCheck(movementCheck);
     // 生存時間
     //float lifeTimer = 50.0f;
     //actor->GetComponent<ProjectileHoming>()->SetLifeTimer(lifeTimer);
 
     //actor->AddComponent<Collision>();
-    ProjectileManager::Instance().Register(actor);
+    ProjectileManager::Instance().Register(actor.lock());
     //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
     //std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
@@ -1184,42 +1188,42 @@ void EnemySlime::InputThrowingRuby(DirectX::XMFLOAT3 target)
     const char* filename = "Data/Model/Bullet/Bullet.mdl";
     //const char* filename = "Data/Model/Sword/Sword.mdl";
 
-    std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-    actor->AddComponent<ModelControll>();
-    actor->GetComponent<ModelControll>()->LoadModel(filename);
-    actor->SetName("ProjectileRubyThrowing");
-    actor->AddComponent<Transform>();
-    actor->GetComponent<Transform>()->SetPosition(pos);
-    actor->GetComponent<Transform>()->SetAngle(angle);
-    actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+    std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+    actor.lock()->AddComponent<ModelControll>();
+    actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+    actor.lock()->SetName("ProjectileRubyThrowing");
+    actor.lock()->AddComponent<Transform>();
+    actor.lock()->GetComponent<Transform>()->SetPosition(pos);
+    actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+    actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
 
     float height = 5;
-    actor->GetComponent<Transform>()->SetHeight(height);
+    actor.lock()->GetComponent<Transform>()->SetHeight(height);
 
     float radius = 6;
-    actor->GetComponent<Transform>()->SetRadius(radius);
+    actor.lock()->GetComponent<Transform>()->SetRadius(radius);
 
     float lifetimer = 10;
 
-    actor->AddComponent<BulletFiring>();
-    actor->GetComponent<BulletFiring>()->Lanch(direction, pos, lifetimer);
+    actor.lock()->AddComponent<BulletFiring>();
+    actor.lock()->GetComponent<BulletFiring>()->Lanch(direction, pos, lifetimer);
 
     
 
 
-    actor->AddComponent<ProjectileThrowing>();
+    actor.lock()->AddComponent<ProjectileThrowing>();
     const char* effectFilename = "Data/Effect/smorker.efk";
-    actor->GetComponent<ProjectileThrowing>()->SetEffectProgress(effectFilename);
+    actor.lock()->GetComponent<ProjectileThrowing>()->SetEffectProgress(effectFilename);
 
-    actor->GetComponent<ProjectileThrowing>()->SetTarget(target);
+    actor.lock()->GetComponent<ProjectileThrowing>()->SetTarget(target);
     //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
     // これが２Dかの確認
     bool check2d = false;
-    actor->SetCheck2d(check2d);
+    actor.lock()->SetCheck2d(check2d);
     // 移動処理の有無
     bool movementCheck = false;
-    actor->GetComponent<ProjectileThrowing>()->SetMovementCheck(movementCheck);
+    actor.lock()->GetComponent<ProjectileThrowing>()->SetMovementCheck(movementCheck);
 
 
     // 生存時間
@@ -1227,7 +1231,7 @@ void EnemySlime::InputThrowingRuby(DirectX::XMFLOAT3 target)
     //actor->GetComponent<ProjectileHoming>()->SetLifeTimer(lifeTimer);
 
     //actor->AddComponent<Collision>();
-    ProjectileManager::Instance().Register(actor);
+    ProjectileManager::Instance().Register(actor.lock());
     //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
     //std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
@@ -1253,26 +1257,26 @@ void EnemySlime::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
 void EnemySlime::UiControlle(float elapsedTime)
 {
     if (UiManager::Instance().GetUiesCount() <= 0)return;
-    float gaugeWidth = hp->GetMaxHealth() * hp->GetHealth() * 0.12f;
-    std::shared_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
-    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
+    float gaugeWidth = hp.lock()->GetMaxHealth() * hp.lock()->GetHealth() * 0.12f;
+    std::weak_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
+    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp.lock()->GetScale().y };
 
-    uiHp->SetScale(scale);
+    uiHp.lock()->SetScale(scale);
 
-    std::shared_ptr<Ui> uiHpLife1 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife01)->GetComponent<Ui>();
-    std::shared_ptr<Ui> uiHpLife2 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife02)->GetComponent<Ui>();
+    std::weak_ptr<Ui> uiHpLife1 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife01)->GetComponent<Ui>();
+    std::weak_ptr<Ui> uiHpLife2 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife02)->GetComponent<Ui>();
 
     bool checkDraw = false;
-    switch (hp->GetLife())
+    switch (hp.lock()->GetLife())
     {
     case 1:
     {
-        uiHpLife2->SetDrawCheck(checkDraw);
+        uiHpLife2.lock()->SetDrawCheck(checkDraw);
         break;
     }
     case 0:
     {
-        uiHpLife1->SetDrawCheck(checkDraw);
+        uiHpLife1.lock()->SetDrawCheck(checkDraw);
         break;
     }
     default:
@@ -1285,7 +1289,7 @@ void EnemySlime::UiControlle(float elapsedTime)
 
 void EnemySlime::OnHit(float elapsedTime)
 {
-    if (hp->FlashTime(elapsedTime))
+    if (hp.lock()->FlashTime(elapsedTime))
     {
         ++damageStateTime;
         if (damageStateTime >= damageStateTimeMax)
@@ -1341,8 +1345,8 @@ void EnemySlime::MoveToTarget(float elapsedTime, float speedRate)
     vz /= dist;
 
     // 移動処理
-    movement->Move({ vx,0.0f ,vz }, moveSpeed * speedRate, elapsedTime);
-    movement->Turn({ vx,0.0f ,vz } ,turnSpeed,elapsedTime);
+    movement.lock()->Move({ vx,0.0f ,vz }, moveSpeed * speedRate, elapsedTime);
+    movement.lock()->Turn({ vx,0.0f ,vz } ,turnSpeed,elapsedTime);
    // Move( vx,vz  ,moveSpeed * speedRate);
     //Turn(elapsedTime, vx, vz ,turnSpeed * speedRate);
     //movement->Turn({ vx,0.0f ,vz } ,turnSpeed * speedRate,elapsedTime);
@@ -1357,7 +1361,7 @@ void EnemySlime::TurnToTarget(float elapsedTime, float speedRate)
     vx /= dist;
     vz /= dist;
     // 回転
-    movement->Turn({ vx,0.0f ,vz }, turnSpeed, elapsedTime);
+    movement.lock()->Turn({ vx,0.0f ,vz }, turnSpeed, elapsedTime);
 }
 
 void EnemySlime::InputJump()
@@ -1369,13 +1373,13 @@ void EnemySlime::InputJump()
     if (position.y >= 1)
     {
         jumpSpeed = 0;
-        movement->JumpVelocity(jumpSpeed);
+        movement.lock()->JumpVelocity(jumpSpeed);
     }
 
 
-    if (movement->GetOnLadius())
+    if (movement.lock()->GetOnLadius())
     {
-        movement->JumpVelocity(jumpSpeedMin);
+        movement.lock()->JumpVelocity(jumpSpeedMin);
     }
 
 }
@@ -1445,12 +1449,12 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
         for (int i = 0; i < playercount; ++i)
         {
             // プレイヤー取得
-            std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(i);
+            std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(i);
 
             //　トランスフォーム分解
-            DirectX::XMFLOAT3 playerPosition = playerid->GetComponent<Transform>()->GetPosition();
-            float playerRadius = playerid->GetComponent<Transform>()->GetRadius();
-            float playerHeight = playerid->GetComponent<Transform>()->GetRadius();
+            DirectX::XMFLOAT3 playerPosition = playerid.lock()->GetComponent<Transform>()->GetPosition();
+            float playerRadius = playerid.lock()->GetComponent<Transform>()->GetRadius();
+            float playerHeight = playerid.lock()->GetComponent<Transform>()->GetRadius();
 
 
             DirectX::XMFLOAT3 outPosition;
@@ -1463,7 +1467,7 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
                 outPosition))
             {
                 // ダメージを与える
-                if (playerid->GetComponent<HP>()->ApplyDamage(1, 0.5f))
+                if (playerid.lock()->GetComponent<HP>()->ApplyDamage(1, 0.5f))
                 {
 
                     // 衝動
@@ -1484,10 +1488,10 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
 
 
                     // 吹っ飛ばす
-                    playerid->GetComponent<Movement>()->AddImpulse(impulse);
+                    playerid.lock()->GetComponent<Movement>()->AddImpulse(impulse);
 
                     // Ui 揺らし開始
-                    playerid->GetComponent<Player>()->SetShakeMode(true);
+                    playerid.lock()->GetComponent<Player>()->SetShakeMode(true);
                 }
             }
         }
@@ -1497,12 +1501,12 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
 bool EnemySlime::SearchPlayer()
 {
     // プレイヤー取得
-    std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
+    std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
     
     //　トランスフォーム分解
-    DirectX::XMFLOAT3 playerPosition = playerid->GetComponent<Transform>()->GetPosition();
-    float playerRadius = playerid->GetComponent<Transform>()->GetRadius();
-    float playerHeight = playerid->GetComponent<Transform>()->GetRadius();
+    DirectX::XMFLOAT3 playerPosition = playerid.lock()->GetComponent<Transform>()->GetPosition();
+    float playerRadius = playerid.lock()->GetComponent<Transform>()->GetRadius();
+    float playerHeight = playerid.lock()->GetComponent<Transform>()->GetRadius();
 
 
     
@@ -1573,9 +1577,9 @@ void EnemySlime::TransitionPursuitState()
 void EnemySlime::UpdatePursuitState(float elapsedTime)
 {
     // プレイヤーid
-    std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+    std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
     // 目標地点ををプレイヤー位置に設定
-    targetPosition = playerid->GetComponent<Transform>()->GetPosition();
+    targetPosition = playerid.lock()->GetComponent<Transform>()->GetPosition();
 
     // 目標地点へ移動
     MoveToTarget(elapsedTime, 1.0f);
@@ -1637,9 +1641,9 @@ void EnemySlime::TransitionIdleBattleState()
 void EnemySlime::UpdateIdleBattleState(float elapsedTime)
 {
     // プレイヤーid
-    std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+    std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
     // 目標地点ををプレイヤー位置に設定
-    targetPosition = playerid->GetComponent<Transform>()->GetPosition();
+    targetPosition = playerid.lock()->GetComponent<Transform>()->GetPosition();
 
     // タイマー処理
     stateTimer -= elapsedTime;
@@ -1695,7 +1699,7 @@ void EnemySlime::UpdateDeathState(float elapsedTime)
     // ダメージアニメーションが終わったら自分を破棄
     if (!model->IsPlayAnimation())
     {
-        hp->OnDead();
+        hp.lock()->OnDead();
         EnemyManager::Instance().Remove(GetActor());
         EnemyManager::Instance().DeleteUpdate(elapsedTime);
     }

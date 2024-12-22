@@ -282,14 +282,20 @@ public:
     StateMachine* GetStateMachine() { return stateMachine.get(); }
 
     // 攻撃方法変更
-    void SetSelectCheck(bool selectCheck) { this->selectCheck = selectCheck; }
+    void SetSelectCheck(int selectCheck) { this->selectCheck = selectCheck; }
     // 攻撃方法変更
-    bool GetSelectCheck() const { return selectCheck; }
+    int GetSelectCheck() const { return selectCheck; }
 
     // 魔法変更
-    void SetSelectMagicCheck(bool selectMagicCheck) { this->selectMagicCheck = selectMagicCheck; }
+    void SetSelectMagicCheck(int selectMagicCheck) { this->selectMagicCheck = selectMagicCheck; }
     // 魔法変更
     int GetSelectMagicCheck() const { return selectMagicCheck; }
+
+    // 魔法選択
+    void SetMagicAction(bool magicAction) { this->magicAction = magicAction; }
+    
+    // 魔法選択
+    bool GetMagicAction() { return magicAction; }
 
     // 特殊魔法発動ため
     void SetSpecialAttackCharge(float specialAttackCharge) { this->specialAttackCharge = specialAttackCharge; }
@@ -509,10 +515,14 @@ public:
 
 
 private:
-    std::shared_ptr<Movement>	movement;
-    std::shared_ptr<HP>	hp;
-    std::shared_ptr<Mp> mp;
-    std::shared_ptr<Transform> transform;
+    //std::shared_ptr<Movement>	movement;
+    //std::shared_ptr<HP>	hp;
+    //std::shared_ptr<Mp> mp;
+    //std::shared_ptr<Transform> transform;
+    std::weak_ptr<Movement>	movement;
+    std::weak_ptr<HP> hp;
+    std::weak_ptr<Mp> mp;
+    std::weak_ptr<Transform> transform;
 
     
     DirectX::XMFLOAT3 velocity = { 0,0,0 };

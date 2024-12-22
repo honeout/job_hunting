@@ -197,7 +197,7 @@ void WanderState::Exit()
 void WanderState::End()
 {
 	// 解放
-	owner.lock().reset();
+	//owner.lock().reset();
 }
 
 // 初期化
@@ -231,7 +231,7 @@ void IdleState::Execute(float elapsedTime)
 
 	 std::weak_ptr<EnemySlime> enemyid = owner.lock()->GetComponent<EnemySlime>();
 	 Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	 std::weak_ptr<HP> hp = owner.lock()->GetComponent<HP>();
+	 std::weak_ptr <HP> hp = owner.lock()->GetComponent<HP>();
 
 	if (stateTimer <= stateTimerEnd)
 	{
@@ -265,7 +265,7 @@ void IdleState::Exit()
 void IdleState::End()
 {
 	// 解放
-	owner.lock().reset();
+	//owner.lock().reset();
 }
 // 初期化
 void PursuitState::Enter()
@@ -441,7 +441,7 @@ void PursuitState::Exit()
 void PursuitState::End()
 {
 	// 解放
-	owner.lock().reset();
+	//owner.lock().reset();
 }
 
 // 初期化
@@ -575,7 +575,7 @@ void JumpState::Exit()
 void JumpState::End()
 {
 	// 解放
-	owner.lock().reset();
+	//owner.lock().reset();
 }
 
 
@@ -675,7 +675,7 @@ void AttackState::Exit()
 void AttackState::End()
 {
 	// 解放
-	owner.lock().reset();
+	//owner.lock().reset();
 }
 
 // 初期設定
@@ -775,7 +775,7 @@ void AttackShotState::Exit()
 void AttackShotState::End()
 {
 	// 解放
-	owner.lock().reset();
+	//owner.lock().reset();
 }
 
 // 初期処理
@@ -813,8 +813,8 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 	//DirectX::XMFLOAT3 direction;
 	DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
 	// プレイヤーid
-	std::shared_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
-	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid->GetComponent<Transform>()->GetPosition());
+	std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
+	DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid.lock()->GetComponent<Transform>()->GetPosition());
 
 	//for (int i = 0; i < ProjectileManager::Instance().GetProjectileCount(); ++i)
 	//{
@@ -853,7 +853,7 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 
 		 
 		//	遠距離攻撃登録
-		enemyid.lock()->InputThrowingRuby(playerid->GetComponent<Transform>()->GetPosition());
+		enemyid.lock()->InputThrowingRuby(playerid.lock()->GetComponent<Transform>()->GetPosition());
 
 		
 
@@ -862,7 +862,7 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 	if (animationTime <= 3.6f && animationTime >= 3.0f && !turnPermission)
 	{
 
-		enemyid.lock()->SetTargetPosition(playerid->GetComponent<Transform>()->GetPosition());
+		enemyid.lock()->SetTargetPosition(playerid.lock()->GetComponent<Transform>()->GetPosition());
 		enemyid.lock()->TurnToTarget(elapsedTime, turnSpeed);
 
 
@@ -883,7 +883,7 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 
 					});
 
-				projectileManager->GetComponent<BulletFiring>()->TurnFull(turnSpeed, playerid->GetComponent<Transform>()->GetPosition(), elapsedTime);
+				projectileManager->GetComponent<BulletFiring>()->TurnFull(turnSpeed, playerid.lock()->GetComponent<Transform>()->GetPosition(), elapsedTime);
 
 			}
 		}
@@ -899,7 +899,7 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 			std::shared_ptr<Actor> projectileManager = ProjectileManager::Instance().GetProjectile(i);
 			if (projectileManager->GetComponent<ProjectileThrowing>())
 			{
-				DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid->GetComponent<Transform>()->GetPosition());
+				DirectX::XMVECTOR playerPosition = DirectX::XMLoadFloat3(&playerid.lock()->GetComponent<Transform>()->GetPosition());
 				DirectX::XMVECTOR projectilePosition = DirectX::XMLoadFloat3(&projectileManager->GetComponent<Transform>()->GetPosition());
 
 				//DirectX::XMVECTOR vectorVec = DirectX::XMVectorSubtract(playerPosition, projectilePosition);
@@ -1025,7 +1025,7 @@ void ConfusionState::Enter()
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
 	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
-	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	//model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
 	model->PlayAnimation(EnemySlime::Animation::Anim_Die, loop, currentAnimationStartSeconds, blendSeconds,
 		currentAnimationAddSeconds, keyFrameEnd);
@@ -1181,8 +1181,8 @@ void PlayerIdleState::Enter()
 	
 
 	// 落ちる
-	bool stop = false;
-	moveid.lock()->SetStopMove(stop);
+	//bool stop = false;
+	moveid.lock()->SetStopMove(false);
 }
 
 void PlayerIdleState::Execute(float elapsedTime)
@@ -1267,8 +1267,8 @@ void PlayerMovestate::Enter()
 
 
 	// 落ちる
-	bool stop = false;
-	moveid.lock()->SetStopMove(stop);
+	//bool stop = false;
+	moveid.lock()->SetStopMove(false);
 }
 
 void PlayerMovestate::Execute(float elapsedTime)
@@ -1349,8 +1349,8 @@ void PlayerJumpState::Enter()
 
 
 	// 落ちる
-	bool stop = false;
-	moveid.lock()->SetStopMove(stop);
+	//bool stop = false;
+	moveid.lock()->SetStopMove(false);
 }
 
 void PlayerJumpState::Execute(float elapsedTime)
@@ -3005,7 +3005,7 @@ void PlayerMagicState::Enter()
 	{
 		// アニメーション再生
 		model->PlayAnimation(
-			Player::Anim_MagicSeconde, loop,
+			Player::Anim_Magic, loop,
 			currentAnimationStartSeconds, blendSeconds
 		);
 
@@ -3027,7 +3027,7 @@ void PlayerMagicState::Enter()
 	{
 		// アニメーション再生
 		model->PlayAnimation(
-			Player::Anim_Magic, loop,
+			Player::Anim_MagicSeconde, loop,
 			currentAnimationStartSeconds, blendSeconds
 		);
 
@@ -3196,10 +3196,20 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 void PlayerMagicState::Exit()
 {
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 
 	// 魔法の選択をゼロに
-	owner.lock()->GetComponent<Player>()->SetSelectCheck((int)Player::CommandMagic::Normal);
+	//owner.lock()->GetComponent<Player>()->SetSelectCheck((int)Player::CommandMagic::Normal);
+	if (!playerid.lock()->InputShortCutkeyMagic())
+	{
+		// 魔法選択解除
+		playerid.lock()->SetMagicAction(false);
+
+		// 攻撃種類選択
+		playerid.lock()->SetSelectMagicCheck((int)Player::CommandAttack::Attack);
+
+	}
 
 	// 落ちるの再開
 	bool stopFall = false;

@@ -270,9 +270,9 @@ private:
     DirectX::XMFLOAT3 angle = {};
     DirectX::XMFLOAT3 scale = {};
 
-    std::shared_ptr<Movement>	movement;
-    std::shared_ptr<HP>	hp;
-    std::shared_ptr<Transform>	transform;
+    std::weak_ptr<Movement>	movement;
+    std::weak_ptr<HP>	hp;
+    std::weak_ptr<Transform>	transform;
 
     // プレイヤーに与ダメエフェ
     std::unique_ptr<Effect> moveAttackEffect;

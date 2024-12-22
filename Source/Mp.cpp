@@ -39,7 +39,7 @@ bool Mp::ApplyConsumption(int mpConsumption)
     // ダメージが０の場合は健康状態を変更する必要がない
     if (mpConsumption == 0) return false;
 
-    std::shared_ptr<Actor> actor = GetActor();
+    std::weak_ptr<Actor> actor = GetActor();
 
       // 死亡している場合は健康状態を変更しない
     if (magic <= 0) 

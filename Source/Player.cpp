@@ -105,11 +105,11 @@ void Player::Start()
 
     // —‰º’â~
     bool stopFall = false;
-    movement->SetStopFall(stopFall);
+    movement.lock()->SetStopFall(stopFall);
 
     // ˆÚ“®‚Ì’â~
     bool stopMove = false;
-    movement->SetStopMove(stopMove);
+    movement.lock()->SetStopMove(stopMove);
 
     // hpŠÖ”‚ğg‚¦‚é‚æ‚¤‚É
     hp = GetActor()->GetComponent<HP>();
@@ -121,14 +121,14 @@ void Player::Start()
     transform = GetActor()->GetComponent<Transform>();
 
     // ˆÊ’u“™
-    position = transform->GetPosition();
+    position = transform.lock()->GetPosition();
 
-    angle = transform->GetAngle();
+    angle = transform.lock()->GetAngle();
 
-    scale = transform->GetScale();
+    scale = transform.lock()->GetScale();
 
     // d—Íİ’è
-    movement->SetGravity(gravity);
+    movement.lock()->SetGravity(gravity);
 
     // ƒ‚ƒfƒ‹ƒf[ƒ^‚ğ“ü‚ê‚éB
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
@@ -168,20 +168,20 @@ void Player::Start()
     bornDownerEndPoint = "mixamorig:RightToe_End";
 
     // hpİ’è
-    hp->SetHealth(health);
+    hp.lock()->SetHealth(health);
     // hpÅ‘å’l‚Ìİ’è
-    hp->SetMaxHealth(maxHealth);
+    hp.lock()->SetMaxHealth(maxHealth);
 
 
     // mpİ’è
-    mp->SetMagic(magicPoint);
+    mp.lock()->SetMagic(magicPoint);
     // mpÅ‘å’l
-    mp->SetMaxMagic(magicPoint);
+    mp.lock()->SetMaxMagic(magicPoint);
 
     // ”¼Œa
-    transform->SetRadius(radius);
+    transform.lock()->SetRadius(radius);
     // g’·
-    transform->SetHeight(height);
+    transform.lock()->SetHeight(height);
 
     // ƒRƒ}ƒ“ƒh‘€ì—p
     selectCheck = (int)CommandAttack::Attack;
@@ -224,7 +224,7 @@ void Player::Start()
     moveSpeedAnimation = 0.0f;
 
     // “ÁêƒAƒNƒVƒ‡ƒ“‚Ìí—Ş
-    specialAttack.push((int)SpecialAttack::Normal);
+    //specialAttack.push((int)SpecialAttack::Normal);
 
     // “ÁêƒAƒNƒVƒ‡ƒ“”­“®•s
     specialAttackTime = false;
@@ -272,7 +272,7 @@ void Player::Update(float elapsedTime)
 
 
         // ’…’n‚ÉƒGƒtƒFƒNƒgØ‚é
-        if (movement->GetOnLadius() || GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
+        if (movement.lock()->GetOnLadius() || GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
         {
             areWork->Stop(areWork->GetEfeHandle());
         }
@@ -291,9 +291,9 @@ void Player::Update(float elapsedTime)
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
 
             // ‰Š‰¹
-            Bgm->Play(false);
+            //Bgm->Play(false);
             // ‰¹‘å‚«‚¢
-            Bgm->SetVolume(2.0f);
+            //Bgm->SetVolume(2.0f);
             
             // ‚à‚µ’n–Ê‚È‚ç‰½‚à‚µ‚È‚¢
             bool noStart = false;
@@ -306,8 +306,9 @@ void Player::Update(float elapsedTime)
         //@–‚–@“ü—Íˆ—
         if (InputAttack() && GetSelectCheck() == (int)Player::CommandAttack::Magic &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Magic) && 
-            !mp->GetMpEmpth() &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage)
+            !mp.lock()->GetMpEmpth() &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death)
                 )
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
@@ -366,23 +367,23 @@ void Player::Update(float elapsedTime)
     // ‘¬—Íˆ—XV
 
 
-    position = transform->GetPosition();
+    position = transform.lock()->GetPosition();
 
-    angle = transform->GetAngle();
+    angle = transform.lock()->GetAngle();
 
-    scale = transform->GetScale();
+    scale = transform.lock()->GetScale();
 
-    hp->UpdateInbincibleTimer(elapsedTime);
+    hp.lock()->UpdateInbincibleTimer(elapsedTime);
 
     // ƒ}ƒWƒbƒN‰ñ•œ
-    mp->MpCharge(elapsedTime);
+    mp.lock()->MpCharge(elapsedTime);
 
     //// ƒƒbƒNƒIƒ“
     InputRockOn();
 
     hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
     // ‰Á‘¬“x“™
-    movement->UpdateVelocity(elapsedTime);
+    movement.lock()->UpdateVelocity(elapsedTime);
     
 
     // ƒvƒŒƒCƒ„[‚Æ“G‚Æ‚ÌÕ“Ëˆ—
@@ -402,7 +403,7 @@ void Player::Update(float elapsedTime)
     UiControlle(elapsedTime);
 
     // ˆÊ’uXV
-    transform->UpdateTransform();
+    transform.lock()->UpdateTransform();
 
 
 
@@ -448,7 +449,7 @@ void Player::Update(float elapsedTime)
 
 
     // ˆÊ’uXV
-    model->UpdateTransform(transform->GetTransform());
+    model->UpdateTransform(transform.lock()->GetTransform());
     
 }
 
@@ -765,8 +766,8 @@ void Player::OnGUI()
 
         MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-        position = transform->GetPosition();
-        angle = transform->GetAngle();
+        position = transform.lock()->GetPosition();
+        angle = transform.lock()->GetAngle();
 
 
 
@@ -883,14 +884,16 @@ bool Player::InputMove(float elapsedTime)
     // ’¼i’eŠÛ”­Ë@rƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚ç
   
     if (ax + FLT_EPSILON != 0.0f + FLT_EPSILON &&
-        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
+        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
+        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
     {
 
         return true;
     }
 
     if (ay + FLT_EPSILON != 0.0f + FLT_EPSILON &&
-        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
+        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
+        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
     {
 
         return true;
@@ -977,11 +980,11 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
     // ƒ[ƒJƒ‹‚©‚çƒ[ƒ‹ƒh‚És‚­‚Æ‚«‚É‚¢‚é“z‘Šè‚Ìƒ|ƒWƒVƒ‡ƒ“‚ğ“n‚·B
     DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
 
-    std::shared_ptr<Ui> uiIdSight;
-    std::shared_ptr<TransForm2D> uiIdSightTransform;
+    std::weak_ptr<Ui> uiIdSight;
+    std::weak_ptr<TransForm2D> uiIdSightTransform;
 
-    std::shared_ptr<Ui> uiIdSightMove; 
-    std::shared_ptr<TransForm2D> uiIdSightMoveTransform;
+    std::weak_ptr<Ui> uiIdSightMove;
+    std::weak_ptr<TransForm2D> uiIdSightMoveTransform;
 
     int uiCount = UiManager::Instance().GetUiesCount();
 
@@ -1048,7 +1051,7 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
         if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f && !rockCheck)
         {
             bool drawCheck = false;
-            uiIdSight->SetDrawCheck(drawCheck);
+            uiIdSight.lock()->SetDrawCheck(drawCheck);
 
             //uiIdSightMove->SetDrawCheck(drawCheck);
 
@@ -1056,18 +1059,18 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
         }
 
         bool drawCheck = true;
-        uiIdSight->SetDrawCheck(drawCheck);
+        uiIdSight.lock()->SetDrawCheck(drawCheck);
 
        // uiIdSightMove->SetDrawCheck(drawCheck);
 
         // 2DƒXƒvƒ‰ƒCƒg•`‰æ
         {
-            uiIdSightTransform->SetPosition(
+            uiIdSightTransform.lock()->SetPosition(
                 { 
                     scereenPosition.x,
                     scereenPosition.y
                 });
-            uiIdSightMoveTransform->SetPosition(
+            uiIdSightMoveTransform.lock()->SetPosition(
                 {
                     scereenPosition.x - 34,
                     scereenPosition.y - 25
@@ -1111,6 +1114,7 @@ bool Player::InputSelectCheck()
         magicAction = true;
 
         gamePad.SetButtonDownCountinue(true);
+        return true;
     }
     // ˆê“x—£‚·‚Ü‚Åƒ{ƒ^ƒ“Œø‚©‚È‚¢
     if (gamePad.GetButtonUp() & GamePad::BTN_B)
@@ -1121,6 +1125,7 @@ bool Player::InputSelectCheck()
     if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT && selectCheck == (int)CommandAttack::Magic)
     {
         magicAction = true;
+        return true;
     }
     // ƒ‹[ƒv‘€ì Å‘å‚É‚¢‚Á‚½‚ç
     if (selectCheck > (int)CommandAttack::Magic)
@@ -1141,42 +1146,42 @@ bool Player::InputSelectCheck()
     // UŒ‚‘I‚Ô
     if (selectCheck == (int)CommandAttack::Attack)
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttackCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttackCheck)->GetComponent<Ui>();
 
         
-        uiIdAttack->SetDrawCheck(false);
-        uiIdAttackCheck->SetDrawCheck(true);
+        uiIdAttack.lock()->SetDrawCheck(false);
+        uiIdAttackCheck.lock()->SetDrawCheck(true);
     }
     // –‚–@‘I‚ñ‚¾
     else
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttackCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttackCheck)->GetComponent<Ui>();
 
 
-        uiIdAttack->SetDrawCheck(true);
-        uiIdAttackCheck->SetDrawCheck(false);
+        uiIdAttack.lock()->SetDrawCheck(true);
+        uiIdAttackCheck.lock()->SetDrawCheck(false);
     }
     // –‚–@‘I‚ñ‚¾
     if (selectCheck == (int)CommandAttack::Magic)
     {
-        std::shared_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdMagickCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagickCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdMagickCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagickCheck)->GetComponent<Ui>();
 
 
-        uiIdMagick->SetDrawCheck(false);
-        uiIdMagickCheck->SetDrawCheck(true);
+        uiIdMagick.lock()->SetDrawCheck(false);
+        uiIdMagickCheck.lock()->SetDrawCheck(true);
     }
     // UŒ‚‘I‚Ô
     else
     {
-        std::shared_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdMagickCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagickCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdMagickCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagickCheck)->GetComponent<Ui>();
 
 
-        uiIdMagick->SetDrawCheck(true);
-        uiIdMagickCheck->SetDrawCheck(false);
+        uiIdMagick.lock()->SetDrawCheck(true);
+        uiIdMagickCheck.lock()->SetDrawCheck(false);
     }
 
 
@@ -1229,90 +1234,90 @@ bool Player::InputSelectMagicCheck()
     // UIİ’è ‰Š
     if (selectMagicCheck == (int)CommandMagic::Fire && magicAction)
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
 
 
-        uiIdAttack->SetDrawCheck(false);
-        uiIdAttackCheck->SetDrawCheck(true);
+        uiIdAttack.lock()->SetDrawCheck(false);
+        uiIdAttackCheck.lock()->SetDrawCheck(true);
     }
     else
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
 
 
-        uiIdAttack->SetDrawCheck(true);
-        uiIdAttackCheck->SetDrawCheck(false);
+        uiIdAttack.lock()->SetDrawCheck(true);
+        uiIdAttackCheck.lock()->SetDrawCheck(false);
     }
     if (!magicAction)
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
 
 
-        uiIdAttack->SetDrawCheck(false);
-        uiIdAttackCheck->SetDrawCheck(false);
+        uiIdAttack.lock()->SetDrawCheck(false);
+        uiIdAttackCheck.lock()->SetDrawCheck(false);
     }
 
 
     // UIİ’è —‹
     if (selectMagicCheck == (int)CommandMagic::Thander && magicAction)
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
 
 
-        uiIdAttack->SetDrawCheck(false);
-        uiIdAttackCheck->SetDrawCheck(true);
+        uiIdAttack.lock()->SetDrawCheck(false);
+        uiIdAttackCheck.lock()->SetDrawCheck(true);
     }
     else
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
 
 
-        uiIdAttack->SetDrawCheck(true);
-        uiIdAttackCheck->SetDrawCheck(false);
+        uiIdAttack.lock()->SetDrawCheck(true);
+        uiIdAttackCheck.lock()->SetDrawCheck(false);
     }
     if (!magicAction)
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
 
 
-        uiIdAttack->SetDrawCheck(false);
-        uiIdAttackCheck->SetDrawCheck(false);
+        uiIdAttack.lock()->SetDrawCheck(false);
+        uiIdAttackCheck.lock()->SetDrawCheck(false);
     }
 
 
     // UIİ’è •X
     if (selectMagicCheck == (int)CommandMagic::Ice && magicAction)
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
 
 
-        uiIdAttack->SetDrawCheck(false);
-        uiIdAttackCheck->SetDrawCheck(true);
+        uiIdAttack.lock()->SetDrawCheck(false);
+        uiIdAttackCheck.lock()->SetDrawCheck(true);
     }
     else
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
 
 
-        uiIdAttack->SetDrawCheck(true);
-        uiIdAttackCheck->SetDrawCheck(false);
+        uiIdAttack.lock()->SetDrawCheck(true);
+        uiIdAttackCheck.lock()->SetDrawCheck(false);
     }
     if (!magicAction)
     {
-        std::shared_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
 
 
-        uiIdAttack->SetDrawCheck(false);
-        uiIdAttackCheck->SetDrawCheck(false);
+        uiIdAttack.lock()->SetDrawCheck(false);
+        uiIdAttackCheck.lock()->SetDrawCheck(false);
     }
 
 
@@ -1329,11 +1334,14 @@ bool Player::InputShortCutkeyMagic()
         selectCheck = (int)CommandAttack::Magic;
         selectMagicCheck = (int)CommandMagic::Fire;
         magicAction = true;
+
+        return true;
     }
     // ‰Ÿ‚µ‚Ä‚éŠÔ‘I‘ğ
     if (gamePad.GetButton() & GamePad::BTN_LEFT_SHOULDER)
     {
         magicAction = true;
+        return true;
     }
     // —£‚µ‚½‚ç
     if (gamePad.GetButtonUp() & GamePad::BTN_LEFT_SHOULDER)
@@ -1354,9 +1362,9 @@ bool Player::InputSpecialAttackCharge()
 
     if (specialAttackCharge >= 1.5f)
     {
-        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
 
         //// ‹ZŠm’è
         //std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
@@ -1368,11 +1376,11 @@ bool Player::InputSpecialAttackCharge()
         //specialAttack.push((int)SpecialAttack::Attack);
 
         bool drawCheck = false;
-        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeFurst.lock()->SetDrawCheck(drawCheck);
 
-        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeSecond.lock()->SetDrawCheck(drawCheck);
 
-        uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeSerde.lock()->SetDrawCheck(drawCheck);
 
         //for (int i = 0; i < specialAttack.size(); ++i)
         //{
@@ -1383,12 +1391,12 @@ bool Player::InputSpecialAttackCharge()
             if (attackEnergyCharge >= energyChargeMax)
             {
                 // ‹ZŠm’è
-                std::shared_ptr<Ui> uiIdAttackSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
-                std::shared_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
+                std::weak_ptr<Ui> uiIdAttackSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+                std::weak_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
 
 
                 bool drawCheck = true;
-                uiIdAttackSpecial->SetDrawCheck(drawCheck);
+                uiIdAttackSpecial.lock()->SetDrawCheck(drawCheck);
 
 
                 // •KE‹Z‰½‚ª“o˜^‚³‚ê‚½‚© aŒ‚
@@ -1401,7 +1409,7 @@ bool Player::InputSpecialAttackCharge()
 
                 if (2 < (int)specialAttack.size())
                     pos.y = pos.y - (add * (float)specialAttack.size());
-                uiIdSpecialAttackTransForm2D->SetPosition(pos);
+                uiIdSpecialAttackTransForm2D.lock()->SetPosition(pos);
 
                 // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
                 specialAttackCharge = 0.0f;
@@ -1415,12 +1423,12 @@ bool Player::InputSpecialAttackCharge()
             if (fireEnergyCharge >= energyChargeMax)
             {
                 // ‹ZŠm’è
-                std::shared_ptr<Ui> uiIdSpecialFire = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
-                std::shared_ptr<TransForm2D> uiIdSpecialFireTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
+                std::weak_ptr<Ui> uiIdSpecialFire = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+                std::weak_ptr<TransForm2D> uiIdSpecialFireTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
 
 
                 bool drawCheck = true;
-                uiIdSpecialFire->SetDrawCheck(drawCheck);
+                uiIdSpecialFire.lock()->SetDrawCheck(drawCheck);
 
                 // •KE‹Z‰½‚ª“o˜^‚³‚ê‚½‚© ‰Î
                 specialAttack.push((int)SpecialAttack::MagicFire);
@@ -1430,7 +1438,7 @@ bool Player::InputSpecialAttackCharge()
                 float add = 30;
                 if (2 < (int)specialAttack.size())
                     pos.y = pos.y - (add * (float)specialAttack.size());
-                uiIdSpecialFireTransForm2D->SetPosition(pos);
+                uiIdSpecialFireTransForm2D.lock()->SetPosition(pos);
 
                 // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
                 specialAttackCharge = 0.0f;
@@ -1446,12 +1454,12 @@ bool Player::InputSpecialAttackCharge()
 
 
                 // ‹ZŠm’è
-                std::shared_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
-                std::shared_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
+                std::weak_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
+                std::weak_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
 
 
                 bool drawCheck = true;
-                uiIdSpecialThander->SetDrawCheck(drawCheck);
+                uiIdSpecialThander.lock()->SetDrawCheck(drawCheck);
 
                 // •KE‹Z‰½‚ª“o˜^‚³‚ê‚½‚© aŒ‚
                 specialAttack.push((int)SpecialAttack::MagicThander);
@@ -1461,7 +1469,7 @@ bool Player::InputSpecialAttackCharge()
                 float add = 30;
                 if (2 < (int)specialAttack.size())
                     pos.y = pos.y - (add * (float)specialAttack.size());
-                uiIdSpecialThanderTransForm2D->SetPosition(pos);
+                uiIdSpecialThanderTransForm2D.lock()->SetPosition(pos);
 
                 // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
                 specialAttackCharge = 0.0f;
@@ -1475,12 +1483,12 @@ bool Player::InputSpecialAttackCharge()
             if (iceEnergyCharge >= energyChargeMax)
             {
                 // ‹ZŠm’è
-                std::shared_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
-                std::shared_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
+                std::weak_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
+                std::weak_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
 
 
                 bool drawCheck = true;
-                uiIdSpecialIce->SetDrawCheck(drawCheck);
+                uiIdSpecialIce.lock()->SetDrawCheck(drawCheck);
 
                 // •KE‹Z‰½‚ª“o˜^‚³‚ê‚½‚© •X
                 specialAttack.push((int)SpecialAttack::MagicIce);
@@ -1490,7 +1498,7 @@ bool Player::InputSpecialAttackCharge()
                 float add = 30;
                 if (2 < (int)specialAttack.size())
                     pos.y = pos.y - (add * (float)specialAttack.size());
-                uiIdSpecialIceTransForm2D->SetPosition(pos);
+                uiIdSpecialIceTransForm2D.lock()->SetPosition(pos);
 
 
                 // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
@@ -1546,18 +1554,18 @@ bool Player::InputSpecialAttackCharge()
         if (enemyManagerCount > 0)
         {
 
-            std::shared_ptr<EnemySlime> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemySlime>();
-            std::shared_ptr<Movement> enemyMove = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<Movement>();
+            std::weak_ptr<EnemySlime> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemySlime>();
+            std::weak_ptr<Movement> enemyMove = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<Movement>();
 
             bool moveCheck = false;
-            enemy->SetMoveCheck(moveCheck);
+            enemy.lock()->SetMoveCheck(moveCheck);
 
             // ‘¬“x’â~
             bool stopVelocity = true;
-            enemyMove->SetStopMove(stopVelocity);
+            enemyMove.lock()->SetStopMove(stopVelocity);
             // —‚¿‚é‚Ì’â~
             bool stopFall = true;
-            enemyMove->SetStopFall(stopFall);
+            enemyMove.lock()->SetStopFall(stopFall);
         }
 
         switch (specialAttack.top())
@@ -1567,19 +1575,19 @@ bool Player::InputSpecialAttackCharge()
         {
 
             // ‹ZŠm’è
-            std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
-            std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
-            std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
-            std::shared_ptr<TransForm2D> uiIdSpecialShurashuPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<TransForm2D>();
+            std::weak_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+            std::weak_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
+            std::weak_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
+            std::weak_ptr<TransForm2D> uiIdSpecialShurashuPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<TransForm2D>();
 
             bool drawCheck = false;
-            uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+            uiIdSpecialShurashu.lock()->SetDrawCheck(drawCheck);
             //drawCheck = true;
             //uiIdSpecialShurashuPush->SetDrawCheck(drawCheck);
 
             DirectX::XMFLOAT2 pos;
-            pos = { uiIdSpecialShurashuTransForm2D->GetPosition() };
-            uiIdSpecialShurashuPushTransForm2D->SetPosition(pos);
+            pos = { uiIdSpecialShurashuTransForm2D.lock()->GetPosition() };
+            uiIdSpecialShurashuPushTransForm2D.lock()->SetPosition(pos);
 
             specialAttack.pop();
 
@@ -1601,19 +1609,19 @@ bool Player::InputSpecialAttackCharge()
         case (int)SpecialAttack::MagicFire:
         {
             // ‹ZŠm’è
-            std::shared_ptr<Ui> uiIdSpecialFrame = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
-            std::shared_ptr<Ui> uiIdSpecialFramePush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
-            std::shared_ptr<TransForm2D> uiIdSpecialFrameTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
-            std::shared_ptr<TransForm2D> uiIdSpecialFramePushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
+            std::weak_ptr<Ui> uiIdSpecialFrame = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+            std::weak_ptr<Ui> uiIdSpecialFramePush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
+            std::weak_ptr<TransForm2D> uiIdSpecialFrameTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
+            std::weak_ptr<TransForm2D> uiIdSpecialFramePushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
 
             bool drawCheck = false;
-            uiIdSpecialFrame->SetDrawCheck(drawCheck);
+            uiIdSpecialFrame.lock()->SetDrawCheck(drawCheck);
             //drawCheck = true;
             //uiIdSpecialFramePush->SetDrawCheck(drawCheck);
 
             DirectX::XMFLOAT2 pos;
-            pos = { uiIdSpecialFrameTransForm2D->GetPosition() };
-            uiIdSpecialFramePushTransForm2D->SetPosition(pos);
+            pos = { uiIdSpecialFrameTransForm2D.lock()->GetPosition() };
+            uiIdSpecialFramePushTransForm2D.lock()->SetPosition(pos);
 
             specialAttack.pop();
 
@@ -1633,19 +1641,19 @@ bool Player::InputSpecialAttackCharge()
         case (int)SpecialAttack::MagicIce:
         {
             // ‹ZŠm’è
-            std::shared_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
-            std::shared_ptr<Ui> uiIdSpecialIceePush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
-            std::shared_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
-            std::shared_ptr<TransForm2D> uiIdSpecialIcePushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
+            std::weak_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
+            std::weak_ptr<Ui> uiIdSpecialIceePush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
+            std::weak_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
+            std::weak_ptr<TransForm2D> uiIdSpecialIcePushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
 
             bool drawCheck = false;
-            uiIdSpecialIce->SetDrawCheck(drawCheck);
+            uiIdSpecialIce.lock()->SetDrawCheck(drawCheck);
  /*           drawCheck = true;
             uiIdSpecialIceePush->SetDrawCheck(drawCheck);*/
 
             DirectX::XMFLOAT2 pos;
-            pos = { uiIdSpecialIceTransForm2D->GetPosition() };
-            uiIdSpecialIcePushTransForm2D->SetPosition(pos);
+            pos = { uiIdSpecialIceTransForm2D.lock()->GetPosition() };
+            uiIdSpecialIcePushTransForm2D.lock()->SetPosition(pos);
 
 
             specialAttack.pop();
@@ -1666,19 +1674,19 @@ bool Player::InputSpecialAttackCharge()
         case (int)SpecialAttack::MagicThander:
         {
             // ‹ZŠm’è
-            std::shared_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
-            std::shared_ptr<Ui> uiIdSpecialThanderPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
-            std::shared_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
-            std::shared_ptr<TransForm2D> uiIdSpecialThanderPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
+            std::weak_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
+            std::weak_ptr<Ui> uiIdSpecialThanderPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
+            std::weak_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
+            std::weak_ptr<TransForm2D> uiIdSpecialThanderPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
 
             bool drawCheck = false;
-            uiIdSpecialThander->SetDrawCheck(drawCheck);
+            uiIdSpecialThander.lock()->SetDrawCheck(drawCheck);
             //drawCheck = true;
             //uiIdSpecialThanderPush->SetDrawCheck(drawCheck);
 
             DirectX::XMFLOAT2 pos;
-            pos = { uiIdSpecialThanderTransForm2D->GetPosition() };
-            uiIdSpecialThanderPushTransForm2D->SetPosition(pos);
+            pos = { uiIdSpecialThanderTransForm2D.lock()->GetPosition() };
+            uiIdSpecialThanderPushTransForm2D.lock()->SetPosition(pos);
 
             specialAttack.pop();
 
@@ -1724,65 +1732,65 @@ bool Player::InputSpecialAttackCharge()
     // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
     if (specialAttackCharge >= 0.4f && specialAttackCharge < 0.8f)
     {
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialCharge = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialCharge = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
 
         bool drawCheck = true;
-        uiIdSpecialCharge->SetDrawCheck(drawCheck);
+        uiIdSpecialCharge.lock()->SetDrawCheck(drawCheck);
 
         DirectX::XMFLOAT2 pos = { 110,250 };
-        uiIdSpecialTransForm2D->SetPosition(pos);
+        uiIdSpecialTransForm2D.lock()->SetPosition(pos);
     }
 
 
     // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
     if (specialAttackCharge >= 0.8f && specialAttackCharge < 1.2f)
     {
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
 
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
 
         bool drawCheck = true;
-        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeFurst.lock()->SetDrawCheck(drawCheck);
 
         DirectX::XMFLOAT2 pos = { 47,250 };
-        uiIdSpecialTransForm2DFurst->SetPosition(pos);
+        uiIdSpecialTransForm2DFurst.lock()->SetPosition(pos);
 
-        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeSecond.lock()->SetDrawCheck(drawCheck);
 
         pos = { 158,250 };
-        uiIdSpecialTransForm2DSecond->SetPosition(pos);
+        uiIdSpecialTransForm2DSecond.lock()->SetPosition(pos);
     }
 
     // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
     if (specialAttackCharge >= 1.2f && specialAttackCharge < 1.5f)
     {
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
 
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
 
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
 
         bool drawCheck = true;
-        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeFurst.lock()->SetDrawCheck(drawCheck);
 
         DirectX::XMFLOAT2 pos = { 0,250 };
-        uiIdSpecialTransForm2DFurst->SetPosition(pos);
+        uiIdSpecialTransForm2DFurst.lock()->SetPosition(pos);
 
-        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeSecond.lock()->SetDrawCheck(drawCheck);
 
         pos = { 94,250 };
-        uiIdSpecialTransForm2DSecond->SetPosition(pos);
+        uiIdSpecialTransForm2DSecond.lock()->SetPosition(pos);
 
-        uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeSerde.lock()->SetDrawCheck(drawCheck);
 
         pos = { 205,250 };
-        uiIdSpecialTransForm2DSerde->SetPosition(pos);
+        uiIdSpecialTransForm2DSerde.lock()->SetPosition(pos);
     }
 
 
@@ -1941,13 +1949,13 @@ bool Player::InputSpecialShotCharge()
 
     if (specialShotCharge >= 1.5f)
     {
-        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
 
         // ‹ZŠm’è
-        std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
-        std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
 
 
         // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
@@ -1955,21 +1963,21 @@ bool Player::InputSpecialShotCharge()
         specialAttack.push((int)SpecialAttack::MagicFire);
 
         bool drawCheck = false;
-        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeFurst.lock()->SetDrawCheck(drawCheck);
 
-        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeSecond.lock()->SetDrawCheck(drawCheck);
 
-        uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeSerde.lock()->SetDrawCheck(drawCheck);
 
         drawCheck = true;
-        uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+        uiIdSpecialShurashu.lock()->SetDrawCheck(drawCheck);
 
         DirectX::XMFLOAT2 pos;
         pos = { 94,240 };
         float add = 30;
         if (2 < (int)specialAttack.size())
             pos.y = pos.y - (add * (float)specialAttack.size());
-        uiIdSpecialShurashuTransForm2D->SetPosition(pos);
+        uiIdSpecialShurashuTransForm2D.lock()->SetPosition(pos);
 
 
     }
@@ -1978,22 +1986,22 @@ bool Player::InputSpecialShotCharge()
     if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::MagicFire && !specialAttackTime)
     {
         // ‹ZŠm’è
-        std::shared_ptr<Ui> uiIdSpecialMagic = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdSpecialMagicPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
-        std::shared_ptr<TransForm2D> uiIdSpecialMagicTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
-        std::shared_ptr<TransForm2D> uiIdSpecialMagicPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialMagic = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialMagicPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialMagicTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
+        std::weak_ptr<TransForm2D> uiIdSpecialMagicPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
 
         bool drawCheck = false;
-        uiIdSpecialMagic->SetDrawCheck(drawCheck);
+        uiIdSpecialMagic.lock()->SetDrawCheck(drawCheck);
         drawCheck = true;
-        uiIdSpecialMagicPush->SetDrawCheck(drawCheck);
+        uiIdSpecialMagicPush.lock()->SetDrawCheck(drawCheck);
 
         DirectX::XMFLOAT2 pos;
-        pos = { uiIdSpecialMagicTransForm2D->GetPosition() };
+        pos = { uiIdSpecialMagicTransForm2D.lock()->GetPosition() };
         //float add = 30;
         //if (1 > (int)specialAttack.size())
         //    pos.y = pos.y - (add * (float)specialAttack.size());
-        uiIdSpecialMagicPushTransForm2D->SetPosition(pos);
+        uiIdSpecialMagicPushTransForm2D.lock()->SetPosition(pos);
 
         // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
         if (specialAttack.top() != (int)SpecialAttack::Normal)
@@ -2006,75 +2014,75 @@ bool Player::InputSpecialShotCharge()
         specialAttackTime = false;
 
         // ‹ZŠm’è
-        std::shared_ptr<Ui> uiIdSpecialMagicPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialMagicPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
 
         bool drawCheck = false;
-        uiIdSpecialMagicPush->SetDrawCheck(drawCheck);
+        uiIdSpecialMagicPush.lock()->SetDrawCheck(drawCheck);
     }
 
 
     // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
     if (specialShotCharge >= 0.4f && specialShotCharge < 0.8f)
     {
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialCharge = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialCharge = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
 
         bool drawCheck = true;
-        uiIdSpecialCharge->SetDrawCheck(drawCheck);
+        uiIdSpecialCharge.lock()->SetDrawCheck(drawCheck);
 
         DirectX::XMFLOAT2 pos = { 110,250 };
-        uiIdSpecialTransForm2D->SetPosition(pos);
+        uiIdSpecialTransForm2D.lock()->SetPosition(pos);
     }
 
 
     // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
     if (specialShotCharge >= 0.8f && specialShotCharge < 1.2f)
     {
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
 
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
 
         bool drawCheck = true;
-        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeFurst.lock()->SetDrawCheck(drawCheck);
 
         DirectX::XMFLOAT2 pos = { 47,250 };
-        uiIdSpecialTransForm2DFurst->SetPosition(pos);
+        uiIdSpecialTransForm2DFurst.lock()->SetPosition(pos);
 
-        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeSecond.lock()->SetDrawCheck(drawCheck);
 
         pos = { 158,250 };
-        uiIdSpecialTransForm2DSecond->SetPosition(pos);
+        uiIdSpecialTransForm2DSecond.lock()->SetPosition(pos);
     }
 
     // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
     if (specialShotCharge >= 1.2f && specialShotCharge < 1.5f)
     {
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
 
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
 
-        std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<TransForm2D>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
 
         bool drawCheck = true;
-        uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeFurst.lock()->SetDrawCheck(drawCheck);
 
         DirectX::XMFLOAT2 pos = { 0,250 };
-        uiIdSpecialTransForm2DFurst->SetPosition(pos);
+        uiIdSpecialTransForm2DFurst.lock()->SetPosition(pos);
 
-        uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeSecond.lock()->SetDrawCheck(drawCheck);
 
         pos = { 94,250 };
-        uiIdSpecialTransForm2DSecond->SetPosition(pos);
+        uiIdSpecialTransForm2DSecond.lock()->SetPosition(pos);
 
-        uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
+        uiIdSpecialChargeSerde.lock()->SetDrawCheck(drawCheck);
 
         pos = { 205,250 };
-        uiIdSpecialTransForm2DSerde->SetPosition(pos);
+        uiIdSpecialTransForm2DSerde.lock()->SetPosition(pos);
     }
 
     return false;
@@ -2091,19 +2099,19 @@ void Player::ChargeSpecialEnergyMultiple()
     if (fireEnergyCharge >= energyChargeMax)
     {
         // ‹ZŠm’è
-        std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
-        std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
+        std::weak_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
 
 
         bool drawCheck = true;
-        uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+        uiIdSpecialShurashu.lock()->SetDrawCheck(drawCheck);
 
         DirectX::XMFLOAT2 pos;
         pos = { 94,240 };
         float add = 30;
         if (2 < (int)specialAttack.size())
             pos.y = pos.y - (add * (float)specialAttack.size());
-        uiIdSpecialShurashuTransForm2D->SetPosition(pos);
+        uiIdSpecialShurashuTransForm2D.lock()->SetPosition(pos);
     }
 
     // —‹–‚–@‚ğˆê’èˆÈã—­‚ß‚½‚ç
@@ -2180,8 +2188,8 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
     if (vec.x != 0 || vec.y != 0 || vec.z != 0)
     {
-        movement->Move(vec,moveSpeed, elapsedTime);
-        movement->Turn( vec ,turnSpeed, elapsedTime);
+        movement.lock()->Move(vec,moveSpeed, elapsedTime);
+        movement.lock()->Turn( vec ,turnSpeed, elapsedTime);
     }
 
    
@@ -2246,7 +2254,7 @@ DirectX::XMFLOAT3 Player::GetMagicMoveVec(float elapsedTime) const
 
     if (vec.x != 0 || vec.y != 0 || vec.z != 0)
     {
-        movement->Move(vec, moveSpeed, elapsedTime);
+        movement.lock()->Move(vec, moveSpeed, elapsedTime);
     }
 
 
@@ -2275,18 +2283,18 @@ void Player::CollisionProjectilesVsEnemies()
         // w’è‚Ìƒm[ƒh‚Æ‘S‚Ä‚Ì“G‚ğ‘“–‚½‚è‚ÅÕ“Ëˆ—
         for (int i = 0; i < enemyCount; ++i)
         {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
 
-            DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-            float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
-            float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
+            float enemyRudius = enemy.lock()->GetComponent<Transform>()->GetRadius();
+            float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
 
 
 
-            Model::Node* nodeHeart = enemy->GetComponent<ModelControll>()->GetModel()->FindNode("body2");
-            Model::Node* nodeLeftArm = enemy->GetComponent<ModelControll>()->GetModel()->FindNode("boss_left_hand2");
-            Model::Node* nodeRightArm = enemy->GetComponent<ModelControll>()->GetModel()->FindNode("boss_right_hand2");
+            Model::Node* nodeHeart = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("body2");
+            Model::Node* nodeLeftArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("boss_left_hand2");
+            Model::Node* nodeRightArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("boss_right_hand2");
             // S‘ŸˆÊ’u
             DirectX::XMFLOAT3 nodeHeartPosition;
             nodeHeartPosition = {
@@ -2310,9 +2318,9 @@ void Player::CollisionProjectilesVsEnemies()
             nodeRightArm->worldTransform._42,
             nodeRightArm->worldTransform._43
             };
-            std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
-            DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
-            float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
+            std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+            DirectX::XMFLOAT3 projectilePosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
+            float projectileRadius = projectile.lock()->GetComponent<Transform>()->GetRadius();
 
 
 
@@ -2400,17 +2408,17 @@ void Player::CollisionProjectilesVsEnemies()
                 //            outPositon))
 
                 //        {
-                if (!projectile->GetComponent<ProjectileHoming>() && !projectile->GetComponent<ProjectileSunder>())return;
+                if (!projectile.lock()->GetComponent<ProjectileHoming>() && !projectile.lock()->GetComponent<ProjectileSunder>())return;
                             // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
-                if (enemy->GetComponent<HP>()->ApplyDamage(3, 0.5f))
+                if (enemy.lock()->GetComponent<HP>()->ApplyDamage(3, 0.5f))
                 {
 
-                    if (enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Wander &&
-                        enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Jump && 
-                        enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::IdleBattle)
+                    if (enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Wander &&
+                        enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Jump && 
+                        enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::IdleBattle)
                     {
                         // ƒ_ƒ[ƒWƒXƒe[ƒg‚Ö
-                        enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+                        enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
                     }
 
 
@@ -2418,14 +2426,14 @@ void Player::CollisionProjectilesVsEnemies()
                     {
                         //DirectX::XMFLOAT3 e = enemyPosition;
                         //e.y += enemyHeight * 0.5f;
-                        if (projectile->GetComponent<ProjectileSunder>())
+                        if (projectile.lock()->GetComponent<ProjectileSunder>())
                         {
                             ++ThanderEnergyCharge;
                             hitThander->Play(projectilePosition);
                         }
                         else
                         {
-                            switch (projectile->GetComponent<ProjectileHoming>()->GetMagicNumber())
+                            switch (projectile.lock()->GetComponent<ProjectileHoming>()->GetMagicNumber())
                             {
                             case (int)ProjectileHoming::MagicNumber::Fire:
                             {
@@ -2452,9 +2460,9 @@ void Player::CollisionProjectilesVsEnemies()
                         //specialShotCharge += 0.1f;
                         //specialShotCharge += 1.5f;
                     }
-                    if (projectile->GetComponent<ProjectileHoming>())
+                    if (projectile.lock()->GetComponent<ProjectileHoming>())
                         // ’eŠÛ”jŠü
-                        projectile->GetComponent<BulletFiring>()->Destroy();
+                        projectile.lock()->GetComponent<BulletFiring>()->Destroy();
                 }
             }
         }
@@ -2473,25 +2481,25 @@ void Player::CollisionRubyVsEnemies()
     for (int i = 0; i < projectileCount; ++i)
     {
         int enemyCount = EnemyManager::Instance().GetEnemyCount();
-        std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
         for (int j = 0; j < enemyCount; ++j)
         {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(j);
+            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(j);
 
-            DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
-            float projectileRadius = projectile->GetComponent<Transform>()->GetRadius();
+            DirectX::XMFLOAT3 projectilePosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
+            float projectileRadius = projectile.lock()->GetComponent<Transform>()->GetRadius();
 
-            DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-            float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
-            float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
+            float enemyRadius = enemy.lock()->GetComponent<Transform>()->GetRadius();
+            float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
 
             // Õ“Ëˆ—
             DirectX::XMFLOAT3 outPositon;
 
-            if (!projectile->GetComponent<ProjectileThrowing>() )return;
+            if (!projectile.lock()->GetComponent<ProjectileThrowing>() )return;
 
             bool counterCheck;
-            counterCheck = projectile->GetComponent<ProjectileThrowing>()->GetCounterCheck();
+            counterCheck = projectile.lock()->GetComponent<ProjectileThrowing>()->GetCounterCheck();
 
             // ‰~’Œ‚Æ‰~
             if (Collision::IntersectSphereVsCylinder(
@@ -2509,7 +2517,7 @@ void Player::CollisionRubyVsEnemies()
             {
 
                 // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
-                if (enemy->GetComponent<HP>()->ApplyDamage(1, 0.5f))
+                if (enemy.lock()->GetComponent<HP>()->ApplyDamage(1, 0.5f))
                 {
                     // ‚«”ò‚Î‚·
                     {
@@ -2528,8 +2536,8 @@ void Player::CollisionRubyVsEnemies()
                         specialShotCharge += 0.1f;
                     }
                     // ’eŠÛ”jŠü
-                    projectile->GetComponent<BulletFiring>()->Destroy();
-                    enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState
+                    projectile.lock()->GetComponent<BulletFiring>()->Destroy();
+                    enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState
                     ((int)EnemySlime::State::IdleBattle);
                    
                         
@@ -2553,15 +2561,15 @@ void Player::CollisionPlayerVsEnemies()
 
         for (int i = 0; i < enemyCount; ++i)
         {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
 
             //// Õ“Ëˆ—
             DirectX::XMFLOAT3 outPositon;
 
-            DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-            float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
-            float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
+            float enemyRadius = enemy.lock()->GetComponent<Transform>()->GetRadius();
+            float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
 
 
             if (Collision::IntersectCylinderVsCylinder(
@@ -2588,7 +2596,7 @@ void Player::CollisionPlayerVsEnemies()
                     //    position.z * -normal.z * power
                     //};
 
-                    transform->SetPosition(position);
+                    transform.lock()->SetPosition(position);
 
                     //if (normal.y > 0.8f)
                     //{
@@ -2649,10 +2657,10 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 
     for (int i = 0; i < enemyCount; ++i)
     {
-        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+        std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
         // ƒm[ƒhæ“¾
-        Model::Node* node = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(bornname);
+        Model::Node* node = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(bornname);
 
         // ƒm[ƒhˆÊ’uæ“¾
         DirectX::XMFLOAT3 nodePosition;
@@ -2665,9 +2673,9 @@ void Player::CollisionBornVsProjectile(const char* bornname)
         //// Õ“Ëˆ—
         DirectX::XMFLOAT3 outPositon;
 
-        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-        float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
-        float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+        DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
+        float enemyRadius = enemy.lock()->GetComponent<Transform>()->GetRadius();
+        float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
 
 
         if (Collision::IntersectCylinderVsCylinder(
@@ -2718,7 +2726,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
                 //if(movement->GetVelocity().x <= velocityMax)
                 //movement->AddImpulse(impulse);
                 position = outPositon;
-                transform->SetPosition(position);
+                transform.lock()->SetPosition(position);
 
 
             }
@@ -2760,18 +2768,18 @@ bool Player::CollisionNodeVsEnemies(
     // w’è‚Ìƒm[ƒh‚Æ‘S‚Ä‚Ì“G‚ğ‘“–‚½‚è‚ÅÕ“Ëˆ—
     for (int i = 0; i < enemyCount; ++i)
     {
-        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+        std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
 
-        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-        float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
-        float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+        DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
+        float enemyRudius = enemy.lock()->GetComponent<Transform>()->GetRadius();
+        float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
 
 
 
-        Model::Node* nodeHeart = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(nodeHeartName);
-        Model::Node* nodeLeftArm = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(nodeLeftArmName);
-        Model::Node* nodeRightArm = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(nodeRightArmName);
+        Model::Node* nodeHeart = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(nodeHeartName);
+        Model::Node* nodeLeftArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(nodeLeftArmName);
+        Model::Node* nodeRightArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(nodeRightArmName);
         // S‘ŸˆÊ’u
         DirectX::XMFLOAT3 nodeHeartPosition;
         nodeHeartPosition = {
@@ -2846,14 +2854,14 @@ bool Player::CollisionNodeVsEnemies(
                 enemyHeight,
                 outPositon))
         {
-            if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
+            if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
             {
 
 
                 hitEffect->Play(nodePosition);
 
-                    if (enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Wander &&
-                        enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Jump )
+                    if (enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Wander &&
+                        enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Jump )
                     {
                         // ƒ_ƒ[ƒWƒXƒe[ƒg‚Ö
                         //enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
@@ -2874,13 +2882,13 @@ bool Player::CollisionNodeVsEnemies(
                         float blendSeconds = 0.35f;
 
                         // ’Êí
-                        enemy->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Movie, loop
+                        enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Movie, loop
                             , currentAnimationStartSeconds, blendSeconds, currentAnimationAddSeconds, keyFrameEnd);
 
                         
 
                         // €‚ñ‚¾‚Æ‚«
-                        if (enemy->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() == (int)EnemySlime::State::IdleBattle)
+                        if (enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() == (int)EnemySlime::State::IdleBattle)
                         {
 
                             // Ä¶ŠJnŠÔ 
@@ -2890,7 +2898,7 @@ bool Player::CollisionNodeVsEnemies(
                             // ƒL[ƒtƒŒ[ƒ€‚ÌI—¹
                             keyFrameEnd = 55.0f;
 
-                            enemy->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Die, loop
+                            enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Die, loop
                                 , currentAnimationStartSeconds, blendSeconds, currentAnimationAddSeconds, keyFrameEnd);
                         }
                      
@@ -3127,17 +3135,17 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
     {
         for (int j = 0; j < enemyCount; ++j)
         {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(j);
-            std::shared_ptr<Actor> projectille = projectileManager.GetProjectile(i);
+            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(j);
+            std::weak_ptr<Actor> projectille = projectileManager.GetProjectile(i);
 
             //enemy->GetComponent<ModelControll>()->GetModel()->FindNode
 
-            if (!projectille->GetComponent<ProjectileImpact>()) return;
+            if (!projectille.lock()->GetComponent<ProjectileImpact>()) return;
 
-            DirectX::XMFLOAT3 projectilePosition = projectille->GetComponent<Transform>()->GetPosition();
-            float projectileInRudius = projectille->GetComponent<ProjectileImpact>()->GetRadiusInSide();
-            float projectileOutRudius = projectille->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
-            float projectileHeight = projectille->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 projectilePosition = projectille.lock()->GetComponent<Transform>()->GetPosition();
+            float projectileInRudius = projectille.lock()->GetComponent<ProjectileImpact>()->GetRadiusInSide();
+            float projectileOutRudius = projectille.lock()->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
+            float projectileHeight = projectille.lock()->GetComponent<Transform>()->GetHeight();
 
 
             /*DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
@@ -3148,7 +3156,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
             //// Õ“Ëˆ—
             DirectX::XMFLOAT3 outPositon;
 
-            std::shared_ptr<EnemySlime> enemySlime = enemy->GetComponent<EnemySlime>();
+            std::weak_ptr<EnemySlime> enemySlime = enemy.lock()->GetComponent<EnemySlime>();
 
 
             // ‹…‚Æ‹…
@@ -3163,7 +3171,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
                     nodeRadius,
                     projectilePosition,
                     projectileInRudius,
-                    outPositon) &&projectille->GetComponent<ProjectileImpact>()) /*&&
+                    outPositon) &&projectille.lock()->GetComponent<ProjectileImpact>()) /*&&
                 enemySlime->GetCounterJudgment())*/
             {
                 // ‚‚³‚ªˆê’èˆÈ‰º‚È‚ç’Ê‚é
@@ -3176,7 +3184,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
                     //DirectX::XMFLOAT3 e = enemyPosition;
                     //e.y += enemyHeight * 0.5f;
 
-                    projectille->GetComponent<ProjectileImpact>()->Destoroy();
+                    projectille.lock()->GetComponent<ProjectileImpact>()->Destoroy();
 
                     ImpactEffect->Play(nodePosition);
 
@@ -3221,18 +3229,18 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
     {
         for (int j = 0; j < enemyCount; ++j)
         {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
-            std::shared_ptr<Actor> projectille = projectileManager.GetProjectile(i);
+            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+            std::weak_ptr<Actor> projectille = projectileManager.GetProjectile(i);
 
             //enemy->GetComponent<ModelControll>()->GetModel()->FindNode
 
-            if (!projectille->GetComponent<ProjectileRuby>()) return;
+            if (!projectille.lock()->GetComponent<ProjectileRuby>()) return;
            
 
 
-            DirectX::XMFLOAT3 projectilePosition = projectille->GetComponent<Transform>()->GetPosition();
-            float projectileRudius = projectille->GetComponent<Transform>()->GetRadius();
-            float projectileHeight = projectille->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 projectilePosition = projectille.lock()->GetComponent<Transform>()->GetPosition();
+            float projectileRudius = projectille.lock()->GetComponent<Transform>()->GetRadius();
+            float projectileHeight = projectille.lock()->GetComponent<Transform>()->GetHeight();
 
 
             /*DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
@@ -3243,7 +3251,7 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
             //// Õ“Ëˆ—
             DirectX::XMFLOAT3 outPositon;
 
-            std::shared_ptr<EnemySlime> enemySlime = enemy->GetComponent<EnemySlime>();
+            std::weak_ptr<EnemySlime> enemySlime = enemy.lock()->GetComponent<EnemySlime>();
 
 
             // ‹…‚Æ‹…
@@ -3265,7 +3273,7 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
                     //DirectX::XMFLOAT3 e = enemyPosition;
                     //e.y += enemyHeight * 0.5f;
 
-                    projectille->GetComponent<BulletFiring>()->Destroy();
+                    projectille.lock()->GetComponent<BulletFiring>()->Destroy();
                     
 
                     ImpactEffect->Play(nodePosition);
@@ -3308,20 +3316,20 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
     // w’è‚Ìƒm[ƒh‚Æ‘S‚Ä‚Ì“G‚ğ‘“–‚½‚è‚ÅÕ“Ëˆ—
     for (int j = 0; j < enemyCount; ++j)
     {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(j);
+            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(j);
     for (int i = 0; i < projectileCount; ++i)
     {
       
-            std::shared_ptr<Actor> projectille = projectileManager.GetProjectile(i);
+            std::weak_ptr<Actor> projectille = projectileManager.GetProjectile(i);
 
-            if (!projectille->GetComponent<ProjectileThrowing>()) return;
+            if (!projectille.lock()->GetComponent<ProjectileThrowing>()) return;
 
-            bool counterCheck = projectille->GetComponent<ProjectileThrowing>()->GetCounterCheck();
+            bool counterCheck = projectille.lock()->GetComponent<ProjectileThrowing>()->GetCounterCheck();
 
 
-            DirectX::XMFLOAT3 projectilePosition = projectille->GetComponent<Transform>()->GetPosition();
-            float projectileRudius = projectille->GetComponent<Transform>()->GetRadius();
-            float projectileHeight = projectille->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 projectilePosition = projectille.lock()->GetComponent<Transform>()->GetPosition();
+            float projectileRudius = projectille.lock()->GetComponent<Transform>()->GetRadius();
+            float projectileHeight = projectille.lock()->GetComponent<Transform>()->GetHeight();
 
 
             /*DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
@@ -3332,7 +3340,7 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
             //// Õ“Ëˆ—
             DirectX::XMFLOAT3 outPositon;
 
-            std::shared_ptr<EnemySlime> enemySlime = enemy->GetComponent<EnemySlime>();
+            std::weak_ptr<EnemySlime> enemySlime = enemy.lock()->GetComponent<EnemySlime>();
 
 
             // ‹…‚Æ‹…
@@ -3355,23 +3363,23 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
                     //e.y += enemyHeight * 0.5f;
 
                     //projectille->GetComponent<BulletFiring>()->Destroy();
-                    projectille->GetComponent<ProjectileThrowing>()->SetTarget(
+                    projectille.lock()->GetComponent<ProjectileThrowing>()->SetTarget(
                         {
-                            enemy->GetComponent<Transform>()->GetPosition().x,
-                            enemy->GetComponent<Transform>()->GetPosition().y + enemy->GetComponent<Transform>()->GetHeight(),
-                            enemy->GetComponent<Transform>()->GetPosition().z,
+                            enemy.lock()->GetComponent<Transform>()->GetPosition().x,
+                            enemy.lock()->GetComponent<Transform>()->GetPosition().y + enemy.lock()->GetComponent<Transform>()->GetHeight(),
+                            enemy.lock()->GetComponent<Transform>()->GetPosition().z,
                         }
                     );
 
                     DirectX::XMFLOAT3 direction = GetForwerd(angle);
 
                     float lifeTimerCounter = 5.0f;
-                    projectille->GetComponent<BulletFiring>()->Lanch(direction, projectilePosition, lifeTimerCounter);
+                    projectille.lock()->GetComponent<BulletFiring>()->Lanch(direction, projectilePosition, lifeTimerCounter);
 
                     ImpactEffect->Play(nodePosition);
 
                     counterCheck = true;
-                    projectille->GetComponent<ProjectileThrowing>()->SetCounterCheck(counterCheck);
+                    projectille.lock()->GetComponent<ProjectileThrowing>()->SetCounterCheck(counterCheck);
 
                     // ƒqƒbƒg­‚µƒXƒ[‚É
                     hitCheck = true;
@@ -3480,10 +3488,10 @@ bool Player::InputJump()
     if (gamePad.GetButtonDown() & GamePad::BTN_A)
     {
         // ’l‚ğ¬‚³‚­‚·‚é
-        if (movement->GetJumpCount() < jumpLimit) {
+        if (movement.lock()->GetJumpCount() < jumpLimit) {
            
             
-            movement->JumpVelocity(jumpSpeed);
+            movement.lock()->JumpVelocity(jumpSpeed);
 
             // ƒWƒƒƒ“ƒv“ü—Í‚µ‚½
            return true;
@@ -3517,29 +3525,29 @@ bool Player::InputProjectile()
             // ’eŠÛ‰Šú‰»
             const char* filename = "Data/Model/Sword/Sword.mdl";
 
-            std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-            actor->AddComponent<ModelControll>();
-            actor->GetComponent<ModelControll>()->LoadModel(filename);
-            actor->SetName("ProjectileStraight");
-            actor->AddComponent<Transform>();
-            actor->GetComponent<Transform>()->SetPosition(position);
-            actor->GetComponent<Transform>()->SetAngle(angle);
-            actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
-            actor->AddComponent<BulletFiring>();
-            actor->AddComponent<ProjectileStraight>();
+            std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+            actor.lock()->AddComponent<ModelControll>();
+            actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+            actor.lock()->SetName("ProjectileStraight");
+            actor.lock()->AddComponent<Transform>();
+            actor.lock()->GetComponent<Transform>()->SetPosition(position);
+            actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+            actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+            actor.lock()->AddComponent<BulletFiring>();
+            actor.lock()->AddComponent<ProjectileStraight>();
             //actor->AddComponent<Collision>();
-            ProjectileManager::Instance().Register(actor);
+            ProjectileManager::Instance().Register(actor.lock());
             //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
             //std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
             // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
             bool check2d = false;
-            actor->SetCheck2d(check2d);
+            actor.lock()->SetCheck2d(check2d);
 
             // ”ò‚ÔŠÔ
             float   lifeTimer = 3.0f;
             // ”­Ë
-            actor->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+            actor.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         }
 
         //projectile->Lanch(dir, pos);
@@ -3583,10 +3591,10 @@ bool Player::InputProjectile()
         for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
         {
             // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
-            std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+            std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
             // “G‚ÌˆÊ’u
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
             // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
             // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
@@ -3597,8 +3605,8 @@ bool Player::InputProjectile()
             {
                 // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
                 dist = d;
-                target = enemy->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
-                target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
+                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
             }
             
             
@@ -3613,31 +3621,31 @@ bool Player::InputProjectile()
         // ’eŠÛ‰Šú‰»
         const char* filename = "Data/Model/Sword/Sword.mdl";
 
-        std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-        actor->AddComponent<ModelControll>();
-        actor->GetComponent<ModelControll>()->LoadModel(filename);
-        actor->SetName("ProjectileHoming");
-        actor->AddComponent<Transform>();
-        actor->GetComponent<Transform>()->SetPosition(position);
-        actor->GetComponent<Transform>()->SetAngle(angle);
-        actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f,3.0f,3.0f));
-        actor->AddComponent<BulletFiring>();
-        actor->AddComponent<ProjectileHoming>();
+        std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+        actor.lock()->AddComponent<ModelControll>();
+        actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+        actor.lock()->SetName("ProjectileHoming");
+        actor.lock()->AddComponent<Transform>();
+        actor.lock()->GetComponent<Transform>()->SetPosition(position);
+        actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+        actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f,3.0f,3.0f));
+        actor.lock()->AddComponent<BulletFiring>();
+        actor.lock()->AddComponent<ProjectileHoming>();
 
         // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
         bool check2d = false;
-        actor->SetCheck2d(check2d);
+        actor.lock()->SetCheck2d(check2d);
 
         //actor->AddComponent<Collision>();
-        ProjectileManager::Instance().Register(actor);
+        ProjectileManager::Instance().Register(actor.lock());
         //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-        std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+        std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
         // ”ò‚ÔŠÔ
         float   lifeTimer = 3.0f;
         // ”­Ë
-        projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
-        projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+        projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        projectile.lock()->GetComponent<ProjectileHoming>()->SetTarget(target);
 
         //// “ÁêUŒ‚‚Ì”­¶ğŒ
         //specialAttackTime = false;
@@ -3854,7 +3862,7 @@ void Player::UpdateJumpState(float elapsedTime)
 
 
     // ƒWƒƒƒ“ƒv“ü—Íˆ—
-    if (InputJump()&&movement->GetJumpCount() >= 1)
+    if (InputJump()&&movement.lock()->GetJumpCount() >= 1)
     {
         TransitionJumpFlipState();
     }
@@ -3890,7 +3898,7 @@ void Player::TransitionLandState()
     // ’…’nƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
     //model->PlayAnimation(Anim_Landing, false);
 
-    movement->SetOnLadius(false);
+    movement.lock()->SetOnLadius(false);
 
     //movement->SetStepOffSet(false);
     
@@ -3903,7 +3911,7 @@ void Player::UpdateLandState(float elapsedTime)
     // ‚à‚µI‚í‚Á‚½‚ç‘Ò‹@‚É•ÏX
     if (!model->IsPlayAnimation())
     {
-        movement->SetOnLadius(false);
+        movement.lock()->SetOnLadius(false);
         TransitionIdleState();
     }
 
@@ -4030,20 +4038,20 @@ void Player::UpdateProjectile(float elapsedTime)
     for (int i = 0; i < projectileCount; ++i)
     {
   
-        std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
         float dist = FLT_MAX;// float ‚ÌÅ‘å’lfloat‘S‘Ì
         EnemyManager& enemyManager = EnemyManager::Instance();
         int enemyCount = enemyManager.GetEnemyCount();
         for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
         {
             // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
-            std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+            std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
 
 
 
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
             // “G‚ÌˆÊ’u
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
             // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
             // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
@@ -4054,8 +4062,8 @@ void Player::UpdateProjectile(float elapsedTime)
             {
                 // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
                 dist = d;
-                target = enemy->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
-                target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
+                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
                 //if (projectile->GetModel())
                 //    projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
             }
@@ -4139,7 +4147,7 @@ bool Player::InputMagicframe()
     //if ( !mp->GetMpEmpth())
     //{
         // mpÁ”ï
-        mp->ApplyConsumption(magicConsumption);
+        mp.lock()->ApplyConsumption(magicConsumption);
 
         // ‘O•ûŒü sin‚ÌŒvZ
         DirectX::XMFLOAT3 dir;
@@ -4171,10 +4179,10 @@ bool Player::InputMagicframe()
         for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
         {
             // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
-            std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+            std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
             // “G‚ÌˆÊ’u
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
             // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
             // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
@@ -4185,8 +4193,8 @@ bool Player::InputMagicframe()
             {
                 // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
                 dist = d;
-                target = enemy->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
-                target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
+                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
             }
 
 
@@ -4196,39 +4204,39 @@ bool Player::InputMagicframe()
         // ’eŠÛ‰Šú‰»
         const char* filename = "Data/Model/Sword/Sword.mdl";
 
-        std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-        actor->AddComponent<ModelControll>();
-        actor->GetComponent<ModelControll>()->LoadModel(filename);
-        actor->SetName("ProjectileHoming");
-        actor->AddComponent<Transform>();
-        actor->GetComponent<Transform>()->SetPosition(position);
-        actor->GetComponent<Transform>()->SetAngle(angle);
-        actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
-        actor->AddComponent<BulletFiring>();
-        actor->AddComponent<ProjectileHoming>();
+        std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+        actor.lock()->AddComponent<ModelControll>();
+        actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+        actor.lock()->SetName("ProjectileHoming");
+        actor.lock()->AddComponent<Transform>();
+        actor.lock()->GetComponent<Transform>()->SetPosition(position);
+        actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+        actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+        actor.lock()->AddComponent<BulletFiring>();
+        actor.lock()->AddComponent<ProjectileHoming>();
         const char* effectFilename = "Data/Effect/fire.efk";
-        actor->GetComponent<ProjectileHoming>()->SetEffectProgress(effectFilename);
+        actor.lock()->GetComponent<ProjectileHoming>()->SetEffectProgress(effectFilename);
         int magicNumber = (int)ProjectileHoming::MagicNumber::Fire;
-        actor->GetComponent<ProjectileHoming>()->SetMagicNumber(magicNumber);
+        actor.lock()->GetComponent<ProjectileHoming>()->SetMagicNumber(magicNumber);
         //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
         // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
         bool check2d = false;
-        actor->SetCheck2d(check2d);
+        actor.lock()->SetCheck2d(check2d);
 
         //actor->AddComponent<Collision>();
-        ProjectileManager::Instance().Register(actor);
+        ProjectileManager::Instance().Register(actor.lock());
         //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-        std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+        std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
         // ”ò‚ÔŠÔ
         float   lifeTimer = 4.0f;
         // ”­Ë
-        projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
-        projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+        projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        projectile.lock()->GetComponent<ProjectileHoming>()->SetTarget(target);
 
         // UŒ‚‰ğœ
-        magicAction = false;
-        selectMagicCheck = (int)CommandMagic::Normal;
+        //magicAction = false;
+        //selectMagicCheck = (int)CommandMagic::Normal;
      
         return true;
     //}
@@ -4246,7 +4254,7 @@ bool Player::InputMagicIce()
         //if ( !mp->GetMpEmpth())
         //{
         // mpÁ”ï
-        mp->ApplyConsumption(magicConsumption);
+        mp.lock()->ApplyConsumption(magicConsumption);
         // ‘O•ûŒü sin‚ÌŒvZ
         DirectX::XMFLOAT3 dir;
 
@@ -4277,10 +4285,10 @@ bool Player::InputMagicIce()
         for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
         {
             // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
-            std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+            std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
             // “G‚ÌˆÊ’u
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
             // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
             // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
@@ -4291,8 +4299,8 @@ bool Player::InputMagicIce()
             {
                 // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
                 dist = d;
-                target = enemy->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
-                target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
+                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
             }
 
 
@@ -4302,41 +4310,41 @@ bool Player::InputMagicIce()
         // ’eŠÛ‰Šú‰»
         const char* filename = "Data/Model/Sword/Sword.mdl";
 
-        std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-        actor->AddComponent<ModelControll>();
-        actor->GetComponent<ModelControll>()->LoadModel(filename);
-        actor->SetName("ProjectileHoming");
-        actor->AddComponent<Transform>();
-        actor->GetComponent<Transform>()->SetPosition(position);
-        actor->GetComponent<Transform>()->SetAngle(angle);
-        actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
-        actor->AddComponent<BulletFiring>();
-        actor->AddComponent<ProjectileHoming>();
+        std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+        actor.lock()->AddComponent<ModelControll>();
+        actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+        actor.lock()->SetName("ProjectileHoming");
+        actor.lock()->AddComponent<Transform>();
+        actor.lock()->GetComponent<Transform>()->SetPosition(position);
+        actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+        actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+        actor.lock()->AddComponent<BulletFiring>();
+        actor.lock()->AddComponent<ProjectileHoming>();
         const char* effectFilename = "Data/Effect/brezerd.efk";
-        actor->GetComponent<ProjectileHoming>()->SetEffectProgress(effectFilename);
+        actor.lock()->GetComponent<ProjectileHoming>()->SetEffectProgress(effectFilename);
         //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
 
         int magicNumber = (int)ProjectileHoming::MagicNumber::Ice;
-        actor->GetComponent<ProjectileHoming>()->SetMagicNumber(magicNumber);
+        actor.lock()->GetComponent<ProjectileHoming>()->SetMagicNumber(magicNumber);
 
         // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
         bool check2d = false;
-        actor->SetCheck2d(check2d);
+        actor.lock()->SetCheck2d(check2d);
 
         //actor->AddComponent<Collision>();
-        ProjectileManager::Instance().Register(actor);
+        ProjectileManager::Instance().Register(actor.lock());
         //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-        std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+        std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
         
         // ”ò‚ÔŠÔ
         float   lifeTimer = 4.0f;
         // ”­Ë
-        projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
-        projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
+        projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        projectile.lock()->GetComponent<ProjectileHoming>()->SetTarget(target);
 
         // UŒ‚‰ğœ
-        magicAction = false;
-        selectMagicCheck = (int)CommandMagic::Normal;
+        //magicAction = false;
+        //selectMagicCheck = (int)CommandMagic::Normal;
 
         return true;
     //}
@@ -4354,7 +4362,7 @@ bool Player::InputMagicLightning()
     //if (!mp->GetMpEmpth())
     //{
         // mpÁ”ï
-        mp->ApplyConsumption(magicConsumption);
+        mp.lock()->ApplyConsumption(magicConsumption);
         // ‘O•ûŒü sin‚ÌŒvZ
         DirectX::XMFLOAT3 dir;
 
@@ -4385,10 +4393,10 @@ bool Player::InputMagicLightning()
         for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
         {
             // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
-            std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+            std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
             // “G‚ÌˆÊ’u
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy->GetComponent<Transform>()->GetPosition());
+            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
             // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
             // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
@@ -4399,8 +4407,8 @@ bool Player::InputMagicLightning()
             {
                 // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
                 dist = d;
-                target = enemy->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
-                target.y += enemy->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
+                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
             }
 
 
@@ -4410,39 +4418,39 @@ bool Player::InputMagicLightning()
         // ’eŠÛ‰Šú‰»
         const char* filename = "Data/Model/Sword/Sword.mdl";
 
-        std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-        actor->AddComponent<ModelControll>();
-        actor->GetComponent<ModelControll>()->LoadModel(filename);
-        actor->SetName("ProjectileSunder");
-        actor->AddComponent<Transform>();
-        actor->GetComponent<Transform>()->SetPosition(pos);
-        actor->GetComponent<Transform>()->SetAngle(angle);
-        actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
-        actor->AddComponent<BulletFiring>();
-        actor->AddComponent<ProjectileSunder>();
+        std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+        actor.lock()->AddComponent<ModelControll>();
+        actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+        actor.lock()->SetName("ProjectileSunder");
+        actor.lock()->AddComponent<Transform>();
+        actor.lock()->GetComponent<Transform>()->SetPosition(pos);
+        actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+        actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+        actor.lock()->AddComponent<BulletFiring>();
+        actor.lock()->AddComponent<ProjectileSunder>();
         const char* effectFilename = "Data/Effect/lightningStrike.efk";
-        actor->GetComponent<ProjectileSunder>()->SetEffectProgress(effectFilename);
+        actor.lock()->GetComponent<ProjectileSunder>()->SetEffectProgress(effectFilename);
         //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
 
 
         // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
         bool check2d = false;
-        actor->SetCheck2d(check2d);
+        actor.lock()->SetCheck2d(check2d);
 
         //actor->AddComponent<Collision>();
-        ProjectileManager::Instance().Register(actor);
+        ProjectileManager::Instance().Register(actor.lock());
         //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-        std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+        std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
         float   lifeTimer = 0.5f;
 
         // ”­Ë
-        projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
-        projectile->GetComponent<ProjectileSunder>()->SetTarget(target);
+        projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        projectile.lock()->GetComponent<ProjectileSunder>()->SetTarget(target);
 
         // UŒ‚‰ğœ
-        magicAction = false;
-        selectMagicCheck = (int)CommandMagic::Normal;
+        //magicAction = false;
+        //selectMagicCheck = (int)CommandMagic::Normal;
 
         return true;
     //}
@@ -4472,10 +4480,10 @@ void Player::InputSpecialMagicframe()
     for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
     {
         // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
-        std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+        std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
 
 
-        target = enemy->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
+        target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
 
 
     }
@@ -4483,35 +4491,35 @@ void Player::InputSpecialMagicframe()
     // ’eŠÛ‰Šú‰»
     const char* filename = "Data/Model/Sword/Sword.mdl";
 
-    std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-    actor->AddComponent<ModelControll>();
-    actor->GetComponent<ModelControll>()->LoadModel(filename);
-    actor->SetName("MagicFrameTornade");
-    actor->AddComponent<Transform>();
-    actor->GetComponent<Transform>()->SetPosition(target);
-    actor->GetComponent<Transform>()->SetAngle(angle);
-    actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
-    actor->AddComponent<BulletFiring>();
-    actor->AddComponent<ProjectileTornade>();
+    std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+    actor.lock()->AddComponent<ModelControll>();
+    actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+    actor.lock()->SetName("MagicFrameTornade");
+    actor.lock()->AddComponent<Transform>();
+    actor.lock()->GetComponent<Transform>()->SetPosition(target);
+    actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+    actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+    actor.lock()->AddComponent<BulletFiring>();
+    actor.lock()->AddComponent<ProjectileTornade>();
     const char* effectFilename = "Data/Effect/fireTornade.efk";
-    actor->GetComponent<ProjectileTornade>()->SetEffectProgress(effectFilename);
+    actor.lock()->GetComponent<ProjectileTornade>()->SetEffectProgress(effectFilename);
     //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
 
 
     // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
     bool check2d = false;
-    actor->SetCheck2d(check2d);
+    actor.lock()->SetCheck2d(check2d);
 
     //actor->AddComponent<Collision>();
-    ProjectileManager::Instance().Register(actor);
+    ProjectileManager::Instance().Register(actor.lock());
     //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-    std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+    std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
     float   lifeTimer = 0.5f;
 
     // ”­Ë
-    projectile->GetComponent<BulletFiring>()->Lanch(dir, target, lifeTimer);
-    projectile->GetComponent<ProjectileTornade>()->SetTarget(target);
+    projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, target, lifeTimer);
+    projectile.lock()->GetComponent<ProjectileTornade>()->SetTarget(target);
 
     //// UŒ‚‰ğœ
     //magicAction = false;
@@ -4536,7 +4544,7 @@ void Player::AttackCheckUI()
     {
         for (int i = 0; i < enemyCount; ++i)
         {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
             ////// Õ“Ëˆ—
             //DirectX::XMFLOAT3 outPositon;
 
@@ -4544,9 +4552,9 @@ void Player::AttackCheckUI()
             //float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
 
 
-            DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-            float enemyRudius = enemy->GetComponent<Transform>()->GetRadius() + 1;
-            float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+            DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
+            float enemyRudius = enemy.lock()->GetComponent<Transform>()->GetRadius() + 1;
+            float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
 
             //// Õ“Ëˆ—
             DirectX::XMFLOAT3 outPositon;
@@ -4565,17 +4573,17 @@ void Player::AttackCheckUI()
                 outPositon))
 
             {
-                std::shared_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+                std::weak_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
 
                 bool drawCheck = true;
-                uiSightAttackCheck->SetDrawCheck(drawCheck);
+                uiSightAttackCheck.lock()->SetDrawCheck(drawCheck);
             }
             else
             {
-                std::shared_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+                std::weak_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
 
                 bool drawCheck = false;
-                uiSightAttackCheck->SetDrawCheck(drawCheck);
+                uiSightAttackCheck.lock()->SetDrawCheck(drawCheck);
             }
 
 
@@ -4608,12 +4616,12 @@ void Player::AttackCheckUI()
     {
         for (int i = 0; i < enemyCount; ++i)
         {
-            std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
 
             DirectX::XMVECTOR playerPosition =
                 DirectX::XMLoadFloat3(&position);
-            DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+            DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
 
             DirectX::XMVECTOR enemyPositionXM =
                 DirectX::XMLoadFloat3(&enemyPosition);
@@ -4628,17 +4636,17 @@ void Player::AttackCheckUI()
 
             if (lengthSq < magicRangeLength)
             {
-                std::shared_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+                std::weak_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
 
                 bool drawCheck = true;
-                uiSightAttackCheck->SetDrawCheck(drawCheck);
+                uiSightAttackCheck.lock()->SetDrawCheck(drawCheck);
             }
             else
             {
-                std::shared_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
+                std::weak_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
 
                 bool drawCheck = false;
-                uiSightAttackCheck->SetDrawCheck(drawCheck);
+                uiSightAttackCheck.lock()->SetDrawCheck(drawCheck);
             }
         }
         break;
@@ -4726,9 +4734,9 @@ void Player::DmageInvalidJudment(bool invalidJudgment)
     for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
     {
         // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
-        std::shared_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+        std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
 
-        enemy->GetComponent<EnemySlime>()->SetInvalidJudgment(invalidJudgment);
+        enemy.lock()->GetComponent<EnemySlime>()->SetInvalidJudgment(invalidJudgment);
     }
 }
 
@@ -4738,29 +4746,29 @@ void Player::UiControlle(float elapsedTime)
     // ui–³‚©‚Á‚½‚ç
     if (uiCount <= 0) return;
 
-    float gaugeWidth = hp->GetMaxHealth() * hp->GetHealth() * 0.1f;
+    float gaugeWidth = hp.lock()->GetMaxHealth() * hp.lock()->GetHealth() * 0.1f;
     // hpƒQ[ƒW
-    std::shared_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
-    std::shared_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
-    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
+    std::weak_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
+    std::weak_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
+    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp.lock()->GetScale().y };
 
 
-    uiHp->SetScale(scale);
+    uiHp.lock()->SetScale(scale);
 
-    gaugeWidth = mp->GetMaxMagic() * mp->GetMagic() * 0.1f;
+    gaugeWidth = mp.lock()->GetMaxMagic() * mp.lock()->GetMagic() * 0.1f;
     // mpƒQ[ƒW
-    std::shared_ptr<TransForm2D> uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();
-    std::shared_ptr<Ui> uiColor = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<Ui>();
-    scale = { gaugeWidth, uiMp->GetScale().y };
+    std::weak_ptr<TransForm2D> uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();
+    std::weak_ptr<Ui> uiColor = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<Ui>();
+    scale = { gaugeWidth, uiMp.lock()->GetScale().y };
 
-    uiMp->SetScale(scale);
+    uiMp.lock()->SetScale(scale);
     // mpF
    mpUiColor = { 1,1,1,1 };
-    if (mp->GetMpEmpth())
+    if (mp.lock()->GetMpEmpth())
     {
         mpUiColor = { 1,0,0,1 };
     }
-   uiColor->SetColor(mpUiColor);
+   uiColor.lock()->SetColor(mpUiColor);
 
 
 
@@ -4768,23 +4776,23 @@ void Player::UiControlle(float elapsedTime)
     if (shakeMode)
     {
         
-        uiHp->Shake();
-        uiHpBar->Shake();
+        uiHp.lock()->Shake();
+        uiHpBar.lock()->Shake();
         
 
         
 
     }
     //@‰Šú‰»
-    if (uiHp->GetShakeEnd())
+    if (uiHp.lock()->GetShakeEnd())
     {
         float positionStandardBar = 593;
         float positionStandard = 421;
         shakeMode = false;
-        uiHp->SetShakeTime(0);
-        uiHpBar->SetShakeTime(0);
-        uiHp->SetPosition({ uiHp->GetPosition().x ,positionStandardBar });
-        uiHpBar->SetPosition({ uiHpBar->GetPosition().x ,positionStandard });
+        uiHp.lock()->SetShakeTime(0);
+        uiHpBar.lock()->SetShakeTime(0);
+        uiHp.lock()->SetPosition({ uiHp.lock()->GetPosition().x ,positionStandardBar });
+        uiHpBar.lock()->SetPosition({ uiHpBar.lock()->GetPosition().x ,positionStandard });
     
     }
 }
@@ -4803,25 +4811,25 @@ void Player::SpecialApplyDamageInRadius()
     // w’è‚Ìƒm[ƒh‚Æ‘S‚Ä‚Ì“G‚ğ‘“–‚½‚è‚ÅÕ“Ëˆ—
     for (int i = 0; i < enemyCount; ++i)
     {
-        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+        std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
 
-        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-        float enemyRudius = enemy->GetComponent<Transform>()->GetRadius();
-        float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
+        DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
+        float enemyRudius = enemy.lock()->GetComponent<Transform>()->GetRadius();
+        float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
         ProjectileManager& projectileManager = ProjectileManager::Instance();
         for (int ii = 0; ii < projectileManager.GetProjectileCount(); ++ii)
         {
-            std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(ii);
+            std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(ii);
             
-            if (!projectile->GetComponent<ProjectileTornade>()) return;
+            if (!projectile.lock()->GetComponent<ProjectileTornade>()) return;
             
             // –‚–@ˆÊ’u
-            DirectX::XMFLOAT3 magicPosition = projectile->GetComponent<Transform>()->GetPosition();
+            DirectX::XMFLOAT3 magicPosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
 
-            float magicRadius = projectile->GetComponent<Transform>()->GetRadius();
+            float magicRadius = projectile.lock()->GetComponent<Transform>()->GetRadius();
 
-            float magicHeight = projectile->GetComponent<Transform>()->GetHeight();
+            float magicHeight = projectile.lock()->GetComponent<Transform>()->GetHeight();
 
             //// Õ“Ëˆ—
             DirectX::XMFLOAT3 outPositon;
@@ -4841,7 +4849,7 @@ void Player::SpecialApplyDamageInRadius()
                 // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
                 //enemy->ApplyDamage(1);
             // ƒ_ƒ[ƒW‚ª’Ê‚Á‚½‚çÁ‚¦‚éBTRUE‚É‚È‚é‚©‚ç
-                if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageSpecial, 0.5f))
+                if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageSpecial, 0.5f))
                 {
 
 
@@ -4869,7 +4877,7 @@ void Player::SpecialApplyDamageInRadius()
 
 bool Player::Ground()
 {
-    if (movement->GetOnLadius())
+    if (movement.lock()->GetOnLadius())
     {
         //jumpCount = 0;
         //TransitionLandState();

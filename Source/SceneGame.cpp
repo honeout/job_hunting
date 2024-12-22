@@ -2044,7 +2044,7 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 			//radialBlurData.radius + FLT_EPSILON > radislBlurRadius - FLT_EPSILON ?
 			//radialBlurData.radius + (5 + elapsedTime) : radialBlurData.radius;
 		// 歪み具合
-		float radislBlurSamplingCount = 10;
+		int radislBlurSamplingCount = 10;
 		radialBlurData.samplingCount = radislBlurSamplingCount;
 		// 自分が見える範囲
 		float radislBlurMaskRadius = 300;
@@ -2133,7 +2133,7 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 			radialBlurData.radius > radialBlurDataRadislBlurRadiusMax ?
 			radialBlurData.radius : radialBlurData.radius + (5 + elapsedTime);
 		// 歪み具合
-		float radislBlurSamplingCount = 10;
+		int radislBlurSamplingCount = 10;
 		radialBlurData.samplingCount = radislBlurSamplingCount;
 		// 自分が見える範囲
 		float radislBlurMaskRadius = 300;
