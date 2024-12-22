@@ -2,7 +2,7 @@
 #include "SceneGame.h"
 #include "Camera.h"
 //#include "EnemyManager.h"
-#include "EnemySlime.h"
+#include "EnemyBoss.h"
 
 #include "EffectManager.h"
 
@@ -272,7 +272,7 @@ void SceneGame::Initialize()
 		int life = 2;
 		hp->SetLife(life);
 		actor->AddComponent<Collision>();
-		actor->AddComponent<EnemySlime>();
+		actor->AddComponent<EnemyBoss>();
 
 		// これが２Dかの確認
 		bool check2d = false;
@@ -1655,7 +1655,7 @@ void SceneGame::Update(float elapsedTime)
 			int enemyCount = EnemyManager::Instance().GetEnemyCount();
 			if (enemyCount > 0)
 			{
-				std::shared_ptr<EnemySlime> enemyid = EnemyManager::Instance().GetEnemy(enemyCount - 1)->GetComponent<EnemySlime>();
+				std::shared_ptr<EnemyBoss> enemyid = EnemyManager::Instance().GetEnemy(enemyCount - 1)->GetComponent<EnemyBoss>();
 				shaderBlurStateTimer = enemyid->GetBlurCheck() ? shaderBlurStateTimerMax : shaderBlurStartStateTimer;
 				bool blurCheck = false;
 				enemyid->SetBlurCheck(blurCheck);
@@ -1695,7 +1695,7 @@ void SceneGame::Update(float elapsedTime)
 				hp->SetDead(false);
 				//ActorManager::Instance().Clear();
 
-				EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState(static_cast<int>(EnemySlime::State::Death));
+				EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Death));
 
 
 				
@@ -1710,7 +1710,7 @@ void SceneGame::Update(float elapsedTime)
 				//hp->SetLife(hp->GetLife() - 1);
 			}
 			// クリア
-			if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->GetClearCheck())
+			if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetClearCheck())
 			{
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameClear));
 			}
@@ -1953,7 +1953,7 @@ void SceneGame::Render3DScene()
 
 		for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); i++)
 		{
-			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemySlime>()->DrawDebugPrimitive();
+			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->DrawDebugPrimitive();
 		}
 
 		// ライトのデバッグプリミティブの描画

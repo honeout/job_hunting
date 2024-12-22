@@ -159,7 +159,7 @@
     <ClInclude Include="Source\Player.h">
       <Filter>Source\Character</Filter>
     </ClInclude>
-    <ClInclude Include="Source\EnemySlime.h">
+    <ClInclude Include="Source\EnemyBoss.h">
       <Filter>Source\Character</Filter>
     </ClInclude>
     <ClInclude Include="Source\HP.h">
@@ -398,7 +398,7 @@
     <ClCompile Include="Source\Player.cpp">
       <Filter>Source\Character</Filter>
     </ClCompile>
-    <ClCompile Include="Source\EnemySlime.cpp">
+    <ClCompile Include="Source\EnemyBoss.cpp">
       <Filter>Source\Character</Filter>
     </ClCompile>
     <ClCompile Include="Source\HP.cpp">

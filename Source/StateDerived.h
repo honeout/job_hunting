@@ -34,7 +34,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 	////std::shared_ptr<ModelControll> modelid;
 	//std::shared_ptr<Movement> moveid = nullptr;
 	////std::shared_ptr<Actor> playerid;
@@ -98,7 +98,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 	//std::shared_ptr<ModelControll> model;
 	//Model*  model = nullptr;
 	//std::shared_ptr<Movement> move = nullptr;
@@ -138,7 +138,7 @@ public:
 	void End()override;
 private:
 	//std::shared_ptr<Actor> playerid;
-	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 	//std::shared_ptr<HP> hpid = nullptr;
 	
 
@@ -187,7 +187,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 	////std::shared_ptr<ModelControll> modelid;
 	//std::shared_ptr<Movement> moveid = nullptr;
 	//std::shared_ptr<HP> hpid = nullptr;
@@ -260,7 +260,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
 	//std::shared_ptr<HP> hpid = nullptr;
 
@@ -299,7 +299,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
 	//std::shared_ptr<HP> hpid = nullptr;
 	//std::shared_ptr<ProjectileRuby> projectileRubyid;
@@ -336,7 +336,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
 	//std::shared_ptr<Transform> transformid = nullptr;
 
@@ -377,7 +377,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
 	//std::shared_ptr<Transform> transformid;
 
@@ -433,7 +433,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
 	// 混乱
 	std::unique_ptr<AudioSource> confusionSe;
@@ -480,7 +480,7 @@ public:
 	// 終了処理
 	void End()override;
 private:
-	//std::shared_ptr<EnemySlime> enemyid = nullptr;
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
 	//std::shared_ptr<Transform> transformid = nullptr;
 

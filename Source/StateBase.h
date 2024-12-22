@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
-//class EnemySlime;
+//class EnemyBoss;
 //class Player;
 class Actor;
 

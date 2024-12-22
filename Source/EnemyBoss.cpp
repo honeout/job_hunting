@@ -1,5 +1,5 @@
 #include <imgui.h>
-#include "EnemySlime.h"
+#include "EnemyBoss.h"
 //#include "EnemyManager.h"
 #include "Graphics/Graphics.h"
 #include "Mathf.h"
@@ -21,7 +21,7 @@
 
 
 // デストラクタ
-EnemySlime::~EnemySlime()
+EnemyBoss::~EnemyBoss()
 {
    // delete model;
     //if (stateMachine != nullptr)
@@ -44,7 +44,7 @@ EnemySlime::~EnemySlime()
 
 }
 
-void EnemySlime::Start()
+void EnemyBoss::Start()
 {
   
     // ムーブメント関数を使えるように
@@ -149,7 +149,7 @@ void EnemySlime::Start()
 }
 
 // 更新処理
-void EnemySlime::Update(float elapsedTime)
+void EnemyBoss::Update(float elapsedTime)
 {
     
     //// 動作するかどうか
@@ -241,7 +241,7 @@ void EnemySlime::Update(float elapsedTime)
 
 
 
-void EnemySlime::Render(RenderContext& rc, ModelShader& shader)
+void EnemyBoss::Render(RenderContext& rc, ModelShader& shader)
 {
  
   
@@ -268,7 +268,7 @@ void EnemySlime::Render(RenderContext& rc, ModelShader& shader)
 
 }
 #ifdef _DEBUG
-void EnemySlime::OnGUI()
+void EnemyBoss::OnGUI()
 {
     if(ImGui::Button("drawtrue"))
     {
@@ -287,7 +287,7 @@ void EnemySlime::OnGUI()
 
 
 // デバッグプリミティブ描画
-void EnemySlime::DrawDebugPrimitive()
+void EnemyBoss::DrawDebugPrimitive()
 {
     // 基底クラスのデバッグプリミティブ描画
     //Enemy::DrawDebugPrimitive();
@@ -329,7 +329,7 @@ void EnemySlime::DrawDebugPrimitive()
 }
 
 // 足踏み(衝撃波)の当たり判定
-void EnemySlime::CollisionImpactVsPlayer()
+void EnemyBoss::CollisionImpactVsPlayer()
 {
     PlayerManager& playerManager = PlayerManager::Instance();
 
@@ -430,7 +430,7 @@ void EnemySlime::CollisionImpactVsPlayer()
     }
 }
 
-void EnemySlime::CollisionRubyVsPlayer()
+void EnemyBoss::CollisionRubyVsPlayer()
 {
     PlayerManager& playerManager = PlayerManager::Instance();
 
@@ -580,7 +580,7 @@ void EnemySlime::CollisionRubyVsPlayer()
     }
 }
 // ルビーとプレイヤーの当たり判定
-void EnemySlime::CollisionRubyWidthVsPlayer()
+void EnemyBoss::CollisionRubyWidthVsPlayer()
 {
     PlayerManager& playerManager = PlayerManager::Instance();
 
@@ -684,7 +684,7 @@ void EnemySlime::CollisionRubyWidthVsPlayer()
 }
 
 // ルビィと地面
-void EnemySlime::CollisionRubyWidthVsOnGraound()
+void EnemyBoss::CollisionRubyWidthVsOnGraound()
 {
     ProjectileManager& projectileManager = ProjectileManager::Instance();
 
@@ -735,7 +735,7 @@ void EnemySlime::CollisionRubyWidthVsOnGraound()
     }
 }
 
-bool EnemySlime::CollisionPlayerWithRushEnemy()
+bool EnemyBoss::CollisionPlayerWithRushEnemy()
 {
 
 
@@ -823,7 +823,7 @@ bool EnemySlime::CollisionPlayerWithRushEnemy()
 }
 
 // 衝撃波
-void EnemySlime::CollisionInpact()
+void EnemyBoss::CollisionInpact()
 {
     // 衝撃波の有無
     if (!IsInpact) return;
@@ -930,7 +930,7 @@ void EnemySlime::CollisionInpact()
     }
 }
 
-void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
+void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
 {
 
     int playerCount = PlayerManager::Instance().GetPlayerCount();
@@ -1030,7 +1030,7 @@ void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
     }
 }
 
-void EnemySlime::InputImpact(DirectX::XMFLOAT3 pos)
+void EnemyBoss::InputImpact(DirectX::XMFLOAT3 pos)
 {
     {
 
@@ -1081,7 +1081,7 @@ void EnemySlime::InputImpact(DirectX::XMFLOAT3 pos)
 
 }
 
-void EnemySlime::InputProjectile()
+void EnemyBoss::InputProjectile()
 {
     // 前方向 sinの計算
     DirectX::XMFLOAT3 dir;
@@ -1157,7 +1157,7 @@ void EnemySlime::InputProjectile()
 
 }
 
-void EnemySlime::InputThrowingRuby(DirectX::XMFLOAT3 target)
+void EnemyBoss::InputThrowingRuby(DirectX::XMFLOAT3 target)
 {
     //// 前方向 sinの計算
     DirectX::XMFLOAT3 direction;
@@ -1247,14 +1247,14 @@ void EnemySlime::InputThrowingRuby(DirectX::XMFLOAT3 target)
 }
 
 // 縄張り設定
-void EnemySlime::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
+void EnemyBoss::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
 {
     territoryOrigin = origin;
     territoryRange = range;
 
 }
 
-void EnemySlime::UiControlle(float elapsedTime)
+void EnemyBoss::UiControlle(float elapsedTime)
 {
     if (UiManager::Instance().GetUiesCount() <= 0)return;
     float gaugeWidth = hp.lock()->GetMaxHealth() * hp.lock()->GetHealth() * 0.12f;
@@ -1287,7 +1287,7 @@ void EnemySlime::UiControlle(float elapsedTime)
 
 }
 
-void EnemySlime::OnHit(float elapsedTime)
+void EnemyBoss::OnHit(float elapsedTime)
 {
     if (hp.lock()->FlashTime(elapsedTime))
     {
@@ -1325,7 +1325,7 @@ void EnemySlime::OnHit(float elapsedTime)
     }
 }
 
-void EnemySlime::SetRandomTargetPosition()
+void EnemyBoss::SetRandomTargetPosition()
 {
 
     float theta = Mathf::RandomRange(-DirectX::XM_PI, DirectX::XM_PI);
@@ -1335,7 +1335,7 @@ void EnemySlime::SetRandomTargetPosition()
     targetPosition.z = territoryOrigin.z + cosf(theta) * range;
 }
 
-void EnemySlime::MoveToTarget(float elapsedTime, float speedRate)
+void EnemyBoss::MoveToTarget(float elapsedTime, float speedRate)
 {
     // ターゲット方向への進行ベクトルを算出
     float vx = targetPosition.x - position.x;
@@ -1352,7 +1352,7 @@ void EnemySlime::MoveToTarget(float elapsedTime, float speedRate)
     //movement->Turn({ vx,0.0f ,vz } ,turnSpeed * speedRate,elapsedTime);
 }
 // 目的方向への回転
-void EnemySlime::TurnToTarget(float elapsedTime, float speedRate)
+void EnemyBoss::TurnToTarget(float elapsedTime, float speedRate)
 {
 
     float vx = targetPosition.x - position.x;
@@ -1364,7 +1364,7 @@ void EnemySlime::TurnToTarget(float elapsedTime, float speedRate)
     movement.lock()->Turn({ vx,0.0f ,vz }, turnSpeed, elapsedTime);
 }
 
-void EnemySlime::InputJump()
+void EnemyBoss::InputJump()
 {
 
     //jumpSpeed += jumpSpeedMin;
@@ -1385,7 +1385,7 @@ void EnemySlime::InputJump()
 }
 
 // 徘徊ステートへ遷移
-void EnemySlime::TransitionWanderState()
+void EnemyBoss::TransitionWanderState()
 {
     state = State::Wander;
 
@@ -1393,11 +1393,11 @@ void EnemySlime::TransitionWanderState()
     SetRandomTargetPosition();
 
     // 歩きアニメーション再生
-    model->PlayAnimation(EnemySlime::Anim_Walk, true);
+    model->PlayAnimation(EnemyBoss::Anim_Walk, true);
 }
 
 // 徘徊ステート更新処理
-void EnemySlime::UpdateWanderState(float elapsedTime)
+void EnemyBoss::UpdateWanderState(float elapsedTime)
 {
     // 目標地点までXZ平面での距離判定
     float vx = targetPosition.x - position.x;
@@ -1421,7 +1421,7 @@ void EnemySlime::UpdateWanderState(float elapsedTime)
     }
 }
 
-void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
+void EnemyBoss::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
 {
     // ノード位置と当たり判定を行う
     Model::Node* node = model->FindNode(nodeName);
@@ -1498,7 +1498,7 @@ void EnemySlime::CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius)
     }
 }
 
-bool EnemySlime::SearchPlayer()
+bool EnemyBoss::SearchPlayer()
 {
     // プレイヤー取得
     std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
@@ -1539,7 +1539,7 @@ bool EnemySlime::SearchPlayer()
     return false;
 }
 
-void EnemySlime::TransitionIdleState()
+void EnemyBoss::TransitionIdleState()
 {
     state = State::Idle;
 
@@ -1550,7 +1550,7 @@ void EnemySlime::TransitionIdleState()
    // model->PlayAnimation(Anim_IdleNormal, true);
 }
 
-void EnemySlime::UpdateIdleState(float elapsedTime)
+void EnemyBoss::UpdateIdleState(float elapsedTime)
 {
 
     // タイマー処理 待機時間
@@ -1562,7 +1562,7 @@ void EnemySlime::UpdateIdleState(float elapsedTime)
     }
 }
 
-void EnemySlime::TransitionPursuitState()
+void EnemyBoss::TransitionPursuitState()
 {
     state = State::Pursuit;
 
@@ -1574,7 +1574,7 @@ void EnemySlime::TransitionPursuitState()
 }
 
 // 追尾ステート更新処理
-void EnemySlime::UpdatePursuitState(float elapsedTime)
+void EnemyBoss::UpdatePursuitState(float elapsedTime)
 {
     // プレイヤーid
     std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
@@ -1607,7 +1607,7 @@ void EnemySlime::UpdatePursuitState(float elapsedTime)
 
 }
 
-void EnemySlime::TransitionAttackState()
+void EnemyBoss::TransitionAttackState()
 {
     state = State::Attack;
 
@@ -1615,7 +1615,7 @@ void EnemySlime::TransitionAttackState()
     //model->PlayAnimation(Anim_Attack1, false);
 }
 
-void EnemySlime::UpdateAttackState(float elapsedTime)
+void EnemyBoss::UpdateAttackState(float elapsedTime)
 {
     if (!model->IsPlayAnimation())
     {
@@ -1630,7 +1630,7 @@ void EnemySlime::UpdateAttackState(float elapsedTime)
     }
 }
 
-void EnemySlime::TransitionIdleBattleState()
+void EnemyBoss::TransitionIdleBattleState()
 {
     state = State::IdleBattle;
 
@@ -1638,7 +1638,7 @@ void EnemySlime::TransitionIdleBattleState()
     //model->PlayAnimation(Anim_IdleBattle, true);
 }
 
-void EnemySlime::UpdateIdleBattleState(float elapsedTime)
+void EnemyBoss::UpdateIdleBattleState(float elapsedTime)
 {
     // プレイヤーid
     std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1);
@@ -1668,7 +1668,7 @@ void EnemySlime::UpdateIdleBattleState(float elapsedTime)
     MoveToTarget(elapsedTime, 0.0f);
 }
 // ダメージステートへ遷移
-void EnemySlime::TransitionDamageState()
+void EnemyBoss::TransitionDamageState()
 {
     state = State::Damage;
 
@@ -1676,7 +1676,7 @@ void EnemySlime::TransitionDamageState()
     //model->PlayAnimation(Anim_GetHit, false);
 }
 
-void EnemySlime::UpdateDamageState(float elapsedTime)
+void EnemyBoss::UpdateDamageState(float elapsedTime)
 {
     // ダメージアニメーションが終わったら戦闘待機ステートへ遷移
     if (!model->IsPlayAnimation())
@@ -1686,7 +1686,7 @@ void EnemySlime::UpdateDamageState(float elapsedTime)
 }
 
 // 死亡ステートへ遷移
-void EnemySlime::TransitionDeathState()
+void EnemyBoss::TransitionDeathState()
 {
     state = State::Death;
 
@@ -1694,7 +1694,7 @@ void EnemySlime::TransitionDeathState()
     model->PlayAnimation(Anim_Die, false);
 }
 
-void EnemySlime::UpdateDeathState(float elapsedTime)
+void EnemyBoss::UpdateDeathState(float elapsedTime)
 {
     // ダメージアニメーションが終わったら自分を破棄
     if (!model->IsPlayAnimation())
@@ -1705,7 +1705,7 @@ void EnemySlime::UpdateDeathState(float elapsedTime)
     }
 }
 
-void EnemySlime::Destroy()
+void EnemyBoss::Destroy()
 {
     EnemyManager::Instance().Remove(GetActor());
 

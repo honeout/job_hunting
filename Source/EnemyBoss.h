@@ -17,14 +17,14 @@
 
 
 // ƒXƒ‰ƒCƒ€
-class EnemySlime : public Component
+class EnemyBoss : public Component
 {
 public:
-    EnemySlime() {}
-    ~EnemySlime() override;
+    EnemyBoss() {}
+    ~EnemyBoss() override;
 
     // –¼‘OŽæ“¾
-    const char* GetName() const override { return "EnemySlime"; }
+    const char* GetName() const override { return "EnemyBoss"; }
 
     void Start() override;
 

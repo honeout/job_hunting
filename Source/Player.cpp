@@ -11,7 +11,7 @@
 #include "ProjectileRuby.h"
 #include "ProjectileThrowing.h"
 #include "Graphics/Model.h"
-#include "EnemySlime.h"
+#include "EnemyBoss.h"
 
 #include "ProjectileTornade.h"
 
@@ -1554,7 +1554,7 @@ bool Player::InputSpecialAttackCharge()
         if (enemyManagerCount > 0)
         {
 
-            std::weak_ptr<EnemySlime> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemySlime>();
+            std::weak_ptr<EnemyBoss> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemyBoss>();
             std::weak_ptr<Movement> enemyMove = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<Movement>();
 
             bool moveCheck = false;
@@ -2413,12 +2413,12 @@ void Player::CollisionProjectilesVsEnemies()
                 if (enemy.lock()->GetComponent<HP>()->ApplyDamage(3, 0.5f))
                 {
 
-                    if (enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Wander &&
-                        enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Jump && 
-                        enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::IdleBattle)
+                    if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
+                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump && 
+                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
                     {
                         // ダメージステートへ
-                        enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
                     }
 
 
@@ -2537,8 +2537,8 @@ void Player::CollisionRubyVsEnemies()
                     }
                     // 弾丸破棄
                     projectile.lock()->GetComponent<BulletFiring>()->Destroy();
-                    enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState
-                    ((int)EnemySlime::State::IdleBattle);
+                    enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState
+                    ((int)EnemyBoss::State::IdleBattle);
                    
                         
                         
@@ -2860,11 +2860,11 @@ bool Player::CollisionNodeVsEnemies(
 
                 hitEffect->Play(nodePosition);
 
-                    if (enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Wander &&
-                        enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() != (int)EnemySlime::State::Jump )
+                    if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
+                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump )
                     {
                         // ダメージステートへ
-                        //enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+                        //enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
                         // 再生ループ
                         bool  loop = false;
@@ -2882,13 +2882,13 @@ bool Player::CollisionNodeVsEnemies(
                         float blendSeconds = 0.35f;
 
                         // 通常
-                        enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Movie, loop
+                        enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemyBoss::Animation::Anim_Movie, loop
                             , currentAnimationStartSeconds, blendSeconds, currentAnimationAddSeconds, keyFrameEnd);
 
                         
 
                         // 死んだとき
-                        if (enemy.lock()->GetComponent<EnemySlime>()->GetStateMachine()->GetStateIndex() == (int)EnemySlime::State::IdleBattle)
+                        if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle)
                         {
 
                             // 再生開始時間 
@@ -2898,7 +2898,7 @@ bool Player::CollisionNodeVsEnemies(
                             // キーフレームの終了
                             keyFrameEnd = 55.0f;
 
-                            enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemySlime::Animation::Anim_Die, loop
+                            enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemyBoss::Animation::Anim_Die, loop
                                 , currentAnimationStartSeconds, blendSeconds, currentAnimationAddSeconds, keyFrameEnd);
                         }
                      
@@ -2950,7 +2950,7 @@ bool Player::CollisionNodeVsEnemies(
         //            hitEffect->Play(nodePosition);
 
         //            // ダメージステートへ
-        //            enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+        //            enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
 
         //        }
@@ -2990,7 +2990,7 @@ bool Player::CollisionNodeVsEnemies(
 
        //             hitEffect->Play(nodePosition);
        //             // ダメージステートへ
-       //             enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+       //             enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
        //         }
        //         // 当たった時の副次的効果
@@ -3030,7 +3030,7 @@ bool Player::CollisionNodeVsEnemies(
 
        //             hitEffect->Play(nodePosition);
        //             // ダメージステートへ
-       //             enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+       //             enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
        //         }
        //         // 当たった時の副次的効果
@@ -3070,7 +3070,7 @@ bool Player::CollisionNodeVsEnemies(
 
        //             hitEffect->Play(nodePosition);
        //             // ダメージステートへ
-       //             enemy->GetComponent<EnemySlime>()->GetStateMachine()->ChangeState((int)EnemySlime::State::Damage);
+       //             enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
        //         }
        //         // 当たった時の副次的効果
@@ -3090,19 +3090,19 @@ bool Player::CollisionNodeVsEnemies(
         //    if (enemy->GetComponent<HP>()->DamageDrawCheck())
         //    {
         //        bool modelDrawCheck = false;
-        //        enemy->GetComponent<EnemySlime>()->SetModelDrawCheck(modelDrawCheck);
+        //        enemy->GetComponent<EnemyBoss>()->SetModelDrawCheck(modelDrawCheck);
         //    }
         //    else
         //    {
         //        bool modelDrawCheck = true;
-        //        enemy->GetComponent<EnemySlime>()->SetModelDrawCheck(modelDrawCheck);
+        //        enemy->GetComponent<EnemyBoss>()->SetModelDrawCheck(modelDrawCheck);
         //    }
 
         //}
         //else
         //{
         //    bool modelDrawCheck = true;
-        //    enemy->GetComponent<EnemySlime>()->SetModelDrawCheck(modelDrawCheck);
+        //    enemy->GetComponent<EnemyBoss>()->SetModelDrawCheck(modelDrawCheck);
         //}
 
     }
@@ -3156,7 +3156,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
             //// 衝突処理
             DirectX::XMFLOAT3 outPositon;
 
-            std::weak_ptr<EnemySlime> enemySlime = enemy.lock()->GetComponent<EnemySlime>();
+            std::weak_ptr<EnemyBoss> enemyBoss = enemy.lock()->GetComponent<EnemyBoss>();
 
 
             // 球と球
@@ -3172,13 +3172,13 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
                     projectilePosition,
                     projectileInRudius,
                     outPositon) &&projectille.lock()->GetComponent<ProjectileImpact>()) /*&&
-                enemySlime->GetCounterJudgment())*/
+                EnemyBoss->GetCounterJudgment())*/
             {
                 // 高さが一定以下なら通る
                 if (projectilePosition.y + projectileHeight < nodePosition.y) return;
 
 
-                //enemySlime->GetStateMachine()->ChangeState((int)EnemySlime::State::Idle);
+                //EnemyBoss->GetStateMachine()->ChangeState((int)EnemyBoss::State::Idle);
                 // ヒットエフェクト再生
                 {
                     //DirectX::XMFLOAT3 e = enemyPosition;
@@ -3193,7 +3193,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
 
                     //desEffect->Play(e);
 
-                    //enemySlime->SetCounterJudgment(false);
+                    //EnemyBoss->SetCounterJudgment(false);
                 }
 
 
@@ -3251,7 +3251,7 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
             //// 衝突処理
             DirectX::XMFLOAT3 outPositon;
 
-            std::weak_ptr<EnemySlime> enemySlime = enemy.lock()->GetComponent<EnemySlime>();
+            std::weak_ptr<EnemyBoss> enemyBoss = enemy.lock()->GetComponent<EnemyBoss>();
 
 
             // 球と球
@@ -3261,13 +3261,13 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
                 projectilePosition,
                 projectileRudius,
                 outPositon)) /*&&
-                enemySlime->GetCounterJudgment())*/
+                EnemyBoss->GetCounterJudgment())*/
             {
                 // 高さが一定以下なら通る
                 if (projectilePosition.y + projectileHeight < nodePosition.y) return;
 
 
-                //enemySlime->GetStateMachine()->ChangeState((int)EnemySlime::State::Idle);
+                //EnemyBoss->GetStateMachine()->ChangeState((int)EnemyBoss::State::Idle);
                 // ヒットエフェクト再生
                 {
                     //DirectX::XMFLOAT3 e = enemyPosition;
@@ -3283,7 +3283,7 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
 
                     //desEffect->Play(e);
 
-                    //enemySlime->SetCounterJudgment(false);
+                    //EnemyBoss->SetCounterJudgment(false);
                 }
 
 
@@ -3340,7 +3340,7 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
             //// 衝突処理
             DirectX::XMFLOAT3 outPositon;
 
-            std::weak_ptr<EnemySlime> enemySlime = enemy.lock()->GetComponent<EnemySlime>();
+            std::weak_ptr<EnemyBoss> enemyBoss = enemy.lock()->GetComponent<EnemyBoss>();
 
 
             // 球と球
@@ -3350,13 +3350,13 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
                 projectilePosition,
                 projectileRudius,
                 outPositon) && !counterCheck) /*&&
-                enemySlime->GetCounterJudgment())*/
+                enemyBoss->GetCounterJudgment())*/
             {
                 // 高さが一定以下なら通る
                /* if (projectilePosition.y + projectileHeight < nodePosition.y) return;*/
 
 
-                //enemySlime->GetStateMachine()->ChangeState((int)EnemySlime::State::Idle);
+                //EnemyBoss->GetStateMachine()->ChangeState((int)EnemyBoss::State::Idle);
                 // ヒットエフェクト再生
                 {
                     //DirectX::XMFLOAT3 e = enemyPosition;
@@ -4736,7 +4736,7 @@ void Player::DmageInvalidJudment(bool invalidJudgment)
         // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
         std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
 
-        enemy.lock()->GetComponent<EnemySlime>()->SetInvalidJudgment(invalidJudgment);
+        enemy.lock()->GetComponent<EnemyBoss>()->SetInvalidJudgment(invalidJudgment);
     }
 }
 
