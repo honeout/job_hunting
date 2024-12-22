@@ -55,7 +55,7 @@
 // SV_TARGET                0   xyzw        0   TARGET   float   xyzw
 //
 ps_5_0
-dcl_globalFlags refactoringAllowed
+dcl_globalFlags refactoringAllowed | skipOptimization
 dcl_constantbuffer CB0[6], immediateIndexed
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
@@ -63,125 +63,482 @@ dcl_resource_texture2d (float,float,float,float) t1
 dcl_input_ps linear v1.xyzw
 dcl_input_ps linear v2.xy
 dcl_output o0.xyzw
-dcl_temps 6
+dcl_temps 5
+//
+// Initial variable locations:
+//   v0.x <- pin.position.x; v0.y <- pin.position.y; v0.z <- pin.position.z; v0.w <- pin.position.w; 
+//   v1.x <- pin.color.x; v1.y <- pin.color.y; v1.z <- pin.color.z; v1.w <- pin.color.w; 
+//   v2.x <- pin.texcoord.x; v2.y <- pin.texcoord.y; 
+//   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
+//
+#line 12 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\FinalpassPS.hlsl"
 sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v2.xyxx, t0.xyzw, s0
-mul r1.xyzw, r0.xyzw, v1.xyzw
-resinfo_indexable(texture2d)(float,float,float,float) r2.xy, l(0), t0.xyzw
-ilt r0.w, l(1), cb0[1].y
-if_nz r0.w
-  add r2.zw, -v2.xxxy, cb0[1].zzzw
-  div r3.xy, cb0[1].xxxx, r2.xyxx
-  mul r2.zw, r2.zzzw, r3.xxxy
-  itof r0.w, cb0[1].y
-  mov r3.xyz, r1.xyzx
-  mov r3.w, l(1)
+mul r0.xyzw, r0.xyzw, v1.xyzw  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
+
+#line 16
+resinfo_indexable(texture2d)(float,float,float,float) r1.xy, l(0), t0.xyzw
+mov r1.x, r1.x  // r1.x <- sceneTextureDimensions.x
+mov r1.y, r1.y  // r1.y <- sceneTextureDimensions.y
+
+#line 19
+ilt r1.z, l(1), cb0[1].y
+if_nz r1.z
+  mov r1.z, cb0[1].y  // r1.z <- rb_samplingCount
+
+#line 21
+  mov r0.xyz, r0.xyzx  // r0.x <- result_color.x; r0.y <- result_color.y; r0.z <- result_color.z
+
+#line 24
+  mov r2.xy, -v2.xyxx
+  add r2.xy, r2.xyxx, cb0[1].zwzz  // r2.x <- blur_vector.x; r2.y <- blur_vector.y
+
+#line 26
+  div r2.zw, cb0[1].xxxx, r1.xxxy
+  mul r2.xy, r2.zwzz, r2.xyxx
+
+#line 28
+  mov r1.w, l(1)  // r1.w <- index
+  mov r3.xyz, r0.xyzx  // r3.x <- result_color.x; r3.y <- result_color.y; r3.z <- result_color.z
+  mov r2.z, r1.w  // r2.z <- index
   loop 
-    ige r4.x, r3.w, cb0[1].y
-    breakc_nz r4.x
-    itof r4.x, r3.w
-    div r4.x, r4.x, r0.w
-    mad r4.xy, r2.zwzz, r4.xxxx, v2.xyxx
+    ilt r2.w, r2.z, r1.z
+    breakc_z r2.w
+
+#line 30
+    itof r2.w, r2.z
+    itof r3.w, r1.z
+    div r2.w, r2.w, r3.w
+    mul r4.xy, r2.wwww, r2.xyxx
+    add r4.xy, r4.xyxx, v2.xyxx
     sample_indexable(texture2d)(float,float,float,float) r4.xyz, r4.xyxx, t0.xyzw, s0
     add r3.xyz, r3.xyzx, r4.xyzx
-    iadd r3.w, r3.w, l(1)
+
+#line 31
+    iadd r2.z, r2.z, l(1)
   endloop 
-  div r3.xyz, r3.xyzx, r0.wwww
-  min r0.w, r2.y, r2.x
-  div r0.w, cb0[2].x, r0.w
-  add r2.zw, v2.xxxy, -cb0[1].zzzw
-  dp2 r2.z, r2.zwzz, r2.zwzz
-  sqrt r2.z, r2.z
-  div_sat r0.w, r2.z, r0.w
-  mad r0.xyz, -r0.xyzx, v1.xyzx, r3.xyzx
-  mad r1.xyz, r0.wwww, r0.xyzx, r1.xyzx
+
+#line 33
+  itof r2.xyz, r1.zzzz
+  div r2.xyz, r3.xyzx, r2.xyzx  // r2.x <- result_color.x; r2.y <- result_color.y; r2.z <- result_color.z
+
+#line 35
+  min r1.z, r1.y, r1.x
+  div r1.z, cb0[2].x, r1.z  // r1.z <- mask_radius
+
+#line 36
+  mov r3.xy, -cb0[1].zwzz
+  add r3.xy, r3.xyxx, v2.xyxx
+  dp2 r1.w, r3.xyxx, r3.xyxx
+  sqrt r1.w, r1.w
+  div r1.z, r1.w, r1.z
+  max r1.z, r1.z, l(0.000000)
+  min r1.z, r1.z, l(1.000000)  // r1.z <- mask_value
+
+#line 37
+  mov r3.xyz, -r0.xyzx
+  add r2.xyz, r2.xyzx, r3.xyzx
+  mul r2.xyz, r1.zzzz, r2.xyzx
+  add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z
+
+#line 38
 endif 
-sample_indexable(texture2d)(float,float,float,float) r0.xyz, v2.xyxx, t1.xyzw, s0
-add r0.xyz, r0.yzxy, r1.yzxy
-max r0.w, r0.y, r0.x
-max r0.w, r0.w, r0.z
-min r1.x, r0.y, r0.x
-min r1.x, r0.z, r1.x
-add r1.x, r0.w, -r1.x
-div r1.y, r1.x, r0.w
-mul r1.z, r1.y, cb0[0].y
-mul r3.y, r0.w, cb0[0].z
-eq r2.z, r1.z, l(0.000000)
-if_nz r2.z
-  mov r4.xyz, r3.yyyy
+
+#line 42
+sample_indexable(texture2d)(float,float,float,float) r2.xyz, v2.xyxx, t1.xyzw, s0
+add r0.xyz, r0.xyzx, r2.xyzx
+
+#line 48
+nop 
+mov r0.xyz, r0.xyzx
+
+#line 8 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\FilterFunctions.hlsli"
+itof r2.x, l(0)  // r2.x <- hsv.x
+
+#line 10
+max r1.z, r0.z, r0.y
+max r2.z, r0.x, r1.z  // r2.z <- Vmax
+
+#line 11
+min r1.z, r0.z, r0.y
+min r1.z, r0.x, r1.z  // r1.z <- Vmin
+
+#line 14
+mov r1.z, -r1.z
+add r1.z, r1.z, r2.z  // r1.z <- delta
+
+#line 18
+mov r2.z, r2.z  // r2.z <- hsv.z
+
+#line 21
+div r2.y, r1.z, r2.z  // r2.y <- hsv.y
+
+#line 24
+lt r1.w, l(0.000000), r2.y
+if_nz r1.w
+
+#line 27
+  eq r1.w, r0.x, r2.z
+  if_nz r1.w
+
+#line 31
+    itof r1.w, l(60)
+    mov r2.w, -r0.z
+    add r2.w, r0.y, r2.w
+    div r2.w, r2.w, r1.z
+    mul r2.x, r1.w, r2.w
+
+#line 33
+  endif 
+
+#line 35
+  eq r1.w, r0.y, r2.z
+  if_nz r1.w
+
+#line 38
+    itof r1.w, l(60)
+    mov r2.w, -r0.x
+    add r2.w, r0.z, r2.w
+    div r2.w, r2.w, r1.z
+    mul r1.w, r1.w, r2.w
+    itof r2.w, l(120)
+    add r2.x, r1.w, r2.w
+
+#line 40
+  endif 
+
+#line 42
+  eq r0.z, r0.z, r2.z
+  if_nz r0.z
+
+#line 45
+    itof r0.z, l(60)
+    mov r0.y, -r0.y
+    add r0.x, r0.y, r0.x
+    div r0.x, r0.x, r1.z
+    mul r0.x, r0.x, r0.z
+    itof r0.y, l(240)
+    add r2.x, r0.y, r0.x
+
+#line 47
+  endif 
+
+#line 49
+  itof r0.x, l(0)
+  lt r0.x, r2.x, r0.x
+  if_nz r0.x
+
+#line 51
+    itof r0.x, l(360)
+    add r2.x, r0.x, r2.x
+
+#line 52
+  endif 
+
+#line 53
+endif 
+
+#line 54
+mov r2.x, r2.x  // r2.x <- <RGB2HSV return value>.x
+mov r2.y, r2.y  // r2.y <- <RGB2HSV return value>.y
+mov r2.z, r2.z  // r2.z <- <RGB2HSV return value>.z
+
+#line 48 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\FinalpassPS.hlsl"
+mov r2.xyz, r2.xyzx  // r2.x <- color.x; r2.y <- color.y; r2.z <- color.z
+
+#line 51
+add r0.x, r2.x, cb0[0].x  // r0.x <- color.x
+
+#line 54
+mul r0.y, r2.y, cb0[0].y  // r0.y <- color.y
+
+#line 57
+mul r0.z, r2.z, cb0[0].z  // r0.z <- color.z
+
+#line 60
+nop 
+mov r0.x, r0.x
+mov r0.y, r0.y
+mov r0.z, r0.z
+
+#line 64 "C:\Users\2220261\Desktop\2年時前期\３年\個人製作\project\job_hunting\HLSL\FilterFunctions.hlsli"
+itof r2.xyz, l(0, 0, 0, 0)  // r2.x <- rgb.x; r2.y <- rgb.y; r2.z <- rgb.z
+
+#line 65
+itof r1.z, l(0)
+eq r1.z, r0.y, r1.z
+if_nz r1.z
+
+#line 68
+  mov r2.z, r0.z
+  mov r2.y, r2.z
+  mov r2.x, r2.y
+
+#line 69
 else 
-  lt r2.z, l(0.000000), r1.y
-  eq r5.xyz, r0.zxyz, r0.wwww
-  add r0.xyz, -r0.yzxy, r0.xyzx
-  div r0.xyz, r0.xyzx, r1.xxxx
-  mul r0.x, r0.x, l(60.000000)
-  and r0.x, r0.x, r5.x
-  mad r0.yz, r0.yyzy, l(0.000000, 60.000000, 60.000000, 0.000000), l(0.000000, 120.000000, 240.000000, 0.000000)
-  movc r0.x, r5.y, r0.y, r0.x
-  movc r0.x, r5.z, r0.z, r0.x
-  lt r0.y, r0.x, l(0.000000)
-  add r0.z, r0.x, l(360.000000)
-  movc r0.x, r0.y, r0.z, r0.x
-  and r0.x, r0.x, r2.z
-  add r0.x, r0.x, cb0[0].x
-  mul r0.y, r0.x, l(360.000000)
-  ge r0.y, r0.y, -r0.y
-  movc r0.yz, r0.yyyy, l(0,360.000000,0.002778,0), l(0,-360.000000,-0.002778,0)
-  mul r0.x, r0.z, r0.x
+
+#line 74
+  mov r0.z, r0.z  // r0.z <- Vmax
+
+#line 76
+  itof r1.z, l(360)
+  mul r1.w, r0.x, r1.z
+  mov r2.w, -r1.w
+  ge r1.w, r1.w, r2.w
+  mov r2.w, -r1.z
+  movc r1.z, r1.w, r1.z, r2.w
+  div r1.w, l(1.000000, 1.000000, 1.000000, 1.000000), r1.z
+  mul r0.x, r0.x, r1.w
   frc r0.x, r0.x
+  mul r0.x, r0.x, r1.z  // r0.x <- hsv.x
+
+#line 77
+  itof r1.z, l(60)
+  div r1.z, r0.x, r1.z
+  ftoi r1.z, r1.z
+  itof r1.z, r1.z  // r1.z <- Huei
+
+#line 78
+  itof r1.w, l(60)
+  div r0.x, r0.x, r1.w
+  mov r1.w, -r1.z
+  add r0.x, r0.x, r1.w  // r0.x <- Huef
+
+#line 79
+  mov r1.w, -r0.y
+  add r1.w, r1.w, l(1.000000)
+  mul r1.w, r0.z, r1.w  // r1.w <- p
+
+#line 80
+  mul r2.w, r0.x, r0.y
+  mov r2.w, -r2.w
+  add r2.w, r2.w, l(1.000000)
+  mul r2.w, r0.z, r2.w  // r2.w <- q
+
+#line 81
+  mov r0.x, -r0.x
+  add r0.x, r0.x, l(1.000000)
   mul r0.x, r0.x, r0.y
-  mul r0.y, r0.x, l(0.016667)
-  round_z r0.y, r0.y
-  mad r0.x, r0.x, l(0.016667), -r0.y
-  mad r0.z, -r1.y, cb0[0].y, l(1.000000)
-  mul r3.z, r0.z, r3.y
-  mad r0.z, -r1.z, r0.x, l(1.000000)
-  add r0.x, -r0.x, l(1.000000)
-  mad r0.x, -r1.z, r0.x, l(1.000000)
-  mul r3.xw, r0.xxxz, r3.yyyy
-  eq r5.xyzw, r0.yyyy, l(0.000000, 1.000000, 2.000000, 3.000000)
-  eq r0.xy, r0.yyyy, l(4.000000, 5.000000, 0.000000, 0.000000)
-  and r0.yzw, r3.yyzw, r0.yyyy
-  movc r0.xyz, r0.xxxx, r3.xzyx, r0.yzwy
-  movc r0.xyz, r5.wwww, r3.zwyz, r0.xyzx
-  movc r0.xyz, r5.zzzz, r3.zyxz, r0.xyzx
-  movc r0.xyz, r5.yyyy, r3.wyzw, r0.xyzx
-  movc r4.xyz, r5.xxxx, r3.yxzy, r0.xyzx
+  mov r0.x, -r0.x
+  add r0.x, r0.x, l(1.000000)
+  mul r0.x, r0.x, r0.z  // r0.x <- t
+
+#line 82
+  itof r0.y, l(0)
+  eq r0.y, r0.y, r1.z
+  if_nz r0.y
+
+#line 84
+    mov r2.x, r0.z
+
+#line 85
+    mov r2.y, r0.x
+
+#line 86
+    mov r2.z, r1.w
+
+#line 87
+  else 
+
+#line 88
+    itof r0.y, l(1)
+    eq r0.y, r0.y, r1.z
+    if_nz r0.y
+
+#line 90
+      mov r2.x, r2.w
+
+#line 91
+      mov r2.y, r0.z
+
+#line 92
+      mov r2.z, r1.w
+
+#line 93
+    else 
+
+#line 94
+      itof r0.y, l(2)
+      eq r0.y, r0.y, r1.z
+      if_nz r0.y
+
+#line 96
+        mov r2.x, r1.w
+
+#line 97
+        mov r2.y, r0.z
+
+#line 98
+        mov r2.z, r0.x
+
+#line 99
+      else 
+
+#line 100
+        itof r0.y, l(3)
+        eq r0.y, r0.y, r1.z
+        if_nz r0.y
+
+#line 102
+          mov r2.x, r1.w
+
+#line 103
+          mov r2.y, r2.w
+
+#line 104
+          mov r2.z, r0.z
+
+#line 106
+        else 
+
+#line 107
+          itof r0.y, l(4)
+          eq r0.y, r0.y, r1.z
+          if_nz r0.y
+
+#line 109
+            mov r2.x, r0.x
+
+#line 110
+            mov r2.y, r1.w
+
+#line 111
+            mov r2.z, r0.z
+
+#line 112
+          else 
+
+#line 113
+            itof r0.x, l(5)
+            eq r0.x, r0.x, r1.z
+            if_nz r0.x
+
+#line 115
+              mov r2.x, r0.z
+
+#line 116
+              mov r2.y, r1.w
+
+#line 117
+              mov r2.z, r2.w
+
+#line 118
+            endif 
+          endif 
+        endif 
+      endif 
+    endif 
+  endif 
+
+#line 120
 endif 
-lt r0.x, l(0.000000), cb0[4].z
-lt r0.y, l(0.500000), cb0[5].z
-add r1.yz, v2.xxyx, -cb0[4].xxyx
-div r0.z, r2.x, r2.y
-add r0.z, r0.z, l(-1.000000)
-mad r0.z, cb0[5].x, r0.z, l(1.000000)
-mul r1.x, r0.z, r1.y
-mad r0.w, cb0[4].z, l(0.700000), l(0.300000)
-add r2.x, -r0.w, cb0[4].z
-mad r0.w, cb0[5].x, r2.x, r0.w
-add r0.w, -r0.w, l(1.000000)
-dp2 r1.x, r1.xzxx, r1.xzxx
-sqrt r1.x, r1.x
-ge r0.w, r1.x, r0.w
-and r0.w, r0.w, l(0x3f800000)
-add r2.xyz, cb0[3].xyzx, l(-1.000000, -1.000000, -1.000000, 0.000000)
-mad r2.xyz, r0.wwww, r2.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
-mul r2.xyz, r2.xyzx, r4.xyzx
-mul r1.yz, |r1.zzyz|, cb0[4].zzzz
-mul r1.x, r0.z, r1.z
-mov_sat r1.xy, r1.xyxx
-log r0.zw, r1.xxxy
-mul r0.zw, r0.zzzw, cb0[5].yyyy
-exp r0.zw, r0.zzzw
-dp2 r0.z, r0.zwzz, r0.zwzz
-add r0.z, -r0.z, l(1.000000)
-max r0.z, r0.z, l(0.000000)
-log r0.z, r0.z
-mul r0.z, r0.z, cb0[4].w
-exp r0.z, r0.z
-add r1.xyz, -cb0[3].xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
-mad r1.xyz, r0.zzzz, r1.xyzx, cb0[3].xyzx
-mul r1.xyz, r1.xyzx, r4.xyzx
-movc r0.yzw, r0.yyyy, r2.xxyz, r1.xxyz
-movc o0.xyz, r0.xxxx, r0.yzwy, r4.xyzx
-mov o0.w, r1.w
+
+#line 121
+mov r2.xyz, r2.xyzx  // r2.x <- <HSV2RGB return value>.x; r2.y <- <HSV2RGB return value>.y; r2.z <- <HSV2RGB return value>.z
+
+#line 60 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\FinalpassPS.hlsl"
+mov r2.xyz, r2.xyzx  // r2.x <- color.x; r2.y <- color.y; r2.z <- color.z
+
+#line 66
+itof r0.x, l(0)
+lt r0.x, r0.x, cb0[4].z
+if_nz r0.x
+
+#line 69
+  lt r0.x, l(0.500000), cb0[5].z
+  if_nz r0.x
+
+#line 71
+    mov r0.xy, -cb0[4].xyxx
+    add r0.yz, r0.xxyx, v2.xxyx  // r0.y <- vn_vector.x; r0.z <- vn_vector.y
+
+#line 72
+    div r1.z, r1.x, r1.y  // r1.z <- aspect
+
+#line 73
+    mov r1.w, l(-1.000000)
+    add r1.z, r1.w, r1.z
+    mul r1.z, r1.z, cb0[5].x
+    add r1.z, r1.z, l(1.000000)
+    mul r0.x, r0.y, r1.z  // r0.x <- vn_vector.x
+
+#line 74
+    mov r0.y, l(-0.300000)
+    add r0.y, r0.y, l(1.000000)
+    mul r0.y, r0.y, cb0[4].z
+    add r0.y, r0.y, l(0.300000)
+    mov r1.z, -r0.y
+    add r1.z, r1.z, cb0[4].z
+    mul r1.z, r1.z, cb0[5].x
+    add r0.y, r0.y, r1.z  // r0.y <- intensity
+
+#line 75
+    itof r1.z, l(1)
+    mov r0.y, -r0.y
+    add r0.y, r0.y, r1.z
+    dp2 r0.x, r0.xzxx, r0.xzxx
+    sqrt r0.x, r0.x
+    ge r0.x, r0.x, r0.y
+    movc r0.x, r0.x, l(1.000000), l(0)  // r0.x <- factor
+
+#line 76
+    max r0.x, r0.x, l(0.000000)
+    min r0.x, r0.x, l(1.000000)
+    mov r3.xyz, l(-1.000000,-1.000000,-1.000000,-0.000000)
+    add r3.xyz, r3.xyzx, cb0[3].xyzx
+    mul r0.xyz, r0.xxxx, r3.xyzx
+    add r0.xyz, r0.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
+    mul r2.xyz, r0.xyzx, r2.xyzx
+
+#line 77
+  else 
+
+#line 81
+    mov r0.xy, -cb0[4].xyxx
+    add r0.xy, r0.xyxx, v2.xyxx
+    mov r1.zw, -r0.xxxy
+    max r0.xy, r0.xyxx, r1.zwzz
+    mul r0.yz, r0.xxyx, cb0[4].zzzz  // r0.y <- d.x; r0.z <- d.y
+
+#line 83
+    div r1.x, r1.x, r1.y
+    mov r1.y, l(-1.000000)
+    add r1.x, r1.y, r1.x
+    mul r1.x, r1.x, cb0[5].x
+    add r1.x, r1.x, l(1.000000)
+    mul r0.x, r0.y, r1.x  // r0.x <- d.x
+
+#line 84
+    max r0.xy, r0.xzxx, l(0.000000, 0.000000, 0.000000, 0.000000)
+    min r0.xy, r0.xyxx, l(1.000000, 1.000000, 0.000000, 0.000000)
+    log r0.xy, r0.xyxx
+    mul r0.xy, r0.xyxx, cb0[5].yyyy
+    exp r0.xy, r0.xyxx  // r0.x <- d.x; r0.y <- d.y
+
+#line 86
+    dp2 r0.x, r0.xyxx, r0.xyxx
+    mov r0.x, -r0.x
+    add r0.x, r0.x, l(1.000000)
+    max r0.x, r0.x, l(0.000000)
+    min r0.x, r0.x, l(1.000000)
+    log r0.x, r0.x
+    mul r0.x, r0.x, cb0[4].w
+    exp r0.x, r0.x  // r0.x <- factor
+
+#line 87
+    mov r1.xyz, -cb0[3].xyzx
+    add r1.xyz, r1.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
+    mul r0.xyz, r0.xxxx, r1.xyzx
+    add r0.xyz, r0.xyzx, cb0[3].xyzx
+    mul r2.xyz, r0.xyzx, r2.xyzx
+
+#line 88
+  endif 
+
+#line 89
+endif 
+
+#line 91
+mov o0.xyz, r2.xyzx
+mov o0.w, r0.w
 ret 
-// Approximately 120 instruction slots used
+// Approximately 265 instruction slots used

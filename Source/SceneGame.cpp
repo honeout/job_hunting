@@ -30,6 +30,8 @@
 #include "SceneGameClear.h"
 #include "SceneGameOver.h"
 
+#include "Audio\AudioSource.h"
+
 #include "UiTime.h"
 
 #include "Mp.h"
@@ -233,6 +235,8 @@ void SceneGame::Initialize()
 		actor->SetCheck2d(check2d);
 
 		PlayerManager::Instance().Register(actor);
+
+
 
 
 
