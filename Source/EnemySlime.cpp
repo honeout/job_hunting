@@ -7,6 +7,8 @@
 //#include "Collision.h"
 #include "StateDerived.h"
 
+#include "Audio/Audio.h"
+
 #include "TransForm2D.h"
 
 #include "ProjectileImpact.h"
@@ -34,6 +36,11 @@ EnemySlime::~EnemySlime()
     //if (transform)
     //transform.reset();
     
+    // ダメージ表現
+    if (moveAttackEffect->GetEfeHandle())
+    {
+        moveAttackEffect->Stop(moveAttackEffect->GetEfeHandle());
+    }
 
 }
 
@@ -66,7 +73,8 @@ void EnemySlime::Start()
 
     //SetTerritory(position, territoryarea);
 
-    //moveAttackEffect = std::make_unique<Effect>("Data/Effect/enemyMoveAttackHit.efk");
+    moveAttackEffect = std::make_unique<Effect>("Data/Effect/enemyMoveAttackHit.efk");
+
 
 
     stateMachine = std::make_unique<StateMachine>();
@@ -94,6 +102,10 @@ void EnemySlime::Start()
 
     // エフェクト
     inpactEffect = std::make_unique<Effect>("Data/Effect/hit fire.efk");
+
+    // Se
+    impactSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/衝撃波ヒット.wav");
+    moveAttackSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/打撃.wav");
 
     // アニメーションルール
     updateanim = UpAnim::Normal;
@@ -400,6 +412,8 @@ void EnemySlime::CollisionImpactVsPlayer()
                         {
                             playerPosition.y += playerHeight * 0.5f;
 
+                            bool loopSe = false;
+                            impactSe->Play(loopSe);
 
                             //hitEffect->Play(e);
                         }
@@ -959,7 +973,7 @@ void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
                 const float power = 10.0f;
                 DirectX::XMFLOAT3 impulse;
                 impulse.y = power * 0.5f;
-                player->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
+                //player->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
 
 
                 //// 吹き飛ばす
@@ -984,9 +998,21 @@ void EnemySlime::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
 
 
                     player->GetComponent<Movement>()->AddImpulse(impulse);
-                    // ヒットエフェクト再生
 
-                    playerPosition.y += playerHeight * 0.5f;
+                    // エフェクト発生位置
+                    DirectX::XMFLOAT3 efcPos = playerPosition;
+                    efcPos.y += player->GetComponent<Transform>()->GetHeight();
+
+
+                    // ヒットエフェクト再生
+                    moveAttackEffect->Play(playerPosition);
+
+                    //SE
+                    bool loopSe = false;
+                    moveAttackSe->Play(loopSe);
+
+
+                    //playerPosition.y += playerHeight * 0.5f;
 
                     //hitEffect->Play(e);
 
@@ -1007,7 +1033,7 @@ void EnemySlime::InputImpact(DirectX::XMFLOAT3 pos)
 
 
         // 弾丸初期化
-        const char* filename = "Data/Model/Sword/Sword.mdl";
+        const char* filename = "Data/Model/SpikeBall/SpikeBall.mdl";
 
         std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
         actor->AddComponent<ModelControll>();

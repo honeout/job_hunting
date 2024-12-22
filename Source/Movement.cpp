@@ -312,7 +312,7 @@ void Movement::UpdateHorizontalVelocity( float elapsedFrame)
 
     // XZ•½–Ê‚Ì‘¬—Í‚ðŒ¸‘¬‚·‚é ‘¬“x‚Ì’·‚³
     float length = sqrtf(velocity.x * velocity.x + velocity.z * velocity.z);
-    if (length > 0.0f)
+    if ((length + FLT_EPSILON )> (0.0f - FLT_EPSILON))
     {
         // –€ŽC—Í
         float friction = this->friction * elapsedFrame;
@@ -650,7 +650,7 @@ void Movement::UpdateVelocity( float elapsedTime)
         velocity.x = 0;
         velocity.z = 0;
         // —Ž‰º‚ð‚ä‚Á‚½‚è‚³‚¹‚é‚½‚ß
-        velocity.y = 0;
+        //velocity.y = 0;
     }
     if (!stopFall)
     {

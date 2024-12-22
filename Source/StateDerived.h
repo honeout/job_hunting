@@ -6,6 +6,7 @@
 #include "Actor.h"
 #include "Effect.h"
 #include "ProjectileTornade.h"
+#include "Audio/AudioSource.h"
 
 
 enum AttackChange
@@ -44,6 +45,9 @@ private:
 	float				stateTimer = stateTimerEnd;
 	float				stateTimerMax = 4.0f;
 
+	// 歩行SE
+	std::unique_ptr<AudioSource> walkSe;
+	bool loopSe = true;
 
 	// 着地瞬間
 	bool                upOnLading = false;
@@ -72,6 +76,8 @@ private:
 
 	// ターゲット位置
 	DirectX::XMFLOAT3 targetPosition = {.0f,.0f,.0f};
+
+
 };
 
 // 待機ステートオブジェクト
@@ -163,7 +169,7 @@ private:
 };
 
 
-// 徘徊ステートオブジェクト
+// ジャンプ系ステートオブジェクト
 class JumpState : public State
 {
 public:
@@ -190,6 +196,15 @@ private:
 	////float				stateTimer = 0.0f;
 
 	//Model* model = nullptr;
+
+	// ジャンプ
+	std::unique_ptr<AudioSource> janpSe;
+
+	// 着地
+	std::unique_ptr<AudioSource> landSe;
+
+	// ループするかSe
+	bool loopSe = false;
 
 	// 着地瞬間
 	bool                upOnLading = false;
@@ -366,7 +381,9 @@ private:
 
 	//std::shared_ptr<Transform> transformid;
 
-
+	// 被ダメージ
+	std::unique_ptr<AudioSource> damageSe;
+	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
 	float				stateTimerMax = 5.0f;
@@ -418,6 +435,9 @@ public:
 private:
 	//std::shared_ptr<EnemySlime> enemyid = nullptr;
 
+	// 混乱
+	std::unique_ptr<AudioSource> confusionSe;
+	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
 	float				stateTimerMax = 5.0f;
@@ -464,7 +484,9 @@ private:
 
 	//std::shared_ptr<Transform> transformid = nullptr;
 
-
+	// 死亡音声
+	std::unique_ptr<AudioSource> deathSe;
+	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
 
@@ -522,7 +544,7 @@ private:
 	float blendSeconds = 0.5f;
 };
 
-// 徘徊ステートオブジェクト
+// 移動ステートオブジェクト
 class PlayerMovestate : public State
 {
 public:
@@ -540,6 +562,10 @@ public:
 	// 終了処理
 	void End()override;
 private:
+
+	// 歩行
+	std::unique_ptr<AudioSource> walkSe;
+	bool loopSe = true;
 
 	//std::shared_ptr<Movement> moveid;
 
@@ -580,6 +606,10 @@ private:
 	//Model* model;
 	//std::shared_ptr<Movement> moveid;
 
+	// ジャンプ
+	std::unique_ptr<AudioSource> janpSe;
+	bool loopSe = false;
+
 	float				stateTimer = 0.0f;
 	float				attackRange = 1.5f;
 
@@ -617,6 +647,11 @@ private:
 	//std::shared_ptr<ModelControll> model;
 	Model* model;
 	std::shared_ptr<Movement> moveid;
+
+	// 着地
+	std::unique_ptr<AudioSource> landSe;
+
+	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
 
@@ -658,6 +693,11 @@ private:
 	//std::shared_ptr<ModelControll> model;
 	//Model* model;
 	//std::shared_ptr<Movement> moveid;
+
+
+	// ジャンプ
+	std::unique_ptr<AudioSource> janpSe;
+	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
 
@@ -709,6 +749,10 @@ private:
 
 	// 足もとに竜巻
 	//std::unique_ptr<Effect> areWork;
+
+	// 斬撃
+	std::unique_ptr<AudioSource> slashSe;
+	bool loopSe = false;
 	
 
 	DirectX::XMFLOAT3 angle; 
@@ -806,6 +850,10 @@ private:
 	//std::shared_ptr<Movement> moveid;
 	//std::shared_ptr<Transform> transformid;
 
+	// 斬撃
+	std::unique_ptr<AudioSource> slashSe;
+	bool loopSe = false;
+
 	DirectX::XMFLOAT3 angle;
 
 	float				stateTimer = 0.0f;
@@ -902,6 +950,10 @@ private:
 	//Model* model;
 	//std::shared_ptr<Movement> moveid;
 	//std::shared_ptr<Transform> transformid;
+
+	// 斬撃
+	std::unique_ptr<AudioSource> slashSe;
+	bool loopSe = false;
 
 	DirectX::XMFLOAT3 angle;
 
@@ -1003,6 +1055,15 @@ private:
 	//std::shared_ptr<Transform> enemyTransform;
 	//std::shared_ptr<HP> enemyHpId;
 
+	// 斬撃
+	std::unique_ptr<AudioSource> slashSe;
+
+	// 必殺技雷
+	std::unique_ptr<AudioSource> lighteningStrikeSpecialSe;
+	// 必殺技雷ため
+	std::unique_ptr<AudioSource> lighteningStrikeSpecialSaveSe;
+	bool loopSe = false;
+
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 angle;
 
@@ -1076,6 +1137,28 @@ private:
 	//Model* model;
 	//std::shared_ptr<Movement> moveid;
 
+
+	// 炎発射
+	std::unique_ptr<AudioSource> flameStarteSe;
+	// 炎持続
+	//std::unique_ptr<AudioSource> flameDurationSe;
+	// 炎着弾時
+	std::unique_ptr<AudioSource> flameimpactSe;
+
+
+	// 氷発射
+	std::unique_ptr<AudioSource> iceStarteSe;
+	// 氷持続
+	std::unique_ptr<AudioSource> iceDurationSe;
+	// 氷着弾時
+	std::unique_ptr<AudioSource> iceimpactSe;
+
+	// 雷ヒット時
+	std::unique_ptr<AudioSource> lightningSe;
+
+	// se
+	bool loopSe = false;
+
 	// 再生ループ
 	bool  loop = false;
 
@@ -1145,6 +1228,16 @@ private:
 	// エネミー入れ物
 	//std::shared_ptr<Transform> enemyTransform;
 	//std::shared_ptr<HP> enemyHpId;
+
+	// 炎持続
+	//std::unique_ptr<AudioSource> flameDurationSe;
+
+	// 必殺技炎
+	std::unique_ptr<AudioSource> flameSpecialStarteSe;
+	// 必殺技炎ため
+	std::unique_ptr<AudioSource> flameSpecialSaveSe;
+	bool loopSe = false;
+
 
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 angle;
@@ -1381,7 +1474,9 @@ private:
 	std::shared_ptr<Movement> moveid;
 	Model* model;
 
-
+	// 被ダメージ
+	std::unique_ptr<AudioSource> damageSe;
+	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
 
@@ -1417,6 +1512,9 @@ private:
 	//std::shared_ptr<Movement> moveid;
 	//std::shared_ptr<HP> hpid;
 
+	// ダッシュ
+	std::unique_ptr<AudioSource> dushSe;
+	bool loopSe = false;
 
 	// エフェクト
 	std::unique_ptr<Effect> wind;
@@ -1465,6 +1563,10 @@ public:
 private:
 	
 
+	// 反射
+	std::unique_ptr<AudioSource> reflectionStop;
+	bool loopSe = false;
+
 	float				stateTimer = 0.0f;
 
 	// 再生ループ
@@ -1500,6 +1602,9 @@ private:
 	//std::shared_ptr<HP> hpid;
 	//std::shared_ptr<Transform> transformid;
 	//float				stateTimer = 0.0f;
+
+	// 死亡音声敵
+	std::unique_ptr<AudioSource> deathSe;
 
 	// 再生ループ
 	bool  loop = false;

@@ -20,6 +20,9 @@ public:
 	// ボリューム変更
 	void SetVolume(float volume) { sourceVoice->SetVolume(volume); }
 
+	// 速度変更
+	void SetSpeed(float speed) { sourceVoice->SetFrequencyRatio(speed); }
+
 	
 
 private:

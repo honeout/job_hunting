@@ -7,6 +7,7 @@
 //#include "EnemyManager.h"
 #include "Collision.h"
 #include "ProjectileManager.h"
+#include "Audio/AudioSource.h"
 #include "Component.h"
 #include "Movement.h"
 #include "HP.h"
@@ -172,7 +173,7 @@ public:
     //void CollisionPlayerVsEnemies();
 
     // ƒm[ƒh‚ÆƒGƒlƒ~[‚ÌÕ“Ëˆ—
-    void CollisionNodeVsEnemies(
+    bool CollisionNodeVsEnemies(
         const char* nodeName, 
         float nodeRadius,
         const char* nodeHeartName,
@@ -553,6 +554,80 @@ private:
     Effect* magicIceHitEffect = nullptr;
     Effect* ImpactEffect = nullptr;
     Effect* desEffect = nullptr;
+
+
+    //////// ‰¹ŠÖŒW //////////
+    
+    // BGM
+    std::unique_ptr<AudioSource> Bgm;
+
+    // ‚PaŒ‚
+    std::unique_ptr<AudioSource> slashFustSe;
+    // ‚QaŒ‚
+    std::unique_ptr<AudioSource> slasSecondeSe;
+    // ‘ÅŒ‚
+    std::unique_ptr<AudioSource> buttonTherdeSe;
+
+    // •às
+    std::unique_ptr<AudioSource> walkSe;
+
+    // ƒ_ƒbƒVƒ…
+    std::unique_ptr<AudioSource> DushSe;
+
+    // ƒWƒƒƒ“ƒv
+    std::unique_ptr<AudioSource> janpSe;
+
+    // ’…’n
+    std::unique_ptr<AudioSource> landSe;
+
+    // ”íƒ_ƒ[ƒW
+    std::unique_ptr<AudioSource> damageSe;
+
+    // ¬—“G
+    std::unique_ptr<AudioSource> confusionSe;
+
+    // €–S‰¹º“G
+    std::unique_ptr<AudioSource> deathSe;
+
+
+    // ƒqƒbƒgƒXƒgƒbƒv
+    std::unique_ptr<AudioSource> hitStop;
+
+    // •KE‹Z‰Š
+    std::unique_ptr<AudioSource> flameSpecialStarteSe;
+    // •KE‹Z‰Š‚½‚ß
+    std::unique_ptr<AudioSource> flameSpecialSaveSe;
+
+    // •KE‹Z—‹
+    std::unique_ptr<AudioSource> lighteningStrikeSpecialSe;
+    // •KE‹Z—‹‚½‚ß
+    std::unique_ptr<AudioSource> lighteningStrikeSpecialSaveSe;
+
+
+    // ‰Š”­Ë
+    std::unique_ptr<AudioSource> flameStarteSe;
+    // ‰Š‘±
+    std::unique_ptr<AudioSource> flameDurationSe;
+    // ‰Š’…’e
+    std::unique_ptr<AudioSource> flameimpactSe;
+    
+
+    // •X”­Ë
+    std::unique_ptr<AudioSource> iceStarteSe;
+    // •X‘±
+    std::unique_ptr<AudioSource> iceDurationSe;
+    // •X’…’e
+    std::unique_ptr<AudioSource> iceimpactSe;
+
+    // —‹ƒqƒbƒg
+    std::unique_ptr<AudioSource> lightningSe;
+
+
+
+    /////////////////////////
+
+
+
 
     std::unique_ptr<Effect> lightningAttack;
 

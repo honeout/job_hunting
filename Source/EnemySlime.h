@@ -2,6 +2,7 @@
 
 #include "Graphics/Model.h"
 #include "Component.h"
+#include "Audio/AudioSource.h"
 #include "Movement.h"
 #include "HP.h"
 #include "ModelControll.h"
@@ -278,7 +279,9 @@ private:
 
     std::unique_ptr<Effect> inpactEffect;
 
-
+    // 衝撃波SE
+    std::unique_ptr<AudioSource> impactSe;
+    std::unique_ptr<AudioSource> moveAttackSe;
 
     // どのステートで動くか
     State state = State::Wander;
@@ -340,7 +343,7 @@ private:
     int maxHealth = 50;
 
     // 半径
-    float radius = 1.5f;
+    float radius = 1.0f;
 
     // 高さ
     float height = 9.0f;

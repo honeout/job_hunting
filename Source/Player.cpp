@@ -5,6 +5,7 @@
 #include "Graphics/Graphics.h"
 //#include "EnemyManager.h"
 #include "Collision.h"
+#include "Audio\Audio.h"
 #include "ProjectileStraight.h"
 #include "ProjectileHoming.h"
 #include "ProjectileRuby.h"
@@ -95,6 +96,9 @@ Player::~Player()
 void Player::Start()
 {
 
+    // BGM
+    
+    Bgm = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎飛行時.wav");
 
     // ムーブメント関数を使えるように
     movement = GetActor()->GetComponent<Movement>();
@@ -286,7 +290,10 @@ void Player::Update(float elapsedTime)
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
 
-
+            // 炎音
+            Bgm->Play(false);
+            // 音大きい
+            Bgm->SetVolume(2.0f);
             
             // もし地面なら何もしない
             bool noStart = false;
@@ -2723,7 +2730,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 }
 
 // ノードと敵の衝突判定
-void Player::CollisionNodeVsEnemies(
+bool Player::CollisionNodeVsEnemies(
     const char* nodeName, float nodeRadius,
     const char* nodeHeartName,
     const char* nodeLeftArmName,
@@ -2897,10 +2904,13 @@ void Player::CollisionNodeVsEnemies(
 
                     // 斬撃チャージ
                     ++attackEnergyCharge;
+
+                    return true;
           
             }
         }
     }
+    return false;
 
         //// 下半身
         //// 円柱と円
