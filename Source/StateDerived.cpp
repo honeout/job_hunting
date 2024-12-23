@@ -2084,7 +2084,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 		bool stop = false;
 		moveid.lock()->SetStopMove(stop);
 
-		angle = transformid.lock()->GetAngle();
+		DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
 
 		DirectX::XMFLOAT3 direction;
 		direction.x = sinf(angle.y) * 6;
@@ -2389,7 +2389,7 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 		bool stop = false;
 		moveid.lock()->SetStopMove(stop);
 
-		angle = transformid.lock()->GetAngle();
+		DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
 
 		DirectX::XMFLOAT3 direction;
 		direction.x = sinf(angle.y) * 6;

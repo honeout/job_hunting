@@ -16,7 +16,7 @@
 
 
 
-// スライム
+// 宝石ボス
 class EnemyBoss : public Component
 {
 public:

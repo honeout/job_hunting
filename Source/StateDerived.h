@@ -645,8 +645,8 @@ public:
 	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
-	Model* model;
-	std::shared_ptr<Movement> moveid;
+	//Model* model;
+	//std::shared_ptr<Movement> moveid;
 
 	// 着地
 	std::unique_ptr<AudioSource> landSe;
@@ -755,7 +755,7 @@ private:
 	bool loopSe = false;
 	
 
-	DirectX::XMFLOAT3 angle; 
+	//DirectX::XMFLOAT3 angle; 
 
 	float				stateTimer = 0.0f;
 	bool				button = false;
@@ -854,7 +854,7 @@ private:
 	std::unique_ptr<AudioSource> slashSe;
 	bool loopSe = false;
 
-	DirectX::XMFLOAT3 angle;
+	//DirectX::XMFLOAT3 angle;
 
 	float				stateTimer = 0.0f;
 	bool				button = false;
@@ -955,7 +955,7 @@ private:
 	std::unique_ptr<AudioSource> slashSe;
 	bool loopSe = false;
 
-	DirectX::XMFLOAT3 angle;
+	//DirectX::XMFLOAT3 angle;
 
 	float				stateTimer = 0.0f;
 	bool				button = false;
@@ -1064,8 +1064,8 @@ private:
 	std::unique_ptr<AudioSource> lighteningStrikeSpecialSaveSe;
 	bool loopSe = false;
 
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 angle;
+	DirectX::XMFLOAT3 position = {0.0f,0.0f,0.0f};
+	DirectX::XMFLOAT3 angle = { 0.0f,0.0f,0.0f };
 
 	float				stateTimer = 0.0f;
 
@@ -1100,9 +1100,9 @@ private:
 	bool isRotate = false;
 
 	// 向き
-	DirectX::XMFLOAT3 vector;
+	DirectX::XMFLOAT3 vector = { 0.0f,0.0f,0.0f };
 	// 距離
-	float length;
+	float length = 0.0f;
 
 	// 距離の最大値
 	float attackCheckRangeMax = 10.5f;
@@ -1178,12 +1178,12 @@ private:
 	float moveSpeed = 5.0f;
 
 	// 回転許可
-	bool                      isRotate;
+	bool                      isRotate = false;
 
 	// 向き
-	DirectX::XMFLOAT3 vector;
+	DirectX::XMFLOAT3 vector = { 0.0f,0.0f,0.0f };
 	// 距離
-    float length;
+    float length = 0.0f;
 
 	// 角度範囲
 	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
@@ -1239,8 +1239,8 @@ private:
 	bool loopSe = false;
 
 
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 angle;
+	DirectX::XMFLOAT3 position = { 0.0f,0.0f,0.0f };
+	DirectX::XMFLOAT3 angle = { 0.0f,0.0f,0.0f };
 
 	float				stateTimer = 0.0f;
 
@@ -1284,9 +1284,9 @@ private:
 	bool isRotate = false;
 
 	// 向き
-	DirectX::XMFLOAT3 vector;
+	DirectX::XMFLOAT3 vector = { 0.0f,0.0f,0.0f };
 	// 距離
-	float length;
+	float length = 0.0f;
 
 	// 距離の最大値
 	float attackCheckRangeMax = 10.5f;
@@ -1333,8 +1333,8 @@ private:
 	//std::shared_ptr<Transform> enemyTransform;
 	//std::shared_ptr<HP> enemyHpId;
 
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 angle;
+	DirectX::XMFLOAT3 position = { 0.0f,0.0f,0.0f };
+	DirectX::XMFLOAT3 angle = { 0.0f,0.0f,0.0f };
 
 	float				stateTimer = 0.0f;
 
@@ -1410,8 +1410,8 @@ private:
 	//std::shared_ptr<Transform> enemyTransform;
 	//std::shared_ptr<HP> enemyHpId;
 
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 angle;
+	DirectX::XMFLOAT3 position = { 0.0f,0.0f,0.0f };
+	DirectX::XMFLOAT3 angle = { 0.0f,0.0f,0.0f };
 
 	float				stateTimer = 0.0f;
 
@@ -1471,8 +1471,8 @@ public:
 	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
-	std::shared_ptr<Movement> moveid;
-	Model* model;
+	//std::shared_ptr<Movement> moveid;
+	//Model* model;
 
 	// 被ダメージ
 	std::unique_ptr<AudioSource> damageSe;
