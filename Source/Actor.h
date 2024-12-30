@@ -27,6 +27,7 @@ public:
 
 	// 描画
 	virtual void Render(RenderContext rc, ModelShader* shader);
+	virtual void Render(RenderContext rc, SpriteShader* shader);
 	virtual void Render2D(RenderContext rc, SpriteShader* shader);
 
 
@@ -76,7 +77,9 @@ private:
 	std::string			name;
 	
 	// ２D判定
-	bool                    check2d;
+	bool                    check2d = false;
+
+
 };
 
 // アクターマネージャー
@@ -107,6 +110,10 @@ public:
 
 	// 3D描画
 	void Render(RenderContext rc, ModelShader* shader);
+	void Render(RenderContext rc, SpriteShader* shader);
+
+	void RenderGui();
+
 	// 2D描画
 	void Render2D(RenderContext rc, SpriteShader* shader);
 	// 全削除

@@ -33,6 +33,15 @@ void Actor::Render(RenderContext rc, ModelShader* shader)
 	}
 }
 
+void Actor::Render(RenderContext rc, SpriteShader* shader)
+{
+	// ‚QD•`‰æ
+	for (std::shared_ptr<Component>& component : components)
+	{
+		component->Render(rc, *shader);
+	}
+}
+
 void Actor::Render2D(RenderContext rc, SpriteShader* shader)
 {
 	// ‚QD•`‰æ
@@ -151,22 +160,46 @@ void ActorManager::Render(RenderContext rc, ModelShader* shader)
 		if (!actor->GetCheck2d())
 		// ƒ‚ƒfƒ‹‚ª‚ ‚ê‚Î•`‰æ
 		actor->Render(rc, shader);
-
-
+		
+		
 	}
 
 
 
 
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
+//	// ƒŠƒXƒ^[•`‰æ
+//	DrawLister();
+//
+//	// Ú×•`‰æ
+//	DrawDetail();
+//#endif // _DEBUG
+
+}
+
+void ActorManager::Render(RenderContext rc, SpriteShader* shader)
+{
+	Graphics& graphics = Graphics::Instance();
+
+
+	for (std::shared_ptr<Actor>& actor : updateActors)
+	{
+		if (actor->GetCheck2d())
+			// ƒ‚ƒfƒ‹‚ª‚ ‚ê‚Î•`‰æ
+			actor->Render2D(rc, shader);
+	}
+}
+
+void ActorManager::RenderGui()
+{
+	#ifdef _DEBUG
 	// ƒŠƒXƒ^[•`‰æ
 	DrawLister();
 
 	// Ú×•`‰æ
 	DrawDetail();
 #endif // _DEBUG
-
 }
 
 void ActorManager::Render2D(RenderContext rc, SpriteShader* shader)

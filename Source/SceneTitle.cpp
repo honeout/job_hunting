@@ -13,6 +13,7 @@ void SceneTitle::Initialize()
 
     //sprite = std::make_unique<Sprite>("Data/Sprite/Title.png");
     sprite = std::make_unique<Sprite>("Data/Sprite/タイトル.png");
+    spritePush = std::make_unique<Sprite>("Data/Sprite/コマンドPUSH.png");
 
 }
 // 終了化
@@ -56,6 +57,9 @@ void SceneTitle::Render()
         float screenHeight = static_cast<float>(graphics.GetScreenHeight());
         float textureWidth = static_cast<float>(sprite->GetTextureWidth());
         float textureHeight = static_cast<float>(sprite->GetTextureHeight());
+
+        float texturePushWidth = static_cast<float>(spritePush->GetTextureWidth());
+        float texturePushHeight = static_cast<float>(spritePush->GetTextureHeight());
         // 描画
         sprite->Render(dc,
             0, 0, screenWidth, screenHeight,
@@ -64,6 +68,14 @@ void SceneTitle::Render()
             1, 1, 1, 1);
         // {位置}{サイズ}{画像どこから}{画像何処まで}
         // dc , ｛範囲｝｛｝
+
+        // Push
+        spritePush->Render(dc,
+            position.x, position.y, texturePushWidth, texturePushHeight,
+            0, 0, texturePushWidth, texturePushHeight,
+            0,
+            1, 1, 1, 1);
+        // {位置}{サイズ}{画像どこ
     }
 }
 

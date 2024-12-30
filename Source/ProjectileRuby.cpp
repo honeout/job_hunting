@@ -3,7 +3,7 @@
 // コンストラクタ
 ProjectileRuby::ProjectileRuby()
 {
-   
+    height = 0.0f;
 }
 // デストラクタ
 ProjectileRuby::~ProjectileRuby()

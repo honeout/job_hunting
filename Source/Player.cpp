@@ -85,7 +85,11 @@ Player::~Player()
 
 
 
-
+    //if (seSouce != nullptr)
+    //{
+    //    delete seSouce;
+    //    seSouce = nullptr;
+    //}
 
    // ProjectileManager::Instance().Clear();
   
@@ -97,8 +101,10 @@ void Player::Start()
 {
 
     // BGM
-    
-    Bgm = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎飛行時.wav");
+    //Bgm = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎飛行時.wav");
+
+    //// SE
+    //SePlayer = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎着弾時.wav","flame");
 
     // ムーブメント関数を使えるように
     movement = GetActor()->GetComponent<Movement>();
@@ -152,6 +158,26 @@ void Player::Start()
 
     // エフェクト竜巻
     areWork = std::make_unique<Effect>("Data/Effect/tornade.efk");
+
+    //SE
+    seSouce = Audio::Instance().LoadAudioSource();
+    seSouce->LoadSE("Data/Audio/SE/足音.wav","walk");
+    seSouce->LoadSE("Data/Audio/SE/打撃.wav","hitButton");
+    seSouce->LoadSE("Data/Audio/SE/Enemy着地.wav","land");
+    seSouce->LoadSE("Data/Audio/SE/スラッシュ１回目.wav","slash");
+    seSouce->LoadSE("Data/Audio/SE/スラッシュ２回目.wav","slashTwo");
+    seSouce->LoadSE("Data/Audio/SE/炎着弾時.wav","flamePush");
+    seSouce->LoadSE("Data/Audio/SE/炎飛行時.wav","flame");
+    seSouce->LoadSE("Data/Audio/SE/氷着弾時.wav","icePush");
+    seSouce->LoadSE("Data/Audio/SE/氷発射.wav","ice");
+    seSouce->LoadSE("Data/Audio/SE/雷.wav","lightningStrike");
+    seSouce->LoadSE("Data/Audio/SE/ヒットストップ.wav","hitStop");
+    seSouce->LoadSE("Data/Audio/SE/必殺技炎.wav","specileFirePush");
+    seSouce->LoadSE("Data/Audio/SE/必殺技炎ため.wav","specileFireCharge");
+    seSouce->LoadSE("Data/Audio/SE/必殺技ため完了.wav","specileChargeClear");
+    seSouce->LoadSE("Data/Audio/SE/必殺技雷.wav","specileLightning");
+    seSouce->LoadSE("Data/Audio/SE/必殺技雷ため.wav","specileLightningCharge");
+    //SeSouce->LoadSE("Data/Audio/SE/ヒットストップ.wav","hitStop");
 
     //// 上半身
     //bornUpStartPoint = "mixamorig:Hips";
@@ -887,7 +913,7 @@ bool Player::InputMove(float elapsedTime)
         GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
         GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
     {
-
+        
         return true;
     }
 

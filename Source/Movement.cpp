@@ -13,7 +13,13 @@
 // コンストラクタ
 Movement::Movement()
 {
+    area.max.x = 0.0f;
+    area.max.y = 0.0f;
+    area.max.z = 0.0f;
 
+    area.min.x = 0.0f;
+    area.min.y = 0.0f;
+    area.min.z = 0.0f;
 }
 
 // デストラクタ

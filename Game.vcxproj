@@ -130,7 +130,6 @@
     <ClInclude Include="Source\EffectManager.h" />
     <ClInclude Include="Source\EnemyBoss.h" />
     <ClInclude Include="Source\Framework.h" />
-    <ClInclude Include="Source\Graphics\AfterImageShader.h" />
     <ClInclude Include="Source\Graphics\ColorGradingShader.h" />
     <ClInclude Include="Source\Graphics\DebugRenderer.h" />
     <ClInclude Include="Source\Graphics\DepthStencil.h" />
@@ -213,7 +212,6 @@
     <ClCompile Include="Source\EffectManager.cpp" />
     <ClCompile Include="Source\EnemyBoss.cpp" />
     <ClCompile Include="Source\Framework.cpp" />
-    <ClCompile Include="Source\Graphics\AfterImageShader.cpp" />
     <ClCompile Include="Source\Graphics\ColorGradingShader.cpp" />
     <ClCompile Include="Source\Graphics\DebugRenderer.cpp" />
     <ClCompile Include="Source\Graphics\DepthStencil.cpp" />
@@ -273,7 +271,6 @@
     <ClCompile Include="Source\UiTime.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="HLSL\AfterImageShader.hlsli" />
     <None Include="HLSL\ColorGrading.hlsli" />
     <None Include="HLSL\Debug.hlsli" />
     <None Include="HLSL\FilterFunctions.hlsli" />
@@ -291,14 +288,6 @@
     <None Include="HLSL\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="HLSL\AfterImageShaderPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="HLSL\AfterImageShaderVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
     <FxCompile Include="HLSL\ColorGradingPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>

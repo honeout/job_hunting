@@ -291,8 +291,8 @@ private:
     DirectX::XMFLOAT3 territoryOrigin = { 0,0,0 };
 
     // アップデート再生上半身下半身別
-    UpAnim  updateanim;
-
+    UpAnim  updateanim = UpAnim::Normal;
+    
     //// 上半身更新開始位置
     //char* bornUpStartPoint;
 

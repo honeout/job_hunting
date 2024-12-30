@@ -45,8 +45,11 @@ private:
 	float				stateTimer = stateTimerEnd;
 	float				stateTimerMax = 4.0f;
 
+	// エフェクト
+	std::unique_ptr<Effect> smorker;
+
 	// 歩行SE
-	std::unique_ptr<AudioSource> walkSe;
+	std::unique_ptr<AudioSeSource> walkSe;
 	bool loopSe = true;
 
 	// 着地瞬間
@@ -54,13 +57,17 @@ private:
 
 
 	// 再生ループ
-	bool  loop = true;
+	bool  loop = false;
 
 	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	float currentAnimationStartSeconds = 3.3f;
+
+	// 再生終了時間
+	float currentAnimationEndSeconds = 300.0f;
 
 	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.06f;
+	float currentAnimationAddSeconds = 0.00f;
+	//float currentAnimationAddSeconds = 0.06f;
 
 	// キーフレームの終了
 	float keyFrameEnd = 0.0f;
@@ -198,10 +205,13 @@ private:
 	//Model* model = nullptr;
 
 	// ジャンプ
-	std::unique_ptr<AudioSource> janpSe;
+	std::unique_ptr<AudioSeSource> janpSe;
 
 	// 着地
-	std::unique_ptr<AudioSource> landSe;
+	std::unique_ptr<AudioSeSource> landSe;
+
+	// エフェクト
+	std::unique_ptr<Effect> smorker;
 
 	// ループするかSe
 	bool loopSe = false;
@@ -382,7 +392,7 @@ private:
 	//std::shared_ptr<Transform> transformid;
 
 	// 被ダメージ
-	std::unique_ptr<AudioSource> damageSe;
+	//std::unique_ptr<AudioSource> damageSe;
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
@@ -436,7 +446,7 @@ private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
 	// 混乱
-	std::unique_ptr<AudioSource> confusionSe;
+	//std::unique_ptr<AudioSource> confusionSe;
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
@@ -485,7 +495,8 @@ private:
 	//std::shared_ptr<Transform> transformid = nullptr;
 
 	// 死亡音声
-	std::unique_ptr<AudioSource> deathSe;
+	//std::unique_ptr<AudioSource> deathSe;
+	std::unique_ptr<AudioSeSource> deathSe;
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
@@ -1233,9 +1244,9 @@ private:
 	//std::unique_ptr<AudioSource> flameDurationSe;
 
 	// 必殺技炎
-	std::unique_ptr<AudioSource> flameSpecialStarteSe;
+	//std::unique_ptr<AudioSource> flameSpecialStarteSe;
 	// 必殺技炎ため
-	std::unique_ptr<AudioSource> flameSpecialSaveSe;
+	//std::unique_ptr<AudioSource> flameSpecialSaveSe;
 	bool loopSe = false;
 
 

@@ -17,7 +17,6 @@ enum class ModelShaderId
 	Toon,
 	ShadowmapCaster,
 	Lanbert,
-	AfterImage,
 	Max
 };
 

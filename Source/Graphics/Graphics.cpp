@@ -1,6 +1,5 @@
 #include "Misc.h"
 #include "Graphics/LambertShader.h"
-#include "Graphics\AfterImageShader.h"
 #include "Graphics/Graphics.h"
 #include "Graphics/PhongShader.h"
 #include "Graphics/ColorGradingShader.h"
@@ -174,8 +173,7 @@ Graphics::Graphics(HWND hWnd)
 		modelShaders[static_cast<int>(ModelShaderId::ShadowmapCaster)] =
 			std::make_unique<ShadowmapCasterShader>(device.Get());
 
-		modelShaders[static_cast<int>(ModelShaderId::AfterImage)] =
-			std::make_unique<AfterImageShader>(device.Get());
+
 
 
 	}

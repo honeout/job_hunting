@@ -329,6 +329,8 @@ public:
     // ダメージ判定
     void SpecialApplyDamageInRadius();
 
+    
+
 public:
     // ステート
     enum class State
@@ -512,7 +514,7 @@ public:
     void SetHitCheck(bool hitCheck) {  this->hitCheck = hitCheck; }
     bool GetHitCheck() {  return hitCheck; }
 
-
+    AudioSeSource* PlaySE() { return seSouce.get(); }
 
 private:
     //std::shared_ptr<Movement>	movement;
@@ -526,6 +528,9 @@ private:
 
     
     DirectX::XMFLOAT3 velocity = { 0,0,0 };
+
+    // 炎発射
+    std::unique_ptr<AudioSeSource> seSouce;
 
     //std::unique_ptr<Model> model;
     Model* model = nullptr;
@@ -547,7 +552,7 @@ private:
 
     float          turnSpeed = DirectX::XMConvertToRadians(720);
 
-    float          turnSpeedAdd;
+    float          turnSpeedAdd = 0.0f;
 
     // 回転速度　攻撃時
     float          turnSpeedAttack = DirectX::XMConvertToRadians(2600);
@@ -569,68 +574,71 @@ private:
     //////// 音関係 //////////
     
     // BGM
-    std::unique_ptr<AudioSource> Bgm;
+    //std::unique_ptr<AudioSource> Bgm;
 
-    // １斬撃
-    std::unique_ptr<AudioSource> slashFustSe;
-    // ２斬撃
-    std::unique_ptr<AudioSource> slasSecondeSe;
-    // 打撃
-    std::unique_ptr<AudioSource> buttonTherdeSe;
+    // SE
+    //std::unique_ptr<AudioSeSource> SePlayer;
 
-    // 歩行
-    std::unique_ptr<AudioSource> walkSe;
+    //// １斬撃
+    //std::unique_ptr<AudioSource> slashFustSe;
+    //// ２斬撃
+    //std::unique_ptr<AudioSource> slasSecondeSe;
+    //// 打撃
+    //std::unique_ptr<AudioSource> buttonTherdeSe;
 
-    // ダッシュ
-    std::unique_ptr<AudioSource> DushSe;
+    //// 歩行
+    //std::unique_ptr<AudioSource> walkSe;
 
-    // ジャンプ
-    std::unique_ptr<AudioSource> janpSe;
+    //// ダッシュ
+    //std::unique_ptr<AudioSource> DushSe;
 
-    // 着地
-    std::unique_ptr<AudioSource> landSe;
+    //// ジャンプ
+    //std::unique_ptr<AudioSource> janpSe;
 
-    // 被ダメージ
-    std::unique_ptr<AudioSource> damageSe;
+    //// 着地
+    //std::unique_ptr<AudioSource> landSe;
 
-    // 混乱敵
-    std::unique_ptr<AudioSource> confusionSe;
+    //// 被ダメージ
+    //std::unique_ptr<AudioSource> damageSe;
 
-    // 死亡音声敵
-    std::unique_ptr<AudioSource> deathSe;
+    //// 混乱敵
+    //std::unique_ptr<AudioSource> confusionSe;
 
-
-    // ヒットストップ
-    std::unique_ptr<AudioSource> hitStop;
-
-    // 必殺技炎
-    std::unique_ptr<AudioSource> flameSpecialStarteSe;
-    // 必殺技炎ため
-    std::unique_ptr<AudioSource> flameSpecialSaveSe;
-
-    // 必殺技雷
-    std::unique_ptr<AudioSource> lighteningStrikeSpecialSe;
-    // 必殺技雷ため
-    std::unique_ptr<AudioSource> lighteningStrikeSpecialSaveSe;
+    //// 死亡音声敵
+    //std::unique_ptr<AudioSource> deathSe;
 
 
-    // 炎発射
-    std::unique_ptr<AudioSource> flameStarteSe;
-    // 炎持続
-    std::unique_ptr<AudioSource> flameDurationSe;
-    // 炎着弾時
-    std::unique_ptr<AudioSource> flameimpactSe;
-    
+    //// ヒットストップ
+    //std::unique_ptr<AudioSource> hitStop;
 
-    // 氷発射
-    std::unique_ptr<AudioSource> iceStarteSe;
-    // 氷持続
-    std::unique_ptr<AudioSource> iceDurationSe;
-    // 氷着弾時
-    std::unique_ptr<AudioSource> iceimpactSe;
+    //// 必殺技炎
+    //std::unique_ptr<AudioSource> flameSpecialStarteSe;
+    //// 必殺技炎ため
+    //std::unique_ptr<AudioSource> flameSpecialSaveSe;
 
-    // 雷ヒット時
-    std::unique_ptr<AudioSource> lightningSe;
+    //// 必殺技雷
+    //std::unique_ptr<AudioSource> lighteningStrikeSpecialSe;
+    //// 必殺技雷ため
+    //std::unique_ptr<AudioSource> lighteningStrikeSpecialSaveSe;
+
+
+    //// 炎発射
+    //std::unique_ptr<AudioSource> flameStarteSe;
+    //// 炎持続
+    //std::unique_ptr<AudioSource> flameDurationSe;
+    //// 炎着弾時
+    //std::unique_ptr<AudioSource> flameimpactSe;
+    //
+
+    //// 氷発射
+    //std::unique_ptr<AudioSource> iceStarteSe;
+    //// 氷持続
+    //std::unique_ptr<AudioSource> iceDurationSe;
+    //// 氷着弾時
+    //std::unique_ptr<AudioSource> iceimpactSe;
+
+    //// 雷ヒット時
+    //std::unique_ptr<AudioSource> lightningSe;
 
 
 
@@ -649,12 +657,12 @@ private:
     std::unique_ptr<Effect> areWork;
 
     State                   state = State::Idle;
-    State                   stated;
+    State                   stated = State::Idle;
     
     CameraState            cameraState = CameraState::Normal;
     CameraState			lockonState = CameraState::NotLockOn;
 
-    DirectX::XMFLOAT3 lockonCharactor;
+    DirectX::XMFLOAT3 lockonCharactor = {0.0f,0.0f,0.0f};
 
 
     float				lockonTargetChangeTime = 0;
@@ -678,9 +686,9 @@ private:
     bool blend = false;
 
     // アップデート再生種類
-    UpAnim  updateanim ;
+    UpAnim  updateanim = UpAnim::Normal;
 
-    DirectX::XMFLOAT3 moveVec;
+    DirectX::XMFLOAT3 moveVec = {0.0f,0.0f,0.0f};
 
     DirectX::XMFLOAT3 frontVec = { 0 ,0,0 };
 
@@ -733,7 +741,7 @@ private:
 
     /////////////////// カメラ関係
 
-    CameraController* cameraControlle;
+    CameraController* cameraControlle = nullptr;
     //std::unique_ptr<CameraController> cameraControlle;
 
     DirectX::XMFLOAT3	cameraAngle = DirectX::XMFLOAT3(0, 0, 0);
@@ -775,7 +783,7 @@ private:
 
 
     // 移動傾き
-    float moveSpeedAnimation;
+    float moveSpeedAnimation = 0.0f;
 
     // 当たり判定無効判定
     bool invalidJudgment = true;
@@ -786,7 +794,7 @@ private:
 
 
     // 特殊アクション確認
-    bool specialAttackTime;
+    bool specialAttackTime = false;
 
     // 魔法攻撃を打つショートカット用
     bool magicAction = false;

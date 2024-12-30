@@ -16,6 +16,12 @@ public:
 
 	// オーディオソース読み込み
 	std::unique_ptr<AudioSource> LoadAudioSource(const char* filename);
+	std::unique_ptr<AudioSeSource> LoadAudioSource();
+
+	std::shared_ptr<AudioResource> LoadAudioSourceSe(const char* filename);
+
+	//std::unique_ptr<AudioSeSource> LoadAudioSource(const char* filename,
+	//	const std::string& name);
 
 private:
 	static Audio*			instance;

@@ -5,7 +5,7 @@
 // コンストラクタ
 ProjectileTornade::ProjectileTornade()
 {
-
+    height = 0.0f;
 }
 // デストラクタ
 ProjectileTornade::~ProjectileTornade()

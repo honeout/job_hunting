@@ -30,7 +30,7 @@
 #include "SceneGameClear.h"
 #include "SceneGameOver.h"
 
-#include "Audio\AudioSource.h"
+#include "Audio\Audio.h"
 
 #include "UiTime.h"
 
@@ -1588,6 +1588,10 @@ void SceneGame::Initialize()
 	bloomData.gaussianFilterData.kernelSize = 15;
 	bloomData.gaussianFilterData.deviation = 8.3f;
 
+	// BGM
+	Bgm = Audio::Instance().LoadAudioSource("Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav");
+	Bgm->Play(true);
+	Bgm->SetVolume(0.3f);
 }
 
 
@@ -1608,6 +1612,8 @@ void SceneGame::Finalize()
 	UiManager::Instance().Clear();
 
 	ProjectileManager::Instance().Clear();
+
+	Bgm->Stop();
 
 }
 
@@ -1744,6 +1750,8 @@ void SceneGame::Render()
 
 	Render3DScene();
 
+	// GUI
+	ActorManager::Instance().RenderGui();
 
 
 	// 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
@@ -1811,7 +1819,7 @@ void SceneGame::Render()
 		
 		SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
 
-		ActorManager::Instance().Render2D(rc, shaderUi);
+		ActorManager::Instance().Render(rc, shaderUi);
 	}
 
 

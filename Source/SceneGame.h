@@ -10,6 +10,7 @@
 #include "Graphics/DepthStencil.h"
 #include "Light.h"
 #include "PostprocessingRenderer.h"
+#include "Audio/AudioSource.h"
 
 // ゲームシーン
 class SceneGame : public Scene
@@ -53,6 +54,9 @@ private:
 
 
 private:
+	// BGM
+	std::unique_ptr<AudioSource> Bgm;
+
 	// シェーダーをエフェクトして再生
 	float shaderPlayStateTimer = 0;
 	float shaderPlayStateTimerMax = 0.8f;
@@ -86,9 +90,9 @@ private:
 	std::unique_ptr<RenderTarget> renderTarget;
 	std::unique_ptr<Sprite>	sprite;
 
-	float dissolveThreshold;
-	float edgeThreshold; // 緑の閾値
-	DirectX::XMFLOAT4 edgeColor; // 緑の色
+	float dissolveThreshold = 0.0f;
+	float edgeThreshold = 0.0f; // 緑の閾値
+	DirectX::XMFLOAT4 edgeColor{0.0f,0.0f,0.0f,0.0f}; // 緑の色
 
 	// 画面の色
 	ColorGradingData       colorGradingData;
@@ -109,7 +113,11 @@ private:
 	//std::unique_ptr <Light> mainDirectionalLight; // シャドウマップを生成する平行光源
 	std::unique_ptr<DepthStencil> shadowmapDepthStencil; // シャドウマップ用深度ステンシルバッファ
 	float shadowDrawRect = 500.0f;// シャドウマップに描画する範囲
-	DirectX::XMFLOAT4X4 lightViewProjeciton; // ライトビュープロジェクション行列
+	DirectX::XMFLOAT4X4 lightViewProjeciton = {
+	0.0f,0.0f,0.0f,0.0f, 
+	0.0f,0.0f,0.0f,0.0f, 
+	0.0f,0.0f,0.0f,0.0f, 
+	0.0f,0.0f,0.0f,0.0f}; // ライトビュープロジェクション行列
 	DirectX::XMFLOAT3 shadowColor = { 0.2f,0.2f,0.2f };// 影の色
 	float shadowBias = 0.001f;// 深度比較用のオフセット値
 
@@ -142,7 +150,8 @@ private:
 	BloomData bloomData;
 
 	// 行動範囲
-	DirectX::XMFLOAT3 minPos, maxPos;
+	DirectX::XMFLOAT3 minPos = {0.0f,0.0f,0.0f};
+	DirectX::XMFLOAT3 maxPos = {0.0f,0.0f,0.0f};
 
 
 };

@@ -20,6 +20,7 @@ public:
 
 	// 描画
 	virtual void Render(RenderContext& rc, ModelShader& shader) {}
+	virtual void Render(RenderContext& rc, SpriteShader& shader) {}
 	virtual void Render2D(RenderContext& rc, SpriteShader& shader) {}
 
 	// シャドウマップ描画

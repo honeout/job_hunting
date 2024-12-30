@@ -129,9 +129,6 @@
     <ClInclude Include="Source\ResourceManager.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Graphics\AfterImageShader.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Graphics\PhongShader.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
@@ -371,9 +368,6 @@
     <ClCompile Include="Source\ResourceManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\AfterImageShader.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Graphics\PhongShader.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
@@ -556,9 +550,6 @@
     <None Include="HLSL\Sprite.hlsli">
       <Filter>HLSL</Filter>
     </None>
-    <None Include="HLSL\AfterImageShader.hlsli">
-      <Filter>HLSL</Filter>
-    </None>
     <None Include="HLSL\ShadowmapCaster.hlsli">
       <Filter>HLSL</Filter>
     </None>
@@ -619,12 +610,6 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\SpritePS.hlsl">
-      <Filter>HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="HLSL\AfterImageShaderPS.hlsl">
-      <Filter>HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="HLSL\AfterImageShaderVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\ShadowmapCasterVS.hlsl">

@@ -87,7 +87,7 @@ private:
     bool movementCheck = true;
 
     // ‚‚³
-    float height;
+    float height = 0.0f;
 
 
 

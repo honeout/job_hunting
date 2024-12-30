@@ -51,9 +51,38 @@ Audio::~Audio()
 	CoUninitialize();
 }
 
+
 // オーディオソース読み込み
 std::unique_ptr<AudioSource> Audio::LoadAudioSource(const char* filename)
 {
 	std::shared_ptr<AudioResource> resource = std::make_shared<AudioResource>(filename);
 	return std::make_unique<AudioSource>(xaudio, resource);
 }
+//// オーディオソース読み込み
+//std::unique_ptr<AudioSeSource> Audio::LoadAudioSource(const char* filename,
+//	const std::string& name)
+//{
+//	std::shared_ptr<AudioResource> resource = std::make_shared<AudioResource>(filename);
+//	return std::make_unique<AudioSeSource>(xaudio, resource, name);
+//	
+//}
+// オーディオソース読み込み
+std::unique_ptr<AudioSeSource> Audio::LoadAudioSource()
+{
+	return  std::make_unique<AudioSeSource>(xaudio);
+}
+
+std::shared_ptr<AudioResource> Audio::LoadAudioSourceSe(const char* filename)
+{
+	std::shared_ptr<AudioResource> resource = std::make_shared<AudioResource>(filename);
+	return resource;
+}
+
+//// オーディオソース読み込み
+//std::unique_ptr<AudioSeSource> Audio::LoadAudioSource(const char* filename,
+//	const std::string& name)
+//{
+//	std::shared_ptr<AudioResource> resource = std::make_shared<AudioResource>(filename);
+//	return std::make_unique<AudioSeSource>(xaudio, resource, name);
+//
+//}

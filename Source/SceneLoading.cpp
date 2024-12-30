@@ -7,7 +7,9 @@
 void SceneLoading::Initialize()
 {
     // スプライト初期化
-    sprite = new Sprite("Data/Sprite/LoadingIcon.png");
+    //sprite = new Sprite("Data/Sprite/LoadingIcon.png");
+    sprite = std::make_unique<Sprite>("Data/Sprite/タイトル.png");
+    spriteLoading = std::make_unique<Sprite>("Data/Sprite/LoadingIcon.png");
 
     // スレッド開始      (関数名、引数の中身 自分自信)スレッド立ち上げる
     // 引数を何個でも入れられる。関数の引数の長さによる
@@ -27,12 +29,12 @@ void SceneLoading::Finalize()
         thread = nullptr;
     }
     
-    // スプライト終了化
-    if (this->sprite)
-    {
-        delete sprite;
-        sprite = nullptr;
-    }
+    //// スプライト終了化
+    //if (this->sprite)
+    //{
+    //    delete sprite;
+    //    sprite = nullptr;
+    //}
 }
 // 更新処理
 void SceneLoading::Update(float elapsedTime)
@@ -69,12 +71,12 @@ void SceneLoading::Render()
         // 画面右下にローディングアイコンを描画
         float screenWidth = static_cast<float>(graphics.GetScreenWidth());
         float screenHeight = static_cast<float>(graphics.GetScreenHeight());
-        float textureWidth = static_cast<float>(sprite->GetTextureWidth());
-        float textureHeight = static_cast<float>(sprite->GetTextureHeight());
+        float textureWidth = static_cast<float>(spriteLoading->GetTextureWidth());
+        float textureHeight = static_cast<float>(spriteLoading->GetTextureHeight());
         float positionX = screenWidth - textureWidth;
         float positionY = screenHeight - textureHeight;
 
-        sprite->Render(dc,
+        spriteLoading->Render(dc,
             positionX, positionY, textureWidth, textureHeight,
             0, 0, textureWidth, textureHeight,
             angle,
@@ -90,7 +92,7 @@ void SceneLoading::LoadingThread(SceneLoading* scene)
     // サウンド、テクスチャ等の処理はCOMを使ってやっている。
     // スレッドごとの初期化しないといけない
     // 毎回やってる
-    CoInitialize(nullptr);
+    HRESULT hr = CoInitialize(nullptr);
 
     // 次のシーンの初期化を行う
     //scene->Initialize();

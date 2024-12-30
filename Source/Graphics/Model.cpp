@@ -123,9 +123,10 @@ void Model::ComputeAnimation(int animationIndex, int nodeIndex, float time, Node
 	//int keyCount = static_cast<int> (keyframes.size());
 	for (int keyIndex = 0; keyIndex < keyCount - 1; ++keyIndex)
 	{
+		int keyIndex1 = keyIndex + 1;
 		// 現在の時間がどのキーフレームの間にいるか判定する
 		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
-		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex + 1);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex1);
 		if (currentAnimationSeconds >= keyframe0.seconds &&
 			currentAnimationSeconds < keyframe1.seconds)
 		{
@@ -476,9 +477,10 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 		static_cast<int>(keyFrameEnd) <= 0 ? static_cast<int> (keyframes.size()) : static_cast<int>(keyFrameEnd);
 	for (int keyIndex = 0; keyIndex < keyCount - 1; ++keyIndex)
 	{
+		int keyIndex1 = keyIndex + 1;
 		// 現在の時間がどのキーフレームの間にいるか判定する
 		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
-		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex + 1);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex1);
 		if (currentAnimationSeconds >= keyframe0.seconds &&
 			currentAnimationSeconds < keyframe1.seconds)
 		{
@@ -775,10 +777,10 @@ void Model::ReverseplaybackAnimation(float elapsedTime, bool blend)
 		static_cast<int>(keyFrameEnd) <= 0 ? static_cast<int> (keyframes.size()) : static_cast<int>(keyFrameEnd);
 	for (int keyIndex = keyCount - 1; keyIndex > 0; --keyIndex)
 	{
-
+		int keyIndex1 = keyIndex - 1;
 		//現在の時間がどのキーフレームの間にいるか判定する
 		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
-		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex - 1);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex1);
 		if (currentAnimationSeconds <= keyframe0.seconds &&
 			currentAnimationSeconds > keyframe1.seconds)
 		{
@@ -973,15 +975,15 @@ void Model::Update_blend_animations(float elapsedTime,   bool blend)
 	int keyCountSeconds = static_cast<int> (keyframesSeconds.size());
 	for (int keyIndex = 0; keyIndex < keyCount - 1 && keyIndex < keyCountSeconds - 1; ++keyIndex)
 	{
-
+		int keyIndex1 = keyIndex + 1;
 		//////////////////////ここ直して
 		// 現在の時間がどのキーフレームの間にいるか判定する
 		
 		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
-		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex + 1);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex1);
 		
 		const ModelResource::Keyframe& keyframeSeconds0 = keyframesSeconds.at(keyIndex);
-		const ModelResource::Keyframe& keyframeSeconds1 = keyframesSeconds.at(keyIndex + 1);
+		const ModelResource::Keyframe& keyframeSeconds1 = keyframesSeconds.at(keyIndex1);
 
 
 
@@ -1202,9 +1204,10 @@ void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, const
 		static_cast<int> (keyFrameEndUpper) <= 0 ? static_cast<int> (keyframes.size()) : static_cast<int> (keyFrameEndUpper);
 	for (int keyIndex = 0; keyIndex < keyCount - 1; ++keyIndex)
 	{
+		int keyIndex1 = keyIndex + 1;
 		//現在の時間がどのキーフレームの間にいるか判定する
 		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
-		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex + 1);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex1);
 		if (currentAnimationSecondsUpeer >= keyframe0.seconds &&
 			currentAnimationSecondsUpeer < keyframe1.seconds)
 		{
@@ -1358,9 +1361,10 @@ void Model::ReverseplaybackUpeerBodyAnimation(float elapsedTime,  const char* en
 
 	for (int keyIndex = 0; keyIndex < keyCount - 1; ++keyIndex)
 	{
+		int keyIndex1 = keyIndex + 1;
 		//現在の時間がどのキーフレームの間にいるか判定する
 		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
-		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex + 1);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex1);
 		if (currentAnimationSecondsUpeer >= keyframe0.seconds &&
 			currentAnimationSecondsUpeer < keyframe1.seconds)
 		{
@@ -1491,10 +1495,10 @@ void Model::UpdateLowerBodyAnimation(float elapsedTime,const char* start, const 
 	int keyCount = static_cast<int>(keyFrameEnd) <= 0 ? static_cast<int>(keyframes.size()): static_cast<int>(keyFrameEnd);
 	for (int keyIndex = 0; keyIndex < keyCount - 1; ++keyIndex)
 	{
-
+		int keyIndex1 = keyIndex + 1;
 		//現在の時間がどのキーフレームの間にいるか判定する
 		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
-		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex + 1);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex1);
 		if (currentAnimationSeconds >= keyframe0.seconds &&
 			currentAnimationSeconds < keyframe1.seconds)
 		{
@@ -1630,10 +1634,10 @@ void Model::ReverseplaybackLowerBodyAnimation(float elapsedTime, const char* end
 	int keyCount = static_cast<int>(keyframes.size());
 	for (int keyIndex = keyCount - 1; keyIndex > 0; --keyIndex)
 	{
-
+		int keyIndex1 = keyIndex - 1;
 		//現在の時間がどのキーフレームの間にいるか判定する
 		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
-		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex - 1);
+		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex1);
 		if (currentAnimationSeconds <= keyframe0.seconds &&
 			currentAnimationSeconds > keyframe1.seconds)
 		{

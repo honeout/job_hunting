@@ -33,10 +33,11 @@ void WanderState::Enter()
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	walkSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav");
-	walkSe->Play(loopSe);
-	float seSpeed = 0.5f;
-	walkSe->SetSpeed(seSpeed);
+
+	//walkSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav", "walk");
+	//walkSe->Play("walk",loopSe);
+	//float seSpeed = 0.5f;
+	//walkSe->SetSpeed("walk",seSpeed);
 
 	//moveid = owner.lock()->GetComponent<Movement>();
 	// 縄張り
@@ -44,9 +45,14 @@ void WanderState::Enter()
 
 	// アニメーション再生
 	model->
-		PlayAnimation(EnemyBoss::Animation::Anim_Walk,
-			loop, currentAnimationStartSeconds, blendSeconds, 
-			currentAnimationAddSeconds);
+		PlayAnimation(EnemyBoss::Animation::Anim_Movie,
+			loop, currentAnimationStartSeconds, blendSeconds,
+			currentAnimationAddSeconds, currentAnimationEndSeconds);
+
+	//model->
+	//	PlayAnimation(EnemyBoss::Animation::Anim_Walk,
+	//		loop, currentAnimationStartSeconds, blendSeconds, 
+	//		currentAnimationAddSeconds);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
@@ -58,6 +64,8 @@ void WanderState::Enter()
 
 	// プレイヤーid
 
+	// 煙エフェクト
+	smorker = std::make_unique<Effect>("Data/Effect/smorkeDash.efk");
 
 
 }
@@ -76,7 +84,8 @@ void WanderState::Execute(float elapsedTime)
 	// 目標地点ををプレイヤー位置に設定
 	targetPosition = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1)->GetComponent<Transform>()->GetPosition();
 
-
+	// 任意のアニメーション再生区間でのみ衝突判定処理をする
+	float animationTime = model->GetCurrentANimationSeconds();
 
 	enemyid.lock()->SetTargetPosition(targetPosition);
 	
@@ -101,17 +110,29 @@ void WanderState::Execute(float elapsedTime)
 
 	DirectX::XMStoreFloat3(&direction, directionVec);
 
-	moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
+	
 
 	// 目的地へ着いた
-	if (stateTimer <= stateTimerEnd)
+	//if (stateTimer <= stateTimerEnd)
+	if (!model->IsPlayAnimation())
 	{
 		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
 	}
+	// 移動
+	if (animationTime <= 4.6f)
+	{
+		moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
+
+		moveid.lock()->Move(direction, moveSpeed, elapsedTime);
+
+	}
+
+
+
 	// 目的地にこの半径入ったら
 	float radius = enemyid.lock()->GetAttackRightFootRange();
 
-	moveid.lock()->Move(direction ,moveSpeed, elapsedTime);
+	//moveid.lock()->Move(direction ,moveSpeed, elapsedTime);
 
 	// 当たり判定
 	{
@@ -144,6 +165,20 @@ void WanderState::Execute(float elapsedTime)
 		bossLeftHandPosition = model->ConvertLocalToWorld(bossLeftHand);
 
 		enemyid.lock()->DetectHitByBodyPart(bossLeftHandPosition);
+
+		// 足が地面につく
+		if (animationTime + FLT_EPSILON >= 4.0f - FLT_EPSILON &&
+			animationTime - FLT_EPSILON <= 4.1f + FLT_EPSILON)
+		{
+			smorker->Play(bossRightFootPosition);
+		}
+
+		// 足が地面につく
+		if (animationTime + FLT_EPSILON >= 4.6f - FLT_EPSILON &&
+			animationTime - FLT_EPSILON <= 4.7f + FLT_EPSILON)
+		{
+			smorker->Play(bossLeftFootPosition);
+		}
 
 	}
 	//enemyid->CollisionPlayerWithRushEnemy();
@@ -191,7 +226,7 @@ void WanderState::Execute(float elapsedTime)
 // 徘徊ステートから出ていくときのメソッド
 void WanderState::Exit()
 {
-	walkSe->Stop();
+	//walkSe->Stop("walk");
 }
 
 void WanderState::End()
@@ -450,8 +485,8 @@ void JumpState::Enter()
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 
 	// SE 否設定
-	janpSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav");
-	landSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav");
+	//janpSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","janp");
+	//landSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","land");
 
 	//moveid = owner.lock()->GetComponent<Movement>();
 	Model* model =  owner.lock()->GetComponent<ModelControll>()->GetModel();
@@ -492,6 +527,8 @@ void JumpState::Enter()
 		hpid.lock()->SetIsOverDamageRule(isOverDamageRule);
 	}
 
+	// 煙エフェクト
+	smorker = std::make_unique<Effect>("Data/Effect/smorkeDash.efk");
 }
 // 更新処理
 void JumpState::Execute(float elapsedTime)
@@ -526,12 +563,21 @@ void JumpState::Execute(float elapsedTime)
 	// 目的地にこの半径入ったら
 	float radius = enemyid.lock()->GetAttackRightFootRange();
 
+	//Model::Node* bossLeftHand = model->FindNode("boss_left_hand1");
+
+	// 左足ボーン
+	Model::Node* bossLeftFoot = model->FindNode("boss_left_foot1");
+	// ノード位置取得
+	// 左足
+	DirectX::XMFLOAT3 bossLeftFootPosition;
+	bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
+
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = model->GetCurrentANimationSeconds();
 
-	if (animationTime <= 0.8f && !jumpStart)
+	if (animationTime - FLT_EPSILON <= 0.8f + FLT_EPSILON && !jumpStart)
 	{
-		landSe->Play(loopSe);
+		//landSe->Play("janp",loopSe);
 
 		bool blurCheck = true;
 		enemyid.lock()->SetBlurCheck(blurCheck);
@@ -542,7 +588,9 @@ void JumpState::Execute(float elapsedTime)
 
 		jumpStart = true;
 
-		janpSe->Play(loopSe);
+		smorker->Play(bossLeftFootPosition);
+
+		//janpSe->Play("janp",loopSe);
 
 		return;
 	}
@@ -555,21 +603,24 @@ void JumpState::Execute(float elapsedTime)
 
 	if (moveid.lock()->GetOnLadius() && jumpStart)
 	{
-		landSe->Play(loopSe);
+		//landSe->Play("land",loopSe);
 		//enemyid->InputProjectile();
 		enemyid.lock()->InputImpact(enemyid.lock()->GetPosition());
 		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
-		landSe->Play(loopSe);
+
+		// 煙エフェクト
+		smorker->Play(bossLeftFootPosition);
+		//landSe->Play(loopSe);
 	}
 	enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1",enemyid.lock()->GetRadius());
 }
 // 終了処理
 void JumpState::Exit()
 {
-	jumpStart = false;
+	//jumpStart = false;
 
-	janpSe->Stop();
-	landSe->Stop();
+	//janpSe->Stop("janp");
+	//landSe->Stop("land");
 }
 
 void JumpState::End()
@@ -1087,7 +1138,7 @@ void DeathState::Enter()
 	//std::shared_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	// 死亡時Se
-	deathSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav");
+	//deathSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","death");
 
 
 	Model* model;
@@ -1130,8 +1181,8 @@ void DeathState::Execute(float elapsedTime)
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = model->GetCurrentANimationSeconds();
 
-	if(animationTime + FLT_EPSILON >= 0.5f - FLT_EPSILON && animationTime - FLT_EPSILON <= 0.51f + FLT_EPSILON)
-	deathSe->Play(loopSe);
+	//if(animationTime + FLT_EPSILON >= 0.5f - FLT_EPSILON && animationTime - FLT_EPSILON <= 0.51f + FLT_EPSILON)
+	//deathSe->Play("death",loopSe);
 
 
 	float vx = sinf(angle.y) * 6;
@@ -1150,7 +1201,7 @@ void DeathState::Execute(float elapsedTime)
 
 void DeathState::Exit()
 {
-	return;
+	//deathSe->Stop("death");
 }
 
 void DeathState::End()
@@ -1239,9 +1290,9 @@ void PlayerMovestate::Enter()
 
 
 	// 歩きSe否設定
-	walkSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/足音.wav");
-	if(moveid.lock()->GetOnLadius())
-	walkSe->Play(loopSe);
+	//walkSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/足音.wav");
+	//if(moveid.lock()->GetOnLadius())
+	//walkSe->Play(loopSe);
 
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
@@ -1269,6 +1320,10 @@ void PlayerMovestate::Enter()
 	// 落ちる
 	//bool stop = false;
 	moveid.lock()->SetStopMove(false);
+
+	// SE再生
+	playerid.lock()->PlaySE()->Play("walk");
+	playerid.lock()->PlaySE()->SetSpeed("walk",0.5f);
 }
 
 void PlayerMovestate::Execute(float elapsedTime)
@@ -1289,7 +1344,7 @@ void PlayerMovestate::Execute(float elapsedTime)
 	// 移動入力処理
 	if (!playerid.lock()->InputMove(elapsedTime))
 	{
-		walkSe->Stop();
+		//walkSe->Stop();
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 		//TransitionIdleState();
 	}
@@ -1298,7 +1353,7 @@ void PlayerMovestate::Execute(float elapsedTime)
 	// 回避入力処理
 	if (playerid.lock()->InputAvoidance())
 	{
-		walkSe->Stop();
+		//walkSe->Stop();
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 
 	}
@@ -1306,7 +1361,7 @@ void PlayerMovestate::Execute(float elapsedTime)
 	// ジャンプ入力処理
 	if (playerid.lock()->InputJump())
 	{
-		walkSe->Stop();
+		//walkSe->Stop();
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Jump));
 		
 	}
@@ -1317,7 +1372,10 @@ void PlayerMovestate::Execute(float elapsedTime)
 
 void PlayerMovestate::Exit()
 {
-	walkSe->Stop();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	// SE再生
+	playerid.lock()->PlaySE()->Stop("walk");
+	//walkSe->Stop();
 }
 
 void PlayerMovestate::End()
@@ -1331,8 +1389,8 @@ void PlayerJumpState::Enter()
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
 	// 否設定Se
-	janpSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/足音.wav");
-	janpSe->Play(loopSe);
+	//janpSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/足音.wav");
+	//janpSe->Play(loopSe);
 
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
@@ -1351,6 +1409,8 @@ void PlayerJumpState::Enter()
 	// 落ちる
 	//bool stop = false;
 	moveid.lock()->SetStopMove(false);
+
+	playerid.lock()->PlaySE()->Play("land");
 }
 
 void PlayerJumpState::Execute(float elapsedTime)
@@ -1401,7 +1461,7 @@ void PlayerJumpState::Execute(float elapsedTime)
 
 void PlayerJumpState::Exit()
 {
-	janpSe->Stop();
+	//janpSe->Stop();
 }
 
 void PlayerJumpState::End()
@@ -1414,9 +1474,9 @@ void PlayerLandState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
-	// Se
-	landSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/足音.wav");
-	landSe->Play(loopSe);
+	//// Se
+	//landSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/足音.wav");
+	//landSe->Play(loopSe);
 
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
@@ -1471,7 +1531,7 @@ void PlayerLandState::Execute(float elapsedTime)
 
 void PlayerLandState::Exit()
 {
-	landSe->Stop();
+	//landSe->Stop();
 }
 
 void PlayerLandState::End()
@@ -1484,9 +1544,9 @@ void PlayerJumpFlipState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
-	// Se
-	janpSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/足音.wav");
-	janpSe->Play(loopSe);
+	//// Se
+	//janpSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/足音.wav");
+	//janpSe->Play(loopSe);
 
 	//std::shared_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
@@ -1533,7 +1593,7 @@ void PlayerJumpFlipState::Execute(float elapsedTime)
 
 void PlayerJumpFlipState::Exit()
 {
-	janpSe->Stop();
+	//janpSe->Stop();
 
 }
 
@@ -1547,7 +1607,7 @@ void PlayerQuickJabState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
-	slashSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/スラッシュ１回目.wav");
+	/*slashSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/スラッシュ１回目.wav");*/
 
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
@@ -1873,7 +1933,7 @@ void PlayerQuickJabState::Exit()
 		attackMemory = 0;
 	}
 
-	slashSe->Stop();
+	//slashSe->Stop();
 
 }
 
@@ -1894,7 +1954,7 @@ void PlayerSideCutState::Enter()
 	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	// Se
-	slashSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/スラッシュ２回目.wav");
+	//slashSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/スラッシュ２回目.wav");
 
 	// 二回
 
@@ -2181,7 +2241,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 	if (playerid.lock()->CollisionNodeVsEnemies("mixamorig:LeftHand"
 		, playerid.lock()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2"))
 	{
-		slashSe->Play(loopSe);
+		//slashSe->Play(loopSe);
 	}
 
 }
@@ -2204,7 +2264,7 @@ void PlayerSideCutState::Exit()
 	bool stopFall = false;
 	moveid.lock()->SetStopFall(stopFall);
 
-	slashSe->Stop();
+	//slashSe->Stop();
 	
 }
 
@@ -2226,7 +2286,7 @@ void PlayerCycloneStrikeState::Enter()
 	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	// se
-	slashSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/３撃目.wav");
+	//slashSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/３撃目.wav");
 
 
 	if (!moveid.lock()->GetOnLadius())
@@ -2467,7 +2527,7 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	if (playerid.lock()->CollisionNodeVsEnemies("mixamorig:LeftHand",
 		playerid.lock()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2"))
 	{
-		slashSe->Play(loopSe);
+		//slashSe->Play(loopSe);
 	}
 
 }
@@ -2492,7 +2552,7 @@ void PlayerCycloneStrikeState::Exit()
 	bool stopFall = false;
 	moveid.lock()->SetStopFall(stopFall);
 
-	slashSe->Stop();
+	//slashSe->Stop();
 
 }
 
@@ -2516,12 +2576,12 @@ void PlayerSpecialAttackState::Enter()
 	//moveid = owner.lock()->GetComponent<Movement>();
 
 	// se 登録
-	slashSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/スラッシュ２回目.wav");
-	lighteningStrikeSpecialSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/必殺技雷.wav");
-	lighteningStrikeSpecialSaveSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/必殺技雷ため.wav");
+	//slashSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/スラッシュ２回目.wav");
+	//lighteningStrikeSpecialSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/必殺技雷.wav");
+	//lighteningStrikeSpecialSaveSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/必殺技雷ため.wav");
 
 	loopSe = false;
-	lighteningStrikeSpecialSe->Play(loopSe);
+	//lighteningStrikeSpecialSe->Play(loopSe);
 
 	std::weak_ptr<Transform> enemyTransform = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>();
 	std::weak_ptr<HP> enemyHpId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<HP>();
@@ -2822,9 +2882,9 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			lightning->Stop(lightning->GetEfeHandle());
 
 			//Se
-			lighteningStrikeSpecialSe->Play(loopSe);
+			//lighteningStrikeSpecialSe->Play(loopSe);
 			loopSe = true;
-			lighteningStrikeSpecialSaveSe->Play(loopSe);
+			//lighteningStrikeSpecialSaveSe->Play(loopSe);
 
 
 			//rockCheck = true;
@@ -2938,9 +2998,9 @@ void PlayerSpecialAttackState::Exit()
 	}
 
 	//se 停止
-	slashSe->Stop();
-	lighteningStrikeSpecialSe->Stop();
-	lighteningStrikeSpecialSaveSe->Stop();
+	//slashSe->Stop();
+	//lighteningStrikeSpecialSe->Stop();
+	//lighteningStrikeSpecialSaveSe->Stop();
 
 	//rockCheck = false;
 	//owner.lock()->GetComponent<Player>()->SetRockCheck(rockCheck);
@@ -2965,13 +3025,13 @@ void PlayerMagicState::Enter()
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 
 	// Se
-	flameStarteSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎着弾時.wav");
-	flameimpactSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎飛行時.wav");
+	//flameStarteSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎着弾時.wav");
+	//flameimpactSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎飛行時.wav");
 
-	iceStarteSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/氷発射.wav");
-	iceimpactSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/氷着弾時.wav");
+	//iceStarteSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/氷発射.wav");
+	//iceimpactSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/氷着弾時.wav");
 
-	lightningSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/雷.wav");
+	//lightningSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/雷.wav");
 
 	//// サンダー系
 	//if (playerid.lock()->GetSelectMagicCheck() ==
@@ -3053,6 +3113,9 @@ void PlayerMagicState::Enter()
 
 	// 移動許可
 	isMove = false;
+
+	// SE
+	playerid.lock()->PlaySE()->Play("flame");
 	
 }
 
@@ -3157,7 +3220,7 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Idle);
 		// 炎se
-		flameStarteSe->Play(loopSe);
+		//flameStarteSe->Play(loopSe);
 
 		break;
 	}
@@ -3172,7 +3235,7 @@ void PlayerMagicState::Execute(float elapsedTime)
 		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Idle);
 
 		// 雷se
-		lightningSe->Play(loopSe);
+		///lightningSe->Play(loopSe);
 		break;
 	}
 	case (int)Player::CommandMagic::Ice:
@@ -3184,7 +3247,7 @@ void PlayerMagicState::Execute(float elapsedTime)
 		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Idle);
 
 		// 氷se
-		iceStarteSe->Play(loopSe);
+		//iceStarteSe->Play(loopSe);
 		break;
 	}
 
@@ -3216,9 +3279,9 @@ void PlayerMagicState::Exit()
 	moveid.lock()->SetStopFall(stopFall);
 
 	// se
-	flameStarteSe->Stop();
-	iceStarteSe->Stop();
-	lightningSe->Stop();
+	//flameStarteSe->Stop();
+	//iceStarteSe->Stop();
+	//lightningSe->Stop();
 }
 
 void PlayerMagicState::End()
@@ -3235,9 +3298,9 @@ void PlayerSpecialMagicState::Enter()
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 
 	// Se
-	flameSpecialStarteSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/必殺技炎.wav");
-	flameSpecialSaveSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/必殺技炎ため.wav");
-	flameSpecialSaveSe->Play(loopSe);
+	//flameSpecialStarteSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/必殺技炎.wav");
+	//flameSpecialSaveSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/必殺技炎ため.wav");
+	//flameSpecialSaveSe->Play(loopSe);
 
 	fire = std::make_unique<Effect>("Data/Effect/fire.efk");
 	fireAttack = std::make_unique<Effect>("Data/Effect/hit fire.efk");
@@ -3278,6 +3341,8 @@ void PlayerSpecialMagicState::Enter()
 
 	// カメラ回転処理を開始
 	isRotate = true;
+
+
 
 
 	//MessageData::CAMERACHANGEMOTIONMODEDATA	p;
@@ -3464,21 +3529,21 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 
 		
 		
-		// エフェクト更新
-		if(fire->GetEfeHandle())
-		{
-			Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
+		//// エフェクト更新
+		//if(fire->GetEfeHandle())
+		//{
+		//	Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
 
-			DirectX::XMFLOAT3 pPosition =
-			{
-						pHPosiiton->worldTransform._41,
-						pHPosiiton->worldTransform._42,
-						pHPosiiton->worldTransform._43
-			};
+		//	DirectX::XMFLOAT3 pPosition =
+		//	{
+		//				pHPosiiton->worldTransform._41,
+		//				pHPosiiton->worldTransform._42,
+		//				pHPosiiton->worldTransform._43
+		//	};
 
-			fire->SetPosition(fire->GetEfeHandle(),
-				pPosition);
-		}
+		//	fire->SetPosition(fire->GetEfeHandle(),
+		//		pPosition);
+		//}
 
 
 
@@ -3500,7 +3565,7 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 			fire->Stop(fire->GetEfeHandle());
 
 			// Se
-			flameSpecialSaveSe->Stop();
+			//flameSpecialSaveSe->Stop();
 
 			//rockCheck = true;
 			//owner.lock()->GetComponent<Player>()->SetRockCheck(rockCheck);
@@ -3560,7 +3625,7 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 			specialMoveWaitTime += elapsedTime;
 
 			// Se
-			flameSpecialStarteSe->Play(loopSe);
+			//flameSpecialStarteSe->Play(loopSe);
 
 		}
 	}
@@ -3629,9 +3694,9 @@ void PlayerSpecialMagicState::Exit()
 		enemyMove->SetStopFall(stopFall);
 	}
 
-	// Se
-	flameSpecialStarteSe->Stop();
-	flameSpecialSaveSe->Stop();
+	//// Se
+	//flameSpecialStarteSe->Stop();
+	//flameSpecialSaveSe->Stop();
 }
 
 void PlayerSpecialMagicState::End()
@@ -4204,8 +4269,8 @@ void PlayerAvoidanceState::Enter()
 	wind->SetAngle(wind->GetEfeHandle(), transformid.lock()->GetAngle());
 
 	// Se否設定
-	dushSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎着弾時.wav");
-	dushSe->Play(loopSe);
+	//dushSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎着弾時.wav");
+	//dushSe->Play(loopSe);
 }
 
 // 回避更新
@@ -4309,7 +4374,7 @@ void PlayerAvoidanceState::Exit()
 	wind->Stop(wind->GetEfeHandle());
 
 	// se
-	dushSe->Stop();
+	//dushSe->Stop();
 }
 
 void PlayerAvoidanceState::End()
@@ -4340,7 +4405,7 @@ void PlayerReflectionState::Enter()
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
 	// Se否設定
-	reflectionStop = Audio::Instance().LoadAudioSource("Data/Audio/SE/ヒットストップ.wav");
+	//reflectionStop = Audio::Instance().LoadAudioSource("Data/Audio/SE/ヒットストップ.wav");
 
 
 }
@@ -4375,16 +4440,16 @@ void PlayerReflectionState::Execute(float elapsedTime)
 		playerid.lock()->CollisionNodeVsRubyCounterBulletFring("mixamorig:LeftHand", owner.lock()->GetComponent<Player>()->GetLeftHandRadius());
 		
 	}
-	if (playerid.lock()->GetHitCheck())
-	{
-		reflectionStop->Play(loopSe);
-	}
+	//if (playerid.lock()->GetHitCheck())
+	//{
+	//	//reflectionStop->Play(loopSe);
+	//}
 }
 
 // 反射終了
 void PlayerReflectionState::Exit()
 {
-	reflectionStop->Stop();
+	//reflectionStop->Stop();
 }
 
 void PlayerReflectionState::End()
