@@ -1588,6 +1588,9 @@ void SceneGame::Initialize()
 	bloomData.gaussianFilterData.kernelSize = 15;
 	bloomData.gaussianFilterData.deviation = 8.3f;
 
+	// テクスチャ
+	//texture = std::make_unique<Sprite>("Data/Sprite/player_status.png");
+
 	// BGM
 	Bgm = Audio::Instance().LoadAudioSource("Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav");
 	Bgm->Play(true);

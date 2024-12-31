@@ -40,6 +40,8 @@ PrimitiveRenderer::PrimitiveRenderer(ID3D11Device* device)
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			//			{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
+			//D3D11_INPUT_PER_VERTEX_DATA,0},
 		};
 		hr = device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), csoData.get(), csoSize, inputLayout.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
@@ -133,6 +135,27 @@ PrimitiveRenderer::PrimitiveRenderer(ID3D11Device* device)
 		HRESULT hr = device->CreateRasterizerState(&desc, rasterizerState.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
+
+	//// サンプラステート
+	//{
+	//	D3D11_SAMPLER_DESC desc;
+	//	::memset(&desc, 0, sizeof(desc));
+	//	desc.MipLODBias = 0.0f;
+	//	desc.MaxAnisotropy = 1;
+	//	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	//	desc.MinLOD = -FLT_MAX;
+	//	desc.MaxLOD = FLT_MAX;
+	//	desc.BorderColor[0] = 1.0f;
+	//	desc.BorderColor[1] = 1.0f;
+	//	desc.BorderColor[2] = 1.0f;
+	//	desc.BorderColor[3] = 1.0f;
+	//	desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	//	desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	//	desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	//	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//	HRESULT hr = device->CreateSamplerState(&desc, samplerState.GetAddressOf());
+	//	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace);
+	//}
 }
 
 void PrimitiveRenderer::Begin(const RenderContext& rc)
@@ -345,6 +368,13 @@ void PrimitiveRenderer::Render(
 	// ラスタライザーステート設定
 	dc->RSSetState(rasterizerState.Get());
 
+	// サンプラー
+	//dc->PSSetSamplers(0, 1, samplerState.GetAddressOf());
+
+	// テクスチャ
+	//dc->PSSetShaderResources(0, 1, sprite->GetShaderResourceView().GetAddressOf());
+
+
 	// ビュープロジェクション行列作成
 	DirectX::XMMATRIX V = DirectX::XMLoadFloat4x4(&view);
 	DirectX::XMMATRIX P = DirectX::XMLoadFloat4x4(&projection);
@@ -353,12 +383,20 @@ void PrimitiveRenderer::Render(
 	// 定数バッファ更新
 	CbScene cbScene;
 	DirectX::XMStoreFloat4x4(&cbScene.viewProjection, VP);
+
 	dc->UpdateSubresource(constantBuffer.Get(), 0, 0, &cbScene, 0, 0);
 
 	// 頂点バッファ設定
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	dc->IASetPrimitiveTopology(primitiveTopology);
+
+	//UINT stride = sizeof(Sprite::Vertex);
+	//UINT offset = 0;
+    //dc->IASetVertexBuffers(0, 1, sprite->GetVertexBuffer().GetAddressOf(), &stride, &offset);
+    //dc->PSSetShaderResources(0, 1, sprite->GetShaderResourceView().GetAddressOf());
+    //dc->Draw(4, 0);
+
 	dc->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 
 	// 描画
@@ -384,6 +422,8 @@ void PrimitiveRenderer::Render(
 			count = totalVertexCount - start;
 		}
 	}
+
+
 
 	vertices.clear();
 }

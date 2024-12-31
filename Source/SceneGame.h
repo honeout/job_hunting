@@ -126,6 +126,8 @@ private:
 	std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
 
 
+
+
 	// 周辺減光周り
 		// 周辺減光
 	DirectX::XMFLOAT4 vignette_color = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -155,5 +157,7 @@ private:
 	DirectX::XMFLOAT3 minPos = {0.0f,0.0f,0.0f};
 	DirectX::XMFLOAT3 maxPos = {0.0f,0.0f,0.0f};
 
+	// テクスチャ
+	//std::unique_ptr<Sprite> texture;
 
 };
