@@ -114,6 +114,25 @@ PrimitiveRenderer::PrimitiveRenderer(ID3D11Device* device)
 	desc.StructureByteStride = 0;
 	HRESULT hr = device->CreateBuffer(&desc, nullptr, vertexBuffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+
+	// ラスタライザーステート
+	{
+		D3D11_RASTERIZER_DESC desc;
+		::memset(&desc, 0, sizeof(desc));
+		desc.FrontCounterClockwise = false;
+		desc.DepthBias = 0;
+		desc.DepthBiasClamp = 0;
+		desc.SlopeScaledDepthBias = 0;
+		desc.DepthClipEnable = true;
+		desc.ScissorEnable = false;
+		desc.MultisampleEnable = true;
+		desc.FillMode = D3D11_FILL_SOLID;
+		desc.CullMode = D3D11_CULL_NONE;
+		desc.AntialiasedLineEnable = false;
+
+		HRESULT hr = device->CreateRasterizerState(&desc, rasterizerState.GetAddressOf());
+		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+	}
 }
 
 void PrimitiveRenderer::Begin(const RenderContext& rc)
@@ -125,6 +144,9 @@ void PrimitiveRenderer::Begin(const RenderContext& rc)
 
 	// 定数バッファ設定
 	rc.deviceContext->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+
+	// ラスタライザーステート設定
+	rc.deviceContext->RSSetState(rasterizerState.Get());
 }
 
 void PrimitiveRenderer::Draw(const RenderContext& rc, const Sprite* sprite)
@@ -181,6 +203,8 @@ void PrimitiveRenderer::End(const RenderContext& rc)
 	rc.deviceContext->VSSetShader(nullptr, nullptr, 0);
 	rc.deviceContext->PSSetShader(nullptr, nullptr, 0);
 	rc.deviceContext->IASetInputLayout(nullptr);
+
+	rc.deviceContext->RSSetState(nullptr);
 
 }
 
@@ -317,6 +341,9 @@ void PrimitiveRenderer::Render(
 
 	// 定数バッファ設定
 	dc->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+
+	// ラスタライザーステート設定
+	dc->RSSetState(rasterizerState.Get());
 
 	// ビュープロジェクション行列作成
 	DirectX::XMMATRIX V = DirectX::XMLoadFloat4x4(&view);
