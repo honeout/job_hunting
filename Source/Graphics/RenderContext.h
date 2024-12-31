@@ -128,6 +128,13 @@ struct ShadowMapData
 	float                     shadowBias; // 深度比較用のオフセット値
 };
 
+// ソードトレイル用情報
+struct SwordTraileData
+{
+	DirectX::XMFLOAT4X4		viewProjection;
+	DirectX::XMFLOAT4		color;
+};
+
 // レンダーコンテキスト
 struct RenderContext
 {
@@ -183,6 +190,9 @@ struct RenderContext
 
 	// ブルームデータ
 	BloomData bloomData;
+
+	// ソードトレイル情報
+	SwordTraileData swordTraileData;
 
 
 #if	defined( UNIT_VN_01 )

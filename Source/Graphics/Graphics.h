@@ -7,6 +7,8 @@
 #include "Graphics/DebugRenderer.h"
 #include "Graphics/LineRenderer.h"
 #include "Graphics/ImGuiRenderer.h"
+#include "Graphics\PrimitiveRenderer.h"
+
 
 #include <mutex>
 
@@ -34,6 +36,7 @@ enum class SpriteShaderId
 	LuminanceExtraction,
 	Finalpass,
 	Skybox,
+	SwordeTraile,
 
 	Max
 };
@@ -78,7 +81,8 @@ public:
 	//// モデルシェーダー取得
 	//ModelShader* GetShaderm(ModelShaderId id) const { return modelShaders[static_cast<int>(id)].get(); }
 
-
+	// プリミティブレンダラ取得
+	PrimitiveRenderer* GetPrimitiveRenderer() const { return primitiveRenderer.get(); }
 
 	// スクリーン幅取得
 	float GetScreenWidth() const { return screenWidth; }
@@ -115,6 +119,8 @@ private:
 	std::unique_ptr<DebugRenderer>					debugRenderer;
 	std::unique_ptr<LineRenderer>					lineRenderer;
 	std::unique_ptr<ImGuiRenderer>					imguiRenderer;
+
+	std::unique_ptr<PrimitiveRenderer>				primitiveRenderer;
 
 	float	screenWidth;
 	float	screenHeight;

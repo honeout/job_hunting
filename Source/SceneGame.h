@@ -10,6 +10,7 @@
 #include "Graphics/DepthStencil.h"
 #include "Light.h"
 #include "PostprocessingRenderer.h"
+#include "Graphics\PrimitiveRenderer.h"
 #include "Audio/AudioSource.h"
 
 // ゲームシーン
@@ -123,6 +124,7 @@ private:
 
 	// ポストプロセス
 	std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
+
 
 	// 周辺減光周り
 		// 周辺減光

@@ -26,6 +26,7 @@
 #include "UiManager.h"
 #include "Ui.h"
 
+#include "Graphics\PrimitiveRenderer.h"
 
 
 
@@ -285,6 +286,9 @@ void Player::Update(float elapsedTime)
     {
         areWork->SetPosition(areWork->GetEfeHandle(), position);
     }
+
+    // ソードトレイル
+    UpdateSwordeTraile();
     
     // コマンド操作
     {
@@ -3471,6 +3475,40 @@ void Player::DrawDebugGUI()
 void Player::Destroy()
 {
     PlayerManager::Instance().Remove(GetActor());
+}
+
+void Player::UpdateSwordeTraile()
+{
+
+    DirectX::XMFLOAT3 positionSwordeTraile = position;
+
+    positionSwordeTraile.y += 1.0f;
+    trailPositions[0][0] = position;
+    trailPositions[1][0] = positionSwordeTraile;
+
+    // ポリゴン作成
+    PrimitiveRenderer* primitiveRenderer = Graphics::Instance().GetPrimitiveRenderer();
+
+    DirectX::XMFLOAT4 color = { 0,0,1,1 };
+    //primitiveRenderer->AddVertex(position, color);
+
+    //primitiveRenderer->AddVertex(positionSwordeTraile, color);
+
+    // 保存していた頂点バッファでポリゴンを作る
+    for (int i = 0; i < MAX_POLYGON; ++i)
+    {
+        primitiveRenderer->AddVertex(trailPositions[0][i], color);
+        primitiveRenderer->AddVertex(trailPositions[1][i], color);
+    }
+
+    // 一つ後ろにずらす
+    for (int i = MAX_POLYGON - 1; i > -1; --i)
+    {
+        trailPositions[0][i] = trailPositions[0][i - 1];
+        trailPositions[1][i] = trailPositions[1][i - 1];
+    }
+
+
 }
 
 //// 着地した時に呼ばれる

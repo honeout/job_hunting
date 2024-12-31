@@ -1634,6 +1634,25 @@ void SceneGame::Update(float elapsedTime)
 	// エフェクトしてシェーダーを使う
 	PlayEffectsShaders(dlayTime);
 
+	//// position更新ソードトレイル
+	//{
+	//	PrimitiveRenderer* primitiveRenderer = Graphics::Instance().GetPrimitiveRenderer();
+	//	int count = PlayerManager::Instance().GetPlayerCount();
+	//	DirectX::XMFLOAT4 color = {0,0,1,1};
+
+	//	for (int i = 0; i < 32; ++i)
+	//	{
+	//		primitiveRenderer->AddVertex(
+	//			PlayerManager::Instance().GetPlayer(count - 1)->GetComponent<Transform>()->GetPosition(), color);
+
+	//		DirectX::XMFLOAT3 positionY = PlayerManager::Instance().GetPlayer(count - 1)->GetComponent<Transform>()->GetPosition();
+	//		positionY.y += 1.0f;
+
+	//		primitiveRenderer->AddVertex(
+	//			positionY, color);
+	//	}
+	//}
+
 	// シーン切り替え
 	{
 		
@@ -1759,6 +1778,7 @@ void SceneGame::Render()
 		ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 		ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
+
 		// 画面クリア＆レンダーターゲット設定
 		FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
 		dc->ClearRenderTargetView(rtv, color);
@@ -1799,6 +1819,9 @@ void SceneGame::Render()
 
 		// ポストプロセスを処理を行う
 		postprocessingRenderer->Render(rc);
+
+
+
 	}
 
 
@@ -1896,6 +1919,7 @@ void SceneGame::Render3DScene()
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView().Get();
 	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
+	PrimitiveRenderer* primitiveRenderer = Graphics::Instance().GetPrimitiveRenderer();
 
 	// 画面クリア＆レンダーターゲット設定
 	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0～1.0)
@@ -1937,6 +1961,14 @@ void SceneGame::Render3DScene()
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
+	// ソードトレイル
+	{
+		// ポリゴン描画
+		primitiveRenderer->Render(dc, rc.view, rc.projection, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+		//// グリッド描画
+		primitiveRenderer->Render(dc, rc.view, rc.projection, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	}
 
 	// 3Dモデル描画
 	{
@@ -2027,6 +2059,11 @@ void SceneGame::RenderShadowmap()
 		ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
 
 		ActorManager::Instance().Render(rc, shader);
+
+		//// ソードトレイル
+		//SpriteShader* shaderSprite = graphics.GetShader(SpriteShaderId::SwordeTraile);
+
+		//ActorManager::Instance().Render(rc, shaderSprite);
 	}
 }
 

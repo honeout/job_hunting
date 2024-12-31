@@ -115,6 +115,9 @@ public:
     // 破棄
     void Destroy();
 
+    // ソードトレイル
+    void UpdateSwordeTraile();
+
     // HP管理
 
 protected:
@@ -857,6 +860,9 @@ private:
     bool flashOn = false;
 
     bool hitCheck = false;
+
+    static const int MAX_POLYGON = 32;
+    DirectX::XMFLOAT3					trailPositions[2][MAX_POLYGON];
 };
 
 // プレイヤーマネージャー

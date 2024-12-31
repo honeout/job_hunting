@@ -306,6 +306,9 @@
     <ClInclude Include="Source\Audio\AudioSEManager.h">
       <Filter>Source\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\PrimitiveRenderer.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -533,6 +536,9 @@
     <ClCompile Include="Source\Audio\AudioSEManager.cpp">
       <Filter>Source\Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\PrimitiveRenderer.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Debug.hlsli">
@@ -578,6 +584,9 @@
       <Filter>HLSL</Filter>
     </None>
     <None Include="HLSL\scene_constant_buffer.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="HLSL\PrimitiveRenderer.hlsli">
       <Filter>HLSL</Filter>
     </None>
   </ItemGroup>
@@ -646,6 +655,12 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\vignette_ps.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\PrimitiveRendererPS.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\PrimitiveRendererVS.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

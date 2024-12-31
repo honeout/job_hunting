@@ -12,6 +12,8 @@
 #include "Graphics/FinalpassShader.h"
 #include "Graphics\ShadowmapCasterShader.h"
 
+#include "Graphics\PrimitiveRenderer.h"
+
 Graphics* Graphics::instance = nullptr;
 
 // コンストラクタ
@@ -204,6 +206,9 @@ Graphics::Graphics(HWND hWnd)
 		spriteShaders[static_cast<int>(SpriteShaderId::Finalpass)] =
 			std::make_unique<FinalpassShader>(device.Get());
 
+		spriteShaders[static_cast<int>(SpriteShaderId::SwordeTraile)] =
+			std::make_unique<PrimitiveRenderer>(device.Get());
+
 		//// UNIT12
 		//spriteShaders[static_cast<int>(SpriteShaderId::Skybox)] =
 		//	std::make_unique<SkyboxShader>(device.Get());
@@ -221,6 +226,7 @@ Graphics::Graphics(HWND hWnd)
 	// レンダラ
 	{
 		debugRenderer = std::make_unique<DebugRenderer>(device.Get());
+		primitiveRenderer = std::make_unique<PrimitiveRenderer>(device.Get());
 		lineRenderer = std::make_unique<LineRenderer>(device.Get(), 1024);
 		imguiRenderer = std::make_unique<ImGuiRenderer>(hWnd, device.Get());
 	}
