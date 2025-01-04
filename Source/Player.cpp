@@ -266,7 +266,8 @@ void Player::Start()
     turnSpeedAdd = 0;
 
     
-
+    // 攻撃ヒット回数初期化
+    attackNumberSave = 0;
 
 }
 
@@ -2931,7 +2932,13 @@ bool Player::CollisionNodeVsEnemies(
                             enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemyBoss::Animation::Anim_Die, loop
                                 , currentAnimationStartSeconds, blendSeconds, currentAnimationAddSeconds, keyFrameEnd);
                         }
-                     
+
+                        // 混乱状態
+                        if (attackNumberSave >= attackNumberSaveMax)
+                        {
+                            enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(
+                                (int)EnemyBoss::State::IdleBattle);
+                        }
 
    
         
@@ -2942,6 +2949,9 @@ bool Player::CollisionNodeVsEnemies(
 
                     // 斬撃チャージ
                     ++attackEnergyCharge;
+
+                    // 攻撃ヒット回数
+                    ++attackNumberSave;
 
                     return true;
           
@@ -3479,12 +3489,63 @@ void Player::Destroy()
 
 void Player::UpdateSwordeTraile()
 {
+    // 剣の原点から根本と先端までのオフセット値
+    DirectX::XMVECTOR RootOffset = DirectX::XMVectorSet(0, 0, 0.5f, 0);
+    DirectX::XMVECTOR TipOffset = DirectX::XMVectorSet(0, 0, 2.3f, 0);
 
-    DirectX::XMFLOAT3 positionSwordeTraile = position;
 
-    positionSwordeTraile.y += 1.0f;
-    trailPositions[0][0] = position;
-    trailPositions[1][0] = positionSwordeTraile;
+    //Model::Node* SwordeRootName = model->FindNode("Maria_sword");
+    Model::Node* SwordeRootName = model->FindNode("mixamorig:RightHand");
+    //Model::Node* SwordeTipName = model->FindNode("mixamorig:RightHand");
+
+    /*DirectX::XMFLOAT3 dir = GetForwerd(angle);*/
+
+    // 前
+    DirectX::XMFLOAT3 dir;
+    dir.x = sinf(SwordeRootName->rotation.y);// 三角を斜めにして位置を変えた
+    dir.y = cosf(SwordeRootName->rotation.x);
+    dir.z = cosf(SwordeRootName->rotation.y);
+
+    DirectX::XMVECTOR dirVec = DirectX::XMLoadFloat3(&dir);
+
+   
+    // 剣の手元
+    DirectX::XMFLOAT3 swordeRootPosition;
+    //SwordeRootPosition = model->ConvertLocalToWorld(SwordeRootName);
+    swordeRootPosition = model->ConvertLocalToWorld(SwordeRootName);
+
+    DirectX::XMMATRIX swordeRootPositionVec = DirectX::XMLoadFloat4x4(&SwordeRootName->worldTransform);
+
+
+    //SwordeRootPosition.x = (SwordeRootPosition.x * dir.x) * 1.3f;
+
+   // DirectX::XMStoreFloat3(&SwordeRootPosition, DirectX::XMVector3Transform(RootOffset, swordeRootPositionVec));
+
+    // 剣先
+    DirectX::XMFLOAT3 swordeTipPosition;
+    DirectX::XMVECTOR swordeTipPositionVec;
+    swordeTipPositionVec = DirectX::XMLoadFloat3(&swordeRootPosition);
+    dirVec = DirectX::XMVector3Normalize(dirVec);
+    swordeTipPositionVec = DirectX::XMVectorMultiply(swordeTipPositionVec, dirVec);
+    
+    DirectX::XMStoreFloat3(&swordeTipPosition, swordeTipPositionVec);
+
+
+    //swordeTipPosition.x = swordeTipPosition.x * 1.3f;
+    //swordeTipPosition.z = swordeTipPosition.z * 1.3f;
+    //SwordeTipPosition = SwordeRootPosition;
+
+    //DirectX::XMMATRIX swordeTipPositionVec = DirectX::XMLoadFloat4x4(&SwordeRootName->worldTransform);
+    //DirectX::XMStoreFloat3(&SwordeTipPosition,DirectX::XMVector3Transform(TipOffset, swordeRootPositionVec));
+
+
+
+
+   // DirectX::XMFLOAT3 positionSwordeTraile = position;
+
+    //positionSwordeTraile.y += 1.0f;
+    trailPositions[0][0] = swordeRootPosition;
+    trailPositions[1][0] = swordeTipPosition;
 
     // ポリゴン作成
     PrimitiveRenderer* primitiveRenderer = Graphics::Instance().GetPrimitiveRenderer();

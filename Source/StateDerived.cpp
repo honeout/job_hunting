@@ -392,9 +392,10 @@ void PursuitState::Execute(float elapsedTime)
 
 	// TODO 03 
 	// 攻撃範囲に入ったとき攻撃ステートへ遷移しなさい
-	if (dist < attackRange)
-		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Attack));
+	//if (dist < attackRange)
+	//	enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Attack));
 
+	if (stateTimer >= stateTimerMin) return;
 
 	switch (randamAttack)
 	{
@@ -3765,13 +3766,20 @@ void PlayerSpecialMagicIceState::Enter()
 	float vz2 = cosf(angle.y) * 7;
 	float vx3 = sinf(angle.y);
 
+	//p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+	//p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
+	//p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+	//p.data.push_back({ 150, {position.x - vx2, position.y + 5, position.z - vz2 }, position });
+	//p.data.push_back({ 170, {position.x + vx, position.y + 3, position.z + vz }, position });
+	//p.data.push_back({ 200, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
+	//p.data.push_back({ 250, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
+
 	p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
-	p.data.push_back({ 150, {position.x - vx2, position.y + 5, position.z - vz2 }, position });
-	p.data.push_back({ 170, {position.x + vx, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 200, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
-	p.data.push_back({ 250, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
+	p.data.push_back({ 50, {position.x + vx2, position.y + 3, position.z + vz }, position });
+	p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position ,true });
+	p.data.push_back({ 150, {position.x - vx2, position.y + 5, position.z - vz2 }, position ,true });
+
+	p.data.push_back({ 230, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position ,true });
 	
 
 	// エネミー呼ぶ奴
@@ -3876,10 +3884,15 @@ void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 
 			// アニメーション再生
 			model->PlayAnimation(
-				Player::Anim_MagicSeconde, loop,
+				Player::Anim_Slash, loop,
 				currentAnimationStartSeconds, blendSeconds
 				, currentAnimationAddSeconds
 			);
+			//model->PlayAnimation(
+			//	Player::Anim_MagicSeconde, loop,
+			//	currentAnimationStartSeconds, blendSeconds
+			//	, currentAnimationAddSeconds
+			//);
 			button = false;
 
 			// 手の炎エフェクト停止

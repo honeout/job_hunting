@@ -194,7 +194,7 @@ void CameraController::MotionCamera(float elapsedTime)
 		bool set = false;
 		for (int i = 0; i < motionData.size() - 1; ++i)
 		{
-			if (motionData[i].time <= motionTimer && motionTimer < motionData[i + 1].time)
+			if (motionData[i].time <= motionTimer && motionTimer < motionData[i + 1].time && !motionData[i + 1].setSkipMoveCheck)
 			{
 				set = true;
 				float	value = motionData[i + 1].time - motionData[i].time;
@@ -211,6 +211,14 @@ void CameraController::MotionCamera(float elapsedTime)
 				position = newPosition;
 				target = newTarget;
 				break;
+			}
+			// ˆê•”ƒ‚[ƒVƒ‡ƒ“‚ð”ò‚Î‚·
+			if (motionData[i].time <= motionTimer && motionTimer < motionData[i + 1].time && motionData[i].setSkipMoveCheck)
+			{
+				newPosition = motionData[i].position;
+				newTarget = motionData[i].target;
+				position = newPosition;
+				target = newTarget;
 			}
 		}
 		if (!set)

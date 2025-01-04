@@ -766,6 +766,10 @@ private:
     float specialAttackCharge = 0.0f;
     float specialShotCharge = 0.0f;
 
+    // UŒ‚ƒqƒbƒg‰ñ”
+    int attackNumberSave;
+    int attackNumberSaveMax = 5;
+
     // “Áê‹Z‚Ìƒ`ƒƒ[ƒW
     int attackEnergyCharge = 0;
     int fireEnergyCharge = 0;

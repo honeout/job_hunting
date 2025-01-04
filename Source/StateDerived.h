@@ -150,6 +150,7 @@ private:
 	
 
 	float				stateTimer = 0.0f;
+	float				stateTimerMin = 0.0f;
 	float				attackRange = 0.0f;
 
 	int                 attackRound = 0;

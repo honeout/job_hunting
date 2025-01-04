@@ -9,6 +9,7 @@ struct CameraMotionData
 	float time;
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 target;
+	bool setSkipMoveCheck = false;
 };
 
 namespace	MessageData
