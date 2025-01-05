@@ -414,7 +414,7 @@ void EnemyBoss::CollisionImpactVsPlayer()
                             playerPosition.y += playerHeight * 0.5f;
 
                             bool loopSe = false;
-                            impactSe->Play(loopSe);
+                           // impactSe->Play(loopSe);
 
                             //hitEffect->Play(e);
                         }
@@ -1012,7 +1012,7 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
 
                     //SE
                     bool loopSe = false;
-                    moveAttackSe->Play(loopSe);
+                    //moveAttackSe->Play(loopSe);
 
 
                     //playerPosition.y += playerHeight * 0.5f;

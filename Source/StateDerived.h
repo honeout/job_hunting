@@ -6,7 +6,7 @@
 #include "Actor.h"
 #include "Effect.h"
 #include "ProjectileTornade.h"
-#include "Audio/AudioSource.h"
+//#include "Audio/AudioSource.h"
 
 
 enum AttackChange
@@ -49,7 +49,7 @@ private:
 	std::unique_ptr<Effect> smorker;
 
 	// •àsSE
-	std::unique_ptr<AudioSeSource> walkSe;
+	//std::unique_ptr<AudioSeSource> walkSe;
 	bool loopSe = true;
 
 	// ’…’nuŠÔ
@@ -205,11 +205,11 @@ private:
 
 	//Model* model = nullptr;
 
-	// ƒWƒƒƒ“ƒv
-	std::unique_ptr<AudioSeSource> janpSe;
+	//// ƒWƒƒƒ“ƒv
+	//std::unique_ptr<AudioSeSource> janpSe;
 
-	// ’…’n
-	std::unique_ptr<AudioSeSource> landSe;
+	//// ’…’n
+	//std::unique_ptr<AudioSeSource> landSe;
 
 	// ƒGƒtƒFƒNƒg
 	std::unique_ptr<Effect> smorker;
@@ -497,7 +497,7 @@ private:
 
 	// €–S‰¹º
 	//std::unique_ptr<AudioSource> deathSe;
-	std::unique_ptr<AudioSeSource> deathSe;
+	//std::unique_ptr<AudioSeSource> deathSe;
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
@@ -576,7 +576,7 @@ public:
 private:
 
 	// •às
-	std::unique_ptr<AudioSource> walkSe;
+	//std::unique_ptr<AudioSource> walkSe;
 	bool loopSe = true;
 
 	//std::shared_ptr<Movement> moveid;
@@ -619,7 +619,7 @@ private:
 	//std::shared_ptr<Movement> moveid;
 
 	// ƒWƒƒƒ“ƒv
-	std::unique_ptr<AudioSource> janpSe;
+	//std::unique_ptr<AudioSource> janpSe;
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
@@ -661,7 +661,7 @@ private:
 	//std::shared_ptr<Movement> moveid;
 
 	// ’…’n
-	std::unique_ptr<AudioSource> landSe;
+	//std::unique_ptr<AudioSource> landSe;
 
 	bool loopSe = false;
 
@@ -708,7 +708,7 @@ private:
 
 
 	// ƒWƒƒƒ“ƒv
-	std::unique_ptr<AudioSource> janpSe;
+	//std::unique_ptr<AudioSource> janpSe;
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
@@ -763,7 +763,7 @@ private:
 	//std::unique_ptr<Effect> areWork;
 
 	// aŒ‚
-	std::unique_ptr<AudioSource> slashSe;
+	//std::unique_ptr<AudioSource> slashSe;
 	bool loopSe = false;
 	
 
@@ -863,7 +863,7 @@ private:
 	//std::shared_ptr<Transform> transformid;
 
 	// aŒ‚
-	std::unique_ptr<AudioSource> slashSe;
+	//std::unique_ptr<AudioSource> slashSe;
 	bool loopSe = false;
 
 	//DirectX::XMFLOAT3 angle;
@@ -964,7 +964,7 @@ private:
 	//std::shared_ptr<Transform> transformid;
 
 	// aŒ‚
-	std::unique_ptr<AudioSource> slashSe;
+	//std::unique_ptr<AudioSource> slashSe;
 	bool loopSe = false;
 
 	//DirectX::XMFLOAT3 angle;
@@ -1067,13 +1067,13 @@ private:
 	//std::shared_ptr<Transform> enemyTransform;
 	//std::shared_ptr<HP> enemyHpId;
 
-	// aŒ‚
-	std::unique_ptr<AudioSource> slashSe;
+	//// aŒ‚
+	//std::unique_ptr<AudioSource> slashSe;
 
-	// •KE‹Z—‹
-	std::unique_ptr<AudioSource> lighteningStrikeSpecialSe;
-	// •KE‹Z—‹‚½‚ß
-	std::unique_ptr<AudioSource> lighteningStrikeSpecialSaveSe;
+	//// •KE‹Z—‹
+	//std::unique_ptr<AudioSource> lighteningStrikeSpecialSe;
+	//// •KE‹Z—‹‚½‚ß
+	//std::unique_ptr<AudioSource> lighteningStrikeSpecialSaveSe;
 	bool loopSe = false;
 
 	DirectX::XMFLOAT3 position = {0.0f,0.0f,0.0f};
@@ -1150,23 +1150,23 @@ private:
 	//std::shared_ptr<Movement> moveid;
 
 
-	// ‰Š”­Ë
-	std::unique_ptr<AudioSource> flameStarteSe;
-	// ‰Š‘±
-	//std::unique_ptr<AudioSource> flameDurationSe;
-	// ‰Š’…’e
-	std::unique_ptr<AudioSource> flameimpactSe;
+	//// ‰Š”­Ë
+	//std::unique_ptr<AudioSource> flameStarteSe;
+	//// ‰Š‘±
+	////std::unique_ptr<AudioSource> flameDurationSe;
+	//// ‰Š’…’e
+	//std::unique_ptr<AudioSource> flameimpactSe;
 
 
-	// •X”­Ë
-	std::unique_ptr<AudioSource> iceStarteSe;
-	// •X‘±
-	std::unique_ptr<AudioSource> iceDurationSe;
-	// •X’…’e
-	std::unique_ptr<AudioSource> iceimpactSe;
+	//// •X”­Ë
+	//std::unique_ptr<AudioSource> iceStarteSe;
+	//// •X‘±
+	//std::unique_ptr<AudioSource> iceDurationSe;
+	//// •X’…’e
+	//std::unique_ptr<AudioSource> iceimpactSe;
 
-	// —‹ƒqƒbƒg
-	std::unique_ptr<AudioSource> lightningSe;
+	//// —‹ƒqƒbƒg
+	//std::unique_ptr<AudioSource> lightningSe;
 
 	// se
 	bool loopSe = false;
@@ -1487,7 +1487,7 @@ private:
 	//Model* model;
 
 	// ”íƒ_ƒ[ƒW
-	std::unique_ptr<AudioSource> damageSe;
+	//std::unique_ptr<AudioSource> damageSe;
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
@@ -1525,7 +1525,7 @@ private:
 	//std::shared_ptr<HP> hpid;
 
 	// ƒ_ƒbƒVƒ…
-	std::unique_ptr<AudioSource> dushSe;
+	//std::unique_ptr<AudioSource> dushSe;
 	bool loopSe = false;
 
 	// ƒGƒtƒFƒNƒg
@@ -1576,7 +1576,7 @@ private:
 	
 
 	// ”½Ë
-	std::unique_ptr<AudioSource> reflectionStop;
+	//std::unique_ptr<AudioSource> reflectionStop;
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
@@ -1616,7 +1616,7 @@ private:
 	//float				stateTimer = 0.0f;
 
 	// €–S‰¹º“G
-	std::unique_ptr<AudioSource> deathSe;
+	//std::unique_ptr<AudioSource> deathSe;
 
 	// Ä¶ƒ‹[ƒv
 	bool  loop = false;

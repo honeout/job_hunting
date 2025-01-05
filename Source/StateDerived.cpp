@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "Mathf.h"
 
-#include "Audio\Audio.h"
+//#include "Audio\Audio.h"
 #include "ProjectileHoming.h"
 #include "ProjectileRuby.h"
 #include "ProjectileThrowing.h"
@@ -1903,7 +1903,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 		owner.lock()->GetComponent<Player>()->GetLeftHandRadius(),
 		"body2", "boss_left_hand2", "boss_right_hand2"))
 	{
-		slashSe->Play(loopSe);
+		//slashSe->Play(loopSe);
 	}
 }
 
