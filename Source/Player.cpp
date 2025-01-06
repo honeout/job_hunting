@@ -1446,7 +1446,7 @@ bool Player::InputSpecialAttackCharge()
                 specialAttackCharge = 0.0f;
 
                 // ŽaŒ‚•KŽE‹Zƒ`ƒƒ[ƒW‰ðÁ
-                attackEnergyCharge = false;
+                attackEnergyCharge = 0;
             }
 
 
@@ -1476,7 +1476,7 @@ bool Player::InputSpecialAttackCharge()
 
 
                 // ‰Î•KŽE‹Zƒ`ƒƒ[ƒW‰ðÁ
-                fireEnergyCharge = false;
+                fireEnergyCharge = 0;
             }
 
             // —‹–‚–@‚ðˆê’èˆÈã—­‚ß‚½‚ç
@@ -1507,7 +1507,7 @@ bool Player::InputSpecialAttackCharge()
 
 
                 // —‹•KŽE‹Zƒ`ƒƒ[ƒW‰ðÁ
-                ThanderEnergyCharge = false;
+                ThanderEnergyCharge = 0;
             }
 
             // •X–‚–@‚ðˆê’èˆÈã—­‚ß‚½‚ç
@@ -1537,7 +1537,7 @@ bool Player::InputSpecialAttackCharge()
 
 
                 // •X•KŽE‹Zƒ`ƒƒ[ƒW‰ðÁ
-                iceEnergyCharge = false;
+                iceEnergyCharge = 0;
             }
 
        
@@ -1722,7 +1722,7 @@ bool Player::InputSpecialAttackCharge()
             specialAttack.pop();
 
 
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagic));
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagicThander));
 
             // ‚à‚µ’n–Ê‚È‚ç‰½‚à‚µ‚È‚¢
             bool noStart = false;

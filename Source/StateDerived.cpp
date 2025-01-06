@@ -277,6 +277,7 @@ void IdleState::Execute(float elapsedTime)
 	// 一定ダメージの最大値
 	float damageThreshold = 10;
 	float timeLimit = 5;
+	// 逃走
 	if (hp.lock()->CheckDamageThresholdWithinTime(elapsedTime, damageThreshold, timeLimit))
 	{
 		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Jump));
@@ -1087,6 +1088,9 @@ void ConfusionState::Enter()
 	// ステート待機時間
 	stateTimer = stateTimerMax;
 
+	// 攻撃種類
+	randamAttack = rand() % 2;
+
 	// 混乱Se否設定
 	//confusionSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎飛行時.wav");
 	//confusionSe->Play(loopSe);
@@ -1100,11 +1104,12 @@ void ConfusionState::Execute(float elapsedTime)
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	if (stateTimer < stateTimerEnd)
-	{
-		// ステート変更
-		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Pursuit));
-	}
+	//if (stateTimer < stateTimerEnd)
+	//{
+	//	// ステート変更
+	//	//enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Pursuit));
+	//	enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Pursuit));
+	//}
 
 	//// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	//float animationTime = owner.lock()->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
@@ -1119,6 +1124,25 @@ void ConfusionState::Execute(float elapsedTime)
 	if (!model->IsPlayAnimation())
 		model->PlayAnimation(EnemyBoss::Animation::Anim_Die, loop, currentAnimationStartSeconds, blendSeconds,
 			currentAnimationAddSeconds, keyFrameEnd);
+
+	if (stateTimer > stateTimerEnd)return;
+	switch (randamAttack)
+	{
+	case (int)EnemyBoss::AttackMode::AssaultAttack:
+	{
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Wander));
+		break;
+	}
+	case (int)EnemyBoss::AttackMode::JumpStompAttack:
+	{
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Jump));
+		break;
+	}
+	default:
+		break;
+	}
+
+
 
 }
 // 混乱終了
@@ -3116,7 +3140,7 @@ void PlayerMagicState::Enter()
 	isMove = false;
 
 	// SE
-	playerid.lock()->PlaySE()->Play("flame");
+	//playerid.lock()->PlaySE()->Play("flame");
 	
 }
 
@@ -3715,31 +3739,32 @@ void PlayerSpecialMagicIceState::Enter()
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 
-	ice = std::make_unique<Effect>("Data/Effect/brezerd.efk");
+	ice = std::make_unique<Effect>("Data/Effect/specialIce.efk");
+	//ice = std::make_unique<Effect>("Data/Effect/brezerd.efk");
 	//fireAttack = std::make_unique<Effect>("Data/Effect/hit fire.efk");
-	// 再生開始時間
-	currentAnimationStartSeconds = 0.0f;
+	//// 再生開始時間
+	//currentAnimationStartSeconds = 0.0f;
 
 	// アニメーション再生
 	model->PlayAnimation(
-		Player::Anim_SlashThree, loop,
+		Player::Anim_Magic, loop,
 		currentAnimationStartSeconds, blendSeconds
-		, currentAnimationAddSeconds
+		, currentAnimationAddSeconds, keyFrameEnd
 	);
 	// アニメーション再生
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
 
-	Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
+	//Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
 
-	DirectX::XMFLOAT3 pPosition =
-	{
-				pHPosiiton->worldTransform._41,
-				pHPosiiton->worldTransform._42,
-				pHPosiiton->worldTransform._43
-	};
+	//DirectX::XMFLOAT3 pPosition =
+	//{
+	//			pHPosiiton->worldTransform._41,
+	//			pHPosiiton->worldTransform._42,
+	//			pHPosiiton->worldTransform._43
+	//};
 
-	ice->Play(pPosition);
+	//ice->Play(pPosition);
 	// 落ちるの停止
 	bool stopFall = true;
 	moveid.lock()->SetStopFall(stopFall);
@@ -3775,11 +3800,10 @@ void PlayerSpecialMagicIceState::Enter()
 	//p.data.push_back({ 250, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
 
 	p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 50, {position.x + vx2, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 100, {position.x + vx2, position.y + 5, position.z - vz2 }, position ,true });
-	p.data.push_back({ 150, {position.x - vx2, position.y + 5, position.z - vz2 }, position ,true });
+	p.data.push_back({ 20, {position.x + vx2, position.y + 5, position.z - vz2 }, position ,true });
+	p.data.push_back({ 40, {position.x - vx2, position.y + 5, position.z - vz2 }, position ,true });
 
-	p.data.push_back({ 230, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position ,true });
+	p.data.push_back({ 60, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position ,true });
 	
 
 	// エネミー呼ぶ奴
@@ -3814,9 +3838,15 @@ void PlayerSpecialMagicIceState::Enter()
 	}
 
 
-	p.data.push_back({ 300, {position.x + (pos.x * length) ,
+	p.data.push_back({ 150, {position.x + (pos.x * length) ,
 		position.y + (pos.y * length) + 1,
 		position.z + (pos.z * length) }, position });
+
+	p.data.push_back({ 200, {position.x + (pos.x * length) ,
+	position.y + (pos.y * length) + 1,
+	position.z + (pos.z * length) }, position });
+
+	Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 }
 
 void PlayerSpecialMagicIceState::Execute(float elapsedTime)
@@ -3879,8 +3909,8 @@ void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 		// アニメーション
 		if (!model->IsPlayAnimation())
 		{
-			// 再生開始時間
-			currentAnimationStartSeconds = 0.0f;
+			//// 再生開始時間
+			//currentAnimationStartSeconds = 0.0f;
 
 			// アニメーション再生
 			model->PlayAnimation(
@@ -3896,8 +3926,21 @@ void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 			button = false;
 
 			// 手の炎エフェクト停止
-			ice->Stop(ice->GetEfeHandle());
+			//ice->Stop(ice->GetEfeHandle());
+				// エネミー呼ぶ奴
+			EnemyManager& enemyManager = EnemyManager::Instance();
+			int enemyManagerCount = enemyManager.GetEnemyCount();
 
+			// 動作させるかどうか
+			if (enemyManagerCount > 0)
+			{
+
+				std::weak_ptr<Transform> enemyTId = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<Transform>();
+				// エフェクトスケール
+				float efScale = 5.0f;
+				// 氷
+				ice->Play(enemyTId.lock()->GetPosition(), efScale);
+			}
 
 			//rockCheck = true;
 			//owner.lock()->GetComponent<Player>()->SetRockCheck(rockCheck);
@@ -3974,10 +4017,10 @@ void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 		int projectileMax = ProjectileManager::Instance().GetProjectileCount();
 		for (int i = 0; i < projectileMax; ++i)
 		{
-			std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(i);
-			if (projectile->GetComponent<ProjectileTornade>())
+			std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(i);
+			if (projectile.lock()->GetComponent<ProjectileTornade>())
 			{
-				projectile->GetComponent<BulletFiring>()->Destroy();
+				projectile.lock()->GetComponent<BulletFiring>()->Destroy();
 			}
 		}
 
@@ -4007,18 +4050,18 @@ void PlayerSpecialMagicIceState::Exit()
 	if (enemyManagerCount > 0)
 	{
 
-		std::shared_ptr<EnemyBoss> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemyBoss>();
-		std::shared_ptr<Movement> enemyMove = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<Movement>();
+		std::weak_ptr<EnemyBoss> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemyBoss>();
+		std::weak_ptr<Movement> enemyMove = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<Movement>();
 
 		bool moveCheck = true;
-		enemy->SetMoveCheck(moveCheck);
+		enemy.lock()->SetMoveCheck(moveCheck);
 
 		// 速度停止
 		bool stopVelocity = false;
-		enemyMove->SetStopMove(stopVelocity);
+		enemyMove.lock()->SetStopMove(stopVelocity);
 		// 落ちるの停止
 		bool stopFall = false;
-		enemyMove->SetStopFall(stopFall);
+		enemyMove.lock()->SetStopFall(stopFall);
 	}
 }
 

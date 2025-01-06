@@ -167,10 +167,11 @@ private:
 	// アニメーションブレンド
 	float blendSeconds = 0.7f;
 
-	// 数回行動したら疲れるモーションを入れる。
-	int mortionLimit = 0;
+
 	// 行動制限最大数
 	int mortionLimitMax = 5;
+	// 数回行動したら疲れるモーションを入れる。
+	int mortionLimit = mortionLimitMax;
 
 	// 行動をランダムで
 	int randamAttack = 0;
@@ -469,6 +470,10 @@ private:
 
 	// アニメーションブレンド
 	float blendSeconds = 0.35f;
+
+	// 攻撃種類
+		// 行動をランダムで
+	int randamAttack = 0;
 };
 
 
@@ -1363,6 +1368,9 @@ private:
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
+
+	// キーフレーム終了
+	float keyFrameEnd = 64.00f;
 
 
 	bool button = false;
