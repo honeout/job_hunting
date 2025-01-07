@@ -60,6 +60,12 @@ public:
     // 衝撃波判定
     void CollisionInpact();
 
+    // 敵覚醒管理
+    void ManageAwakeTime(float elapsedTime);
+
+    // 敵覚醒時間初期化
+    void ResetAwakeTime();
+
     // 当たり判定右端
     void DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition);
 
@@ -261,6 +267,9 @@ public:
 
     void SetBlurCheck(bool blurCheck) {  this->blurCheck = blurCheck; }
 
+    // 覚醒有無
+    bool GetIsEnemyAwakened() { return isEnemyAwakened; }
+
 private:
     // モデル情報を確保
     Model* model = nullptr;
@@ -273,6 +282,14 @@ private:
     std::weak_ptr<Movement>	movement;
     std::weak_ptr<HP>	hp;
     std::weak_ptr<Transform>	transform;
+
+    // 覚醒有無
+    bool isEnemyAwakened = false;
+    // 覚醒時間
+    float enemyAwakeningDuration = 0.0f;
+    float enemyAwakeningDurationMax = 30;
+    float enemyAwakeningDurationEnd = 0.0f;
+    
 
     // プレイヤーに与ダメエフェ
     std::unique_ptr<Effect> moveAttackEffect;

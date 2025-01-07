@@ -20,6 +20,7 @@ HP::~HP()
 void HP::OnGUI()
 {
 	ImGui::SliderInt("Hp", &health,1,maxHealth);
+	ImGui::SliderInt("bonusHp", &bonusHp,0,maxHealth);
 }
 #endif // _DEBUG
 void HP::UpdateInbincibleTimer(float elapsedTime)
@@ -32,6 +33,8 @@ void HP::UpdateInbincibleTimer(float elapsedTime)
 
 bool HP::ApplyDamage(int damage, float invincibleTime)
 {
+    // ヒットしたかどうか
+    onDamage = false;
     // ダメージが０の場合は健康状態を変更する必要がない
     if (damage == 0) return false;
 
@@ -43,12 +46,17 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     // 死亡している場合は健康状態を変更しない
     if (health <= 0)return false;
     if (invincibleTimer > 0.0f)return false;
-    onDamage = false;
     // 何秒無敵
     invincibleTimer = invincibleTime;
-
+    // 通常被ダメ
+    if(!isBonusHpActive)
     // ダメージ処理
     health -= damage;
+    // 耐久力ダメ
+    else
+    {
+        bonusHp -= damage;
+    }
     // 一定ダメージ数
     escapeOnFixedDamage += damage;
 
@@ -72,6 +80,12 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
         return true;
     }
 
+    if (bonusHp <= bonusHpEnd)
+    {
+        isBonusHpActive = false;
+    }
+    
+
     //actor->SetHealth(health);
     // 健康状態が変更した場合はtrueを返す
     return false;
@@ -89,11 +103,27 @@ bool HP::DamageDrawCheck()
 
     if (stateTimer >= 0.0f)
         return true;
-}
+}
+
+// 耐久追加
+void HP::SetIsBonusHpActive(bool isBonusHpActive)
+{
+    this->isBonusHpActive = isBonusHpActive;
+
+    if (this->isBonusHpActive)
+    {
+        // 追加HP
+        bonusHp = maxHealth;
+    }
+    else
+    {
+        bonusHp = bonusHpEnd;
+    }
+}
 bool HP::OnDamaged()
 {
     //--health;
-    return true;
+    return onDamage;
 }
 
 bool HP::OnDead()
@@ -142,7 +172,7 @@ bool HP::FlashTime(float elapsedTime)
 
     return false;
 }
-
+// 被ダメ一定数
 bool HP::CheckDamageThresholdWithinTime(float elapsedTime,  float damageThreshold, float timeLimit)
 {
     damageThresholdTime += elapsedTime;
@@ -172,7 +202,7 @@ bool HP::CheckDamageThresholdWithinTime(float elapsedTime,  float damageThreshol
     }
     return false;
 }
-
+// 被ダメ解放
 void HP::ResetOnDamageThresholdTime()
 {
     // 被ダメチャージ初期化

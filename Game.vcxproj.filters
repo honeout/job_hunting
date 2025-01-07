@@ -49,7 +49,7 @@
     <Filter Include="Source\Ui">
       <UniqueIdentifier>{16430137-dbe1-4b34-98cd-1a75ced3d24f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\State">
+    <Filter Include="Source\Stage">
       <UniqueIdentifier>{da9736a8-2377-46b1-83cc-d71c7d0df78e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -280,16 +280,13 @@
       <Filter>Source\Component</Filter>
     </ClInclude>
     <ClInclude Include="Source\StageMain.h">
-      <Filter>Source\State</Filter>
+      <Filter>Source\Stage</Filter>
     </ClInclude>
     <ClInclude Include="Source\StateBase.h">
-      <Filter>Source\State</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\StateDerived.h">
-      <Filter>Source\State</Filter>
+      <Filter>Source\Stage</Filter>
     </ClInclude>
     <ClInclude Include="Source\StateMachine.h">
-      <Filter>Source\State</Filter>
+      <Filter>Source\Stage</Filter>
     </ClInclude>
     <ClInclude Include="Source\Ui.h">
       <Filter>Source\Ui</Filter>
@@ -308,6 +305,9 @@
     </ClInclude>
     <ClInclude Include="Source\Graphics\PrimitiveRenderer.h">
       <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StateDerived.h">
+      <Filter>Source\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -510,13 +510,10 @@
       <Filter>Source\Projectile</Filter>
     </ClCompile>
     <ClCompile Include="Source\StageMain.cpp">
-      <Filter>Source\State</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\StateDerived.cpp">
-      <Filter>Source\State</Filter>
+      <Filter>Source\Stage</Filter>
     </ClCompile>
     <ClCompile Include="Source\StateMachine.cpp">
-      <Filter>Source\State</Filter>
+      <Filter>Source\Stage</Filter>
     </ClCompile>
     <ClCompile Include="Source\Ui.cpp">
       <Filter>Source\Ui</Filter>
@@ -538,6 +535,9 @@
     </ClCompile>
     <ClCompile Include="Source\Graphics\PrimitiveRenderer.cpp">
       <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StateDerived.cpp">
+      <Filter>Source\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

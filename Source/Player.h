@@ -18,6 +18,7 @@
 #include "ModelControll.h"
 #include "Transform.h"
 #include "StateMachine.h"
+#include "PostprocessingRenderer.h"
 #include <stack>
 
 
@@ -332,6 +333,7 @@ public:
     // ダメージ判定
     void SpecialApplyDamageInRadius();
 
+
     
 
 public:
@@ -519,6 +521,8 @@ public:
 
     AudioSeSource* PlaySE() { return seSouce.get(); }
 
+
+
 private:
     //std::shared_ptr<Movement>	movement;
     //std::shared_ptr<HP>	hp;
@@ -547,7 +551,10 @@ private:
     // 身長
     float height = 1.0f;
 
-    
+
+
+
+
     
     
 

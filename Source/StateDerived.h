@@ -41,9 +41,14 @@ private:
 
 	//Model* model = nullptr;
 	
-	float				stateTimerEnd = 0.0f;
-	float				stateTimer = stateTimerEnd;
-	float				stateTimerMax = 4.0f;
+	//float				stateTimerEnd = 0.0f;
+	//float				stateTimer = stateTimerEnd;
+	//float				stateTimerMax = 4.0f;
+
+	// 覚醒時に攻撃回数を変える。
+	int                 attackCountMax = 2;
+	int                 attackCountMin = 0;
+	int                 attackCount = attackCountMin;
 
 	// エフェクト
 	std::unique_ptr<Effect> smorker;
@@ -211,6 +216,12 @@ private:
 
 	//// 着地
 	//std::unique_ptr<AudioSeSource> landSe;
+
+
+	//// 覚醒時の攻撃回数
+	//int                 attackCountMax = 2;
+	//int                 attackCountMin = 0;
+	//int                 attackCount = attackCountMin;
 
 	// エフェクト
 	std::unique_ptr<Effect> smorker;

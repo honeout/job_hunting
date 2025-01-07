@@ -40,7 +40,15 @@ public:
     // デバッグ情報の表示
     void DrawDebugGUI();
 
-
+    // 一気にいくつかを変える。
+    // ブルームデータ
+    void SetBloomData(BloomData bloomData) { this->bloomData = bloomData; }
+    // 色調補正データ
+    void SetColorGradingData(ColorGradingData    colorGradingData) { this->colorGradingData = colorGradingData; }
+    // ラジアルブラー情報
+    void SetRadialBlurData(RadialBlurData radialBlurData) { this->radialBlurData = radialBlurData; }
+    // ダメージ表現
+    void SetVignetteData(VignetteData	vignetteData) { this->vignetteData = vignetteData; }
 
 private:
     // シーン描画データ

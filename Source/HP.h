@@ -29,6 +29,8 @@ public:
 
 	bool DamageDrawCheck();
 
+
+
 	// HP状態を取得
 	int GetHealth() const { return health; }
 
@@ -77,6 +79,15 @@ public:
 	bool GetIsOverDamageRule() { return isOverDamageRule; }
 	void SetIsOverDamageRule(bool isOverDamageRule) { this->isOverDamageRule = isOverDamageRule; }
 
+	// 追加HPなってるかどうか
+	//void SetIsBonusHpActive(bool isBonusHpActive) { this->isBonusHpActive = isBonusHpActive; }
+
+	// 耐久追加
+	void SetIsBonusHpActive(bool isBonusHpActive);
+
+	// 耐久力追加されてるかどうか
+	bool GetIsBonusHpActive() { return isBonusHpActive; }
+
 private:
 	// 最大値HP
 	int          maxHealth = 5;
@@ -92,6 +103,11 @@ private:
 
 	// 残機
 	int life = 0;
+
+	// 追加の耐久力
+	int bonusHp = 0;
+	int bonusHpEnd = 0;
+	bool isBonusHpActive = false;
 
 	// ダメージ判定
 	bool onDamage = false;

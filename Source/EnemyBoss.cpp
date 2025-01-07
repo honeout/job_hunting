@@ -157,6 +157,9 @@ void EnemyBoss::Update(float elapsedTime)
     //// ステート毎の処理
     stateMachine->Update(elapsedTime);
 
+    // 敵覚醒管理
+    ManageAwakeTime(elapsedTime);
+
     // 位置
     position = transform.lock()->GetPosition();
     // 向き
@@ -278,6 +281,16 @@ void EnemyBoss::OnGUI()
     if (ImGui::Button("drawfalse"))
     {
         modelDrawCheck = false;
+    }
+
+    if (ImGui::Button("isEnemyAwakened"))
+    {
+        ResetAwakeTime();
+
+        bool check = isEnemyAwakened ? true : false;
+        // 耐久力追加
+        hp.lock()->SetIsBonusHpActive(check);
+        //isEnemyAwakened = isEnemyAwakened ? false : true;
     }
 
 
@@ -928,6 +941,35 @@ void EnemyBoss::CollisionInpact()
 
 
     }
+}
+
+// 敵覚醒管理
+void EnemyBoss::ManageAwakeTime(float elapsedTime)
+{
+    // 覚醒中
+    if (enemyAwakeningDuration >= enemyAwakeningDurationEnd)
+    {
+        enemyAwakeningDuration -= elapsedTime;
+
+        // 暴走状態
+        isEnemyAwakened = true;
+    }
+
+    // 覚醒終了
+    else
+    {
+        // 暴走状態
+        isEnemyAwakened = false;
+    }
+
+}
+// 敵覚醒時間初期化
+void EnemyBoss::ResetAwakeTime()
+{
+    // 時間初期化
+    enemyAwakeningDuration = enemyAwakeningDurationMax;
+
+    
 }
 
 void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)

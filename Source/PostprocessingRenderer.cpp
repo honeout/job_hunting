@@ -77,7 +77,7 @@ PostprocessingRenderer::~PostprocessingRenderer()
 
 void PostprocessingRenderer::Render(RenderContext rc)
 {
- 
+
     Graphics& graphics = Graphics::Instance();
 
     // 現在設定されているバッファを避難して初期化しておく
@@ -92,6 +92,18 @@ void PostprocessingRenderer::Render(RenderContext rc)
             , cachedRenderTargetView.ReleaseAndGetAddressOf()
             , cachedDepthStencilView.ReleaseAndGetAddressOf()
         );
+    }
+
+    // セッター変更値用
+    {
+        ////rc.bloomData.gaussianFilterData = bloomData.gaussianFilterData;
+        ////rc.bloomData.luminanceExtractionData = bloomData.luminanceExtractionData;
+
+        //rc.colorGradingData = colorGradingData;
+
+        //rc.radialBlurData = radialBlurData;
+
+        //rc.vignetteData = vignetteData;
     }
 
     //RenderContext rc;
@@ -182,6 +194,7 @@ void PostprocessingRenderer::Render(RenderContext rc)
     // 最終パス
     {
     
+
 
         // 高輝度抽出処理
         SpriteShader* shader = graphics.GetShader(SpriteShaderId::Finalpass);

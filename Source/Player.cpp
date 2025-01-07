@@ -269,6 +269,9 @@ void Player::Start()
     // 攻撃ヒット回数初期化
     attackNumberSave = 0;
 
+
+    
+
 }
 
 // 更新処理
@@ -896,6 +899,8 @@ void Player::OnGUI()
   
         }
     }
+
+
 
     ImGui::SliderFloat("brigthness", &colorGradingData.brigthness,0.0f ,10.0f);
     ImGui::SliderFloat("hueShift", &colorGradingData.hueShift,0.0f ,10.0f);
@@ -3500,19 +3505,21 @@ void Player::UpdateSwordeTraile()
 
     /*DirectX::XMFLOAT3 dir = GetForwerd(angle);*/
 
+        // 剣の手元
+    DirectX::XMFLOAT3 swordeRootPosition;
+    //SwordeRootPosition = model->ConvertLocalToWorld(SwordeRootName);
+    swordeRootPosition = model->ConvertLocalToWorld(SwordeRootName);
+
     // 前
     DirectX::XMFLOAT3 dir;
-    dir.x = sinf(SwordeRootName->rotation.y);// 三角を斜めにして位置を変えた
-    dir.y = cosf(SwordeRootName->rotation.x);
-    dir.z = cosf(SwordeRootName->rotation.y);
+    dir.x = sinf(swordeRootPosition.y);// 三角を斜めにして位置を変えた
+    dir.y = cosf(swordeRootPosition.x);
+    dir.z = cosf(swordeRootPosition.y);
 
     DirectX::XMVECTOR dirVec = DirectX::XMLoadFloat3(&dir);
 
    
-    // 剣の手元
-    DirectX::XMFLOAT3 swordeRootPosition;
-    //SwordeRootPosition = model->ConvertLocalToWorld(SwordeRootName);
-    swordeRootPosition = model->ConvertLocalToWorld(SwordeRootName);
+
 
     DirectX::XMMATRIX swordeRootPositionVec = DirectX::XMLoadFloat4x4(&SwordeRootName->worldTransform);
 
@@ -3522,14 +3529,18 @@ void Player::UpdateSwordeTraile()
    // DirectX::XMStoreFloat3(&SwordeRootPosition, DirectX::XMVector3Transform(RootOffset, swordeRootPositionVec));
 
     // 剣先
-    DirectX::XMFLOAT3 swordeTipPosition;
-    DirectX::XMVECTOR swordeTipPositionVec;
-    swordeTipPositionVec = DirectX::XMLoadFloat3(&swordeRootPosition);
-    dirVec = DirectX::XMVector3Normalize(dirVec);
-    swordeTipPositionVec = DirectX::XMVectorMultiply(swordeTipPositionVec, dirVec);
-    
-    DirectX::XMStoreFloat3(&swordeTipPosition, swordeTipPositionVec);
+    DirectX::XMFLOAT3 swordeTipPosition = swordeRootPosition;
+    //DirectX::XMVECTOR swordeTipPositionVec;
+    //swordeTipPositionVec = DirectX::XMLoadFloat3(&swordeRootPosition);
+    ////dirVec = DirectX::XMVector3Normalize(dirVec);
+    //dirVec = DirectX::XMVectorScale(dirVec,1.5f);
+    ////swordeTipPositionVec = DirectX::XMVectorMultiply(swordeTipPositionVec, dirVec);
+    //swordeTipPositionVec = DirectX::XMVectorMultiply(swordeTipPositionVec , dirVec);
+    //
+    //DirectX::XMStoreFloat3(&swordeTipPosition, swordeTipPositionVec);
 
+
+    swordeTipPosition.y *= (dir.y * 0.01f);
 
     //swordeTipPosition.x = swordeTipPosition.x * 1.3f;
     //swordeTipPosition.z = swordeTipPosition.z * 1.3f;
@@ -5000,6 +5011,8 @@ void Player::SpecialApplyDamageInRadius()
 }
 
 
+
+
 bool Player::Ground()
 {
     if (movement.lock()->GetOnLadius())
@@ -5011,6 +5024,8 @@ bool Player::Ground()
     return false;
     
 }
+
+
 
 
 

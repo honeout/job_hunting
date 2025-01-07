@@ -1819,10 +1819,10 @@ void SceneGame::Render()
 
 	
 		
+		//postprocessingRenderer->SetBloomData();
 
 		// ポストプロセスを処理を行う
 		postprocessingRenderer->Render(rc);
-
 
 
 	}

@@ -42,12 +42,25 @@ void WanderState::Enter()
 	//moveid = owner.lock()->GetComponent<Movement>();
 	// 縄張り
 	enemyid.lock()->SetRandomTargetPosition();
+	// アニメーション終了キーフレーム
+	currentAnimationEndSeconds = 300.0f;
+	// 攻撃回数
+	attackCount = attackCountMax;
+
+	// 覚醒時の設定
+	if (enemyid.lock()->GetIsEnemyAwakened())
+	{
+		attackCount = attackCountMin;
+		currentAnimationEndSeconds = 288;
+	}
 
 	// アニメーション再生
 	model->
 		PlayAnimation(EnemyBoss::Animation::Anim_Movie,
 			loop, currentAnimationStartSeconds, blendSeconds,
 			currentAnimationAddSeconds, currentAnimationEndSeconds);
+
+
 
 	//model->
 	//	PlayAnimation(EnemyBoss::Animation::Anim_Walk,
@@ -56,7 +69,7 @@ void WanderState::Enter()
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
-	stateTimer = stateTimerMax;
+	//stateTimer = stateTimerMax;
 	//stateTimer = 60.0f;
 
 	// 着地瞬間
@@ -73,7 +86,7 @@ void WanderState::Enter()
 // 徘徊ステートで実行するメソッド
 void WanderState::Execute(float elapsedTime)
 {
-	stateTimer -= elapsedTime;
+	//stateTimer -= elapsedTime;
 
 	// owner呼び出し
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
@@ -111,6 +124,21 @@ void WanderState::Execute(float elapsedTime)
 	DirectX::XMStoreFloat3(&direction, directionVec);
 
 	
+
+	// ボスの覚醒アニメーション終了
+	if (!model->IsPlayAnimation() && enemyid.lock()->GetIsEnemyAwakened() && attackCount < attackCountMax)
+	{
+		++attackCount;
+
+		// アニメーション終了キーフレーム
+		currentAnimationEndSeconds = 288;
+
+		// アニメーション再生
+		model->
+			PlayAnimation(EnemyBoss::Animation::Anim_Movie,
+				loop, currentAnimationStartSeconds, blendSeconds,
+				currentAnimationAddSeconds, currentAnimationEndSeconds);
+	}
 
 	// 目的地へ着いた
 	//if (stateTimer <= stateTimerEnd)
@@ -227,6 +255,9 @@ void WanderState::Execute(float elapsedTime)
 void WanderState::Exit()
 {
 	//walkSe->Stop("walk");
+
+	// 連続攻撃
+	attackCount = attackCountMin;
 }
 
 void WanderState::End()
@@ -3799,12 +3830,23 @@ void PlayerSpecialMagicIceState::Enter()
 	//p.data.push_back({ 200, {position.x + vx2, position.y + 5, position.z - vz2 }, position });
 	//p.data.push_back({ 250, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position });
 
-	p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
-	p.data.push_back({ 20, {position.x + vx2, position.y + 5, position.z - vz2 }, position ,true });
-	p.data.push_back({ 40, {position.x - vx2, position.y + 5, position.z - vz2 }, position ,true });
+	//p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+	//p.data.push_back({ 20, {position.x + vx2, position.y + 5, position.z - vz2 }, position ,true });
+	//p.data.push_back({ 40, {position.x - vx2, position.y + 5, position.z - vz2 }, position ,true });
 
-	p.data.push_back({ 60, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position ,true });
-	
+	//p.data.push_back({ 60, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 }, position ,true });
+	//
+
+
+
+	p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
+	//p.data.push_back({ 10, {(position.x + vx3) * 2, position.y + 3, position.z + vz2 }, position });
+	p.data.push_back({ 30, {position.x + vx2, position.y + 5, position.z + vz2 }, position ,true });
+	p.data.push_back({ 70, {position.x - vx2, position.y + 5, position.z + vz2 }, position ,true });
+
+	p.data.push_back({ 110, {position.x + vx3 , position.y + 1, (position.z + 0.1f) + vz2 }, position ,true });
+
+
 
 	// エネミー呼ぶ奴
 	EnemyManager& enemyManager = EnemyManager::Instance();
@@ -3838,15 +3880,25 @@ void PlayerSpecialMagicIceState::Enter()
 	}
 
 
+	//p.data.push_back({ 150, {position.x + (pos.x * length) ,
+	//	position.y + (pos.y * length) + 1,
+	//	position.z + (pos.z * length) }, position });
+
+	//p.data.push_back({ 200, {position.x + (pos.x * length) ,
+	//position.y + (pos.y * length) + 1,
+	//position.z + (pos.z * length) }, position });
+
 	p.data.push_back({ 150, {position.x + (pos.x * length) ,
 		position.y + (pos.y * length) + 1,
 		position.z + (pos.z * length) }, position });
 
-	p.data.push_back({ 200, {position.x + (pos.x * length) ,
+	p.data.push_back({ 180, {position.x + (pos.x * length) ,
 	position.y + (pos.y * length) + 1,
 	position.z + (pos.z * length) }, position });
 
 	Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+
+	//playerid.lock()->Set
 }
 
 void PlayerSpecialMagicIceState::Execute(float elapsedTime)
