@@ -1250,7 +1250,6 @@ void DeathState::Execute(float elapsedTime)
 
 	if (stateTimer < 0)
 	{
-
 		enemyid.lock()->SetClearCheck(clearCheck);
 	}
 }

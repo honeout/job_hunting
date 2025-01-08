@@ -58,6 +58,13 @@ void Effect::SetScale(Effekseer::Handle handle, const DirectX::XMFLOAT3& scale)
     effekseerManager->SetScale(handle, scale.x, scale.y, scale.z);
 }
 
+void Effect::SetScale(Effekseer::Handle handle, const float scale)
+{
+    Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();
+
+    effekseerManager->SetScale(handle, scale, scale, scale);
+}
+
 void Effect::SetAngle(Effekseer::Handle handle, const DirectX::XMFLOAT3& angle)
 {
     Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();

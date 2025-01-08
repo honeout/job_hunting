@@ -521,7 +521,7 @@ public:
 
     AudioSeSource* PlaySE() { return seSouce.get(); }
 
-
+    void SetAttackNumberSave(int attackNumberSave) { this->attackNumberSave = attackNumberSave; }
 
 private:
     //std::shared_ptr<Movement>	movement;
@@ -551,7 +551,8 @@ private:
     // 身長
     float height = 1.0f;
 
-
+    // 斬撃エフェクト　スケール
+    float slashScale = 0.4f;
 
 
 
@@ -656,6 +657,7 @@ private:
 
 
 
+    std::unique_ptr<Effect> hitSlash;
 
     std::unique_ptr<Effect> lightningAttack;
 

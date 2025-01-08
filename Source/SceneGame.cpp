@@ -993,7 +993,7 @@ void SceneGame::Initialize()
 
 	// UI PlayerCommandSpeciulIce
 	{
-		const char* filename = "Data/Sprite/特殊技フレイム.png";
+		const char* filename = "Data/Sprite/特殊技ブリザラ.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulIce");
 		actor->AddComponent<SpriteControll>();
@@ -1009,7 +1009,8 @@ void SceneGame::Initialize()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 160,170 };
+		//DirectX::XMFLOAT2 scale = { 160,170 };
+		DirectX::XMFLOAT2 scale = { 150,70 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -1032,7 +1033,7 @@ void SceneGame::Initialize()
 
 	// UI PlayerCommandSpeciulThander
 	{
-		const char* filename = "Data/Sprite/特殊技フレイム.png";
+		const char* filename = "Data/Sprite/特殊技サンダラ.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulFrame");
 		actor->AddComponent<SpriteControll>();
@@ -1048,7 +1049,8 @@ void SceneGame::Initialize()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 160,170 };
+		//DirectX::XMFLOAT2 scale = { 160,170 };
+		DirectX::XMFLOAT2 scale = { 0.1f,0.1f };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };

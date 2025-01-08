@@ -431,6 +431,8 @@ void EnemyBoss::CollisionImpactVsPlayer()
 
                             //hitEffect->Play(e);
                         }
+                        // UI—h‚ê
+                        player.lock()->GetComponent<Player>()->SetShakeMode(true);
 
                         // ’eŠÛ”jŠü
                         //projectile->GetComponent<ProjectileImpact>()->Destoroy();
@@ -823,7 +825,8 @@ bool EnemyBoss::CollisionPlayerWithRushEnemy()
                         player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
 
                         //hitEffect->Play(e);
-
+                        // UI—h‚ê
+                        player.lock()->GetComponent<Player>()->SetShakeMode(true);
                     }
 
                 }
@@ -1054,6 +1057,10 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
 
                     //SE
                     bool loopSe = false;
+
+                    // UI—h‚ê
+                    player.lock()->GetComponent<Player>()->SetShakeMode(true);
+
                     //moveAttackSe->Play(loopSe);
 
 
@@ -1345,16 +1352,21 @@ void EnemyBoss::OnHit(float elapsedTime)
             bool onHit = false;
             modelDrawCheck = onHit;
 
-            colorGB = {1,1};
-     
+            //colorGB = {1,1};
+            colorGB.x += 0.1f;
+            colorGB.y += 0.1f;
         }
         else
         {
             bool onHit = true;
             modelDrawCheck = onHit;
 
-            colorGB = {0.2f,0.2f};
+            //colorGB = {0.2f,0.2f};
+            colorGB.x -= 0.1f;
+            colorGB.y -= 0.1f;
         }
+
+        
     }
     else
     {

@@ -463,7 +463,7 @@ private:
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
-	float				stateTimerMax = 5.0f;
+	float				stateTimerMax = 0.8f;
 
 	float				stateTimerEnd = 0.0f;
 

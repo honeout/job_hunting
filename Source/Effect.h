@@ -21,6 +21,7 @@ public:
 
     // スケール更新
     void SetScale(Effekseer::Handle handle, const DirectX::XMFLOAT3& scale);
+    void SetScale(Effekseer::Handle handle, const float scale);
     
     // 角度更新
     void SetAngle(Effekseer::Handle handle, const DirectX::XMFLOAT3& angle);

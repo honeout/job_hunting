@@ -142,6 +142,8 @@ void Player::Start()
     // カメラ初期化
     cameraControlle = new CameraController();
 
+
+
     // ヒットエフェクト読込 
     hitEffect = new Effect("Data/Effect/Hit.efk");
     ImpactEffect = new Effect("Data/Effect/rehleckte.efk");
@@ -149,6 +151,9 @@ void Player::Start()
 
     // エフェクト読み込み
     float effectScale = 1.0f;
+
+    // 斬撃
+    hitSlash = std::make_unique<Effect>("Data/Effect/slashHit.efk");
 
     hitFire = std::make_unique<Effect>("Data/Effect/hit fire.efk");
     hitThander = std::make_unique<Effect>("Data/Effect/HitThunder.efk");
@@ -292,7 +297,7 @@ void Player::Update(float elapsedTime)
     }
 
     // ソードトレイル
-    UpdateSwordeTraile();
+    //UpdateSwordeTraile();
     
     // コマンド操作
     {
@@ -2894,7 +2899,7 @@ bool Player::CollisionNodeVsEnemies(
             {
 
 
-                hitEffect->Play(nodePosition);
+                hitSlash->Play(nodePosition, slashScale);
 
                     if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
                         enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump )
@@ -2939,10 +2944,14 @@ bool Player::CollisionNodeVsEnemies(
                         }
 
                         // 混乱状態
-                        if (attackNumberSave >= attackNumberSaveMax)
+                        if (attackNumberSave >= attackNumberSaveMax && attackNumberSave <= attackNumberSaveMax &&
+                            enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
                         {
                             enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(
                                 (int)EnemyBoss::State::IdleBattle);
+
+                            // 攻撃連続ヒット停止
+                            attackNumberSave = 0;
                         }
 
    
