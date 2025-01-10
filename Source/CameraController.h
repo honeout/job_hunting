@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 #include <vector>
 
+#include "Component.h"
 #include "MessageData.h"
 #include "Messenger.h"
 #include "Collision.h"
@@ -24,7 +25,20 @@ public:
 	~CameraController();
 
 	// 更新処理
-	void Update(float elapsedTime);
+	void Update(float elapsedTime) ;
+
+//	~CameraController() override;
+//
+//	// 名前取得
+//	const char* GetName() const override { return "Camera"; }
+//
+//	void Start() override;
+//
+//	// 更新処理
+//	void Update(float elapsedTime) override;
+//#ifdef _DEBUG
+//	void OnGUI() override;
+//#endif // _DEBUG
 
 private:
 	// フリーカメラ更新処理

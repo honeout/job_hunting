@@ -24,6 +24,16 @@ CameraController::~CameraController()
 	Messenger::Instance().RemoveReceiver(CAMERASHAKEKEY);
 }
 
+//void CameraController::Start()
+//{
+//	position = Camera::Instance().GetEye();
+//	newPosition = Camera::Instance().GetEye();
+//	CAMERACHANGEFREEMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEFREEMODE, [&](void* data) { OnFreeMode(data); });
+//	CAMERACHANGELOCKONMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGELOCKONMODE, [&](void* data) { OnLockonMode(data); });
+//	CAMERACHANGEMOTIONMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEMOTIONMODE, [&](void* data) { OnMotionMode(data); });
+//	CAMERASHAKEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERASHAKE, [&](void* data) { OnShake(data); });
+//}
+
 // 更新処理
 void CameraController::Update(float elapsedTime)
 {
@@ -92,6 +102,12 @@ void CameraController::Update(float elapsedTime)
 	// カメラに視点を注視点を設定
 	Camera::Instance().SetLookAt(position, target, DirectX::XMFLOAT3(0, 1, 0));
 }
+//#ifdef _DEBUG
+//void CameraController::OnGUI()
+//{
+//
+//}
+//#endif // _DEBUG
 
 void CameraController::FreeCamera(float elapsedTime)
 {
