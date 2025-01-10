@@ -92,6 +92,7 @@ void WanderState::Execute(float elapsedTime)
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 
 	// 目標地点ををプレイヤー位置に設定
@@ -174,38 +175,68 @@ void WanderState::Execute(float elapsedTime)
 		DirectX::XMFLOAT3 bossLeftFootPosition;
 		bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
 
-		enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
+		//enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
 
 		// 右足
 		DirectX::XMFLOAT3 bossRightFootPosition;
 		bossRightFootPosition = model->ConvertLocalToWorld(bossRightFoot);
 
-		enemyid.lock()->DetectHitByBodyPart(bossRightFootPosition);
+		//enemyid.lock()->DetectHitByBodyPart(bossRightFootPosition);
 
 		// 右腕
 		DirectX::XMFLOAT3 bossRightHandPosition;
 		bossRightHandPosition = model->ConvertLocalToWorld(bossRightHand);
 
-		enemyid.lock()->DetectHitByBodyPart(bossRightHandPosition);
+		//enemyid.lock()->DetectHitByBodyPart(bossRightHandPosition);
 
 		// 左腕
 		DirectX::XMFLOAT3 bossLeftHandPosition;
 		bossLeftHandPosition = model->ConvertLocalToWorld(bossLeftHand);
 
-		enemyid.lock()->DetectHitByBodyPart(bossLeftHandPosition);
+		//enemyid.lock()->DetectHitByBodyPart(bossLeftHandPosition);
 
 		// 足が地面につく
 		if (animationTime + FLT_EPSILON >= 4.0f - FLT_EPSILON &&
 			animationTime - FLT_EPSILON <= 4.1f + FLT_EPSILON)
 		{
-			smorker->Play(bossRightFootPosition);
+			smorker->Play(bossRightFootPosition, scaleEffect);
+
+			// 左足
+			enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
+
+			// 右足
+			enemyid.lock()->DetectHitByBodyPart(bossRightFootPosition);
+
+			// 右腕
+			enemyid.lock()->DetectHitByBodyPart(bossRightHandPosition);
+			// 左腕
+			enemyid.lock()->DetectHitByBodyPart(bossLeftHandPosition);
+
+			// 中心
+			enemyid.lock()->DetectHitByBodyPart(transformid.lock()->GetPosition());
+
 		}
 
 		// 足が地面につく
 		if (animationTime + FLT_EPSILON >= 4.6f - FLT_EPSILON &&
 			animationTime - FLT_EPSILON <= 4.7f + FLT_EPSILON)
 		{
-			smorker->Play(bossLeftFootPosition);
+
+			smorker->Play(bossLeftFootPosition, scaleEffect);
+			// 左足
+			enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
+
+			// 右足
+			enemyid.lock()->DetectHitByBodyPart(bossRightFootPosition);
+
+			// 右腕
+			enemyid.lock()->DetectHitByBodyPart(bossRightHandPosition);
+			// 左腕
+			enemyid.lock()->DetectHitByBodyPart(bossLeftHandPosition);
+
+			// 中心
+			enemyid.lock()->DetectHitByBodyPart(transformid.lock()->GetPosition());
+			
 		}
 
 	}
@@ -621,7 +652,7 @@ void JumpState::Execute(float elapsedTime)
 
 		jumpStart = true;
 
-		smorker->Play(bossLeftFootPosition);
+		smorker->Play(bossLeftFootPosition, scaleEffect);
 
 		//janpSe->Play("janp",loopSe);
 
@@ -642,7 +673,7 @@ void JumpState::Execute(float elapsedTime)
 		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
 
 		// 煙エフェクト
-		smorker->Play(bossLeftFootPosition);
+		smorker->Play(bossLeftFootPosition, scaleEffect);
 		//landSe->Play(loopSe);
 	}
 	enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1",enemyid.lock()->GetRadius());

@@ -995,15 +995,10 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
         if (Collision::IntersectSphereVsCylinder(
             partBodyPosition,
             attackRightFootRange,
-            {
-            playerPosition.x,
-            playerPosition.y,
-            playerPosition.z,
-            },
+            playerPosition,
             playerRadius,
             playerHeight,
             outPositon))
-
         {
             // ダメージを与える。
             if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 1.0f))
@@ -1018,9 +1013,9 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
 
                 float jumpSpeed = 5.0f;
                 // 衝撃
-                const float power = 10.0f;
-                DirectX::XMFLOAT3 impulse;
-                impulse.y = power * 0.5f;
+                //const float power = 10.0f;
+                //DirectX::XMFLOAT3 impulse;
+                //impulse.y = power * 0.5f;
                 //player->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
 
 
@@ -1029,10 +1024,10 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
                     // 衝動
                     DirectX::XMFLOAT3 impulse;
                     // 衝撃
-                    const float power = 20.0f;
+                    const float power = 10.0f;
 
-                    float vx = outPositon.x - position.x;
-                    float vz = outPositon.z - position.z;
+                    float vx = outPositon.x - playerPosition.x;
+                    float vz = outPositon.z - playerPosition.z;
                     float lengthXZ = sqrtf(vx * vx + vz * vz);
                     vx /= lengthXZ;
                     vz /= lengthXZ;
@@ -1041,11 +1036,13 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
                     impulse.y = power * 0.5f;
                     impulse.z = vz * power;
 
-
                     player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
 
 
                     player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
+
+
+                    
 
                     // エフェクト発生位置
                     DirectX::XMFLOAT3 efcPos = playerPosition;

@@ -50,6 +50,9 @@ private:
 	int                 attackCountMin = 0;
 	int                 attackCount = attackCountMin;
 
+	// エフェクトスケール
+	float               scaleEffect = 0.3f;
+
 	// エフェクト
 	std::unique_ptr<Effect> smorker;
 
@@ -222,6 +225,9 @@ private:
 	//int                 attackCountMax = 2;
 	//int                 attackCountMin = 0;
 	//int                 attackCount = attackCountMin;
+
+	// エフェクトスケール
+	float               scaleEffect = 0.3f;
 
 	// エフェクト
 	std::unique_ptr<Effect> smorker;
