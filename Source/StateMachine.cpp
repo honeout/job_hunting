@@ -56,3 +56,8 @@ int StateMachine::GetStateIndex()
 	// ステートが見つからなかった時
 	return -1;
 }
+
+int StateMachine::GetStateSize()
+{
+	return static_cast<int>(statePool.size());
+}

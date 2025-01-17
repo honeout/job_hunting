@@ -77,26 +77,29 @@ void EnemyBoss::Start()
 
 
 
-    stateMachine = std::make_unique<StateMachine>();
+
+
+
+    //stateMachine = std::make_unique<StateMachine>();
 
 
 
     //stateMachine = new StateMachine();
 
-    // ステートマシンにステート登録
-    stateMachine->RegisterState(new WanderState(GetActor()));
-    stateMachine->RegisterState(new IdleState(GetActor()));
-    stateMachine->RegisterState(new PursuitState(GetActor()));
-    stateMachine->RegisterState(new JumpState(GetActor()));
-    stateMachine->RegisterState(new AttackState(GetActor()));
-    stateMachine->RegisterState(new AttackShotState(GetActor()));
-    stateMachine->RegisterState(new AttackShotThrowingState(GetActor()));
-    stateMachine->RegisterState(new ConfusionState(GetActor()));
-    stateMachine->RegisterState(new DamageState(GetActor()));
-    stateMachine->RegisterState(new DeathState(GetActor()));
-    
-    // ステートセット
-    stateMachine->SetState(static_cast<int>(State::Idle));
+    ////// ステートマシンにステート登録
+    ////stateMachine->RegisterState(new WanderState(GetActor()));
+    ////stateMachine->RegisterState(new IdleState(GetActor()));
+    ////stateMachine->RegisterState(new PursuitState(GetActor()));
+    ////stateMachine->RegisterState(new JumpState(GetActor()));
+    ////stateMachine->RegisterState(new AttackState(GetActor()));
+    ////stateMachine->RegisterState(new AttackShotState(GetActor()));
+    ////stateMachine->RegisterState(new AttackShotThrowingState(GetActor()));
+    ////stateMachine->RegisterState(new ConfusionState(GetActor()));
+    ////stateMachine->RegisterState(new DamageState(GetActor()));
+    ////stateMachine->RegisterState(new DeathState(GetActor()));
+    ////
+    ////// ステートセット
+    ////stateMachine->SetState(static_cast<int>(State::Idle));
     //stateMachine->SetState((int) State::Idle);
    
 
@@ -1302,7 +1305,7 @@ void EnemyBoss::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
 
 void EnemyBoss::UiControlle(float elapsedTime)
 {
-    if (UiManager::Instance().GetUiesCount() <= 0)return;
+    if (UiManager::Instance().GetUiesCount() <= uiCountMax)return;
     float gaugeWidth = hp.lock()->GetMaxHealth() * hp.lock()->GetHealth() * 0.12f;
     std::weak_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp.lock()->GetScale().y };

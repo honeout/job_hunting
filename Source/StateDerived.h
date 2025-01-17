@@ -539,6 +539,51 @@ private:
 };
 
 
+// クリアステートオブジェクト
+class ClearState : public State
+{
+public:
+	// コンストラクタ
+	ClearState(std::weak_ptr<Actor> enemy) :State(enemy) {};
+	// デストラクタ
+	~ClearState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+
+	// 終了処理
+	void End()override;
+private:
+	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
+
+	//std::shared_ptr<Transform> transformid = nullptr;
+
+	// 死亡音声
+	//std::unique_ptr<AudioSource> deathSe;
+	//std::unique_ptr<AudioSeSource> deathSe;
+	bool loopSe = false;
+
+	float				stateTimer = 0.0f;
+
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.7f;
+
+	// クリア確認
+	bool clearCheck = true;
+
+	// カメラ距離
+	float distance = 3.0f;
+};
 
 //////////////////////////////
 // プレイヤー
@@ -1680,6 +1725,109 @@ private:
 
 	// 再生ループ
 	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+};
+
+
+// プレイヤータイトル用待機ステートオブジェクト
+class PlayerTitleIdleState : public State
+{
+public:
+	// コンストラクタ
+	PlayerTitleIdleState(std::weak_ptr<Actor> player) :State(player) {};
+	// デストラクタ
+	~PlayerTitleIdleState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+
+	// 終了処理
+	void End()override;
+private:
+	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = true;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+};
+
+
+
+// プレイヤータイトル用決定ステートオブジェクト
+class PlayerTitlePushState : public State
+{
+public:
+	// コンストラクタ
+	PlayerTitlePushState(std::weak_ptr<Actor> player) :State(player) {};
+	// デストラクタ
+	~PlayerTitlePushState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+
+	// 終了処理
+	void End()override;
+private:
+	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+	// 過ぎたら
+	bool secondeMortion = false;
+
+	// エフェクト
+	std::unique_ptr<Effect> lightning;
+	std::unique_ptr<Effect> lightningAttack;
+	std::unique_ptr<Effect> lightningHit;
+};
+
+
+
+// プレイヤークリア用待機ステートオブジェクト
+class PlayerClearIdleState : public State
+{
+public:
+	// コンストラクタ
+	PlayerClearIdleState(std::weak_ptr<Actor> player) :State(player) {};
+	// デストラクタ
+	~PlayerClearIdleState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+
+	// 終了処理
+	void End()override;
+private:
+	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = true;
 
 	// 再生開始時間 
 	float currentAnimationStartSeconds = 0.0f;

@@ -9,7 +9,10 @@ struct CameraMotionData
 	float time;
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 target;
+	// カメラ補完スキップ
 	bool setSkipMoveCheck = false;
+	// エフェクトを作動刺せるか？
+	bool isEffect = false;
 };
 
 namespace	MessageData

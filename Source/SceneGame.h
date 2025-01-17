@@ -126,6 +126,7 @@ private:
 	std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
 
 
+	CameraController* cameraControlle = nullptr;
 
 
 	// Žü•ÓŒ¸ŒõŽü‚è

@@ -24,6 +24,7 @@
 #include "UiManager.h"
 
 #include "LightManager.h"
+#include "StateDerived.h"
 
 #include "SceneLoading.h"
 #include "SceneManager.h"
@@ -98,6 +99,10 @@ void SceneGame::Initialize()
 
 
 	//}
+
+		// カメラ初期化
+	cameraControlle = nullptr;
+	cameraControlle = new CameraController();
 
 
 	// ステージ初期化
@@ -204,7 +209,7 @@ void SceneGame::Initialize()
 		actor->AddComponent<Transform>();
 
 		actor->GetComponent<Transform>()->
-			SetPosition(DirectX::XMFLOAT3(0, 0, -10));
+			SetPosition(DirectX::XMFLOAT3(0, -3.6f, -10));
 
 		actor->GetComponent<Transform>()->
 			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
@@ -213,7 +218,7 @@ void SceneGame::Initialize()
 			SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
 		actor->AddComponent<Movement>();
 
-
+		// 移動範囲
 		actor->GetComponent<Movement>()->SetArea(minPos, maxPos);
 
 		actor->AddComponent<HP>();
@@ -228,7 +233,37 @@ void SceneGame::Initialize()
 
 
 		actor->AddComponent<Player>();
-		actor->AddComponent<Collision>();
+
+		// uiの有無で処理があるかを変える
+		actor->GetComponent<Player>()->SetUiControlleCheck(true);
+
+		// ステート設定
+		actor->GetComponent<Player>()->StateMachineCreate();
+
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerIdleState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerMovestate(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerJumpState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerLandState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerJumpFlipState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerQuickJabState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerSideCutState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerCycloneStrikeState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerSpecialAttackState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerMagicState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerSpecialMagicState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerSpecialMagicIceState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerSpecialThanderMagicState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerDamageState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerDeathState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerReviveState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerAvoidanceState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerReflectionState(actor));
+
+		// ステートセット
+		actor->GetComponent<Player>()->GetStateMachine()->SetState(static_cast<int>(Player::State::Idle));
+
+
+		//actor->AddComponent<Collision>();
 
 		// これが２Dかの確認
 		bool check2d = false;
@@ -258,7 +293,7 @@ void SceneGame::Initialize()
 			SetPosition(DirectX::XMFLOAT3(0, 0, 1));
 
 		actor->GetComponent<Transform>()->
-			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
+			SetAngle(DirectX::XMFLOAT3(0, 3, 0));
 
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(0.06f, 0.06f, 0.06f));
@@ -273,6 +308,24 @@ void SceneGame::Initialize()
 		hp->SetLife(life);
 		actor->AddComponent<Collision>();
 		actor->AddComponent<EnemyBoss>();
+
+		// クリエイト
+		actor->GetComponent<EnemyBoss>()->StateMachineCreate();
+
+		// ステートマシンにステート登録
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new WanderState(actor));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new IdleState(actor));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new PursuitState(actor));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new JumpState(actor));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new AttackState(actor));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new AttackShotState(actor));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new AttackShotThrowingState(actor));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new ConfusionState(actor));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new DamageState(actor));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new DeathState(actor));
+
+		// ステートセット
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::State::Idle));
 
 		// これが２Dかの確認
 		bool check2d = false;
@@ -1597,6 +1650,28 @@ void SceneGame::Initialize()
 	Bgm = Audio::Instance().LoadAudioSource("Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav");
 	Bgm->Play(true);
 	Bgm->SetVolume(0.3f);
+
+
+	// ポストエフェクト
+			// 画面白ボケ
+	// カラーグラディエンス
+	float colorGradingBrigthness = 0.8f;
+	colorGradingData.brigthness = colorGradingBrigthness;
+
+	// ブラー
+	// ブラー範囲
+	float radislBlurRadius = 0;
+	radialBlurData.radius = radislBlurRadius;
+
+	//float radislBlurSamplingCount = 10;
+	//radialBlurData.samplingCount = radislBlurSamplingCount;
+	//float radislBlurMaskRadius = 30;
+	//radialBlurData.mask_radius = radislBlurMaskRadius;
+	// ブラーのかからない範囲
+	float radislBlurMaskRadiusNormal = 600;
+	float radislBlurMaskRadiusEffectOn = 300;
+	radialBlurData.mask_radius = radislBlurMaskRadiusNormal;
+
 }
 
 
@@ -1620,6 +1695,13 @@ void SceneGame::Finalize()
 
 	Bgm->Stop();
 
+	if (cameraControlle != nullptr)
+	{
+		delete cameraControlle;
+		cameraControlle = nullptr;
+	}
+
+
 }
 
 // 更新処理
@@ -1630,7 +1712,8 @@ void SceneGame::Update(float elapsedTime)
 
 	ActorManager::Instance().Update(dlayTime);
 
-
+	// カメラ更新
+	cameraControlle->Update(elapsedTime);
 
 	// エフェクト更新処理
 	EffectManager::Instance().Update(dlayTime);

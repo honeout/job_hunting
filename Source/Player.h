@@ -167,6 +167,9 @@ public:
     bool InputSpecialAttackCharge();
     bool InputSpecialShotCharge();
 
+    // UIの演出
+    void SpecialPlayUlEffect(float elapsedTime);
+
     // 特殊技チャージ出来ました。
     void ChargeSpecialEnergyMultiple();
  
@@ -284,6 +287,8 @@ public:
     // ステートマシーン取得
     //StateMachine* GetStateMachine() { return stateMachine; }
     StateMachine* GetStateMachine() { return stateMachine.get(); }
+    // 外部で初期化するための処置
+    void StateMachineCreate() { stateMachine = std::make_unique<StateMachine>(); }
 
     // 攻撃方法変更
     void SetSelectCheck(int selectCheck) { this->selectCheck = selectCheck; }
@@ -361,6 +366,23 @@ public:
         Reflection,
     };
 
+
+    // ステート
+    enum class StateTitle
+    {
+        // ステート入れるのは後ろから
+        Idle,
+        Push,
+
+    };
+
+    // ステート
+    enum class StateClear
+    {
+        // ステート入れるのは後ろから
+        Idle,
+
+    };
     // カメラステート
     enum class CameraState
     {
@@ -523,6 +545,13 @@ public:
 
     void SetAttackNumberSave(int attackNumberSave) { this->attackNumberSave = attackNumberSave; }
 
+    // UIがないときはfalse
+    void SetUiControlleCheck(bool uiControlleCheck) { this->uiControlleCheck = uiControlleCheck; }
+
+    // ステート変換
+    void SetEndState(bool endState) { this->endState = endState; }
+    bool GetEndState() { return endState; }
+
 private:
     //std::shared_ptr<Movement>	movement;
     //std::shared_ptr<HP>	hp;
@@ -535,6 +564,9 @@ private:
 
     
     DirectX::XMFLOAT3 velocity = { 0,0,0 };
+
+    // UI処理を出すかチェック
+    bool             uiControlleCheck = false;
 
     // 炎発射
     std::unique_ptr<AudioSeSource> seSouce;
@@ -876,6 +908,20 @@ private:
 
     static const int MAX_POLYGON = 32;
     DirectX::XMFLOAT3					trailPositions[2][MAX_POLYGON];
+
+    int stateSize = 2;
+
+    // uiCount最大値
+    int uiCountMax = 3;
+
+    // 終了タイミング
+    bool endState = false;
+
+    //float uiTimeIntervalMax = 5.0f; 
+    float uiShrinkValueMax = 250; 
+    float uiShrinkValueMin = 100;
+
+    
 };
 
 // プレイヤーマネージャー

@@ -124,10 +124,10 @@ AudioSeSource::AudioSeSource(IXAudio2* xaudio)
 
 AudioSeSource::~AudioSeSource()
 {
-	for (auto& [name, voice] : voices)
-	{
-		voice->DestroyVoice();
-	}
+	//for (auto& [name, voice] : voices)
+	//{
+	//	voice->DestroyVoice();
+	//}
 	// ‰¹ŠÖŒW
 	if (xaudio != nullptr)
 	{

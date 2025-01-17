@@ -40,6 +40,8 @@ public:
 //	void OnGUI() override;
 //#endif // _DEBUG
 
+	bool GetCameraMortionDataTime();
+
 private:
 	// フリーカメラ更新処理
 	void FreeCamera(float elapsedTime);
@@ -73,6 +75,7 @@ private:
 	DirectX::XMFLOAT3	angle = { 0, 0, 0 };
 	float				rollSpeed = DirectX::XMConvertToRadians(90);
 	float				range = 7.0f;
+	float				rangeRock = 5.0f;
 	float				maxAngleX = DirectX::XMConvertToRadians(+45);
 	float				minAngleX = DirectX::XMConvertToRadians(-71);
 	// ロックオン処理
@@ -97,6 +100,8 @@ private:
 	uint64_t			CAMERASHAKEKEY;
 
 	float               minPositionY = -3.525f;
+
+	bool				isEffect = false;
 	
 };
 

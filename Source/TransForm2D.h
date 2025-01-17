@@ -16,6 +16,10 @@ public:
 
     // —h‚ê
     void Shake();
+
+    // ûk
+    void ShrinkTexture(float shrinkValueMax, float shrinkValueMin, float elapsedTime);
+
     // —h‚ç‚·”ÍˆÍÅ‘å
     void SetUiMax(int max) { this->max = max; }
     // —h‚ç‚·”ÍˆÍÅ¬
@@ -87,6 +91,16 @@ private:
     // UI‚ğ—h‚ç‚·ŠÔÅ‘å
     int shakeTimeUiMax = 0;
 
-    
+    // UIüŠú
+    //float timeInterval = 0.0f;
 
+    // UIûk
+    float shrinkValue = 0.5f;
+
+    // ûk‚µ‚Ä‚¢‚é‚©
+    bool isShrink = false;
+
+    // ’B‚µ‚Ä‚¢‚é‚©
+    bool isAtShrinkX = false;
+    bool isAtShrinkY = false;
 };

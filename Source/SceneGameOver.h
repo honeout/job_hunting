@@ -1,5 +1,6 @@
 #pragma once
 #include "Graphics/Sprite.h"
+#include "CameraController.h"
 #include "Scene.h"
 class SceneGameOver : public Scene
 {
@@ -19,5 +20,8 @@ public:
 
 private:
     Sprite* sprite = nullptr;
+
+
+    CameraController* cameraControlle = nullptr;
 
 };

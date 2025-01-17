@@ -4,9 +4,7 @@
 #include <string>
 #include <map>
 
-// メッセンジャークラス
-// クラス間のつながりを考えるのがめんどくさかったのでサボるために実装
-// 作りもテキトー
+
 class Messenger
 {
 public:
@@ -34,11 +32,14 @@ public:
 	// データ送信
 	void SendData(const std::string& identifier, void* data);
 
+
 	// 関数登録(同一関数を複数登録できるので注意)
 	uint64_t AddReceiver(const std::string& identifier, Receiver receiver);
 
 	// 関数登録解除(登録時のキーが必要)
 	void RemoveReceiver(uint64_t key);
+
+
 
 private:
 	struct Data

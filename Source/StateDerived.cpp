@@ -15,6 +15,7 @@
 #include "SceneLoading.h"
 #include "SceneManager.h"
 #include "SceneGameOver.h"
+#include "SceneGame.h"
 
 
 
@@ -676,7 +677,13 @@ void JumpState::Execute(float elapsedTime)
 		smorker->Play(bossLeftFootPosition, scaleEffect);
 		//landSe->Play(loopSe);
 	}
-	enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1",enemyid.lock()->GetRadius());
+	//enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1",enemyid.lock()->GetRadius());
+
+	//Model::Node* bossLeftFoot = model->FindNode("boss_left_hand1");
+
+
+	// 左足当たり判定
+	enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
 }
 // 終了処理
 void JumpState::Exit()
@@ -1296,6 +1303,107 @@ void DeathState::End()
 	owner.lock().reset();
 }
 
+
+void ClearState::Enter()
+{
+	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+	//std::shared_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+
+	// 死亡時Se
+	//deathSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","death");
+
+
+	Model* model;
+
+	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
+	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	model->
+		PlayAnimation(
+			EnemyBoss::Animation::Anim_Die, loop);
+	// アニメーションルール
+	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
+
+	stateTimer = 3;
+
+	//bool freeCheckCamera = false;
+
+	//int playerCountMax = PlayerManager::Instance().GetPlayerCount();
+	//if (playerCountMax > 0)
+	//	PlayerManager::Instance().GetPlayer(playerCountMax - 1)->GetComponent<Player>()->SetFreeCameraCheck(freeCheckCamera);
+
+
+	//std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+
+	
+}
+
+void ClearState::Execute(float elapsedTime)
+{
+	GamePad& gamePad = Input::Instance().GetGamePad();
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+
+	// カメラ関係
+	{
+		// 死亡時はそれっぽいカメラアングルで死亡
+	// 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
+		MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+
+		DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+		DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
+
+		//if(animationTime + FLT_EPSILON >= 0.5f - FLT_EPSILON && animationTime - FLT_EPSILON <= 0.51f + FLT_EPSILON)
+		//deathSe->Play("death",loopSe);
+		float vx = sinf(angle.y) * 6;
+		float vz = cosf(angle.y) * 6;
+
+		float vx2 = sinf(angle.y) - 10;
+		float vz2 = cosf(angle.y) * 7;
+		float vx3 = sinf(angle.y);
+
+		p.data.push_back({ 0, {position.x + vx2, position.y + 3, position.z + vz * distance }, position ,false,true});
+		//p.data.push_back({ 150, {position.x + vx, position.y + 3, position.z + vz * distance }, position });
+		p.data.push_back({ 180, {position.x + vx2, position.y + 5, position.z - vz2 * distance }, position ,true,true});
+		p.data.push_back({ 240, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 * distance }, position ,true,true});
+
+
+		Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+	}
+
+	stateTimer -= elapsedTime;
+
+	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+	//std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+
+
+	//DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+	//DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
+
+
+
+	// 任意のアニメーション再生区間でのみ衝突判定処理をする
+	float animationTime = model->GetCurrentANimationSeconds();
+
+	const GamePadButton anyButton =
+		GamePad::BTN_B;
+
+	if (!model->IsPlayAnimation() )// ロードの次ゲームという書き方
+	{
+		enemyid.lock()->SetClearCheck(clearCheck);
+	}
+}
+
+void ClearState::Exit()
+{
+}
+
+void ClearState::End()
+{
+}
+
 // プレイヤー
 void PlayerIdleState::Enter()
 {
@@ -1408,8 +1516,8 @@ void PlayerMovestate::Enter()
 	moveid.lock()->SetStopMove(false);
 
 	// SE再生
-	playerid.lock()->PlaySE()->Play("walk");
-	playerid.lock()->PlaySE()->SetSpeed("walk",0.5f);
+	//playerid.lock()->PlaySE()->Play("walk");
+	//playerid.lock()->PlaySE()->SetSpeed("walk",0.5f);
 }
 
 void PlayerMovestate::Execute(float elapsedTime)
@@ -1460,7 +1568,7 @@ void PlayerMovestate::Exit()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 	// SE再生
-	playerid.lock()->PlaySE()->Stop("walk");
+	//playerid.lock()->PlaySE()->Stop("walk");
 	//walkSe->Stop();
 }
 
@@ -1496,7 +1604,7 @@ void PlayerJumpState::Enter()
 	//bool stop = false;
 	moveid.lock()->SetStopMove(false);
 
-	playerid.lock()->PlaySE()->Play("land");
+	//playerid.lock()->PlaySE()->Play("land");
 }
 
 void PlayerJumpState::Execute(float elapsedTime)
@@ -4596,4 +4704,312 @@ void PlayerReflectionState::End()
 	owner.lock().reset();
 }
 
+void PlayerTitleIdleState::Enter()
+{
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	model->PlayAnimation(
+		Player::Anim_Idle, loop, currentAnimationStartSeconds, blendSeconds
+	);
+
+	// アニメーションルール
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
+
+}
+
+void PlayerTitleIdleState::Execute(float elapsedTime)
+{
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	//// ロックオン処理
+	playerid.lock()->UpdateCameraState(elapsedTime);
+
+	// ヒット
+	if (playerid.lock()->InputAttack())
+	{
+
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::StateTitle::Push));
+	}
+	//// 移動入力処理
+	//if (playerid.lock()->InputMove(elapsedTime))
+	//{
+	//	playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+	//	//TransitionMoveState();
+	//}
+	//if (playerid.lock()->InputAttack())
+	//{
+
+	//}
+
+	//// 反射入力処理
+	//if (playerid.lock()->InputAvoidance())
+	//{
+	//	playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Reflection));
+
+	//}
+
+
+	//// ジャンプ入力処理
+	//if (playerid.lock()->InputJump())
+	//{
+	//	playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Jump));
+	//	//TransitionJumpState();
+
+
+}
+
+void PlayerTitleIdleState::Exit()
+{
+}
+
+void PlayerTitleIdleState::End()
+{
+}
+
+void PlayerTitlePushState::Enter()
+{
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+
+	//std::weak_ptr<Transform> enemyTransform = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<Transform>();
+	//std::weak_ptr<HP> enemyHpId = EnemyManager::Instance().GetEnemy(EnemyManager::Instance().GetEnemyCount() - 1)->GetComponent<HP>();
+
+	lightning = std::make_unique<Effect>("Data/Effect/sunder.efk");
+	lightningAttack = std::make_unique<Effect>("Data/Effect/HitThunder.efk");
+	lightningHit = std::make_unique<Effect>("Data/Effect/lightningStrike.efk");
+
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+	// アニメーション再生
+	model->PlayAnimation(
+		Player::Anim_MagicSeconde, loop,
+		currentAnimationStartSeconds, blendSeconds
+
+	);
+
+	// アニメーション再生
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
+
+
+
+
+	// 落ちるの停止
+	bool stopFall = true;
+	moveid.lock()->SetStopFall(stopFall);
+
+	// モーション切り替え
+	secondeMortion = false;
+
+}
+
+void PlayerTitlePushState::Execute(float elapsedTime)
+{
+	// コンポネント取得
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<HP> enemyHpId;
+	// 任意のアニメーション再生区間でのみ衝突判定処理をする
+		float animationTime = moveid.lock()->GetOnLadius() ?
+			model->GetCurrentANimationSeconds() :
+			model->GetCurrentAnimationSecondsUpeer();
+
+		// アニメーション
+		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON && !secondeMortion)
+		{
+
+			
+
+				// 再生ループ
+				bool  loop = false;
+
+				// 再生開始時間 
+				float currentAnimationStartSeconds = 0.0f;
+				// 再生時間加算分の値
+				float currentAnimationAddSeconds = 0.00f;
+
+				// アニメーションブレンド
+				float blendSeconds = 0.5f;
+
+
+				// アニメーション再生
+				model->PlayAnimation(
+					Player::Anim_SpecialAttack, loop,
+					currentAnimationStartSeconds, blendSeconds
+					, currentAnimationAddSeconds
+				);
+
+				Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
+
+				DirectX::XMFLOAT3 pPosition =
+				{
+							pHPosiiton->worldTransform._41,
+							pHPosiiton->worldTransform._42,
+							pHPosiiton->worldTransform._43
+				};
+
+				lightningHit->Play(pPosition);
+		
+
+			//lightning->Stop(lightning->GetEfeHandle());
+
+				secondeMortion = true;
+
+		}
+		if (animationTime >= 1.5f - FLT_EPSILON && animationTime <= 1.6f + FLT_EPSILON && secondeMortion)
+		{
+
+
+
+			//// 再生ループ
+			//bool  loop = false;
+
+			//// 再生開始時間 
+			//float currentAnimationStartSeconds = 0.0f;
+			//// 再生時間加算分の値
+			//float currentAnimationAddSeconds = 0.00f;
+
+			//// アニメーションブレンド
+			//float blendSeconds = 0.5f;
+
+
+			//// アニメーション再生
+			//model->PlayAnimation(
+			//	Player::Anim_SpecialAttack, loop,
+			//	currentAnimationStartSeconds, blendSeconds
+			//	, currentAnimationAddSeconds
+			//);
+
+			Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
+
+			DirectX::XMFLOAT3 pPosition =
+			{
+						pHPosiiton->worldTransform._41,
+						pHPosiiton->worldTransform._42,
+						pHPosiiton->worldTransform._43
+			};
+
+			lightningHit->Play(pPosition);
+
+
+			////lightning->Stop(lightning->GetEfeHandle());
+
+			//secondeMortion = true;
+
+			playerid.lock()->SetFlashOn(true);
+
+		}
+		if (!model->IsPlayAnimation() && secondeMortion)
+		{
+			// シーン終了
+			playerid.lock()->SetEndState(true);
+			//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
+		}
+	
+}
+
+void PlayerTitlePushState::Exit()
+{
+	//std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+	//std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+
+	//// 落ちるの再開
+	//bool stopFall = false;
+	//moveid.lock()->SetStopFall(stopFall);
+
+
+	//// エネミー呼ぶ奴
+	//EnemyManager& enemyManager = EnemyManager::Instance();
+	//int enemyManagerCount = enemyManager.GetEnemyCount();
+
+	//// 動作させるかどうか
+	//if (enemyManagerCount > 0)
+	//{
+
+	//	std::shared_ptr<EnemyBoss> enemy = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<EnemyBoss>();
+	//	std::shared_ptr<Movement> enemyMove = enemyManager.GetEnemy(enemyManagerCount - 1)->GetComponent<Movement>();
+
+	//	bool moveCheck = true;
+	//	enemy->SetMoveCheck(moveCheck);
+
+
+	//	// 速度停止
+	//	bool stopVelocity = false;
+	//	enemyMove->SetStopMove(stopVelocity);
+	//	// 落ちるの停止
+	//	bool stopFall = false;
+	//	enemyMove->SetStopFall(stopFall);
+	//}
+
+	//se 停止
+	//slashSe->Stop();
+	//lighteningStrikeSpecialSe->Stop();
+	//lighteningStrikeSpecialSaveSe->Stop();
+
+	//rockCheck = false;
+	//owner.lock()->GetComponent<Player>()->SetRockCheck(rockCheck);
+
+	//// フリーカメラのロックをとどめる
+	//bool freeCameraCheck = true;
+	//owner.lock()->GetComponent<Player>()->SetFreeCameraCheck(freeCameraCheck);
+}
+
+void PlayerTitlePushState::End()
+{
+}
+
+void PlayerClearIdleState::Enter()
+{
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	model->PlayAnimation(
+		Player::Anim_Idle, loop, currentAnimationStartSeconds, blendSeconds
+	);
+
+	// アニメーションルール
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
+
+
+}
+
+void PlayerClearIdleState::Execute(float elapsedTime)
+{
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	//// ロックオン処理
+	playerid.lock()->UpdateCameraState(elapsedTime);
+
+	// ヒット
+	if (playerid.lock()->InputAttack())
+	{
+		// シーン終了
+		playerid.lock()->SetEndState(true);
+		//playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::StateTitle::Push));
+	}
+}
+
+void PlayerClearIdleState::Exit()
+{
+}
+
+void PlayerClearIdleState::End()
+{
+}

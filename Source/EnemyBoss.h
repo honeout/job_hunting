@@ -92,8 +92,17 @@ public:
     StateMachine*GetStateMachine() { return stateMachine.get(); }
 
 
+    // 外部で初期化するための処置
+    void StateMachineCreate() { stateMachine = std::make_unique<StateMachine>(); }
+
+
 
 public:
+    enum class ClearState
+    {
+        Death,
+    };
+
     enum class State
     {
         Wander,
@@ -415,6 +424,9 @@ private:
 
     // ブラーかける
     bool blurCheck = false;
+
+    // uiCount最大値
+    int uiCountMax = 3;
 };
 
 // エネミーマネージャー

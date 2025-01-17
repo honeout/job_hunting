@@ -8,6 +8,10 @@ void SceneGameOver::Initialize()
 {
     // スプライト初期化
     sprite = new Sprite("Data/Sprite/仮End.png");
+
+    // カメラ初期化
+    cameraControlle = nullptr;
+    cameraControlle = new CameraController();
 }
 
 void SceneGameOver::Finalize()
@@ -18,11 +22,21 @@ void SceneGameOver::Finalize()
         delete sprite;
         sprite = nullptr;
     }
+
+    if (cameraControlle != nullptr)
+    {
+        delete cameraControlle;
+        cameraControlle = nullptr;
+    }
+
 }
 
 void SceneGameOver::Update(float elapsedTime)
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
+
+    // カメラコントローラー更新処理
+    cameraControlle->Update(elapsedTime);
 
     // 何かボタンを押したらローディングをはさんでゲームシーンへ切り替え
     const GamePadButton anyButton =

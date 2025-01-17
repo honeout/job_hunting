@@ -78,13 +78,13 @@ Player::~Player()
     //    hitFire = nullptr;
     //}
 
-    if (cameraControlle != nullptr)
-    {
-        delete cameraControlle;
-        cameraControlle = nullptr;
-    }
+    //if (cameraControlle != nullptr)
+    //{
+    //    delete cameraControlle;
+    //    cameraControlle = nullptr;
+    //}
 
-
+    stateMachine.reset(nullptr);
 
     //if (seSouce != nullptr)
     //{
@@ -139,10 +139,10 @@ void Player::Start()
 
     // モデルデータを入れる。
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
-    // カメラ初期化
-    cameraControlle = new CameraController();
 
-
+    //// カメラ初期化
+    //cameraControlle = nullptr;
+    //cameraControlle = new CameraController();
 
     // ヒットエフェクト読込 
     hitEffect = new Effect("Data/Effect/Hit.efk");
@@ -166,23 +166,23 @@ void Player::Start()
     areWork = std::make_unique<Effect>("Data/Effect/tornade.efk");
 
     //SE
-    seSouce = Audio::Instance().LoadAudioSource();
-    seSouce->LoadSE("Data/Audio/SE/足音.wav","walk");
-    seSouce->LoadSE("Data/Audio/SE/打撃.wav","hitButton");
-    seSouce->LoadSE("Data/Audio/SE/Enemy着地.wav","land");
-    seSouce->LoadSE("Data/Audio/SE/スラッシュ１回目.wav","slash");
-    seSouce->LoadSE("Data/Audio/SE/スラッシュ２回目.wav","slashTwo");
-    seSouce->LoadSE("Data/Audio/SE/炎着弾時.wav","flamePush");
-    seSouce->LoadSE("Data/Audio/SE/炎飛行時.wav","flame");
-    seSouce->LoadSE("Data/Audio/SE/氷着弾時.wav","icePush");
-    seSouce->LoadSE("Data/Audio/SE/氷発射.wav","ice");
-    seSouce->LoadSE("Data/Audio/SE/雷.wav","lightningStrike");
-    seSouce->LoadSE("Data/Audio/SE/ヒットストップ.wav","hitStop");
-    seSouce->LoadSE("Data/Audio/SE/必殺技炎.wav","specileFirePush");
-    seSouce->LoadSE("Data/Audio/SE/必殺技炎ため.wav","specileFireCharge");
-    seSouce->LoadSE("Data/Audio/SE/必殺技ため完了.wav","specileChargeClear");
-    seSouce->LoadSE("Data/Audio/SE/必殺技雷.wav","specileLightning");
-    seSouce->LoadSE("Data/Audio/SE/必殺技雷ため.wav","specileLightningCharge");
+    //seSouce = Audio::Instance().LoadAudioSource();
+    //seSouce->LoadSE("Data/Audio/SE/足音.wav","walk");
+    //seSouce->LoadSE("Data/Audio/SE/打撃.wav","hitButton");
+    //seSouce->LoadSE("Data/Audio/SE/Enemy着地.wav","land");
+    //seSouce->LoadSE("Data/Audio/SE/スラッシュ１回目.wav","slash");
+    //seSouce->LoadSE("Data/Audio/SE/スラッシュ２回目.wav","slashTwo");
+    //seSouce->LoadSE("Data/Audio/SE/炎着弾時.wav","flamePush");
+    //seSouce->LoadSE("Data/Audio/SE/炎飛行時.wav","flame");
+    //seSouce->LoadSE("Data/Audio/SE/氷着弾時.wav","icePush");
+    //seSouce->LoadSE("Data/Audio/SE/氷発射.wav","ice");
+    //seSouce->LoadSE("Data/Audio/SE/雷.wav","lightningStrike");
+    //seSouce->LoadSE("Data/Audio/SE/ヒットストップ.wav","hitStop");
+    //seSouce->LoadSE("Data/Audio/SE/必殺技炎.wav","specileFirePush");
+    //seSouce->LoadSE("Data/Audio/SE/必殺技炎ため.wav","specileFireCharge");
+    //seSouce->LoadSE("Data/Audio/SE/必殺技ため完了.wav","specileChargeClear");
+    //seSouce->LoadSE("Data/Audio/SE/必殺技雷.wav","specileLightning");
+    //seSouce->LoadSE("Data/Audio/SE/必殺技雷ため.wav","specileLightningCharge");
     //SeSouce->LoadSE("Data/Audio/SE/ヒットストップ.wav","hitStop");
 
     //// 上半身
@@ -226,29 +226,29 @@ void Player::Start()
 
     // ステートマシン
     //stateMachine = new StateMachine();
-    stateMachine = std::make_unique<StateMachine>();
+    //stateMachine = std::make_unique<StateMachine>();
 
-    stateMachine->RegisterState(new PlayerIdleState(GetActor()));
-    stateMachine->RegisterState(new PlayerMovestate(GetActor()));
-    stateMachine->RegisterState(new PlayerJumpState(GetActor()));
-    stateMachine->RegisterState(new PlayerLandState(GetActor()));
-    stateMachine->RegisterState(new PlayerJumpFlipState(GetActor()));
-    stateMachine->RegisterState(new PlayerQuickJabState(GetActor()));
-    stateMachine->RegisterState(new PlayerSideCutState(GetActor()));
-    stateMachine->RegisterState(new PlayerCycloneStrikeState(GetActor()));
-    stateMachine->RegisterState(new PlayerSpecialAttackState(GetActor()));
-    stateMachine->RegisterState(new PlayerMagicState(GetActor()));
-    stateMachine->RegisterState(new PlayerSpecialMagicState(GetActor()));
-    stateMachine->RegisterState(new PlayerSpecialMagicIceState(GetActor()));
-    stateMachine->RegisterState(new PlayerSpecialThanderMagicState(GetActor()));
-    stateMachine->RegisterState(new PlayerDamageState(GetActor()));
-    stateMachine->RegisterState(new PlayerDeathState(GetActor()));
-    stateMachine->RegisterState(new PlayerReviveState(GetActor()));
-    stateMachine->RegisterState(new PlayerAvoidanceState(GetActor()));
-    stateMachine->RegisterState(new PlayerReflectionState(GetActor()));
+    //stateMachine->RegisterState(new PlayerIdleState(GetActor()));
+    //stateMachine->RegisterState(new PlayerMovestate(GetActor()));
+    //stateMachine->RegisterState(new PlayerJumpState(GetActor()));
+    //stateMachine->RegisterState(new PlayerLandState(GetActor()));
+    //stateMachine->RegisterState(new PlayerJumpFlipState(GetActor()));
+    //stateMachine->RegisterState(new PlayerQuickJabState(GetActor()));
+    //stateMachine->RegisterState(new PlayerSideCutState(GetActor()));
+    //stateMachine->RegisterState(new PlayerCycloneStrikeState(GetActor()));
+    //stateMachine->RegisterState(new PlayerSpecialAttackState(GetActor()));
+    //stateMachine->RegisterState(new PlayerMagicState(GetActor()));
+    //stateMachine->RegisterState(new PlayerSpecialMagicState(GetActor()));
+    //stateMachine->RegisterState(new PlayerSpecialMagicIceState(GetActor()));
+    //stateMachine->RegisterState(new PlayerSpecialThanderMagicState(GetActor()));
+    //stateMachine->RegisterState(new PlayerDamageState(GetActor()));
+    //stateMachine->RegisterState(new PlayerDeathState(GetActor()));
+    //stateMachine->RegisterState(new PlayerReviveState(GetActor()));
+    //stateMachine->RegisterState(new PlayerAvoidanceState(GetActor()));
+    //stateMachine->RegisterState(new PlayerReflectionState(GetActor()));
 
-    // ステートセット
-    stateMachine->SetState(static_cast<int>(State::Idle));
+    //// ステートセット
+    //stateMachine->SetState(static_cast<int>(State::Idle));
 
     // アニメーションルール
     updateanim = UpAnim::Normal;
@@ -275,7 +275,7 @@ void Player::Start()
     attackNumberSave = 0;
 
 
-    
+    endState = false;
 
 }
 
@@ -287,8 +287,8 @@ void Player::Update(float elapsedTime)
     //// ステート毎の処理
     stateMachine->Update(elapsedTime);
 
-    // カメラコントローラー更新処理
-    cameraControlle->Update(elapsedTime);
+    //// カメラコントローラー更新処理
+    //cameraControlle->Update(elapsedTime);
 
     // エフェクト位置更新
     if (areWork->GetEfeHandle())
@@ -300,6 +300,8 @@ void Player::Update(float elapsedTime)
     //UpdateSwordeTraile();
     
     // コマンド操作
+    if (uiControlleCheck &&
+        stateMachine->GetStateSize() != stateSize)
     {
         // 行動選択
         InputSelectCheck();
@@ -315,7 +317,6 @@ void Player::Update(float elapsedTime)
         {
             areWork->Stop(areWork->GetEfeHandle());
         }
-
         // 攻撃の時にステートを変更
         if (
             InputAttack() && GetSelectCheck() ==
@@ -324,7 +325,7 @@ void Player::Update(float elapsedTime)
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::SideCut)&&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::CycloneStrike)&&
                 GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) && 
-                    GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death)
+                    GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) 
             )
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
@@ -365,6 +366,17 @@ void Player::Update(float elapsedTime)
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
         // 特殊攻撃
         InputSpecialAttackCharge();
+
+        // UI必殺技演出
+        SpecialPlayUlEffect(elapsedTime);
+
+        // 攻撃範囲内なのでUI描画
+        AttackCheckUI();
+
+
+        // ゲージ管理
+        UiControlle(elapsedTime);
+
         //if (InputSpecialAttackCharge())
         //{
         //    
@@ -434,12 +446,6 @@ void Player::Update(float elapsedTime)
     // ルビー当たり判定
     CollisionRubyVsEnemies();
 
-    // 攻撃範囲内なのでUI描画
-    AttackCheckUI();
-    
-
-    // ゲージ管理
-    UiControlle(elapsedTime);
 
     // 位置更新
     transform.lock()->UpdateTransform();
@@ -1029,7 +1035,7 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
 
     int uiCount = UiManager::Instance().GetUiesCount();
 
-    if (uiCount <= 0) return;
+    if (uiCount <= uiCountMax) return;
         uiIdSight = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<Ui>();
         uiIdSightTransform = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<TransForm2D>();
         uiIdSightMove = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
@@ -1181,7 +1187,7 @@ bool Player::InputSelectCheck()
 
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
-    if (uiCount <= 0) return false;
+    if (uiCount <= uiCountMax) return false;
 
     // UI設定 階層下がる前 選ぶ
     // 攻撃選ぶ
@@ -1270,7 +1276,7 @@ bool Player::InputSelectMagicCheck()
 
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
-    if (uiCount <= 0) return false;
+    if (uiCount <= uiCountMax) return false;
 
     // UI設定 炎
     if (selectMagicCheck == (int)CommandMagic::Fire && magicAction)
@@ -1399,7 +1405,7 @@ bool Player::InputSpecialAttackCharge()
 
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
-    if (uiCount <= 0) return false;
+    if (uiCount <= uiCountMax) return false;
 
     if (specialAttackCharge >= 1.5f)
     {
@@ -1986,7 +1992,7 @@ bool Player::InputSpecialShotCharge()
 
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
-    if (uiCount <= 0) return false;
+    if (uiCount <= uiCountMax) return false;
 
     if (specialShotCharge >= 1.5f)
     {
@@ -2128,13 +2134,38 @@ bool Player::InputSpecialShotCharge()
 
     return false;
 }
+// 必殺技演出
+void Player::SpecialPlayUlEffect(float elapsedTime)
+{
+    // 近接攻撃
+    std::weak_ptr<Ui> uiIdAttackSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+    std::weak_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
+    if (uiIdAttackSpecial.lock()->GetDrawCheck())
+    {
+        uiIdSpecialAttackTransForm2D.lock()->ShrinkTexture( uiShrinkValueMax, uiShrinkValueMin, elapsedTime);
+    }
+
+    // 炎
+    std::weak_ptr<Ui> uiIdSpecialFire = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+    std::weak_ptr<TransForm2D> uiIdSpecialFireTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
+
+
+    // 氷
+    std::weak_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
+    std::weak_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
+
+    // 雷
+    std::weak_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
+    std::weak_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
+
+}
 
 void Player::ChargeSpecialEnergyMultiple()
 {
 
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
-    if (uiCount <= 0) return;
+    if (uiCount <= uiCountMax) return;
 
     // 炎魔法を一定以上溜めたら
     if (fireEnergyCharge >= energyChargeMax)
@@ -4678,7 +4709,7 @@ void Player::AttackCheckUI()
     
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
-    if (uiCount <= 0) return;
+    if (uiCount <= uiCountMax) return;
 
     EnemyManager& enemyManager = EnemyManager::Instance();
 
@@ -4889,7 +4920,7 @@ void Player::UiControlle(float elapsedTime)
 {
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
-    if (uiCount <= 0) return;
+    if (uiCount <= uiCountMax) return;
 
     float gaugeWidth = hp.lock()->GetMaxHealth() * hp.lock()->GetHealth() * 0.1f;
     // hpゲージ

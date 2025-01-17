@@ -109,6 +109,20 @@ void CameraController::Update(float elapsedTime)
 //}
 //#endif // _DEBUG
 
+bool CameraController::GetCameraMortionDataTime()
+{
+
+	// ÇªÇÃèuä‘ÇæÇØó~ÇµÇ¢
+	if (isEffect)
+	{
+		isEffect = false;
+
+		return true;
+	}
+
+	return isEffect;
+}
+
 void CameraController::FreeCamera(float elapsedTime)
 {
 	GamePad& gamePad = Input::Instance().GetGamePad();
@@ -162,9 +176,14 @@ void CameraController::LockonCamera(float elapsedTime)
 	DirectX::XMVECTOR	crv = DirectX::XMLoadFloat3(&Camera::Instance().GetRight());
 	DirectX::XMVECTOR	cuv = DirectX::XMVectorSet(0, 1, 0, 0);
 	DirectX::XMVECTOR	v = DirectX::XMVectorSubtract(t1, t0);
+	//DirectX::XMVECTOR   d = DirectX::XMVector3Normalize(v);
 	DirectX::XMVECTOR	l = DirectX::XMVector3Length(v);
 	float len;
-	DirectX::XMStoreFloat(&len,v);
+	DirectX::XMStoreFloat(&len,l);
+	//if (len < rangeRock)
+	//{
+	//	v = DirectX::XMVectorScale(d, range);
+	//}
 
 	t0 = DirectX::XMLoadFloat3(&targetWork[0]);
 	t1 = DirectX::XMLoadFloat3(&targetWork[1]);
@@ -203,7 +222,10 @@ void CameraController::MotionCamera(float elapsedTime)
 			newTarget = motionData[0].target;
 			position = newPosition;
 			target = newTarget;
+			// éûä‘åoâﬂ
+			isEffect = motionData[0].isEffect ? motionData[0].isEffect : motionData[0].isEffect;
 		}
+
 	}
 	else
 	{
@@ -226,6 +248,9 @@ void CameraController::MotionCamera(float elapsedTime)
 				newTarget.z += (motionData[i + 1].target.z - motionData[i].target.z) * value;
 				position = newPosition;
 				target = newTarget;
+				//// éûä‘åoâﬂ
+				//isEffect =  motionData[i].isEffect ? motionData[i].isEffect : isEffect;
+				//motionData[i].isEffect = false;
 				break;
 			}
 			// àÍïîÉÇÅ[ÉVÉáÉìÇîÚÇŒÇ∑
@@ -235,7 +260,10 @@ void CameraController::MotionCamera(float elapsedTime)
 				newTarget = motionData[i].target;
 				position = newPosition;
 				target = newTarget;
+
+				break;
 			}
+
 		}
 		if (!set)
 		{
@@ -292,7 +320,8 @@ void CameraController::OnMotionMode(void* data)
 		motionTimer = 0;
 	this->mode = Mode::MotionCamera;
 	motionData.clear();
-	motionData = p->data;
+
+	this->motionData = p->data;
 }
 
 void CameraController::OnShake(void* data)

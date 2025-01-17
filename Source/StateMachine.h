@@ -19,6 +19,8 @@ public:
 	void RegisterState(State* state);
 	// 現在のステート番号取得
 	int GetStateIndex();
+	// 最大値
+	int GetStateSize();
 private:
 	// 現在のステート
 	State* currentState = nullptr;
