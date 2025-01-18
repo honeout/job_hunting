@@ -59,3 +59,11 @@ void Ui::UiTimeUpdate()
     if (timeMax > 0)
     --countDown;
 }
+
+
+void Ui::IncrementToAlpha(float increment)
+{
+    if (color.w - FLT_EPSILON <= alphaMax + FLT_EPSILON)
+        color.w += increment;
+}
+

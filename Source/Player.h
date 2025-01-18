@@ -342,7 +342,7 @@ public:
     
 
 public:
-    // ステート
+    // ゲームステート
     enum class State
     {
         // ステート入れるのは後ろから
@@ -367,7 +367,7 @@ public:
     };
 
 
-    // ステート
+    // タイトルステート
     enum class StateTitle
     {
         // ステート入れるのは後ろから
@@ -376,13 +376,22 @@ public:
 
     };
 
-    // ステート
+    // クリアステート
     enum class StateClear
     {
         // ステート入れるのは後ろから
         Idle,
 
     };
+
+    // ゲームオーバーステート
+    enum class StateOver
+    {
+        // ステート入れるのは後ろから
+        Idle,
+
+    };
+
     // カメラステート
     enum class CameraState
     {

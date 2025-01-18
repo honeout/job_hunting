@@ -20,6 +20,9 @@ public:
     // Žûk
     void ShrinkTexture(float shrinkValueMax, float shrinkValueMin, float elapsedTime);
 
+    // ã¸
+    void IncrementToMax(float increment, float incrementMax, float& currentValue);
+
     // —h‚ç‚·”ÍˆÍÅ‘å
     void SetUiMax(int max) { this->max = max; }
     // —h‚ç‚·”ÍˆÍÅ¬

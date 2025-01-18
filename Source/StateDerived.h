@@ -1835,3 +1835,42 @@ private:
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
 };
+
+
+
+// プレイヤークリア用待機ステートオブジェクト
+class PlayerOverIdleState : public State
+{
+public:
+	// コンストラクタ
+	PlayerOverIdleState(std::weak_ptr<Actor> player) :State(player) {};
+	// デストラクタ
+	~PlayerOverIdleState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+
+	// 終了処理
+	void End()override;
+private:
+	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 1.7f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.00f;
+
+	// キーフレーム終了
+	float keyFrameEnd = 105.00f;
+};
+

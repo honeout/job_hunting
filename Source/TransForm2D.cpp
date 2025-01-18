@@ -97,5 +97,11 @@ void TransForm2D::ShrinkTexture(float shrinkValueMax, float shrinkValueMin, floa
     //}
 }
 
+void TransForm2D::IncrementToMax(float increment, float incrementMax, float& currentValue)
+{
+    if (currentValue - FLT_EPSILON <= incrementMax + FLT_EPSILON)
+    currentValue += increment;
+}
+
 
 

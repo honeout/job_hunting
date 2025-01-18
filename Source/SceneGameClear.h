@@ -47,6 +47,7 @@ public:
     // カメラの時間制御
     void CameraUpdate(float elapsedTime);
 
+	// 画面エフェクト
     void PlayEffectsShaders(float elapsedTime);
 
 private:

@@ -25,6 +25,10 @@ public:
     // GUI•`‰æ
     void OnGUI() override;
 #endif // _DEBUG
+
+    // ã¸
+    void IncrementToAlpha(float increment);
+
     // ŽžŠÔ
     void UiTimeUpdate();
 
@@ -46,6 +50,7 @@ public:
     void SetCountDown(int countDown) { this->countDown = countDown; }
 
     void SetColor(DirectX::XMFLOAT4 color) { this->color = color; }
+    DirectX::XMFLOAT4 GetColor() { return color; }
 
 private:
     Sprite* sprite = nullptr;
@@ -67,4 +72,6 @@ private:
 
     DirectX::XMFLOAT4 color = { 1,1,1,1 };
 
+    // 
+    float alphaMax = 1.0f;
 };

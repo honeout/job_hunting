@@ -9,6 +9,7 @@
 
 #include "SceneTitle.h"
 #include "SceneGameClear.h"
+#include "SceneGameOver.h"
 #include "SceneManager.h"
 
 // 垂直同期間隔設定
@@ -28,8 +29,8 @@ Framework::Framework(HWND hWnd)
 
 	// シーン初期化
 	//sceneGame.Initialize();
-	SceneManager::Instance().ChangeScene(new SceneTitle);
-	//SceneManager::Instance().ChangeScene(new SceneGameClear);
+	//SceneManager::Instance().ChangeScene(new SceneTitle);
+	SceneManager::Instance().ChangeScene(new SceneGameOver);
 }
 
 // デストラクタ

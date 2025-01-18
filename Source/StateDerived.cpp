@@ -5013,3 +5013,52 @@ void PlayerClearIdleState::Exit()
 void PlayerClearIdleState::End()
 {
 }
+
+void PlayerOverIdleState::Enter()
+{
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	model->PlayAnimation(
+		Player::Anim_Deth, loop, currentAnimationStartSeconds, blendSeconds
+	
+	);
+
+	// アニメーションルール
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
+}
+
+void PlayerOverIdleState::Execute(float elapsedTime)
+{
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	//// ロックオン処理
+	playerid.lock()->UpdateCameraState(elapsedTime);
+
+	// ヒット
+	if (playerid.lock()->InputAttack())
+	{
+
+		// シーン終了
+		playerid.lock()->SetEndState(true);
+		//playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::StateTitle::Push));
+	}
+	
+	//if (!model->IsPlayAnimation())
+	//{
+	//	model->PlayAnimation(
+	//		Player::Anim_Deth, loop, currentAnimationStartSeconds, blendSeconds
+	//	);
+	//}
+}
+
+void PlayerOverIdleState::Exit()
+{
+}
+
+void PlayerOverIdleState::End()
+{
+}
