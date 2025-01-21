@@ -36,11 +36,11 @@ EnemyBoss::~EnemyBoss()
     //if (transform)
     //transform.reset();
     
-    // ダメージ表現
-    if (moveAttackEffect->GetEfeHandle())
-    {
-        moveAttackEffect->Stop(moveAttackEffect->GetEfeHandle());
-    }
+    //// ダメージ表現
+    //if (moveAttackEffect->GetEfeHandle())
+    //{
+    //    moveAttackEffect->Stop(moveAttackEffect->GetEfeHandle());
+    //}
 
 }
 

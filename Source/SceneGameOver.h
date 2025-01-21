@@ -42,6 +42,17 @@ public:
     // 画面エフェクト
     void PlayEffectsShaders(float elapsedTime);
 
+	// どのシーンに行くか
+	void SelectScene();
+private:
+	enum class Select
+	{
+		Title,
+		Game
+	};
+
+	
+
 private:
     //Sprite* sprite = nullptr;
 
@@ -119,6 +130,25 @@ private:
 	float dlayStateTimerMax = 4.5f;
 
 	bool dlayTimeCheck = false;
+
+	// UI大きさ
+	DirectX::XMFLOAT2 titleUiScaleSelected = { 181,104 };
+	DirectX::XMFLOAT2 titleUiScaleUnselected = { 151,64 };
+
+
+	// UI位置
+	float gameUiPositionSelected = 477;
+	float titleUiPositionSelected = 515;
+	float titleUiPositionUnselected = 554;
+	// UI大きさ
+	DirectX::XMFLOAT2 gameUiScaleSelected = { 181,104 };
+	DirectX::XMFLOAT2 gameUiScaleUnselected = { 151,64 };
+
+
+
+	int selectPush = 0;
+
+
 
 
 };

@@ -294,19 +294,49 @@ private:
 	//std::shared_ptr<HP> hpid = nullptr;
 
 	float				stateTimer = 0.0f;
+	float				stateTimerEnd = 0.0f;
+	float				stateTimerMax = 4.5f;
+
+	// エフェクトスケール
+	float               scaleEffect = 0.3f;
 
 	// 攻撃回数
 	int					attackMemory = 0;
 	int					attackMemoryMax = 3;
+
+	// エフェクト
+	std::unique_ptr<Effect> smorker;
+	std::unique_ptr<Effect> charge;
+	std::unique_ptr<Effect> chargeCompleate;
 	
 	// 再生ループ
 	bool  loop = false;
 
 	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	float currentAnimationStartSeconds = 2.3f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.7f;
+
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.015f;
+
+
+	// 歩き速度
+	float moveSpeed = 10;
+
+	// ターゲット位置
+	DirectX::XMFLOAT3 targetPosition = { .0f,.0f,.0f };
+
+	// 回転速度
+	float turnSpeed = DirectX::XMConvertToRadians(320);
+
+
+
+	// アニメーション終了
+	bool dushStart = false;
+
+
 
 };
 
@@ -1873,4 +1903,48 @@ private:
 	// キーフレーム終了
 	float keyFrameEnd = 105.00f;
 };
+
+
+// プレイヤークリア用待機ステートオブジェクト
+class PlayerOverReviveState : public State
+{
+public:
+	// コンストラクタ
+	PlayerOverReviveState(std::weak_ptr<Actor> player) :State(player) {};
+	// デストラクタ
+	~PlayerOverReviveState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+
+	// 終了処理
+	void End()override;
+private:
+	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.00f;
+
+	// キーフレーム終了
+	float keyFrameEnd = 0.0f;
+
+	// ポーズ切り替え
+	bool isPoseStarte = false;
+
+	// 終わり
+	bool endState = true;
+};
+
 

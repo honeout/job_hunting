@@ -165,7 +165,7 @@ void Player::Start()
     // ƒGƒtƒFƒNƒg—³Šª
     areWork = std::make_unique<Effect>("Data/Effect/tornade.efk");
 
-    //SE
+    //// SE
     //seSouce = Audio::Instance().LoadAudioSource();
     //seSouce->LoadSE("Data/Audio/SE/‘«‰¹.wav","walk");
     //seSouce->LoadSE("Data/Audio/SE/‘ÅŒ‚.wav","hitButton");
@@ -183,7 +183,7 @@ void Player::Start()
     //seSouce->LoadSE("Data/Audio/SE/•KE‹Z‚½‚ßŠ®—¹.wav","specileChargeClear");
     //seSouce->LoadSE("Data/Audio/SE/•KE‹Z—‹.wav","specileLightning");
     //seSouce->LoadSE("Data/Audio/SE/•KE‹Z—‹‚½‚ß.wav","specileLightningCharge");
-    //SeSouce->LoadSE("Data/Audio/SE/ƒqƒbƒgƒXƒgƒbƒv.wav","hitStop");
+    //seSouce->LoadSE("Data/Audio/SE/ƒqƒbƒgƒXƒgƒbƒv.wav","hitStop");
 
     //// ã”¼g
     //bornUpStartPoint = "mixamorig:Hips";
@@ -2137,26 +2137,56 @@ bool Player::InputSpecialShotCharge()
 // •KE‹Z‰‰o
 void Player::SpecialPlayUlEffect(float elapsedTime)
 {
-    // ‹ßÚUŒ‚
-    std::weak_ptr<Ui> uiIdAttackSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
-    std::weak_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
-    if (uiIdAttackSpecial.lock()->GetDrawCheck())
+
+    if (specialAttack.size() <= 0) return;
+    switch (specialAttack.top())
     {
-        uiIdSpecialAttackTransForm2D.lock()->ShrinkTexture( uiShrinkValueMax, uiShrinkValueMin, elapsedTime);
+    case (int)SpecialAttack::Attack:
+    {
+        // ‹ßÚUŒ‚
+        std::weak_ptr<Ui> uiIdAttackSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
+        if (uiIdAttackSpecial.lock()->GetDrawCheck())
+        {
+            uiIdSpecialAttackTransForm2D.lock()->ShrinkTexture(uiShrinkValueMax, uiShrinkValueMin, elapsedTime);
+        }
+
+        break;
     }
-
-    // ‰Š
-    std::weak_ptr<Ui> uiIdSpecialFire = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
-    std::weak_ptr<TransForm2D> uiIdSpecialFireTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
-
-
-    // •X
-    std::weak_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
-    std::weak_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
-
-    // —‹
-    std::weak_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
-    std::weak_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
+    case (int)SpecialAttack::MagicFire:
+    {
+        // ‰Š
+        std::weak_ptr<Ui> uiIdSpecialFire = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialFireTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
+        if (uiIdSpecialFire.lock()->GetDrawCheck())
+        {
+            uiIdSpecialFireTransForm2D.lock()->ShrinkTexture(uiShrinkValueMax, uiShrinkValueMin, elapsedTime);
+        }
+        break;
+    }
+    case (int)SpecialAttack::MagicIce:
+    {
+        // •X
+        std::weak_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
+        if (uiIdSpecialIce.lock()->GetDrawCheck())
+        {
+            uiIdSpecialIceTransForm2D.lock()->ShrinkTexture(uiShrinkValueMax, uiShrinkValueMin, elapsedTime);
+        }
+        break;
+    }
+    case (int)SpecialAttack::MagicThander:
+    {
+        // —‹
+        std::weak_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
+        if (uiIdSpecialThander.lock()->GetDrawCheck())
+        {
+            uiIdSpecialThanderTransForm2D.lock()->ShrinkTexture(uiShrinkValueMax, uiShrinkValueMin, elapsedTime);
+        }
+        break;
+    }
+    }
 
 }
 

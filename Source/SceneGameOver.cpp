@@ -1,6 +1,7 @@
 #include "SceneGameOver.h"
 #include "Graphics/Graphics.h"
 #include "SceneTitle.h"
+#include "SceneGame.h"
 #include "SceneManager.h"
 #include "Input/Input.h"
 #include "SceneLoading.h"
@@ -208,43 +209,45 @@ void SceneGameOver::Update(float elapsedTime)
 	//std::weak_ptr<TransForm2D> uiTransformid = UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>();
 	//uiTransformid.lock()->IncrementToMax(0.1f,1.0f, uiId.lock().get()->GetColor().w);
 
-	for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
-	{
-		std::weak_ptr<Actor> enemyid = EnemyManager::Instance().GetEnemy(i);
+	//for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
+	//{
+	//	std::weak_ptr<Actor> enemyid = EnemyManager::Instance().GetEnemy(i);
 
-		//if (enemyid.lock()->GetComponent<EnemyBoss>()->GetFlashOn())
-		//{
-		//	shaderPlayStateTimer = shaderPlayStateTimerMax;
-		//	shaderBlurStateTimer = shaderBlurStateTimerMax;
-		//}
+	//	//if (enemyid.lock()->GetComponent<EnemyBoss>()->GetFlashOn())
+	//	//{
+	//	//	shaderPlayStateTimer = shaderPlayStateTimerMax;
+	//	//	shaderBlurStateTimer = shaderBlurStateTimerMax;
+	//	//}
 
-		//if (enemyid.lock()->GetComponent<EnemyBoss>()->GetClearCheck())
-		//{
-		//	//　シーン変更
-		//	SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
-		//}
+	//	//if (enemyid.lock()->GetComponent<EnemyBoss>()->GetClearCheck())
+	//	//{
+	//	//	//　シーン変更
+	//	//	SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
+	//	//}
 
+	//
+	//	// 何かボタンを押したらローディングをはさんでゲームシーンへ切り替え
+	//	const GamePadButton anyButton =
+	//		GamePad::BTN_B;
 
-		// 何かボタンを押したらローディングをはさんでゲームシーンへ切り替え
-		const GamePadButton anyButton =
-			GamePad::BTN_B;
+	//	if (!enemyid.lock()->GetComponent<EnemyBoss>()->GetClearCheck()) return;
 
-		if (!enemyid.lock()->GetComponent<EnemyBoss>()->GetClearCheck()) return;
+	//	if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
+	//	{
+	//		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(false);
+	//		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(true);
+	//		//　シーン変更
+	//		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
+	//	}
+	//	else
+	//	{
+	//		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(true);
+	//		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(false);
+	//	}
 
-		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
-		{
-			UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(false);
-			UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(true);
-			//　シーン変更
-			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
-		}
-		else
-		{
-			UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(true);
-			UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(false);
-		}
+	//}
 
-	}
+	SelectScene();
 }
 
 void SceneGameOver::Render()
@@ -388,9 +391,9 @@ void SceneGameOver::Render()
 		{
 			ImGui::SliderFloat2("threshold", &vignetteData.center.x, 0.0f, 10.0f);
 			ImGui::ColorEdit4("color", &vignetteData.color.x);
-			ImGui::SliderFloat("intensity", &vignetteData.intensity, 1, 10);
-			ImGui::SliderFloat("roundness", &vignetteData.roundness, 0, 10);
-			ImGui::SliderFloat("smoothness", &vignetteData.smoothness, 0, 10);
+			ImGui::SliderFloat("intensity", &vignetteData.intensity, -10, 10);
+			ImGui::SliderFloat("roundness", &vignetteData.roundness, -10, 10);
+			ImGui::SliderFloat("smoothness", &vignetteData.smoothness, -10, 10);
 			
 			ImGui::TreePop();
 
@@ -705,6 +708,7 @@ void SceneGameOver::InitializeComponent()
 		actor->GetComponent<Player>()->StateMachineCreate();
 
 		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerOverIdleState(actor));
+		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerOverReviveState(actor));
 
 		// ステートセット
 		actor->GetComponent<Player>()->GetStateMachine()->SetState(static_cast<int>(Player::StateOver::Idle));
@@ -820,9 +824,9 @@ void SceneGameOver::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/コマンドPUSH.png";
+		const char* filename = "Data/Sprite/タイトル戻る.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->SetName("UIPush");
+		actor->SetName("UITitle");
 		actor->AddComponent<SpriteControll>();
 		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
@@ -836,8 +840,8 @@ void SceneGameOver::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(titleUiScaleSelected);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -845,7 +849,7 @@ void SceneGameOver::InitializeComponent()
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-		ui->SetDrawCheck(false);
+		ui->SetDrawCheck(true);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -857,9 +861,9 @@ void SceneGameOver::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/コマンドPUSH押し込み.png";
+		const char* filename = "Data/Sprite/ゲーム戻る.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->SetName("UIPushOn");
+		actor->SetName("UIGame");
 		actor->AddComponent<SpriteControll>();
 		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
@@ -873,8 +877,8 @@ void SceneGameOver::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(gameUiScaleSelected);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -882,7 +886,7 @@ void SceneGameOver::InitializeComponent()
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-		ui->SetDrawCheck(false);
+		ui->SetDrawCheck(true);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -894,4 +898,100 @@ void SceneGameOver::InitializeComponent()
 
 void SceneGameOver::PlayEffectsShaders(float elapsedTime)
 {
+}
+
+void SceneGameOver::SelectScene()
+{
+	int uiManagerMax = UiManager::Instance().GetUiesCount();
+
+	//// 何かボタンを押したらローディングをはさんでゲームシーンへ切り替え
+	//const GamePadButton anyButton =
+	//	GamePad::BTN_B;
+
+	//if (!enemyid.lock()->GetComponent<EnemyBoss>()->GetClearCheck()) return;
+
+	//if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
+	//{
+	//	UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(false);
+	//	UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(true);
+	//	//　シーン変更
+	//	SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
+	//}
+	//else
+	//{
+	//	UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(true);
+	//	UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(false);
+	//}
+	const GamePadButton anyButton =
+		GamePad::BTN_B;
+
+	GamePad& gamePad = Input::Instance().GetGamePad();
+	if (gamePad.GetButtonDown() & GamePad::BTN_UP)
+	{
+		selectPush = selectPush <= (int)Select::Title ? (int)Select::Game : (int)Select::Title;
+	}
+	if (gamePad.GetButtonDown() & GamePad::BTN_DOWN)
+	{
+		selectPush = selectPush >= (int)Select::Game ? (int)Select::Title : (int)Select::Game;
+	}
+
+	switch (selectPush)
+	{
+	case (int)Select::Title:
+	{
+		// ゲーム
+		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
+			SetPositionY(gameUiPositionSelected);
+		// タイトル
+		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
+			SetPositionY(titleUiPositionSelected);
+		
+		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->SetScale(titleUiScaleSelected);
+		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->SetScale(gameUiScaleUnselected);
+
+
+		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
+		{
+			//　シーン変更
+			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
+		}
+
+		break;
+	}
+	case (int)Select::Game:
+	{
+		// タイトル
+		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
+			SetPositionY(titleUiPositionUnselected);
+
+
+		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->SetScale(titleUiScaleUnselected);
+		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->SetScale(gameUiScaleSelected);
+
+		int playerCount = PlayerManager::Instance().GetPlayerCount();
+		for (int i = 0; i < playerCount; ++i)
+		{
+			std::weak_ptr<Player> playerId = PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>();
+			//if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
+			//{
+			//	// ステート変換
+			//	playerId.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::StateOver::Revive));
+
+			//	////　シーン変更
+			//	//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
+			//}
+
+
+			if (playerId.lock()->GetEndState())
+			{
+				//　シーン変更
+				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
+			}
+		}
+
+		break;
+	}
+	}
+
+	
 }

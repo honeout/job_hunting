@@ -465,14 +465,22 @@ void PursuitState::Execute(float elapsedTime)
 	{
 	case (int)EnemyBoss::AttackMode::AssaultAttack:
 	{
+		//enemyid.lock()->GetStateMachine()->ChangeState(
+		//	static_cast<int>(EnemyBoss::State::Wander));
+
 		enemyid.lock()->GetStateMachine()->ChangeState(
-			static_cast<int>(EnemyBoss::State::Wander));
+			static_cast<int>(EnemyBoss::State::Attack));
 		break;
 	}
 	case (int)EnemyBoss::AttackMode::JumpStompAttack:
 	{
+	/*	enemyid.lock()->GetStateMachine()->ChangeState(
+			static_cast<int>(EnemyBoss::State::Jump));*/
+
 		enemyid.lock()->GetStateMachine()->ChangeState(
-			static_cast<int>(EnemyBoss::State::Jump));
+			static_cast<int>(EnemyBoss::State::Attack));
+
+
 		break;
 	}
 
@@ -659,6 +667,10 @@ void JumpState::Execute(float elapsedTime)
 
 		return;
 	}
+	else
+	{
+		moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
+	}
 
 	if (!moveid.lock()->GetOnLadius())
 	{
@@ -706,86 +718,248 @@ void AttackState::Enter()
 {
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 
-	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
+	stateTimer = stateTimerMax;
 
+	// SE 否設定
+	//janpSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","janp");
+	//landSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","land");
+
+	//moveid = owner.lock()->GetComponent<Movement>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
+	// 縄張り
+	enemyid.lock()->SetRandomTargetPosition();
 
-	currentAnimationStartSeconds = 0.0f;
-	model->PlayAnimation(EnemyBoss::Animation::Anim_Attack, loop, currentAnimationStartSeconds, blendSeconds);
-	
-
+	// アニメーション再生
+	model->
+		PlayAnimation(EnemyBoss::Animation::Anim_Attack,
+			loop, currentAnimationStartSeconds, blendSeconds,
+			currentAnimationAddSeconds);
 	// アニメーションルール
-	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
+	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Reverseplayback);
 
-		// ライフ
-	int life;
-	life = hpid.lock()->GetLife();
+	//stateTimer = Mathf::RandomRange(6.0f, 8.0f);
+	//stateTimer = 60.0f;
 
-	switch (life)
+	// 着地瞬間
+	//upOnLading = false;
+
+	// アニメーション終了
+	dushStart = false;
+
+	// 目標地点ををプレイヤー位置に設定
+	targetPosition =
+		PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1)->GetComponent<Transform>()->GetPosition();
+
+	// もし逃走するならこっち
+	if (hpid.lock()->GetIsOverDamageRule())
 	{
-	case AttackChange::Round1:
-	{
-		attackMemoryMax = 1;
-		break;
+		targetPosition = { 0,enemyid.lock()->GetPosition().y,0 };
+		targetPosition.x += Mathf::RandomRange(-enemyid.lock()->GetSearchRange(), enemyid.lock()->GetSearchRange());
+		targetPosition.z += Mathf::RandomRange(-enemyid.lock()->GetSearchRange(), enemyid.lock()->GetSearchRange());
+
+		// 一定ダメージ確認解除
+		bool isOverDamageRule = false;
+		hpid.lock()->SetIsOverDamageRule(isOverDamageRule);
 	}
 
-	case AttackChange::Round2:
-	{
-		attackMemoryMax = 3;
-		break;
-	}
+	// 煙エフェクト
+	smorker = std::make_unique<Effect>("Data/Effect/smorkeDash.efk");
+	charge = std::make_unique<Effect>("Data/Effect/effectCharge.efk");
+	chargeCompleate = std::make_unique<Effect>("Data/Effect/chargecompleted.efk");
 
-	case AttackChange::ROund3:
-	{
-		attackMemoryMax = 5;
-		break;
-	}
+	//std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 
-	}
+	//std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
+
+	//Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	//currentAnimationStartSeconds = 0.0f;
+	//model->PlayAnimation(EnemyBoss::Animation::Anim_Attack, loop, currentAnimationStartSeconds, blendSeconds);
+	//
+
+	//// アニメーションルール
+	//enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
+
+	//	// ライフ
+	//int life;
+	//life = hpid.lock()->GetLife();
+
+	//switch (life)
+	//{
+	//case AttackChange::Round1:
+	//{
+	//	attackMemoryMax = 1;
+	//	break;
+	//}
+
+	//case AttackChange::Round2:
+	//{
+	//	attackMemoryMax = 3;
+	//	break;
+	//}
+
+	//case AttackChange::ROund3:
+	//{
+	//	attackMemoryMax = 5;
+	//	break;
+	//}
+
+	//}
 }
 // update
 void AttackState::Execute(float elapsedTime)
 {
+	
+
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+
+
+	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
 
-	// 攻撃モーションが終了したとき追跡ステートへ移行
-	if (!owner.lock()->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation() && attackMemory < attackMemoryMax)
-	{
-		// アニメ再生
-		currentAnimationStartSeconds = 0.8f;
-		owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemyBoss::Animation::Anim_Attack, loop, currentAnimationStartSeconds, blendSeconds);
 
-		
-		++attackMemory;
-	}
-	// 繰り返し踏みつけ最後
-	else if (attackMemory == attackMemoryMax)
-	{
-		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Pursuit));
-		
-		int attackMemoryStart = 0;
-		attackMemory = attackMemoryStart;
-	}
+	enemyid.lock()->SetTargetPosition(targetPosition);
+
+
+	DirectX::XMVECTOR targetPositionVec = DirectX::XMLoadFloat3(&targetPosition);
+	DirectX::XMVECTOR enemyPositionVec = DirectX::XMLoadFloat3(&enemyid.lock()->GetPosition());
+
+	DirectX::XMVECTOR directionVec = DirectX::XMVectorSubtract(targetPositionVec, enemyPositionVec);
+
+	DirectX::XMFLOAT3 direction;
+
+	DirectX::XMStoreFloat3(&direction, directionVec);
+
+	//// 目的地へ着いた
+	//if (stateTimer < 0.0f)
+	//{
+	//	enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
+	//}
+	// 目的地にこの半径入ったら
+	float radius = enemyid.lock()->GetAttackRightFootRange();
+
+	//Model::Node* bossLeftHand = model->FindNode("boss_left_hand1");
+
+	// 左足ボーン
+	//Model::Node* bossLeftFoot = model->FindNode("boss_left_foot1");
+	Model::Node* bossLeftFoot = model->FindNode("boss_right_foot1");
+	Model::Node* bossEye = model->FindNode("body2");
+	// ノード位置取得
+	// 左足
+	DirectX::XMFLOAT3 bossLeftFootPosition;
+	bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
+
+	DirectX::XMFLOAT3 bossEyePosition = model->ConvertLocalToWorld(bossEye);
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-	float animationTime = owner.lock()->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
-	if (animationTime >= 1.0f && animationTime <= 2.0f)
+	float animationTime = model->GetCurrentANimationSeconds();
+
+	if (animationTime - FLT_EPSILON >= 2.0f + FLT_EPSILON && 
+		animationTime - FLT_EPSILON <= 2.05f + FLT_EPSILON)
 	{
-		// 左足ノードとプレイヤーの衝突処理
-		enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1", 2);
+
+		charge->Play(bossEyePosition);
+
+		chargeCompleate->Play(bossEyePosition);
 	}
 
-	if (animationTime >= 1.30f && animationTime <= 1.33f)
+	if (animationTime - FLT_EPSILON <= 0.8f + FLT_EPSILON && !dushStart)
 	{
-		Model::Node* node = owner.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("boss_left_foot1");
-		DirectX::XMFLOAT3 pos(
-			node->worldTransform._41,
-			node->worldTransform._42,
-			node->worldTransform._43
-		);
-		enemyid.lock()->InputImpact(pos);
+		//landSe->Play("janp",loopSe);
+
+		bool blurCheck = true;
+		enemyid.lock()->SetBlurCheck(blurCheck);
+
+		enemyid.lock()->CollisionPlayerWithRushEnemy();
+
+		//moveid.lock()->JumpVelocity(jumpSpeed);
+
+		dushStart = true;
+
+
+		//smorker->Play(bossLeftFootPosition, scaleEffect);
+
+		//janpSe->Play("janp",loopSe);
+
+		return;
 	}
+	else
+	{
+		moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
+	}
+
+	if (stateTimer > stateTimerEnd && dushStart)
+	{
+		charge->Stop(charge->GetEfeHandle());
+
+		stateTimer -= 0.1f;
+		// 煙エフェクト
+		smorker->Play(bossLeftFootPosition, scaleEffect);
+		moveid.lock()->Move(direction, moveSpeed, elapsedTime);
+		moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
+	}
+
+	if (stateTimer <= stateTimerEnd && dushStart)
+	{
+		//landSe->Play("land",loopSe);
+		//enemyid->InputProjectile();
+		//enemyid.lock()->InputImpact(enemyid.lock()->GetPosition());
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
+
+		// 煙エフェクト
+		smorker->Play(bossLeftFootPosition, scaleEffect);
+		//landSe->Play(loopSe);
+	}
+	//enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1",enemyid.lock()->GetRadius());
+
+	//Model::Node* bossLeftFoot = model->FindNode("boss_left_hand1");
+
+
+	// 左足当たり判定
+	enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
+
+	//std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+	//Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	//// 攻撃モーションが終了したとき追跡ステートへ移行
+	//if (!owner.lock()->GetComponent<ModelControll>()->GetModel()->IsPlayAnimation() && attackMemory < attackMemoryMax)
+	//{
+	//	// アニメ再生
+	//	currentAnimationStartSeconds = 0.8f;
+	//	owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemyBoss::Animation::Anim_Attack, loop, currentAnimationStartSeconds, blendSeconds);
+
+	//	
+	//	++attackMemory;
+	//}
+	//// 繰り返し踏みつけ最後
+	//else if (attackMemory == attackMemoryMax)
+	//{
+	//	enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Pursuit));
+	//	
+	//	int attackMemoryStart = 0;
+	//	attackMemory = attackMemoryStart;
+	//}
+
+	//// 任意のアニメーション再生区間でのみ衝突判定処理をする
+	//float animationTime = owner.lock()->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	//if (animationTime >= 1.0f && animationTime <= 2.0f)
+	//{
+	//	// 左足ノードとプレイヤーの衝突処理
+	//	enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1", 2);
+	//}
+
+	//if (animationTime >= 1.30f && animationTime <= 1.33f)
+	//{
+	//	Model::Node* node = owner.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("boss_left_foot1");
+	//	DirectX::XMFLOAT3 pos(
+	//		node->worldTransform._41,
+	//		node->worldTransform._42,
+	//		node->worldTransform._43
+	//	);
+	//	enemyid.lock()->InputImpact(pos);
+	//}
 
 
 }
@@ -5043,8 +5217,8 @@ void PlayerOverIdleState::Execute(float elapsedTime)
 	{
 
 		// シーン終了
-		playerid.lock()->SetEndState(true);
-		//playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::StateTitle::Push));
+	/*	playerid.lock()->SetEndState(true);*/
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::StateOver::Revive));
 	}
 	
 	//if (!model->IsPlayAnimation())
@@ -5060,5 +5234,55 @@ void PlayerOverIdleState::Exit()
 }
 
 void PlayerOverIdleState::End()
+{
+}
+
+void PlayerOverReviveState::Enter()
+{
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	model->PlayAnimation(
+		Player::Anim_Magic, loop, currentAnimationStartSeconds, blendSeconds
+
+	);
+
+	// アニメーションルール
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
+
+	isPoseStarte = false;
+}
+
+void PlayerOverReviveState::Execute(float elapsedTime)
+{
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	if (!model->IsPlayAnimation() && !isPoseStarte)
+	{
+
+		model->PlayAnimation(
+			Player::Anim_Jump, loop, currentAnimationStartSeconds, blendSeconds
+
+		);
+
+		isPoseStarte = true;
+		return;
+	}
+
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	if (!model->IsPlayAnimation() && isPoseStarte)
+	{
+		
+		playerid.lock()->SetEndState(endState);
+	}
+}
+
+void PlayerOverReviveState::Exit()
+{
+}
+
+void PlayerOverReviveState::End()
 {
 }

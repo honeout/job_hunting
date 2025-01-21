@@ -30,6 +30,7 @@ public:
 
     // ˆÊ’u‚ÌÝ’è
     void SetPosition(const DirectX::XMFLOAT2& position) { this->position = position; }
+    void SetPositionY(const float& positionY) { this->position.y = positionY; }
 
     // Œ³ˆÊ’u‚ÌÝ’è
     void SetTexPosition(const DirectX::XMFLOAT2& texPosition) { this->texPosition = texPosition; }
