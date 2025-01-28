@@ -1646,10 +1646,10 @@ void SceneGame::Initialize()
 	// テクスチャ
 	//texture = std::make_unique<Sprite>("Data/Sprite/player_status.png");
 
-	// BGM
-	Bgm = Audio::Instance().LoadAudioSource("Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav");
-	Bgm->Play(true);
-	Bgm->SetVolume(0.3f);
+	//// BGM
+	//Bgm = Audio::Instance().LoadAudioSource("Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav");
+	//Bgm->Play(true);
+	//Bgm->SetVolume(0.3f);
 
 
 	// ポストエフェクト
@@ -1693,7 +1693,7 @@ void SceneGame::Finalize()
 
 	ProjectileManager::Instance().Clear();
 
-	Bgm->Stop();
+	//Bgm->Stop();
 
 	if (cameraControlle != nullptr)
 	{
@@ -1707,6 +1707,13 @@ void SceneGame::Finalize()
 // 更新処理
 void SceneGame::Update(float elapsedTime)
 {
+	// メニューを選ぶ
+	if (InputMenue())
+	{
+		isMenue = isMenue ? isMenueOf : isMenueOn;
+	}
+
+	if (isMenue)return;
 
 	float dlayTime = dlayTimeCheck ?  elapsedTime / 2 : elapsedTime;
 
@@ -1721,6 +1728,8 @@ void SceneGame::Update(float elapsedTime)
 
 	// エフェクトしてシェーダーを使う
 	PlayEffectsShaders(dlayTime);
+
+
 
 	//// position更新ソードトレイル
 	//{
@@ -2305,6 +2314,17 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 
 	//	colorGradingData.saturation = saturationGageMax + FLT_EPSILON < colorGradingData.saturation - FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation + (0.01f + elapsedTime);
 	//}
+}
+
+bool SceneGame::InputMenue()
+{
+	GamePad& gamePad = Input::Instance().GetGamePad();
+
+	if (gamePad.GetButtonDown() & GamePad::BTN_START)
+	{
+		return true;
+	}
+	return false;
 }
 
 

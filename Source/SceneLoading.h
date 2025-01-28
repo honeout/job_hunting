@@ -32,7 +32,7 @@ private:
 
 private:
     //Sprite* sprite = nullptr;
-    std::unique_ptr<Sprite> sprite;
+    //std::unique_ptr<Sprite> sprite;
     std::unique_ptr<Sprite> spriteLoading;
 
     float angle = 0.0f;

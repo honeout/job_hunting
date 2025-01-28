@@ -292,10 +292,15 @@ private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
 	//std::shared_ptr<HP> hpid = nullptr;
+	// チャージ時間
+	float				stateChargeTimer = 0.0f;
+	float				stateChargeTimerEnd = 0.0f;
+	float				stateChargeTimerMax = 2.0f;
 
-	float				stateTimer = 0.0f;
-	float				stateTimerEnd = 0.0f;
-	float				stateTimerMax = 4.5f;
+	// チャージ完了後のダッシュ時間
+	float				stateChargeCompletionTimer = 0.0f;
+	float				stateChargeCompletionTimerEnd = 0.0f;
+	float				stateChargeCompletionTimerMax = 1.0f;
 
 	// エフェクトスケール
 	float               scaleEffect = 0.3f;
@@ -311,7 +316,7 @@ private:
 	
 	// 再生ループ
 	bool  loop = false;
-
+	// チャージ中
 	// 再生開始時間 
 	float currentAnimationStartSeconds = 2.3f;
 
@@ -320,6 +325,9 @@ private:
 
 	// 再生時間加算分の値
 	float currentAnimationAddSeconds = 0.015f;
+
+	// キーフレームの終了
+	float keyFrameEnd = 120.8f;
 
 
 	// 歩き速度
@@ -331,7 +339,8 @@ private:
 	// 回転速度
 	float turnSpeed = DirectX::XMConvertToRadians(320);
 
-
+	// チャージ初期化
+	bool chargeInitilize = false;
 
 	// アニメーション終了
 	bool dushStart = false;
@@ -603,7 +612,48 @@ private:
 	bool  loop = false;
 
 	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	float currentAnimationStartSeconds = 1.5f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.7f;
+
+	// クリア確認
+	bool clearCheck = true;
+
+	// カメラ距離
+	float distance = 3.0f;
+};
+
+
+// クリアステートオブジェクト
+class ClearReviveState : public State
+{
+public:
+	// コンストラクタ
+	ClearReviveState(std::weak_ptr<Actor> enemy) :State(enemy) {};
+	// デストラクタ
+	~ClearReviveState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+
+	// 終了処理
+	void End()override;
+private:
+
+	bool loopSe = false;
+
+	float				stateTimer = 0.0f;
+
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 1.5f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.7f;
@@ -1857,13 +1907,57 @@ private:
 	float				stateTimer = 0.0f;
 
 	// 再生ループ
-	bool  loop = true;
+	bool  loop = false;
 
 	// 再生開始時間 
 	float currentAnimationStartSeconds = 0.0f;
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
+
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.00f;
+
+	// キーフレーム終了
+	float keyFrameEnd = 68.00f;
+};
+
+
+
+// プレイヤークリア用待機ステートオブジェクト
+class PlayerClearEscapeState : public State
+{
+public:
+	// コンストラクタ
+	PlayerClearEscapeState(std::weak_ptr<Actor> player) :State(player) {};
+	// デストラクタ
+	~PlayerClearEscapeState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+
+	// 終了処理
+	void End()override;
+private:
+	float				stateTimer = 0.0f;
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 0.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.5f;
+
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.00f;
+
+	// キーフレーム終了
+	float keyFrameEnd = 68.00f;
 };
 
 

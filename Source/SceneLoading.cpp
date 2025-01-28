@@ -8,7 +8,7 @@ void SceneLoading::Initialize()
 {
     // スプライト初期化
     //sprite = new Sprite("Data/Sprite/LoadingIcon.png");
-    sprite = std::make_unique<Sprite>("Data/Sprite/タイトル.png");
+   // sprite = std::make_unique<Sprite>("Data/Sprite/タイトル.png");
     spriteLoading = std::make_unique<Sprite>("Data/Sprite/LoadingIcon.png");
 
     // スレッド開始      (関数名、引数の中身 自分自信)スレッド立ち上げる

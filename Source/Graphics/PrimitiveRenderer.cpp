@@ -234,9 +234,9 @@ void PrimitiveRenderer::End(const RenderContext& rc)
 // ’¸“_’Ç‰Á
 void PrimitiveRenderer::AddVertex(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color)
 {
-	Vertex& v = vertices.emplace_back();
-	v.position = position;
-	v.color = color;
+	//Vertex& v = vertices.emplace_back();
+	//v.position = position;
+	//v.color = color;
 }
 
 // Ž²•`‰æ

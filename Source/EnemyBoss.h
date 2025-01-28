@@ -148,6 +148,7 @@ public:
     {
         AssaultAttack,
         JumpStompAttack,
+        DushAttack,
     };
 public:
     // ステートタイマー設定

@@ -188,16 +188,16 @@ void SceneTitle::Update(float elapsedTime)
 	const GamePadButton anyButton =
 		GamePad::BTN_B;
 
-	if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
-	{
-		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(false);
-		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(true);
-	}
-	else
-	{
-		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(true);
-		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(false);
-	}
+	//if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
+	//{
+	//	UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(false);
+	//	UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(true);
+	//}
+	//else
+	//{
+	//	UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(true);
+	//	UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(false);
+	//}
 
 	for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 	{
@@ -214,10 +214,13 @@ void SceneTitle::Update(float elapsedTime)
 			//　シーン変更
 			playerid.lock()->GetComponent<Player>()->SetEndState(false);
 			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
+
+			return;
 		}
 
 	}
 
+	SelectScene();
 
 	// カメラ更新処理
 	//CameraUpdate(elapsedTime);
@@ -255,7 +258,7 @@ void SceneTitle::Render()
 
 
 		// 画面クリア＆レンダーターゲット設定
-		FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
+		FLOAT color[] = { 0.0f,0.0f,0.0f,1.0f }; // RGBA(0.0~1.0)
 		dc->ClearRenderTargetView(rtv, color);
 		dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		dc->OMSetRenderTargets(1, &rtv, dsv);
@@ -319,6 +322,79 @@ void SceneTitle::Render()
 		ActorManager::Instance().Render(rc, shaderUi);
 	}
 
+	// デバッグ
+	{
+		//2DデバッグGUI描画
+		{
+			//ImGui::Separator();
+			 //UNIT11
+			if (ImGui::TreeNode("shadowmap"))
+			{
+				ImGui::SliderFloat("DrawRect", &shadowDrawRect, 1.0f, 2048.0f);
+				ImGui::ColorEdit3("Color", &shadowColor.x);
+				ImGui::SliderFloat("Bias", &shadowBias, 0.0f, 0.1f);
+				/*ImGui::SliderFloat("lightPosition", &lightPositionScale, -13.0f, 13.0f);*/
+				ImGui::Text("texture");
+				ImGui::Image(shadowmapDepthStencil->GetShaderResourceView().Get(), { 256,256 }, { 0,0 }, { 1,1 },
+					{ 1,1,1,1 });
+				ImGui::TreePop();
+			}
+			ImGui::Separator();
+			//UNIT09
+			if (ImGui::TreeNode("ColorGrading"))
+			{
+				ImGui::SliderFloat("hueShift", &colorGradingData.hueShift, 0.0f, +360.0f);
+				ImGui::SliderFloat("saturation", &colorGradingData.saturation, 0.0f, +2.0f);
+				ImGui::SliderFloat("brigtness", &colorGradingData.brigthness, 0.0f, +10.0f);
+
+				ImGui::TreePop();
+			}
+			ImGui::Separator();
+
+
+			if (ImGui::TreeNode("RadialBlur"))
+			{
+				ImGui::SliderFloat("radius", &radialBlurData.radius, 0.0f, 200.0f);
+				ImGui::SliderInt("samplingCount", &radialBlurData.samplingCount, 0, 10);
+				ImGui::SliderFloat2("center", &radialBlurData.center.x, 0.0f, 1.0f);
+
+
+				ImGui::SliderFloat("mask radius", &radialBlurData.mask_radius, 0.0f, 600.0f);
+
+				ImGui::TreePop();
+			}
+			ImGui::Separator();
+
+			if (ImGui::TreeNode("BloomData"))
+			{
+				ImGui::SliderFloat("threshold", &bloomData.luminanceExtractionData.threshold, 0.0f, 1.0f);
+				ImGui::SliderFloat("intensity", &bloomData.luminanceExtractionData.intensity, 0.0f, 10.0f);
+				ImGui::SliderInt("kernelSize", &bloomData.gaussianFilterData.kernelSize, 1, MaxkernelSize - 1);
+				ImGui::SliderFloat("deviation", &bloomData.gaussianFilterData.deviation, 1.0f, 10.0f);
+				ImGui::TreePop();
+
+			}
+			ImGui::Separator();
+
+			if (ImGui::TreeNode("vignette"))
+			{
+				ImGui::SliderFloat2("threshold", &vignetteData.center.x, 0.0f, 10.0f);
+				ImGui::ColorEdit4("color", &vignetteData.color.x);
+				ImGui::SliderFloat("intensity", &vignetteData.intensity, -10, 10);
+				ImGui::SliderFloat("roundness", &vignetteData.roundness, -10, 10);
+				ImGui::SliderFloat("smoothness", &vignetteData.smoothness, -10, 10);
+
+				ImGui::TreePop();
+
+			}
+			ImGui::Separator();
+		}
+
+		LightManager::Instanes().DrawDebugGUI();
+
+		postprocessingRenderer->DrawDebugGUI();
+	}
+
     //// 2Dスプライト描画
     //{
     //    float screenWidth = static_cast<float>(graphics.GetScreenWidth());
@@ -360,7 +436,7 @@ void SceneTitle::Render3DScene()
 	PrimitiveRenderer* primitiveRenderer = Graphics::Instance().GetPrimitiveRenderer();
 
 	// 画面クリア＆レンダーターゲット設定
-	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0～1.0)
+	FLOAT color[] = { 0.0f, 0.0f, 0.0f, 1.0f };	// RGBA(0.0～1.0)
 	dc->ClearRenderTargetView(rtv, color);
 	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	dc->OMSetRenderTargets(1, &rtv, dsv);
@@ -669,7 +745,7 @@ void SceneTitle::InitializeComponent()
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-		ui->SetDrawCheck(true);
+		ui->SetDrawCheck(false);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -682,7 +758,7 @@ void SceneTitle::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/コマンドPUSH.png";
+		const char* filename = "Data/Sprite/ゲーム戻る.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UIPush");
 		actor->AddComponent<SpriteControll>();
@@ -690,44 +766,7 @@ void SceneTitle::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 543, 515 };
-		transform2D->SetPosition(pos);
-		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
-
-		float angle = 0;
-		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
-		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
-
-		actor->AddComponent<Ui>();
-		// 描画チェック
-		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-		ui->SetDrawCheck(true);
-
-		// これが２Dかの確認
-		bool check2d = true;
-		actor->SetCheck2d(check2d);
-
-		UiManager::Instance().Register(actor);
-	}
-
-
-	// UI タイトル名前
-	{
-		const char* filename = "Data/Sprite/コマンドPUSH押し込み.png";
-		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->SetName("UIPushOn");
-		actor->AddComponent<SpriteControll>();
-		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-		actor->AddComponent<TransForm2D>();
-		// 位置　角度　スケール情報
-		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 543, 515 };
+		DirectX::XMFLOAT2 pos = { 543, gameUiPositionSelected };
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -752,6 +791,80 @@ void SceneTitle::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
+
+
+	// UI タイトル名前
+	{
+		const char* filename = "Data/Sprite/EXIT.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("UITitle");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 543, exitUiPositionSelected };
+		transform2D->SetPosition(pos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(scale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(false);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
+	//// UI タイトル名前
+	//{
+	//	const char* filename = "Data/Sprite/コマンドPUSH押し込み.png";
+	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+	//	actor->SetName("UIPushOn");
+	//	actor->AddComponent<SpriteControll>();
+	//	actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+	//	actor->AddComponent<TransForm2D>();
+	//	// 位置　角度　スケール情報
+	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+	//	DirectX::XMFLOAT2 pos = { 543, 515 };
+	//	transform2D->SetPosition(pos);
+	//	// 元の位置
+	//	DirectX::XMFLOAT2 texPos = { 0, 0 };
+	//	transform2D->SetTexPosition(texPos);
+
+	//	float angle = 0;
+	//	transform2D->SetAngle(angle);
+	//	DirectX::XMFLOAT2 scale = { 181,104 };
+	//	transform2D->SetScale(scale);
+	//	// 元の大きさ
+	//	DirectX::XMFLOAT2 texScale = { 0,0 };
+	//	transform2D->SetTexScale(texScale);
+
+	//	actor->AddComponent<Ui>();
+	//	// 描画チェック
+	//	std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+	//	ui->SetDrawCheck(false);
+
+	//	// これが２Dかの確認
+	//	bool check2d = true;
+	//	actor->SetCheck2d(check2d);
+
+	//	UiManager::Instance().Register(actor);
+	//}
 
 }
 
@@ -944,5 +1057,87 @@ void SceneTitle::PlayEffectsShaders(float elapsedTime)
 
 	//	colorGradingData.saturation = saturationGageMax + FLT_EPSILON < colorGradingData.saturation - FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation + (0.01f + elapsedTime);
 	//}
+}
+
+void SceneTitle::SelectScene()
+{
+	int uiManagerMax = UiManager::Instance().GetUiesCount();
+
+	const GamePadButton anyButton =
+		GamePad::BTN_B;
+
+	GamePad& gamePad = Input::Instance().GetGamePad();
+	if (gamePad.GetButtonDown() & GamePad::BTN_UP)
+	{
+		selectPush = selectPush <= (int)Select::Game ? (int)Select::Exit : (int)Select::Game;
+	}
+	if (gamePad.GetButtonDown() & GamePad::BTN_DOWN)
+	{
+		selectPush = selectPush >= (int)Select::Exit ? (int)Select::Game : (int)Select::Exit;
+	}
+
+	switch (selectPush)
+	{
+
+	case (int)Select::Game:
+	{
+		
+		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
+			SetPositionY(exitUiPositionUnselected);
+
+		
+		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
+			SetScale(exitUiScaleUnselected);
+		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
+			SetScale(gameUiScaleSelected);
+
+		//int playerCount = PlayerManager::Instance().GetPlayerCount();
+		//for (int i = 0; i < playerCount; ++i)
+		//{
+		//	std::weak_ptr<Player> playerId = PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>();
+		//	//if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
+		//	//{
+		//	//	// ステート変換
+		//	//	playerId.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::StateOver::Revive));
+
+		//	//	////　シーン変更
+		//	//	//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
+		//	//}
+
+
+		//	//if (playerId.lock()->GetEndState())
+		//	//{
+		//	//	//　シーン変更
+		//	//	SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
+		//	//}
+		//}
+
+		break;
+	}
+	case (int)Select::Exit:
+	{
+		// ゲーム
+		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
+			SetPositionY(gameUiPositionSelected);
+		// タイトル
+		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
+			SetPositionY(exitUiPositionSelected);
+
+		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
+			SetScale(exitUiScaleSelected);
+		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
+			SetScale(gameUiScaleUnselected);
+
+
+		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
+		{
+			//　シーン変更
+			//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
+			PostQuitMessage(0);
+		}
+
+		break;
+	}
+	}
 }
 

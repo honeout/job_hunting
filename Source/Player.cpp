@@ -277,13 +277,18 @@ void Player::Start()
 
     endState = false;
 
+    
+    
+
 }
 
 // 更新処理
 // elapsedTime(経過時間)
 void Player::Update(float elapsedTime)
 {
+    if (isMenue) return;
 
+    GamePad& gamePad = Input::Instance().GetGamePad();
     //// ステート毎の処理
     stateMachine->Update(elapsedTime);
 
@@ -294,6 +299,11 @@ void Player::Update(float elapsedTime)
     if (areWork->GetEfeHandle())
     {
         areWork->SetPosition(areWork->GetEfeHandle(), position);
+    }
+
+    if (InputMenue())
+    {
+        isMenue = isMenue ? isMenueOf : isMenueOn;
     }
 
     // ソードトレイル
@@ -344,11 +354,12 @@ void Player::Update(float elapsedTime)
         }
 
         //　魔法入力処理
-        if (InputAttack() && GetSelectCheck() == (int)Player::CommandAttack::Magic &&
+        if (InputAttack() && GetSelectCheck() == (int)Player::CommandAttack::Magic && 
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Magic) && 
             !mp.lock()->GetMpEmpth() &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death)
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) && 
+            !gamePad.GetButtonDownCountinue()
                 )
         {
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
@@ -2517,7 +2528,9 @@ void Player::CollisionProjectilesVsEnemies()
 
                     if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
                         enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump && 
-                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
+                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle &&
+                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack
+                        )
                     {
                         // ダメージステートへ
                         enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
@@ -2963,7 +2976,10 @@ bool Player::CollisionNodeVsEnemies(
                 hitSlash->Play(nodePosition, slashScale);
 
                     if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
-                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump )
+                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump&&
+                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle &&
+                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack
+                        )
                     {
                         // ダメージステートへ
                         //enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
@@ -3894,6 +3910,19 @@ bool Player::InputAttack()
     return false;
 }
 
+// メニュー開くボタン
+bool Player::InputMenue()
+{
+
+    GamePad& gamePad = Input::Instance().GetGamePad();
+
+    if (gamePad.GetButtonDown() & GamePad::BTN_START)
+    {
+        return true;
+    }
+    return false;
+}
+
 // 待機ステートへ遷移
 void Player::TransitionIdleState()
 {
@@ -4435,7 +4464,7 @@ bool Player::InputMagicframe()
         std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
         // 飛ぶ時間
-        float   lifeTimer = 4.0f;
+        float   lifeTimer = 3.0f;
         // 発射
         projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         projectile.lock()->GetComponent<ProjectileHoming>()->SetTarget(target);
@@ -4664,7 +4693,7 @@ bool Player::InputMagicLightning()
     //{
     //    gamePad.SetButtonDownCountinue(false);
     //}
-    return false;
+    //return false;
 }
 
 void Player::InputSpecialMagicframe()

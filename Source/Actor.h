@@ -12,6 +12,13 @@
 // 前方宣言
 class Component;
 
+struct GameMode
+{
+	float SlowStart = 0.0f;
+	bool isNormalTime = false;
+	bool isMenue = false;
+};
+
 // アクター
 class Actor : public std::enable_shared_from_this<Actor>
 {
@@ -79,6 +86,8 @@ private:
 	// ２D判定
 	bool                    check2d = false;
 
+
+	GameMode  gamemode;
 
 };
 

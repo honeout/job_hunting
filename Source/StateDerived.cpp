@@ -386,7 +386,7 @@ void PursuitState::Enter()
 	stateTimer = Mathf::RandomRange(3.0f, 5.0f);
 
 	// 攻撃の種類を出す
-	randamAttack = rand() % 2;
+	randamAttack = rand() % 3;
 
 	//attackRange = enemyid->GetAttackRightFootRange();
 
@@ -465,20 +465,31 @@ void PursuitState::Execute(float elapsedTime)
 	{
 	case (int)EnemyBoss::AttackMode::AssaultAttack:
 	{
-		//enemyid.lock()->GetStateMachine()->ChangeState(
-		//	static_cast<int>(EnemyBoss::State::Wander));
-
 		enemyid.lock()->GetStateMachine()->ChangeState(
-			static_cast<int>(EnemyBoss::State::Attack));
+			static_cast<int>(EnemyBoss::State::Wander));
+
+		//enemyid.lock()->GetStateMachine()->ChangeState(
+		//	static_cast<int>(EnemyBoss::State::Attack));
 		break;
 	}
 	case (int)EnemyBoss::AttackMode::JumpStompAttack:
 	{
-	/*	enemyid.lock()->GetStateMachine()->ChangeState(
-			static_cast<int>(EnemyBoss::State::Jump));*/
+		enemyid.lock()->GetStateMachine()->ChangeState(
+			static_cast<int>(EnemyBoss::State::Jump));
 
+		//enemyid.lock()->GetStateMachine()->ChangeState(
+		//	static_cast<int>(EnemyBoss::State::Attack));
+
+
+		break;
+	}
+	case (int)EnemyBoss::AttackMode::DushAttack:
+	{
 		enemyid.lock()->GetStateMachine()->ChangeState(
 			static_cast<int>(EnemyBoss::State::Attack));
+
+		//enemyid.lock()->GetStateMachine()->ChangeState(
+		//	static_cast<int>(EnemyBoss::State::Attack));
 
 
 		break;
@@ -718,7 +729,8 @@ void AttackState::Enter()
 {
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 
-	stateTimer = stateTimerMax;
+	//stateTimer = stateTimerMax;
+
 
 	// SE 否設定
 	//janpSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","janp");
@@ -729,6 +741,9 @@ void AttackState::Enter()
 	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
 	// 縄張り
 	enemyid.lock()->SetRandomTargetPosition();
+
+	// 再生開始時間 
+	currentAnimationStartSeconds = 2.3f;
 
 	// アニメーション再生
 	model->
@@ -767,6 +782,8 @@ void AttackState::Enter()
 	smorker = std::make_unique<Effect>("Data/Effect/smorkeDash.efk");
 	charge = std::make_unique<Effect>("Data/Effect/effectCharge.efk");
 	chargeCompleate = std::make_unique<Effect>("Data/Effect/chargecompleted.efk");
+
+
 
 	//std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 
@@ -855,62 +872,147 @@ void AttackState::Execute(float elapsedTime)
 
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = model->GetCurrentANimationSeconds();
+	// 元々の奴
+	//{
+		//if (animationTime - FLT_EPSILON >= 2.0f + FLT_EPSILON && 
+		//	animationTime - FLT_EPSILON <= 2.05f + FLT_EPSILON)
+		//{
 
-	if (animationTime - FLT_EPSILON >= 2.0f + FLT_EPSILON && 
-		animationTime - FLT_EPSILON <= 2.05f + FLT_EPSILON)
+		//	charge->Play(bossEyePosition);
+
+		//	chargeCompleate->Play(bossEyePosition);
+		//}
+
+
+
+
+		//if (animationTime - FLT_EPSILON <= 0.8f + FLT_EPSILON && !dushStart)
+		//{
+		//	//landSe->Play("janp",loopSe);
+
+		//	bool blurCheck = true;
+		//	enemyid.lock()->SetBlurCheck(blurCheck);
+
+		//	enemyid.lock()->CollisionPlayerWithRushEnemy();
+
+		//	//moveid.lock()->JumpVelocity(jumpSpeed);
+
+		//	dushStart = true;
+
+
+		//	//smorker->Play(bossLeftFootPosition, scaleEffect);
+
+		//	//janpSe->Play("janp",loopSe);
+
+		//	return;
+		//}
+		//else
+		//{
+		//	moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
+		//}
+
+		//if (stateTimer > stateTimerEnd && dushStart)
+		//{
+		//	charge->Stop(charge->GetEfeHandle());
+
+		//	stateTimer -= 0.1f;
+		//	// 煙エフェクト
+		//	smorker->Play(bossLeftFootPosition, scaleEffect);
+		//	moveid.lock()->Move(direction, moveSpeed, elapsedTime);
+		//	moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
+		//}
+
+		//if (stateTimer <= stateTimerEnd && dushStart)
+		//{
+		//	//landSe->Play("land",loopSe);
+		//	//enemyid->InputProjectile();
+		//	//enemyid.lock()->InputImpact(enemyid.lock()->GetPosition());
+		//	enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
+
+		//	// 煙エフェクト
+		//	smorker->Play(bossLeftFootPosition, scaleEffect);
+		//	//landSe->Play(loopSe);
+		//}
+		////enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1",enemyid.lock()->GetRadius());
+
+		////Model::Node* bossLeftFoot = model->FindNode("boss_left_hand1");
+
+
+		//// 左足当たり判定
+		//enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
+
+
+	//}
+	// チャージ中
+	if (animationTime - FLT_EPSILON >= 1.5f + FLT_EPSILON &&
+			animationTime - FLT_EPSILON <= 1.6f + FLT_EPSILON && !chargeInitilize)
 	{
 
 		charge->Play(bossEyePosition);
 
 		chargeCompleate->Play(bossEyePosition);
+
+
+
+		// チャージ中
+		stateChargeTimer = stateChargeTimerMax;
+
+		chargeInitilize = true;
+
+		// アニメーションルール
+		enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Stop);
 	}
 
-	if (animationTime - FLT_EPSILON <= 0.8f + FLT_EPSILON && !dushStart)
+	// ダッシュするまで
+	if (!dushStart)
 	{
-		//landSe->Play("janp",loopSe);
-
-		bool blurCheck = true;
-		enemyid.lock()->SetBlurCheck(blurCheck);
-
-		enemyid.lock()->CollisionPlayerWithRushEnemy();
-
-		//moveid.lock()->JumpVelocity(jumpSpeed);
-
-		dushStart = true;
-
-
-		//smorker->Play(bossLeftFootPosition, scaleEffect);
-
-		//janpSe->Play("janp",loopSe);
-
-		return;
-	}
-	else
-	{
+		stateChargeTimer -= 0.01f;
 		moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
 	}
 
-	if (stateTimer > stateTimerEnd && dushStart)
+
+	// ダッシュ初期化
+	if (chargeInitilize && stateChargeTimer <= stateChargeCompletionTimerEnd && !dushStart)
+	{
+		dushStart = true;
+
+		// 再生開始時間 
+		currentAnimationStartSeconds = 1.9f;
+
+		// アニメーション再生
+		model->
+			PlayAnimation(EnemyBoss::Animation::Anim_Attack,
+				loop, currentAnimationStartSeconds, blendSeconds,
+				currentAnimationAddSeconds);
+		// アニメーションルール
+		enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Reverseplayback);
+		// チャージ完了後のダッシュ時間
+		stateChargeCompletionTimer = stateChargeCompletionTimerMax;
+	}
+	
+	// ダッシュ中
+	if (dushStart && animationTime <= 0.9f)
 	{
 		charge->Stop(charge->GetEfeHandle());
 
-		stateTimer -= 0.1f;
 		// 煙エフェクト
 		smorker->Play(bossLeftFootPosition, scaleEffect);
+
 		moveid.lock()->Move(direction, moveSpeed, elapsedTime);
-		moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
+
+		// アニメーションルール
+		enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Stop);
+
+		stateChargeCompletionTimer -= 0.01f;
+
 	}
 
-	if (stateTimer <= stateTimerEnd && dushStart)
+
+	// ダッシュ終了
+	if (dushStart && stateChargeCompletionTimer - FLT_EPSILON <= stateChargeCompletionTimerEnd + FLT_EPSILON)
 	{
-		//landSe->Play("land",loopSe);
-		//enemyid->InputProjectile();
-		//enemyid.lock()->InputImpact(enemyid.lock()->GetPosition());
 		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
 
-		// 煙エフェクト
-		smorker->Play(bossLeftFootPosition, scaleEffect);
-		//landSe->Play(loopSe);
 	}
 	//enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1",enemyid.lock()->GetRadius());
 
@@ -1486,6 +1588,21 @@ void ClearState::Enter()
 	// 死亡時Se
 	//deathSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","death");
 
+	// 位置情報
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+
+	DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+
+	position.z -= 5.5f;
+
+	transformid.lock()->SetPosition(position);
+
+	DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
+
+	angle.y += 1.5f;
+
+	transformid.lock()->SetAngle(angle);
+
 
 	Model* model;
 
@@ -1493,7 +1610,8 @@ void ClearState::Enter()
 	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	model->
 		PlayAnimation(
-			EnemyBoss::Animation::Anim_Die, loop);
+			EnemyBoss::Animation::Anim_Die, loop,
+			currentAnimationStartSeconds);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
@@ -1507,7 +1625,6 @@ void ClearState::Enter()
 
 
 	//std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
-	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	
 }
@@ -1520,32 +1637,41 @@ void ClearState::Execute(float elapsedTime)
 
 	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
-	// カメラ関係
-	{
-		// 死亡時はそれっぽいカメラアングルで死亡
-	// 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
-		MessageData::CAMERACHANGEMOTIONMODEDATA	p;
+	//// カメラ関係
+	//{
+	//	// 死亡時はそれっぽいカメラアングルで死亡
+	//// 例えばコレを必殺技などで上手く利用できればかっこいいカメラ演出が作れますね
+	//	MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 
-		DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
-		DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
+	//	DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+	//	DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
 
-		//if(animationTime + FLT_EPSILON >= 0.5f - FLT_EPSILON && animationTime - FLT_EPSILON <= 0.51f + FLT_EPSILON)
-		//deathSe->Play("death",loopSe);
-		float vx = sinf(angle.y) * 6;
-		float vz = cosf(angle.y) * 6;
+	//	//if(animationTime + FLT_EPSILON >= 0.5f - FLT_EPSILON && animationTime - FLT_EPSILON <= 0.51f + FLT_EPSILON)
+	//	//deathSe->Play("death",loopSe);
+	//	float vx = sinf(angle.y) * 6;
+	//	float vz = cosf(angle.y) * 6;
 
-		float vx2 = sinf(angle.y) - 10;
-		float vz2 = cosf(angle.y) * 7;
-		float vx3 = sinf(angle.y);
+	//	float vx2 = sinf(angle.y) - 10;
+	//	float vz2 = cosf(angle.y) * 7;
+	//	float vx3 = sinf(angle.y);
 
-		p.data.push_back({ 0, {position.x + vx2, position.y + 3, position.z + vz * distance }, position ,false,true});
-		//p.data.push_back({ 150, {position.x + vx, position.y + 3, position.z + vz * distance }, position });
-		p.data.push_back({ 180, {position.x + vx2, position.y + 5, position.z - vz2 * distance }, position ,true,true});
-		p.data.push_back({ 240, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 * distance }, position ,true,true});
+	//	p.data.push_back({ 0, {position.x + vx2, position.y + 3, position.z + vz * distance }, position ,false,true});
+	//	//p.data.push_back({ 150, {position.x + vx, position.y + 3, position.z + vz * distance }, position });
+	//	p.data.push_back({ 180, {position.x + vx2, position.y + 5, position.z - vz2 * distance }, position ,true,true});
+	//	p.data.push_back({ 240, {position.x + vx3 , position.y + 1, (position.z + 0.1f) - vz2 * distance }, position ,true,true});
 
 
-		Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
-	}
+	//	Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+	//}
+
+	//DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+	//position.y += 5;
+	//position.z += 3;
+
+	//MessageData::CAMERACHANGEFREEMODEDATA	p = { position };
+	//
+	//Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
+
 
 	stateTimer -= elapsedTime;
 
@@ -1568,6 +1694,8 @@ void ClearState::Execute(float elapsedTime)
 	{
 		enemyid.lock()->SetClearCheck(clearCheck);
 	}
+
+
 }
 
 void ClearState::Exit()
@@ -1575,6 +1703,53 @@ void ClearState::Exit()
 }
 
 void ClearState::End()
+{
+}
+
+void ClearReviveState::Enter()
+{
+	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+
+
+	// 位置情報
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+
+	DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+
+	position.z -= 5.5f;
+
+	transformid.lock()->SetPosition(position);
+
+	DirectX::XMFLOAT3 angle = transformid.lock()->GetAngle();
+
+	angle.y += 1.5f;
+
+	transformid.lock()->SetAngle(angle);
+
+
+	Model* model;
+
+	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
+	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	model->
+		PlayAnimation(
+			EnemyBoss::Animation::Anim_Die, loop,
+			currentAnimationStartSeconds);
+	// アニメーションルール
+	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
+
+	stateTimer = 3;
+}
+
+void ClearReviveState::Execute(float elapsedTime)
+{
+}
+
+void ClearReviveState::Exit()
+{
+}
+
+void ClearReviveState::End()
 {
 }
 
@@ -5155,11 +5330,37 @@ void PlayerClearIdleState::Enter()
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
 	model->PlayAnimation(
-		Player::Anim_Idle, loop, currentAnimationStartSeconds, blendSeconds
+		Player::Anim_MagicSeconde, loop, currentAnimationStartSeconds, blendSeconds,
+		currentAnimationAddSeconds, keyFrameEnd
 	);
 
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
+
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+
+	position.x += -3.0f;
+
+	transformid.lock()->SetPosition(position);
+
+
+	//Model::Node* PRock = model->FindNode("mixamorig:Spine1");
+
+	//DirectX::XMFLOAT3 pos = model->ConvertLocalToWorld(PRock);
+
+	////DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+	////position.y += 2;
+	////position.z += 3;
+
+	////pos.x += 3.0f;
+	////pos.z += 3;
+
+
+	//MessageData::CAMERACHANGEFREEMODEDATA	p = { pos };
+
+	//Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
+
 
 
 }
@@ -5168,8 +5369,22 @@ void PlayerClearIdleState::Execute(float elapsedTime)
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	Model::Node* PRock = model->FindNode("mixamorig:Spine1");
+
+	DirectX::XMFLOAT3 pos = model->ConvertLocalToWorld(PRock);
+
+	pos.x += 3.0f;
+	//pos.z += 10;
+
+
+	MessageData::CAMERACHANGEFREEMODEDATA	p = { pos };
+
+	Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
+
 	//// ロックオン処理
-	playerid.lock()->UpdateCameraState(elapsedTime);
+	//playerid.lock()->UpdateCameraState(elapsedTime);
 
 	// ヒット
 	if (playerid.lock()->InputAttack())
@@ -5187,6 +5402,38 @@ void PlayerClearIdleState::Exit()
 void PlayerClearIdleState::End()
 {
 }
+
+
+void PlayerClearEscapeState::Enter()
+{
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	model->PlayAnimation(
+		Player::Anim_MagicSeconde, loop, currentAnimationStartSeconds, blendSeconds,
+		currentAnimationAddSeconds, keyFrameEnd
+	);
+
+	// アニメーションルール
+	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
+
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
+	DirectX::XMFLOAT3 position = transformid.lock()->GetPosition();
+
+	position.x += -3.0f;
+
+	transformid.lock()->SetPosition(position);
+}
+
+void PlayerClearEscapeState::Execute(float elapsedTime)
+{
+}
+
+void PlayerClearEscapeState::Exit()
+{
+}
+
 
 void PlayerOverIdleState::Enter()
 {

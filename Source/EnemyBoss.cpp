@@ -158,7 +158,7 @@ void EnemyBoss::Update(float elapsedTime)
     //// 動作するかどうか
     if (moveCheck)
     //// ステート毎の処理
-    stateMachine->Update(elapsedTime);
+    //stateMachine->Update(elapsedTime);
 
     // 敵覚醒管理
     ManageAwakeTime(elapsedTime);

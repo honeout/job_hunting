@@ -53,6 +53,9 @@ void CameraController::Update(float elapsedTime)
 		newPosition.z += (rand() % 3 - 1) * shakePower;
 		shakeTimer -= elapsedTime;
 	}
+
+
+
 	// Todo　壁の最終範囲決めるまで使わないので一旦コメント
 	// 地形との当たり判定を行う
 	//HitResult	hitResult;

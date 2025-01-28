@@ -56,6 +56,15 @@ public:
 
 	void PlayEffectsShaders(float elapsedTime);
 
+
+	// どのシーンに行くか
+	void SelectScene();
+private:
+	enum class Select
+	{
+		Game,
+		Exit
+	};
 private:
 	// カメラ
 	CameraController* cameraControlle = nullptr;
@@ -131,4 +140,23 @@ private:
 	float dlayStateTimerMax = 4.5f;
 
 	bool dlayTimeCheck = false;
+
+
+	// UI大きさ
+	DirectX::XMFLOAT2 gameUiScaleSelected = { 181,104 };
+	DirectX::XMFLOAT2 gameUiScaleUnselected = { 151,64 };
+
+
+	// UI位置
+	float gameUiPositionSelected = 477;
+	float exitUiPositionSelected = 515;
+	float exitUiPositionUnselected = 554;
+	// UI大きさ
+	DirectX::XMFLOAT2 exitUiScaleSelected = { 181,104 };
+	DirectX::XMFLOAT2 exitUiScaleUnselected = { 151,64 };
+
+
+
+	// どれを選択しているかUI
+	int selectPush = 0;
 };

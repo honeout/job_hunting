@@ -210,6 +210,11 @@ public:
     // 攻撃入力
     bool InputAttack();
 
+
+    // メニュー開く入力
+    bool InputMenue();
+
+
     // 待機ステートへ遷移
     void TransitionIdleState();
     // 待機ステート更新
@@ -931,7 +936,10 @@ private:
     float uiShrinkValueMax = 250; 
     float uiShrinkValueMin = 100;
 
-    
+    // メニューのオンオフ
+    bool isMenue = false;
+    bool isMenueOn = true;
+    bool isMenueOf = false;
 };
 
 // プレイヤーマネージャー
