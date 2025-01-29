@@ -108,7 +108,9 @@ void SceneGameOver::Initialize()
 
 	// ポストプロセス描画クラス生成
 	{
-		postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
+
+		//postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
+		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 		// シーンテクスチャを設定しておく
 		ShaderResourceViewData srvData;
 		srvData.srv = renderTarget->GetShaderResourceView();
@@ -116,23 +118,27 @@ void SceneGameOver::Initialize()
 		srvData.height = renderTarget->GetHeight();
 		//srvData.width = 100;
 		//srvData.height = 100;
-		postprocessingRenderer->SetSceneData(srvData);
+		postprocessingRenderer.SetSceneData(srvData);
+
+
+		// シェーダー値
+		bloomData.luminanceExtractionData.threshold = 0.41f;
+		bloomData.luminanceExtractionData.intensity = 1.6f;
+
+		bloomData.gaussianFilterData.kernelSize = 15;
+		bloomData.gaussianFilterData.deviation = 8.3f;
+
+		postprocessingRenderer.SetBloomData(bloomData);
+
+		//vignetteData.color.x = 103;
+		//vignetteData.color.y = 97;
+		//vignetteData.color.z = 97;
+
+		vignetteData.intensity = 1.0f;
+		vignetteData.roundness = 1.0f;
+		vignetteData.smoothness = 0.2f;
+		postprocessingRenderer.SetVignetteData(vignetteData);
 	}
-
-	// シェーダー値
-	bloomData.luminanceExtractionData.threshold = 0.41f;
-	bloomData.luminanceExtractionData.intensity = 1.6f;
-
-	bloomData.gaussianFilterData.kernelSize = 15;
-	bloomData.gaussianFilterData.deviation = 8.3f;
-
-	//vignetteData.color.x = 103;
-	//vignetteData.color.y = 97;
-	//vignetteData.color.z = 97;
-
-	vignetteData.intensity = 1.0f;
-	vignetteData.roundness = 1.0f;
-	vignetteData.smoothness = 0.2f;
 
 
 }
@@ -254,7 +260,7 @@ void SceneGameOver::Render()
 {
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-
+	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 
 	//// シャドウマップの描画
 	RenderShadowmap();
@@ -307,7 +313,7 @@ void SceneGameOver::Render()
 
 
 		// ポストプロセスを処理を行う
-		postprocessingRenderer->Render(rc);
+		postprocessingRenderer.Render(rc);
 
 
 	}
@@ -403,7 +409,7 @@ void SceneGameOver::Render()
 
 	LightManager::Instanes().DrawDebugGUI();
 
-	postprocessingRenderer->DrawDebugGUI();
+	postprocessingRenderer.DrawDebugGUI();
 	//	ImGui::Separator();
 	//	LightManager::Instanes().DrawDebugGUI();
 	//}

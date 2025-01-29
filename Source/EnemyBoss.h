@@ -115,6 +115,7 @@ public:
         IdleBattle,
         Damage,
         Death,
+        AwakeStart,
     };
 
 
@@ -306,9 +307,11 @@ private:
 
     std::unique_ptr<Effect> inpactEffect;
 
-    // 衝撃波SE
-    std::unique_ptr<AudioSource> impactSe;
-    std::unique_ptr<AudioSource> moveAttackSe;
+    std::unique_ptr<Effect> awakeEffect;
+
+    //// 衝撃波SE
+    //std::unique_ptr<AudioSource> impactSe;
+    //std::unique_ptr<AudioSource> moveAttackSe;
 
     // どのステートで動くか
     State state = State::Wander;

@@ -108,7 +108,9 @@ void SceneTitle::Initialize()
 
 	// ポストプロセス描画クラス生成
 	{
-		postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
+		//postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
+		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
 		// シーンテクスチャを設定しておく
 		ShaderResourceViewData srvData;
 		srvData.srv = renderTarget->GetShaderResourceView();
@@ -116,15 +118,34 @@ void SceneTitle::Initialize()
 		srvData.height = renderTarget->GetHeight();
 		//srvData.width = 100;
 		//srvData.height = 100;
-		postprocessingRenderer->SetSceneData(srvData);
+		postprocessingRenderer.SetSceneData(srvData);
+
+
+		bloomData.luminanceExtractionData.threshold = 0.41f;
+		bloomData.luminanceExtractionData.intensity = 1.6f;
+
+		bloomData.gaussianFilterData.kernelSize = 15;
+		bloomData.gaussianFilterData.deviation = 8.3f;
+
+		postprocessingRenderer.SetBloomData(bloomData);
+
+		// 周辺減光
+		vignetteData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		vignetteData.center = { 0.5f, 0.5f };
+		vignetteData.intensity = 0.0f;
+		vignetteData.smoothness = 0.0f;
+		vignetteData.rounded = false;
+		vignetteData.roundness = 0.0f;
+		
+		postprocessingRenderer.SetVignetteData(vignetteData);
 	}
 
 
-	bloomData.luminanceExtractionData.threshold = 0.41f;
-	bloomData.luminanceExtractionData.intensity = 1.6f;
+	//bloomData.luminanceExtractionData.threshold = 0.41f;
+	//bloomData.luminanceExtractionData.intensity = 1.6f;
 
-	bloomData.gaussianFilterData.kernelSize = 15;
-	bloomData.gaussianFilterData.deviation = 8.3f;
+	//bloomData.gaussianFilterData.kernelSize = 15;
+	//bloomData.gaussianFilterData.deviation = 8.3f;
 
 	// カメラ初期化
 	cameraControlle = nullptr;
@@ -234,6 +255,8 @@ void SceneTitle::Render()
 {
     Graphics& graphics = Graphics::Instance();
     ID3D11DeviceContext* dc = graphics.GetDeviceContext();
+	// ポストプロセスシェーダー
+	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
     //ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
     //ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
@@ -253,6 +276,7 @@ void SceneTitle::Render()
 
 	// 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
 	{
+		
 		ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 		ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
@@ -297,7 +321,7 @@ void SceneTitle::Render()
 		//postprocessingRenderer->SetBloomData();
 
 		// ポストプロセスを処理を行う
-		postprocessingRenderer->Render(rc);
+		postprocessingRenderer.Render(rc);
 
 
 	}
@@ -392,7 +416,7 @@ void SceneTitle::Render()
 
 		LightManager::Instanes().DrawDebugGUI();
 
-		postprocessingRenderer->DrawDebugGUI();
+		postprocessingRenderer.DrawDebugGUI();
 	}
 
     //// 2Dスプライト描画
@@ -745,7 +769,7 @@ void SceneTitle::InitializeComponent()
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-		ui->SetDrawCheck(false);
+		ui->SetDrawCheck(true);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -783,7 +807,7 @@ void SceneTitle::InitializeComponent()
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-		ui->SetDrawCheck(false);
+		ui->SetDrawCheck(true);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -820,7 +844,7 @@ void SceneTitle::InitializeComponent()
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-		ui->SetDrawCheck(false);
+		ui->SetDrawCheck(true);
 
 		// これが２Dかの確認
 		bool check2d = true;

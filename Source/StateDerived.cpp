@@ -155,6 +155,14 @@ void WanderState::Execute(float elapsedTime)
 
 		moveid.lock()->Move(direction, moveSpeed, elapsedTime);
 
+
+		// ポストエフェクトインスタンスゲット
+		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+		// ラジアルブラー
+		radialBlurData.radius = 60.0f;
+
+		postprocessingRenderer.SetRadialBlurData(radialBlurData);
+
 	}
 
 
@@ -674,6 +682,12 @@ void JumpState::Execute(float elapsedTime)
 
 		smorker->Play(bossLeftFootPosition, scaleEffect);
 
+		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance().Instance();
+		// ラジアルブラー
+		radialBlurData.radius = 15;
+
+		postprocessingRenderer.SetRadialBlurData(radialBlurData);
+
 		//janpSe->Play("janp",loopSe);
 
 		return;
@@ -699,6 +713,14 @@ void JumpState::Execute(float elapsedTime)
 		// 煙エフェクト
 		smorker->Play(bossLeftFootPosition, scaleEffect);
 		//landSe->Play(loopSe);
+
+
+		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance().Instance();
+		// ラジアルブラー
+		radialBlurData.radius = 30;
+
+		postprocessingRenderer.SetRadialBlurData(radialBlurData);
+
 	}
 	//enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1",enemyid.lock()->GetRadius());
 
@@ -1532,7 +1554,7 @@ void DeathState::Enter()
 
 void DeathState::Execute(float elapsedTime)
 {
-	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();;
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
 
 
@@ -1579,6 +1601,70 @@ void DeathState::End()
 	owner.lock().reset();
 }
 
+// 興奮状態
+void AwakeStartState::Enter()
+{
+	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	model->
+		PlayAnimation(
+			EnemyBoss::Animation::Anim_Movie, loop,
+			currentAnimationStartSeconds, blendSeconds,
+			currentAnimationAddSeconds, keyFrameEnd);
+	// アニメーションルール
+	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
+
+
+}
+
+void AwakeStartState::Execute(float elapsedTime)
+{
+	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+
+	// 任意のアニメーション再生区間でのみ衝突判定処理をする
+	float animationTime = model->GetCurrentANimationSeconds();
+
+	// アニメーションのポーズ
+	if (animationTime >= animationPose)
+	{
+		MessageData::CAMERASHAKEDATA p;
+		p.shakePower = cameraShakePower;
+		p.shakeTimer = cameraShakeTime;
+
+		Messenger::Instance().SendData(MessageData::CAMERASHAKE, &p);
+
+
+		// ポストエフェクトインスタンスゲット
+		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
+		radialBlurData.radius = 30.0f;
+
+		postprocessingRenderer.SetRadialBlurMaxData(radialBlurData);
+	}
+
+
+	// アニメーション終了
+	if (!model->IsPlayAnimation())
+	{
+		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
+	}
+}
+
+void AwakeStartState::Exit()
+{
+	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+	// 覚醒時間
+	enemyid.lock()->ResetAwakeTime();
+	
+}
+
+void AwakeStartState::End()
+{
+
+}
 
 void ClearState::Enter()
 {
@@ -5220,6 +5306,14 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 
 				secondeMortion = true;
 
+
+				// ポストエフェクトインスタンスゲット
+				PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+				// ラジアルブラー
+				radialBlurData.radius = 40.0f;
+
+				postprocessingRenderer.SetRadialBlurData(radialBlurData);
+
 		}
 		if (animationTime >= 1.5f - FLT_EPSILON && animationTime <= 1.6f + FLT_EPSILON && secondeMortion)
 		{
@@ -5261,7 +5355,16 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 
 			//secondeMortion = true;
 
-			playerid.lock()->SetFlashOn(true);
+			//playerid.lock()->SetFlashOn(true);
+
+
+
+			// ポストエフェクトインスタンスゲット
+			PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+			// ラジアルブラー
+			radialBlurData.radius = 60.0f;
+
+			postprocessingRenderer.SetRadialBlurData(radialBlurData);
 
 		}
 		if (!model->IsPlayAnimation() && secondeMortion)
@@ -5533,3 +5636,4 @@ void PlayerOverReviveState::Exit()
 void PlayerOverReviveState::End()
 {
 }
+

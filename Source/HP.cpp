@@ -79,7 +79,7 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
         onDamage = true;
         return true;
     }
-
+    // ’Ç‰ÁHP
     if (bonusHp <= bonusHpEnd)
     {
         isBonusHpActive = false;

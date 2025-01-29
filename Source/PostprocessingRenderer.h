@@ -18,18 +18,25 @@ struct ShaderResourceViewData
 // ポストプロセス用のレンダラ―
 class PostprocessingRenderer
 {
-    // ブルーム情報
-    struct BloomData
-    {
-        // 高輝度抽出用情報
-        LuminanceExtractionData luminanceExtractionData;
-        // ガウスブラー用情報
-        GaussianFilterData gaussianFilterData;
-    };
+    //// ブルーム情報
+    //struct BloomData
+    //{
+    //    // 高輝度抽出用情報
+    //    LuminanceExtractionData luminanceExtractionData;
+    //    // ガウスブラー用情報
+    //    GaussianFilterData gaussianFilterData;
+    //};
 
 public:
     PostprocessingRenderer();
     ~PostprocessingRenderer();
+
+    static PostprocessingRenderer& Instance()
+    {
+        // カメラは様々な所で取り出したいだからシングルトンにする
+        static PostprocessingRenderer postEffect;
+        return postEffect;
+    }
 
     // 描画
     void Render(RenderContext rc);
@@ -40,15 +47,62 @@ public:
     // デバッグ情報の表示
     void DrawDebugGUI();
 
+    // 値を変化
+    void MoveTowards();
+
     // 一気にいくつかを変える。
     // ブルームデータ
-    void SetBloomData(BloomData bloomData) { this->bloomData = bloomData; }
+    void SetBloomData(BloomData bloomDataMax) {
+        this->bloomDataMax = bloomDataMax;
+      
+    }
     // 色調補正データ
-    void SetColorGradingData(ColorGradingData    colorGradingData) { this->colorGradingData = colorGradingData; }
+    void SetColorGradingData(ColorGradingData    colorGradingDataMax) {
+   
+        this->colorGradingData = colorGradingDataMax;
+    }
     // ラジアルブラー情報
-    void SetRadialBlurData(RadialBlurData radialBlurData) { this->radialBlurData = radialBlurData; }
+    void SetRadialBlurData(RadialBlurData radialBlurDataMax) {
+
+        this->radialBlurData = radialBlurDataMax;
+    }
     // ダメージ表現
-    void SetVignetteData(VignetteData	vignetteData) { this->vignetteData = vignetteData; }
+    void SetVignetteData(VignetteData	vignetteDataMax) {
+
+        this->vignetteData = vignetteDataMax;
+    }
+
+
+    // ブルームデータ
+    void SetBloomMaxData(BloomData bloomDataMax) {
+        this->bloomDataMax = bloomDataMax;
+        isIncreasingBloom = true;
+    }
+    // 色調補正データ
+    void SetColorGradingMaxData(ColorGradingData    colorGradingDataMax) {
+        isIncreasingColorGrading = true;
+        this->colorGradingDataMax = colorGradingDataMax;
+    }
+    // ラジアルブラー情報
+    void SetRadialBlurMaxData(RadialBlurData radialBlurDataMax) {
+        isIncreasingRadialBlur = true;
+        this->radialBlurDataMax = radialBlurDataMax;
+    }
+    // ダメージ表現
+    void SetVignetteMaxData(VignetteData	vignetteDataMax) {
+        isIncreasingModeVignetteData = true;
+        this->vignetteDataMax = vignetteDataMax;
+    }
+
+
+    // ブルーム最低値データ
+    void SetBloomMinData(BloomData bloomMinData) { this->bloomDataMin = bloomMinData; }
+    // 色調補正最低値データ
+    void SetColorGradingMinData(ColorGradingData    colorGradingMinData) { this->colorGradingDataMin = colorGradingMinData; }
+    // ラジアルブラー最低値情報
+    void SetRadialBlurMinData(RadialBlurData radialBlurMinData) { this->radialBlurDataMin = radialBlurMinData; }
+    // ダメージ最低値表現
+    void SetVignetteMinData(VignetteData	vignetteMinData) { this->vignetteDataMin = vignetteMinData; }
 
 private:
     // シーン描画データ
@@ -56,12 +110,6 @@ private:
 
     // 描画用スプライト
     std::unique_ptr<Sprite> renderSprite;
-
-    // ブルームデータ
-    BloomData bloomData;
-
-    // 色調補正データ
-    ColorGradingData    colorGradingData;
 
     // 高輝度抽出テクスチャ
     std::unique_ptr<RenderTarget> luminanceExtractRenderTarget;
@@ -95,6 +143,12 @@ private:
     //Microsoft::WRL::ComPtr<ID3D11Buffer> vignette_constant_buffer;
     //Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;
 
+    // ブルームデータ
+    BloomData bloomData;
+
+    // 色調補正データ
+    ColorGradingData    colorGradingData;
+
 
 // ラジアルブラー情報
     RadialBlurData  radialBlurData;
@@ -106,5 +160,48 @@ private:
     
 #endif	//	defined( UNIT_VN_01 )
 
+    // ブルームデータ
+    BloomData bloomDataMax;
+
+    // 色調補正データ
+    ColorGradingData    colorGradingDataMax;
+
+
+    // ラジアルブラー情報
+    RadialBlurData  radialBlurDataMax;
+
+
+
+    //	ビネット情報
+    VignetteData					vignetteDataMax;
+
+
+    // ブルームデータ
+    BloomData bloomDataMin;
+
+    // 色調補正データ
+    ColorGradingData    colorGradingDataMin;
+
+
+    // ラジアルブラー情報
+    RadialBlurData  radialBlurDataMin;
+
+
+
+    //	ビネット情報
+    VignetteData					vignetteDataMin;
+
+    // 値を少しずつ減少
+    float stepValueColor = 0.03f;
+    float stepValueRadial = 0.5f;
+    float stepValuevignette = 0.03f;
+    //float stepDownValue = 0.03f;
+
+    // 値の変化チェック
+    bool isIncreasingBloom = false;
+    bool isIncreasingColorGrading = false;
+    bool isIncreasingRadialBlur = false;
+    bool isIncreasingModeVignetteData = false;
+    bool isIncreasingVignetteData = false;
 
 };

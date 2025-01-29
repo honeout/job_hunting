@@ -55,6 +55,9 @@ private:
 
 	bool InputMenue();
 
+	// コンポネント登録
+	void InitializeComponent();
+
 private:
 	// BGM
 	//std::unique_ptr<AudioSource> Bgm;
@@ -97,11 +100,14 @@ private:
 	DirectX::XMFLOAT4 edgeColor{0.0f,0.0f,0.0f,0.0f}; // 緑の色
 
 	// 画面の色
+	ColorGradingData       colorGradingDataMin;
 	ColorGradingData       colorGradingData;
 
 	// 画面歪み
 	// ラジアルブラー情報
 	RadialBlurData  radialBlurData;
+
+	VignetteData vignetteData;
 
 	// 画面の白ボケの最大値
 	float colorGradingDataBrigthnessMax = 1.5f;
@@ -124,7 +130,7 @@ private:
 	float shadowBias = 0.001f;// 深度比較用のオフセット値
 
 	// ポストプロセス
-	std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
+	//std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
 
 
 	CameraController* cameraControlle = nullptr;

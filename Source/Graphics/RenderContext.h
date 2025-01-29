@@ -69,7 +69,7 @@ struct RadialBlurData
 //	ビネット情報
 struct VignetteData
 {
-	DirectX::XMFLOAT4	color = { 0.0f, 0.0f, 0.0f, 1.0f };	//	減光色
+	DirectX::XMFLOAT4	color = { 1.0f, 0.0f, 0.0f, 1.0f };	//	減光色
 	DirectX::XMFLOAT2	center = { 0.5f, 0.5f };				//	減光中心点
 	float				intensity = 0.5f;							//	強度
 	float				smoothness = 0.2f;							//	滑らかさ

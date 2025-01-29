@@ -20,7 +20,6 @@
 void SceneGameClear::Initialize()
 {
     // スプライト初期化
-    //sprite = new Sprite("Data/Sprite/仮Clear.png");
 
     InitializeComponent();
 
@@ -107,7 +106,8 @@ void SceneGameClear::Initialize()
 
 	// ポストプロセス描画クラス生成
 	{
-		postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
+		//postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
+		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 		// シーンテクスチャを設定しておく
 		ShaderResourceViewData srvData;
 		srvData.srv = renderTarget->GetShaderResourceView();
@@ -115,16 +115,17 @@ void SceneGameClear::Initialize()
 		srvData.height = renderTarget->GetHeight();
 		//srvData.width = 100;
 		//srvData.height = 100;
-		postprocessingRenderer->SetSceneData(srvData);
+		postprocessingRenderer.SetSceneData(srvData);
+
+
+		bloomData.luminanceExtractionData.threshold = 0.41f;
+		bloomData.luminanceExtractionData.intensity = 1.6f;
+
+		bloomData.gaussianFilterData.kernelSize = 15;
+		bloomData.gaussianFilterData.deviation = 8.3f;
+
+		postprocessingRenderer.SetBloomData(bloomData);
 	}
-
-
-	bloomData.luminanceExtractionData.threshold = 0.41f;
-	bloomData.luminanceExtractionData.intensity = 1.6f;
-
-	bloomData.gaussianFilterData.kernelSize = 15;
-	bloomData.gaussianFilterData.deviation = 8.3f;
-
 
 	// カメラ初期化
 	//CameraInitialize();
@@ -243,6 +244,7 @@ void SceneGameClear::Render()
 {
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
+	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 	//ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 	//ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
@@ -306,7 +308,7 @@ void SceneGameClear::Render()
 		//postprocessingRenderer->SetBloomData();
 
 		// ポストプロセスを処理を行う
-		postprocessingRenderer->Render(rc);
+		postprocessingRenderer.Render(rc);
 
 
 	}

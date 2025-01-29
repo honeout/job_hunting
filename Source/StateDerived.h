@@ -92,7 +92,7 @@ private:
 	// ターゲット位置
 	DirectX::XMFLOAT3 targetPosition = {.0f,.0f,.0f};
 
-
+	RadialBlurData radialBlurData;
 };
 
 // 待機ステートオブジェクト
@@ -268,6 +268,8 @@ private:
 
 	// アニメーション終了
 	bool jumpStart = false;
+
+	RadialBlurData radialBlurData;
 };
 
 
@@ -578,6 +580,58 @@ private:
 };
 
 
+// 覚醒ステートオブジェクト
+class AwakeStartState : public State
+{
+public:
+	// コンストラクタ
+	AwakeStartState(std::weak_ptr<Actor> enemy) :State(enemy) {};
+	// デストラクタ
+	~AwakeStartState() {}
+	// ステートに入った時のメソッド
+	void Enter()override;
+	// ステートで実行するメソッド
+	void Execute(float elapsedTime)override;
+	// ステートから出ていくときのメソッド
+	void Exit()override;
+
+	// 終了処理
+	void End()override;
+private:
+
+
+	// 再生ループ
+	bool  loop = false;
+
+	// 再生開始時間 
+	float currentAnimationStartSeconds = 5.829f;
+
+	// 再生時間加算分の値
+	float currentAnimationAddSeconds = 0.00f;
+
+	// キーフレームの終了
+	float keyFrameEnd = 491.0f;
+
+	// アニメーションブレンド
+	float blendSeconds = 0.35f;
+
+
+	// クリア確認
+	bool clearCheck = true;
+
+	// カメラ距離
+	float distance = 3.0f;
+
+	// カメラの揺れの深さ
+	float cameraShakePower = 0.1f;
+	// カメラの揺れ時間
+	float cameraShakeTime = 1.0f;
+
+	// アニメーションの時間
+	float animationPose = 6.70f;
+
+	RadialBlurData radialBlurData;
+};
 // クリアステートオブジェクト
 class ClearState : public State
 {
@@ -1882,6 +1936,8 @@ private:
 	std::unique_ptr<Effect> lightning;
 	std::unique_ptr<Effect> lightningAttack;
 	std::unique_ptr<Effect> lightningHit;
+
+	RadialBlurData radialBlurData;
 };
 
 

@@ -75,6 +75,8 @@ void EnemyBoss::Start()
 
     moveAttackEffect = std::make_unique<Effect>("Data/Effect/enemyMoveAttackHit.efk");
 
+    awakeEffect = std::make_unique<Effect>("Data/Effect/awake.efk");
+
 
 
 
@@ -106,9 +108,9 @@ void EnemyBoss::Start()
     // エフェクト
     inpactEffect = std::make_unique<Effect>("Data/Effect/hit fire.efk");
 
-    // Se
-    impactSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/衝撃波ヒット.wav");
-    moveAttackSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/打撃.wav");
+    //// Se
+    //impactSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/衝撃波ヒット.wav");
+    //moveAttackSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/打撃.wav");
 
     // アニメーションルール
     updateanim = UpAnim::Normal;
@@ -158,7 +160,7 @@ void EnemyBoss::Update(float elapsedTime)
     //// 動作するかどうか
     if (moveCheck)
     //// ステート毎の処理
-    //stateMachine->Update(elapsedTime);
+    stateMachine->Update(elapsedTime);
 
     // 敵覚醒管理
     ManageAwakeTime(elapsedTime);
@@ -296,6 +298,10 @@ void EnemyBoss::OnGUI()
         //isEnemyAwakened = isEnemyAwakened ? false : true;
     }
 
+    if (ImGui::Button("StartAwake"))
+    {
+        stateMachine->ChangeState(static_cast<int>(State::AwakeStart));
+    }
 
     //ImGui::InputFloat("Bullet", &moveSpeed);
 }
@@ -968,12 +974,21 @@ void EnemyBoss::ManageAwakeTime(float elapsedTime)
         isEnemyAwakened = false;
     }
 
+    // 覚醒エフェクト位置更新
+    if (awakeEffect->GetEfeHandle())
+    {
+        awakeEffect->SetPosition(awakeEffect->GetEfeHandle(), position);
+    }
+
 }
 // 敵覚醒時間初期化
 void EnemyBoss::ResetAwakeTime()
 {
     // 時間初期化
     enemyAwakeningDuration = enemyAwakeningDurationMax;
+
+    // 覚醒中のエフェクト
+    awakeEffect->Play(position);
 
     
 }

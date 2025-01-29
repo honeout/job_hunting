@@ -800,6 +800,8 @@ private:
 
     /////////////////// カメラ関係
 
+
+
     CameraController* cameraControlle = nullptr;
     //std::unique_ptr<CameraController> cameraControlle;
 
@@ -915,6 +917,7 @@ private:
 
     // 画面の色
     ColorGradingData       colorGradingData;
+    ColorGradingData       colorGradingPostData;
 
 
     bool flashOn = false;
@@ -940,6 +943,11 @@ private:
     bool isMenue = false;
     bool isMenueOn = true;
     bool isMenueOf = false;
+
+    VignetteData					vignetteData;
+
+
+    bool   checkVignette = false;
 };
 
 // プレイヤーマネージャー

@@ -94,24 +94,28 @@ void PostprocessingRenderer::Render(RenderContext rc)
         );
     }
 
+    // 値を少しずつ戻す
+    MoveTowards();
+
     // セッター変更値用
     {
-        ////rc.bloomData.gaussianFilterData = bloomData.gaussianFilterData;
-        ////rc.bloomData.luminanceExtractionData = bloomData.luminanceExtractionData;
+        rc.bloomData.gaussianFilterData = bloomData.gaussianFilterData;
+        rc.bloomData.luminanceExtractionData = bloomData.luminanceExtractionData;
+        rc.gaussianFilterData.textureSize = bloomData.gaussianFilterData.textureSize;
 
-        //rc.colorGradingData = colorGradingData;
+        rc.colorGradingData = colorGradingData;
 
-        //rc.radialBlurData = radialBlurData;
+        rc.radialBlurData = radialBlurData;
 
-        //rc.vignetteData = vignetteData;
+        rc.vignetteData = vignetteData;
     }
 
     //RenderContext rc;
     
-    rc.luminanceExtractionData = rc.bloomData.luminanceExtractionData;
-    rc.gaussianFilterData = rc.bloomData.gaussianFilterData;
+    //rc.luminanceExtractionData = rc.bloomData.luminanceExtractionData;
+    //rc.gaussianFilterData = rc.bloomData.gaussianFilterData;
 
-    rc.gaussianFilterData.textureSize = bloomData.gaussianFilterData.textureSize;
+    //rc.gaussianFilterData.textureSize = bloomData.gaussianFilterData.textureSize;
 
     // 高輝度抽出用バッファに描画先を変更して高輝度抽出
     {
@@ -325,4 +329,107 @@ void PostprocessingRenderer::DrawDebugGUI()
         //}
         //ImGui::TreePop();
     }
+}
+
+void PostprocessingRenderer::MoveTowards()
+{
+    // 値上昇
+    if (isIncreasingColorGrading)
+    {
+        // カラーグラディエンス
+        colorGradingData.brigthness = colorGradingDataMax.brigthness + FLT_EPSILON <= colorGradingData.brigthness - FLT_EPSILON ?
+            colorGradingDataMax.brigthness : colorGradingData.brigthness + stepValueColor;
+
+        colorGradingData.hueShift = colorGradingDataMax.hueShift + FLT_EPSILON <= colorGradingData.hueShift - FLT_EPSILON ?
+            colorGradingDataMax.hueShift : colorGradingData.hueShift + stepValueColor;
+
+        colorGradingData.saturation = colorGradingDataMax.saturation + FLT_EPSILON <= colorGradingData.saturation - FLT_EPSILON ?
+            colorGradingDataMax.saturation : colorGradingData.saturation + stepValueColor;
+    }
+    // 値減少
+    else
+    {
+
+        // カラーグラディエンス
+        colorGradingData.brigthness = colorGradingDataMin.brigthness + FLT_EPSILON >= colorGradingData.brigthness - FLT_EPSILON ?
+            colorGradingDataMin.brigthness : colorGradingData.brigthness - stepValueColor;
+
+        colorGradingData.hueShift = colorGradingDataMin.hueShift + FLT_EPSILON >= colorGradingData.hueShift - FLT_EPSILON ?
+            colorGradingDataMin.hueShift : colorGradingData.hueShift - stepValueColor;
+
+        colorGradingData.saturation = colorGradingDataMin.saturation + FLT_EPSILON >= colorGradingData.saturation - FLT_EPSILON ?
+            colorGradingDataMin.saturation : colorGradingData.saturation - stepValueColor;
+
+    }
+    // 値上昇
+    if (isIncreasingRadialBlur)
+    {
+        // ラジアルブラー
+        radialBlurData.radius = radialBlurDataMax.radius + FLT_EPSILON <= radialBlurData.radius - FLT_EPSILON ?
+            radialBlurDataMax.radius : radialBlurData.radius + stepValueRadial;
+
+        radialBlurData.samplingCount = radialBlurDataMax.samplingCount + FLT_EPSILON <= radialBlurData.samplingCount - FLT_EPSILON ?
+            radialBlurDataMax.samplingCount : radialBlurData.samplingCount + stepValueRadial;
+    }
+    // 値減少
+    else
+    {
+        // ラジアルブラー
+        radialBlurData.radius = radialBlurDataMin.radius + FLT_EPSILON >= radialBlurData.radius - FLT_EPSILON ?
+            radialBlurDataMin.radius : radialBlurData.radius - stepValueRadial;
+
+        radialBlurData.samplingCount = radialBlurDataMin.samplingCount + FLT_EPSILON >= radialBlurData.samplingCount - FLT_EPSILON ?
+            radialBlurDataMin.samplingCount : radialBlurData.samplingCount - stepValueRadial;
+
+
+    }
+
+
+
+
+    // 上昇終了
+    isIncreasingColorGrading = false;
+    isIncreasingRadialBlur = false;
+
+
+    if (!isIncreasingModeVignetteData)
+    {
+        // ヴィジェット
+        vignetteData.intensity = vignetteDataMin.intensity + FLT_EPSILON >= vignetteData.intensity - FLT_EPSILON ?
+            vignetteDataMin.intensity : vignetteData.intensity - stepValuevignette;
+        return;
+    }
+    
+    // 値上昇
+    if (isIncreasingVignetteData)
+    {
+        
+        // ヴィジェット
+        vignetteData.intensity = vignetteDataMax.intensity + FLT_EPSILON <= vignetteData.intensity - FLT_EPSILON ?
+            vignetteDataMax.intensity : vignetteData.intensity + stepValuevignette;
+
+        isIncreasingVignetteData = vignetteDataMax.intensity + FLT_EPSILON <= vignetteData.intensity - FLT_EPSILON ?
+            false : true;
+
+        //vignetteData.samplingCount = vignetteDataMax.samplingCount + FLT_EPSILON >= vignetteData.samplingCount - FLT_EPSILON ?
+        //    vignetteDataMax.samplingCount : vignetteData.samplingCount - stepDownValue;
+    }
+    // 値減少
+    else
+    {
+        // ヴィジェット
+        vignetteData.intensity = vignetteDataMin.intensity + FLT_EPSILON >= vignetteData.intensity - FLT_EPSILON ?
+            vignetteDataMin.intensity : vignetteData.intensity - stepValuevignette;
+
+        isIncreasingVignetteData = vignetteDataMin.intensity + FLT_EPSILON >= vignetteData.intensity - FLT_EPSILON ?
+            true : false;
+
+        //vignetteData.samplingCount = vignetteDataMin.samplingCount + FLT_EPSILON >= vignetteData.samplingCount - FLT_EPSILON ?
+        //    vignetteDataMin.samplingCount : vignetteData.samplingCount - stepDownValue;
+
+
+    }
+
+
+    isIncreasingModeVignetteData = false;
 }

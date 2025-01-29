@@ -278,7 +278,6 @@ void Player::Start()
     endState = false;
 
     
-    
 
 }
 
@@ -927,6 +926,36 @@ void Player::OnGUI()
     ImGui::SliderFloat("brigthness", &colorGradingData.brigthness,0.0f ,10.0f);
     ImGui::SliderFloat("hueShift", &colorGradingData.hueShift,0.0f ,10.0f);
     ImGui::SliderFloat("saturation", &colorGradingData.saturation,0.0f ,10.0f);
+
+    if (ImGui::Button("PostEffectColor"))
+    {
+        // ポストエフェクトインスタンスゲット
+        PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
+        colorGradingPostData.brigthness = 5;
+        colorGradingPostData.hueShift = 3;
+        //colorGradingPostData.saturation = 0;
+
+        postprocessingRenderer.SetColorGradingMaxData(colorGradingPostData);
+    }
+
+    if (ImGui::Button("PostEffectVig"))
+    {
+        checkVignette = checkVignette ? false : true;
+
+
+    }
+
+    if (checkVignette)
+    {
+        // ポストエフェクトインスタンスゲット
+        PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
+        vignetteData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+        //vignetteData.intensity = 2.5f;
+
+        postprocessingRenderer.SetVignetteMaxData(vignetteData);
+    }
 }
 #endif // _DEBUG
 

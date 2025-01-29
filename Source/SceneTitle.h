@@ -100,7 +100,7 @@ private:
 	float shadowBias = 0.001f;// 深度比較用のオフセット値
 
 	// ポストプロセス
-	std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
+	//std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
 
 	// ブルーム用
 	BloomData bloomData;
