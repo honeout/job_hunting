@@ -159,7 +159,7 @@ void WanderState::Execute(float elapsedTime)
 		// ポストエフェクトインスタンスゲット
 		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 		// ラジアルブラー
-		radialBlurData.radius = 60.0f;
+		radialBlurData.radius = 30.0f;
 
 		postprocessingRenderer.SetRadialBlurData(radialBlurData);
 
@@ -211,18 +211,18 @@ void WanderState::Execute(float elapsedTime)
 			smorker->Play(bossRightFootPosition, scaleEffect);
 
 			// 左足
-			enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
+			enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamage);
 
 			// 右足
-			enemyid.lock()->DetectHitByBodyPart(bossRightFootPosition);
+			enemyid.lock()->DetectHitByBodyPart(bossRightFootPosition, applyDamage);
 
 			// 右腕
-			enemyid.lock()->DetectHitByBodyPart(bossRightHandPosition);
+			enemyid.lock()->DetectHitByBodyPart(bossRightHandPosition, applyDamage);
 			// 左腕
-			enemyid.lock()->DetectHitByBodyPart(bossLeftHandPosition);
+			enemyid.lock()->DetectHitByBodyPart(bossLeftHandPosition, applyDamage);
 
 			// 中心
-			enemyid.lock()->DetectHitByBodyPart(transformid.lock()->GetPosition());
+			enemyid.lock()->DetectHitByBodyPart(transformid.lock()->GetPosition(), applyDamage);
 
 		}
 
@@ -233,18 +233,18 @@ void WanderState::Execute(float elapsedTime)
 
 			smorker->Play(bossLeftFootPosition, scaleEffect);
 			// 左足
-			enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
+			enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamage);
 
 			// 右足
-			enemyid.lock()->DetectHitByBodyPart(bossRightFootPosition);
+			enemyid.lock()->DetectHitByBodyPart(bossRightFootPosition, applyDamage);
 
 			// 右腕
-			enemyid.lock()->DetectHitByBodyPart(bossRightHandPosition);
+			enemyid.lock()->DetectHitByBodyPart(bossRightHandPosition, applyDamage);
 			// 左腕
-			enemyid.lock()->DetectHitByBodyPart(bossLeftHandPosition);
+			enemyid.lock()->DetectHitByBodyPart(bossLeftHandPosition, applyDamage);
 
 			// 中心
-			enemyid.lock()->DetectHitByBodyPart(transformid.lock()->GetPosition());
+			enemyid.lock()->DetectHitByBodyPart(transformid.lock()->GetPosition(), applyDamage);
 			
 		}
 
@@ -728,7 +728,7 @@ void JumpState::Execute(float elapsedTime)
 
 
 	// 左足当たり判定
-	enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
+	enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamageJumpStart);
 }
 // 終了処理
 void JumpState::Exit()
@@ -1042,7 +1042,7 @@ void AttackState::Execute(float elapsedTime)
 
 
 	// 左足当たり判定
-	enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition);
+	enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamageAttack);
 
 	//std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 	//Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
@@ -4823,7 +4823,15 @@ void PlayerDeathState::Enter()
 
 	stateTimer = 0.0f;
 
+	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 
+	colorGradingData.saturation = 0.0f;
+
+	postprocessingRenderer.SetColorGradingMaxData(colorGradingData);
+
+	colorGradingData.saturation = -0.8f;
+
+	postprocessingRenderer.SetColorGradingMinData(colorGradingData);
 
 
 }

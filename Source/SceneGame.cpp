@@ -371,33 +371,33 @@ void SceneGame::Update(float elapsedTime)
 		for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 		{
 			
-			vignette_smoothness = 0.0f;
-			vignette_intensity = 0.0f;
+			//vignette_smoothness = 0.0f;
+			//vignette_intensity = 0.0f;
 
-			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetFlashOn())
-			{
-				bool flashOn = false;
-				PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->SetFlashOn(flashOn);
-				// フラッシュ開始
-				shaderPlayStateTimer = shaderPlayStateTimerMax;
-			}
-			
-			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->HealthPinch() && !PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead())
-			{
-				vignette_smoothness = 0.5f;
-				vignette_intensity = 0.4f;
-			}
+			//if (PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetFlashOn())
+			//{
+			//	bool flashOn = false;
+			//	PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->SetFlashOn(flashOn);
+			//	// フラッシュ開始
+			//	shaderPlayStateTimer = shaderPlayStateTimerMax;
+			//}
+			//
+			//if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->HealthPinch() && !PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead())
+			//{
+			//	vignette_smoothness = 0.5f;
+			//	vignette_intensity = 0.4f;
+			//}
 
-			// ブラーを×
-			int enemyCount = EnemyManager::Instance().GetEnemyCount();
-			if (enemyCount > 0)
-			{
-				std::shared_ptr<EnemyBoss> enemyid = EnemyManager::Instance().GetEnemy(enemyCount - 1)->GetComponent<EnemyBoss>();
-				shaderBlurStateTimer = enemyid->GetBlurCheck() ? shaderBlurStateTimerMax : shaderBlurStartStateTimer;
-				bool blurCheck = false;
-				enemyid->SetBlurCheck(blurCheck);
+			//// ブラーを×
+			//int enemyCount = EnemyManager::Instance().GetEnemyCount();
+			//if (enemyCount > 0)
+			//{
+			//	std::shared_ptr<EnemyBoss> enemyid = EnemyManager::Instance().GetEnemy(enemyCount - 1)->GetComponent<EnemyBoss>();
+			//	shaderBlurStateTimer = enemyid->GetBlurCheck() ? shaderBlurStateTimerMax : shaderBlurStartStateTimer;
+			//	bool blurCheck = false;
+			//	enemyid->SetBlurCheck(blurCheck);
 
-			}
+			//}
 			
 			// 死んだ瞬間
 			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)

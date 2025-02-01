@@ -67,7 +67,7 @@ public:
     void ResetAwakeTime();
 
     // 当たり判定右端
-    void DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition);
+    void DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int applyDamage);
 
     void InputImpact(DirectX::XMFLOAT3 pos);
 
@@ -431,6 +431,14 @@ private:
 
     // uiCount最大値
     int uiCountMax = 3;
+
+
+    // ダメージ
+    int applyDamageSlash = 8;
+    int applyDamageJamp = 5;
+    int applyDamageStamp = 8;
+    int applyDamageImpact = 8;
+    int applyDamageDush = 6;
 };
 
 // エネミーマネージャー

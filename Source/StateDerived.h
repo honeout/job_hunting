@@ -50,6 +50,8 @@ private:
 	int                 attackCountMin = 0;
 	int                 attackCount = attackCountMin;
 
+	int                 applyDamage = 8;
+
 	// エフェクトスケール
 	float               scaleEffect = 0.3f;
 
@@ -226,6 +228,10 @@ private:
 	//int                 attackCountMin = 0;
 	//int                 attackCount = attackCountMin;
 
+	// 与ダメ
+	int                 applyDamageJumpStart = 5;
+	int                 applyDamageJumpStamp = 8;
+
 	// エフェクトスケール
 	float               scaleEffect = 0.3f;
 
@@ -306,6 +312,9 @@ private:
 
 	// エフェクトスケール
 	float               scaleEffect = 0.3f;
+
+	// 与ダメ
+	int                 applyDamageAttack = 8;
 
 	// 攻撃回数
 	int					attackMemory = 0;
@@ -1835,6 +1844,8 @@ private:
 	float stateTimer = 0.0f;
 	float stateTimerMax = 40;
 	//float stateTimerMax = 240;
+
+	ColorGradingData colorGradingData;
 };
 
 // 復活ステートオブジェクト

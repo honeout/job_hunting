@@ -391,12 +391,20 @@ void PostprocessingRenderer::MoveTowards()
     isIncreasingColorGrading = false;
     isIncreasingRadialBlur = false;
 
+    --timeState;
+
 
     if (!isIncreasingModeVignetteData)
     {
         // ヴィジェット
+        vignetteData.intensity = vignetteDataMax.intensity + FLT_EPSILON <= vignetteData.intensity - FLT_EPSILON ?
+            vignetteDataMax.intensity : vignetteData.intensity + stepValuevignette;
+
+
         vignetteData.intensity = vignetteDataMin.intensity + FLT_EPSILON >= vignetteData.intensity - FLT_EPSILON ?
             vignetteDataMin.intensity : vignetteData.intensity - stepValuevignette;
+
+       
         return;
     }
     
@@ -407,6 +415,9 @@ void PostprocessingRenderer::MoveTowards()
         // ヴィジェット
         vignetteData.intensity = vignetteDataMax.intensity + FLT_EPSILON <= vignetteData.intensity - FLT_EPSILON ?
             vignetteDataMax.intensity : vignetteData.intensity + stepValuevignette;
+
+        vignetteData.smoothness = vignetteDataMax.smoothness + FLT_EPSILON <= vignetteData.smoothness - FLT_EPSILON ?
+            vignetteDataMax.smoothness : vignetteData.smoothness + stepValuevignette;
 
         isIncreasingVignetteData = vignetteDataMax.intensity + FLT_EPSILON <= vignetteData.intensity - FLT_EPSILON ?
             false : true;
@@ -421,6 +432,10 @@ void PostprocessingRenderer::MoveTowards()
         vignetteData.intensity = vignetteDataMin.intensity + FLT_EPSILON >= vignetteData.intensity - FLT_EPSILON ?
             vignetteDataMin.intensity : vignetteData.intensity - stepValuevignette;
 
+        vignetteData.smoothness = vignetteDataMin.smoothness + FLT_EPSILON >= vignetteData.smoothness - FLT_EPSILON ?
+            vignetteDataMin.smoothness : vignetteData.smoothness - stepValuevignette;
+
+
         isIncreasingVignetteData = vignetteDataMin.intensity + FLT_EPSILON >= vignetteData.intensity - FLT_EPSILON ?
             true : false;
 
@@ -430,6 +445,6 @@ void PostprocessingRenderer::MoveTowards()
 
     }
 
-
+    if (timeState - FLT_EPSILON <= timeStateMin + FLT_EPSILON)
     isIncreasingModeVignetteData = false;
 }

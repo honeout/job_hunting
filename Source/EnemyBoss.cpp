@@ -408,7 +408,7 @@ void EnemyBoss::CollisionImpactVsPlayer()
                     // 高さが一定以下なら通る
                     if (projectilePosition.y + projectileHeight < playerPosition.y) return;
                     // ダメージを与える。
-                    if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 0.5f))
+                    if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamageImpact, 0.5f))
                     {
                         player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
 
@@ -866,7 +866,7 @@ void EnemyBoss::CollisionInpact()
     DirectX::XMFLOAT3 bossLeftFootPosition;
     bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
 
-    DetectHitByBodyPart(bossLeftFootPosition);
+    DetectHitByBodyPart(bossLeftFootPosition,applyDamageStamp);
 
     // 当たり判定増大
     radiusInpactInSide += 0.3f;
@@ -993,7 +993,7 @@ void EnemyBoss::ResetAwakeTime()
     
 }
 
-void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
+void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int applyDamage)
 {
 
     int playerCount = PlayerManager::Instance().GetPlayerCount();
@@ -1019,7 +1019,7 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition)
             outPositon))
         {
             // ダメージを与える。
-            if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 1.0f))
+            if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamage, 1.0f))
             {
 
                 DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);

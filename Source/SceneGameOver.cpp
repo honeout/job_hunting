@@ -138,6 +138,15 @@ void SceneGameOver::Initialize()
 		vignetteData.roundness = 1.0f;
 		vignetteData.smoothness = 0.2f;
 		postprocessingRenderer.SetVignetteData(vignetteData);
+
+		vignetteData.smoothness = 1.0f;
+		postprocessingRenderer.SetVignetteMinData(vignetteData);
+
+
+		colorGradingData.saturation = 1.0f;
+		postprocessingRenderer.SetColorGradingData(colorGradingData);
+
+		//postprocessingRenderer.SetColorGradingMinData(colorGradingData);
 	}
 
 

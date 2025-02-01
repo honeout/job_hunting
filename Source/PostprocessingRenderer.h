@@ -91,6 +91,7 @@ public:
     // ダメージ表現
     void SetVignetteMaxData(VignetteData	vignetteDataMax) {
         isIncreasingModeVignetteData = true;
+        timeState = timeStateMax;
         this->vignetteDataMax = vignetteDataMax;
     }
 
@@ -102,7 +103,11 @@ public:
     // ラジアルブラー最低値情報
     void SetRadialBlurMinData(RadialBlurData radialBlurMinData) { this->radialBlurDataMin = radialBlurMinData; }
     // ダメージ最低値表現
-    void SetVignetteMinData(VignetteData	vignetteMinData) { this->vignetteDataMin = vignetteMinData; }
+    void SetVignetteMinData(VignetteData	vignetteMinData) { 
+        isIncreasingModeVignetteData = true;
+        timeState = timeStateMax;
+        this->vignetteDataMin = vignetteMinData; 
+    }
 
 private:
     // シーン描画データ
@@ -203,5 +208,9 @@ private:
     bool isIncreasingRadialBlur = false;
     bool isIncreasingModeVignetteData = false;
     bool isIncreasingVignetteData = false;
+
+    float timeState = 0.0f;
+    float timeStateMin = 0.0f;
+    float timeStateMax = 3.0f;
 
 };

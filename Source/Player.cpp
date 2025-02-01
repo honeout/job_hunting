@@ -305,6 +305,9 @@ void Player::Update(float elapsedTime)
         isMenue = isMenue ? isMenueOf : isMenueOn;
     }
 
+    // ポストエフェクトｈｐの一定以下
+    PinchMode(elapsedTime);
+
     // ソードトレイル
     //UpdateSwordeTraile();
     
@@ -956,6 +959,36 @@ void Player::OnGUI()
 
         postprocessingRenderer.SetVignetteMaxData(vignetteData);
     }
+    if (ImGui::Button("PostEffectColorSatulate"))
+    {
+        testcolor = testcolor ? false : true;
+
+
+
+    }
+
+    if (testcolor)
+    {
+        // ポストエフェクトインスタンスゲット
+        PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
+        //colorGradingPostData.brigthness = 5;
+        //colorGradingPostData.hueShift = 3;
+
+        colorGradingPostData.saturation = -0.3f;
+
+        postprocessingRenderer.SetColorGradingMinData(colorGradingPostData);
+    }
+    else
+    {
+        // ポストエフェクトインスタンスゲット
+        PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
+        colorGradingPostData.saturation = 1.0f;
+
+        postprocessingRenderer.SetColorGradingMaxData(colorGradingPostData);
+    }
+
 }
 #endif // _DEBUG
 
@@ -3696,6 +3729,19 @@ void Player::UpdateSwordeTraile()
     }
 
 
+}
+
+void Player::PinchMode(float elapsedTime)
+{
+    if (hp.lock()->HealthPinch() && !hp.lock()->GetDead())
+    {
+        PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
+        vignetteData.smoothness = 3.0f;
+        vignetteData.intensity = 0.8;
+
+        postprocessingRenderer.SetVignetteMaxData(vignetteData);
+    }
 }
 
 //// 着地した時に呼ばれる

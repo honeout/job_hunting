@@ -119,6 +119,9 @@ public:
     // ソードトレイル
     void UpdateSwordeTraile();
 
+    // hpピンチ
+    void PinchMode(float elapsedTime);
+
     // HP管理
 
 protected:
@@ -948,6 +951,8 @@ private:
 
 
     bool   checkVignette = false;
+
+    bool testcolor = false;;
 };
 
 // プレイヤーマネージャー
