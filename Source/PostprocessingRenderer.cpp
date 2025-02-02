@@ -391,7 +391,7 @@ void PostprocessingRenderer::MoveTowards()
     isIncreasingColorGrading = false;
     isIncreasingRadialBlur = false;
 
-    --timeState;
+    //--timeState;
 
 
     if (!isIncreasingModeVignetteData)
@@ -445,6 +445,6 @@ void PostprocessingRenderer::MoveTowards()
 
     }
 
-    if (timeState - FLT_EPSILON <= timeStateMin + FLT_EPSILON)
+  /*  if (timeState - FLT_EPSILON <= timeStateMin + FLT_EPSILON)*/
     isIncreasingModeVignetteData = false;
 }

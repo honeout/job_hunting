@@ -3652,6 +3652,7 @@ void PlayerMagicState::Enter()
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	// Se
 	//flameStarteSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎着弾時.wav");
@@ -3720,6 +3721,22 @@ void PlayerMagicState::Enter()
 			currentAnimationStartSeconds, blendSeconds
 		);
 
+
+		break;
+	}
+
+	case ((int)Player::CommandMagic::Heale):
+	{
+		// アニメーション再生
+		model->PlayAnimation(
+			Player::Anim_MagicSeconde, loop,
+			currentAnimationStartSeconds, blendSeconds
+		);
+		// エフェクト回復
+		heale = std::make_unique<Effect>("Data/Effect/heale.efk");
+
+		// エフェクト再生
+		heale->Play(transformid.lock()->GetPosition());
 
 		break;
 	}
@@ -3877,6 +3894,21 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 		// 氷se
 		//iceStarteSe->Play(loopSe);
+		break;
+	}
+	case (int)Player::CommandMagic::Heale:
+	{
+
+
+		// 時間
+		if (animationTime <= 1.1f)return;
+
+		// 雷発射
+		owner.lock()->GetComponent<Player>()->InputMagicHealing();
+		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Idle);
+
+		// 雷se
+		///lightningSe->Play(loopSe);
 		break;
 	}
 

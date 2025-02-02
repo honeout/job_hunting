@@ -55,7 +55,7 @@ public:
 	void SetDead(bool dead) { this->dead = dead; }
 
 	// 残機
-	void SetLife(int life) { this->life = life; }
+	void SetLife(int life) { this->life += life; }
 	// 残機
 	int GetLife() const { return life; }
 

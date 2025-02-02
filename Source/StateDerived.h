@@ -1378,6 +1378,9 @@ private:
 	//// —‹ƒqƒbƒgŽž
 	//std::unique_ptr<AudioSource> lightningSe;
 
+	// ‰ñ•œ–‚–@
+	std::unique_ptr<Effect> heale;
+
 	// se
 	bool loopSe = false;
 

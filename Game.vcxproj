@@ -117,8 +117,9 @@
     <ClInclude Include="External\imgui\imstb_truetype.h" />
     <ClInclude Include="Source\Actor.h" />
     <ClInclude Include="Source\Audio\Audio.h" />
+    <ClInclude Include="Source\Audio\AudioParam.h" />
     <ClInclude Include="Source\Audio\AudioResource.h" />
-    <ClInclude Include="Source\Audio\AudioSEManager.h" />
+    <ClInclude Include="Source\Audio\AudioResourceManager.h" />
     <ClInclude Include="Source\Audio\AudioSource.h" />
     <ClInclude Include="Source\BulletFiring.h" />
     <ClInclude Include="Source\Camera.h" />
@@ -203,7 +204,7 @@
     <ClCompile Include="Source\Actor.cpp" />
     <ClCompile Include="Source\Audio\Audio.cpp" />
     <ClCompile Include="Source\Audio\AudioResource.cpp" />
-    <ClCompile Include="Source\Audio\AudioSEManager.cpp" />
+    <ClCompile Include="Source\Audio\AudioResourceManager.cpp" />
     <ClCompile Include="Source\Audio\AudioSource.cpp" />
     <ClCompile Include="Source\BulletFiring.cpp" />
     <ClCompile Include="Source\Camera.cpp" />

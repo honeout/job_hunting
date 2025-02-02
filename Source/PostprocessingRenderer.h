@@ -33,7 +33,7 @@ public:
 
     static PostprocessingRenderer& Instance()
     {
-        // カメラは様々な所で取り出したいだからシングルトンにする
+        // 様々な所で取り出したいだからシングルトンにする
         static PostprocessingRenderer postEffect;
         return postEffect;
     }
@@ -91,7 +91,7 @@ public:
     // ダメージ表現
     void SetVignetteMaxData(VignetteData	vignetteDataMax) {
         isIncreasingModeVignetteData = true;
-        timeState = timeStateMax;
+
         this->vignetteDataMax = vignetteDataMax;
     }
 
@@ -105,7 +105,7 @@ public:
     // ダメージ最低値表現
     void SetVignetteMinData(VignetteData	vignetteMinData) { 
         isIncreasingModeVignetteData = true;
-        timeState = timeStateMax;
+
         this->vignetteDataMin = vignetteMinData; 
     }
 
@@ -209,8 +209,8 @@ private:
     bool isIncreasingModeVignetteData = false;
     bool isIncreasingVignetteData = false;
 
-    float timeState = 0.0f;
-    float timeStateMin = 0.0f;
-    float timeStateMax = 3.0f;
+    //float timeState = 0.0f;
+    //float timeStateMin = 0.0f;
+    //float timeStateMax = 3.0f;
 
 };

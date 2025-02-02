@@ -281,6 +281,7 @@ public:
     bool InputMagicframe();
     bool InputMagicIce();
     bool InputMagicLightning();
+    bool InputMagicHealing();
 
     void InputSpecialMagicframe();
 
@@ -483,7 +484,8 @@ public:
         Normal = -2,
         Fire = 0,
         Thander,
-        Ice
+        Ice,
+        Heale
     };
 
     enum class SpecialAttack
@@ -559,7 +561,7 @@ public:
     void SetHitCheck(bool hitCheck) {  this->hitCheck = hitCheck; }
     bool GetHitCheck() {  return hitCheck; }
 
-    AudioSeSource* PlaySE() { return seSouce.get(); }
+   // AudioSeSource* PlaySE() { return seSouce.get(); }
 
     void SetAttackNumberSave(int attackNumberSave) { this->attackNumberSave = attackNumberSave; }
 
@@ -587,7 +589,7 @@ private:
     bool             uiControlleCheck = false;
 
     // 炎発射
-    std::unique_ptr<AudioSeSource> seSouce;
+   // std::unique_ptr<AudioSeSource> seSouce;
 
     //std::unique_ptr<Model> model;
     Model* model = nullptr;
@@ -891,6 +893,7 @@ private:
     // 魔法消費量
     int magicConsumption = 5;
 
+
     // 描画の色をどうするか
     DirectX::XMFLOAT4 mpUiColor = {1,1,1,1};
 
@@ -952,7 +955,9 @@ private:
 
     bool   checkVignette = false;
 
-    bool testcolor = false;;
+    bool testcolor = false;
+    // 回復値
+    int healing = 30;
 };
 
 // プレイヤーマネージャー

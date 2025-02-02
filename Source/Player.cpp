@@ -165,6 +165,8 @@ void Player::Start()
     // エフェクト竜巻
     areWork = std::make_unique<Effect>("Data/Effect/tornade.efk");
 
+
+
     //// SE
     //seSouce = Audio::Instance().LoadAudioSource();
     //seSouce->LoadSE("Data/Audio/SE/足音.wav","walk");
@@ -1332,14 +1334,14 @@ bool Player::InputSelectMagicCheck()
         selectMagicCheck = (int)CommandMagic::Fire;
     }
 
-    if (selectMagicCheck > (int)CommandMagic::Ice && magicAction)
+    if (selectMagicCheck > (int)CommandMagic::Heale && magicAction)
     {
         selectMagicCheck = (int)CommandMagic::Fire;
     }
 
     if (selectMagicCheck < (int)CommandMagic::Fire && magicAction)
     {
-        selectMagicCheck = (int)CommandMagic::Ice;
+        selectMagicCheck = (int)CommandMagic::Heale;
     }
 
     if (!magicAction)
@@ -1434,6 +1436,37 @@ bool Player::InputSelectMagicCheck()
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack.lock()->SetDrawCheck(false);
+        uiIdAttackCheck.lock()->SetDrawCheck(false);
+    }
+
+
+
+    // UI設定 回復
+    if (selectMagicCheck == (int)CommandMagic::Heale && magicAction)
+    {
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHealeCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack.lock()->SetDrawCheck(false);
+        uiIdAttackCheck.lock()->SetDrawCheck(true);
+    }
+    else
+    {
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHealeCheck)->GetComponent<Ui>();
+
+
+        uiIdAttack.lock()->SetDrawCheck(true);
+        uiIdAttackCheck.lock()->SetDrawCheck(false);
+    }
+    if (!magicAction)
+    {
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHealeCheck)->GetComponent<Ui>();
 
 
         uiIdAttack.lock()->SetDrawCheck(false);
@@ -3741,6 +3774,19 @@ void Player::PinchMode(float elapsedTime)
         vignetteData.intensity = 0.8;
 
         postprocessingRenderer.SetVignetteMaxData(vignetteData);
+
+        colorGradingData.brigthness = 3;
+
+        postprocessingRenderer.SetColorGradingMinData(colorGradingData);
+    }
+    else
+    {
+        PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
+        vignetteData.smoothness = 0.0f;
+        vignetteData.intensity = 0.0;
+
+        postprocessingRenderer.SetVignetteMaxData(vignetteData);
     }
 }
 
@@ -4769,6 +4815,18 @@ bool Player::InputMagicLightning()
     //    gamePad.SetButtonDownCountinue(false);
     //}
     //return false;
+}
+// 回復魔法開始
+bool Player::InputMagicHealing()
+{
+
+    // mp消費
+    mp.lock()->ApplyConsumption(mp.lock()->GetMaxMagic());
+    
+    hp.lock()->SetHealth(healing);
+
+
+    return true;
 }
 
 void Player::InputSpecialMagicframe()

@@ -55,6 +55,8 @@ public:
         PlayerCommandRigtningCheck,
         PlayerCommandIce,
         PlayerCommandIceCheck,
+        PlayerCommandHeale,
+        PlayerCommandHealeCheck,
         PlayerCommandSpeciulCharge01,
         PlayerCommandSpeciulCharge02,
         PlayerCommandSpeciulCharge03,
