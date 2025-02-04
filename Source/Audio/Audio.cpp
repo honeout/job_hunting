@@ -1,29 +1,26 @@
 #include "Misc.h"
+#include <imgui.h>
 #include "Audio/Audio.h"
 #include "Audio\AudioResourceManager.h"
 
-Audio* Audio::instance = nullptr;
+//Audio* Audio::instance = nullptr;
 
 // コンストラクタ
 Audio::Audio()
 {
-	// インスタンス設定
-	_ASSERT_EXPR(instance == nullptr, "already instantiated");
-	instance = this;
-
 	HRESULT hr;
 
 	// COMの初期化
 	hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
-	UINT32 createFlags = 0;
+	UINT32 create_flags = 0;
 #if defined(DEBUG) || defined(_DEBUG)
 	//createFlags |= XAUDIO2_DEBUG_ENGINE;
 #endif
 
 	// XAudio初期化
-	hr = XAudio2Create(&xaudio, createFlags);
+	hr = XAudio2Create(&this->xaudio, create_flags);
 	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
 	// マスタリングボイス生成
@@ -31,6 +28,31 @@ Audio::Audio()
 	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	// マスターボイスのボリューム設定
 	masteringVoice->SetVolume(0.5f);
+
+//	// インスタンス設定
+//	_ASSERT_EXPR(instance == nullptr, "already instantiated");
+//	instance = this;
+//
+//	HRESULT hr;
+//
+//	// COMの初期化
+//	hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+//	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+//
+//	UINT32 createFlags = 0;
+//#if defined(DEBUG) || defined(_DEBUG)
+//	//createFlags |= XAUDIO2_DEBUG_ENGINE;
+//#endif
+//
+//	// XAudio初期化
+//	hr = XAudio2Create(&xaudio, createFlags);
+//	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+//
+//	// マスタリングボイス生成
+//	hr = xaudio->CreateMasteringVoice(&masteringVoice);
+//	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+//	// マスターボイスのボリューム設定
+//	masteringVoice->SetVolume(0.5f);
 }
 
 // デストラクタ
@@ -71,8 +93,8 @@ void Audio::Play(AudioParam param)
 {
 	// リソース作成
 	AudioResourceManager& audioResourceManager = AudioResourceManager::Instance();
-	if (&audioResourceManager) return;
-	std::shared_ptr<AudioResource> resource = audioResourceManager.LoadAudioResource(param.filename.c_str(),param.keyName.c_str());
+	//if (&audioResourceManager) return;
+	std::shared_ptr<AudioResource> resource = audioResourceManager.LoadAudioResource(param.filename.c_str());
 	// オーディオソース作成
 	AudioSource* audio = this->audio_source_pool.emplace_back(new AudioSource(this->xaudio, resource, param));
 
@@ -123,6 +145,46 @@ void Audio::Update()
 		this->audio_source_pool.erase(it);
 	}
 }
+
+#ifdef _DEBUG
+
+void Audio::DebugDrawGUI()
+{
+	if (ImGui::Begin("Audio"))
+	{
+		float volume{};
+		masteringVoice->GetVolume(&volume);
+		if (ImGui::SliderFloat("Master Volume", &volume, 0.0f, 1.0f))
+		{
+			masteringVoice->SetVolume(volume);
+		}
+		if (ImGui::Button("AllStart##Audio"))
+		{
+			AllStart();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("AllStop##Audio"))
+		{
+			AllStop();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("AllClear##Audio"))
+		{
+			AllClear();
+		}
+
+		// オーディオソース
+		{
+			for (auto audio_source : audio_source_pool)
+			{
+				audio_source->DebugDrawGUI();
+			}
+		}
+	}
+	ImGui::End();
+}
+
+#endif // DEBUG
 
 //
 //// オーディオソース読み込み

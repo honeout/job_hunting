@@ -30,9 +30,6 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 	////std::shared_ptr<ModelControll> modelid;
@@ -112,8 +109,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 	//std::shared_ptr<ModelControll> model;
@@ -151,8 +146,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<Actor> playerid;
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
@@ -203,8 +196,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 	////std::shared_ptr<ModelControll> modelid;
@@ -294,8 +285,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
@@ -375,8 +364,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
@@ -412,8 +399,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
@@ -453,8 +438,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
@@ -509,8 +492,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
@@ -560,8 +541,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
@@ -604,8 +583,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 
 
@@ -656,8 +633,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
@@ -703,8 +678,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 
 	bool loopSe = false;
@@ -748,8 +721,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<Actor> playerid;
 	//std::shared_ptr<Movement> moveid;
@@ -781,8 +752,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 
 	// 歩行
@@ -821,8 +790,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
 	//Model* model;
@@ -863,8 +830,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
 	//Model* model;
@@ -909,8 +874,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
 	//Model* model;
@@ -954,8 +917,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -1057,8 +1018,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -1158,8 +1117,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -1258,8 +1215,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -1351,8 +1306,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 
 private:
 	//std::shared_ptr<ModelControll> model;
@@ -1435,8 +1388,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -1539,8 +1490,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -1619,8 +1568,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	enum  AttackMemory
 	{
@@ -1695,8 +1642,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
 	//std::shared_ptr<Movement> moveid;
@@ -1733,8 +1678,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<Transform> transformid;
 	//std::shared_ptr<Movement> moveid;
@@ -1786,8 +1729,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	
 
@@ -1822,8 +1763,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	//std::shared_ptr<ModelControll> model;
 	//Model* model;
@@ -1866,8 +1805,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	float				stateTimer = 0.0f;
 
@@ -1897,8 +1834,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	float				stateTimer = 0.0f;
 
@@ -1929,8 +1864,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	float				stateTimer = 0.0f;
 
@@ -1971,8 +1904,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	float				stateTimer = 0.0f;
 
@@ -2009,8 +1940,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	float				stateTimer = 0.0f;
 
@@ -2047,8 +1976,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	float				stateTimer = 0.0f;
 
@@ -2084,8 +2011,6 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 
-	// 終了処理
-	void End()override;
 private:
 	float				stateTimer = 0.0f;
 

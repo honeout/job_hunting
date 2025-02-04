@@ -12,6 +12,9 @@
 #include "PostprocessingRenderer.h"
 #include "Graphics\PrimitiveRenderer.h"
 #include "Audio/AudioSource.h"
+#include "Audio\AudioParam.h"
+#include "Audio\Audio.h"
+#include "Audio\AudioResourceManager.h"
 
 // ゲームシーン
 class SceneGame : public Scene
@@ -58,9 +61,14 @@ private:
 	// コンポネント登録
 	void InitializeComponent();
 
+	// BGM再生
+	void UpdateBgm();
+
 private:
 	// BGM
-	//std::unique_ptr<AudioSource> Bgm;
+	/*AudioSource* Bgm;*/
+	//std::unique_ptr<Audio> Bgm;
+	//std::unique_ptr<AudioSource>Bgm;
 
 	// シェーダーをエフェクトして再生
 	float shaderPlayStateTimer = 0;

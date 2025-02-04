@@ -300,11 +300,6 @@ void WanderState::Exit()
 	attackCount = attackCountMin;
 }
 
-void WanderState::End()
-{
-	// 解放
-	//owner.lock().reset();
-}
 
 // 初期化
 void IdleState::Enter()
@@ -369,11 +364,7 @@ void IdleState::Exit()
 	// 逃げる条件初期化
 	hp.lock()->ResetOnDamageThresholdTime();
 }
-void IdleState::End()
-{
-	// 解放
-	//owner.lock().reset();
-}
+
 // 初期化
 void PursuitState::Enter()
 {
@@ -565,12 +556,6 @@ void PursuitState::Exit()
 
 }
 
-void PursuitState::End()
-{
-	// 解放
-	//owner.lock().reset();
-}
-
 // 初期化
 void JumpState::Enter()
 {
@@ -738,13 +723,6 @@ void JumpState::Exit()
 	//janpSe->Stop("janp");
 	//landSe->Stop("land");
 }
-
-void JumpState::End()
-{
-	// 解放
-	//owner.lock().reset();
-}
-
 
 // 初期化
 void AttackState::Enter()
@@ -1092,12 +1070,6 @@ void AttackState::Exit()
 {
 }
 
-void AttackState::End()
-{
-	// 解放
-	//owner.lock().reset();
-}
-
 // 初期設定
 void AttackShotState::Enter()
 {
@@ -1190,12 +1162,6 @@ void AttackShotState::Execute(float elapsedTime)
 // 終了処理
 void AttackShotState::Exit()
 {
-}
-
-void AttackShotState::End()
-{
-	// 解放
-	//owner.lock().reset();
 }
 
 // 初期処理
@@ -1383,11 +1349,6 @@ void AttackShotThrowingState::Exit()
 {
 }
 
-void AttackShotThrowingState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
 
 void DamageState::Enter()
 {
@@ -1432,11 +1393,6 @@ void DamageState::Exit()
 	//damageSe->Stop();
 }
 
-void DamageState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
 
 // 混乱開始
 void ConfusionState::Enter()
@@ -1518,11 +1474,6 @@ void ConfusionState::Exit()
 	//confusionSe->Stop();
 }
 
-void ConfusionState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
 
 void DeathState::Enter()
 {
@@ -1595,12 +1546,6 @@ void DeathState::Exit()
 	//deathSe->Stop("death");
 }
 
-void DeathState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
-
 // 興奮状態
 void AwakeStartState::Enter()
 {
@@ -1659,11 +1604,6 @@ void AwakeStartState::Exit()
 	// 覚醒時間
 	enemyid.lock()->ResetAwakeTime();
 	
-}
-
-void AwakeStartState::End()
-{
-
 }
 
 void ClearState::Enter()
@@ -1788,10 +1728,6 @@ void ClearState::Exit()
 {
 }
 
-void ClearState::End()
-{
-}
-
 void ClearReviveState::Enter()
 {
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
@@ -1835,9 +1771,6 @@ void ClearReviveState::Exit()
 {
 }
 
-void ClearReviveState::End()
-{
-}
 
 // プレイヤー
 void PlayerIdleState::Enter()
@@ -1900,12 +1833,6 @@ void PlayerIdleState::Execute(float elapsedTime)
 
 void PlayerIdleState::Exit()
 {
-}
-
-void PlayerIdleState::End()
-{
-	// 解放
-	owner.lock().reset();
 }
 
 void PlayerMovestate::Enter()
@@ -2007,11 +1934,6 @@ void PlayerMovestate::Exit()
 	//walkSe->Stop();
 }
 
-void PlayerMovestate::End()
-{
-	// 解放
-	owner.lock().reset();
-}
 
 void PlayerJumpState::Enter()
 {
@@ -2093,11 +2015,6 @@ void PlayerJumpState::Exit()
 	//janpSe->Stop();
 }
 
-void PlayerJumpState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
 
 void PlayerLandState::Enter()
 {
@@ -2163,11 +2080,6 @@ void PlayerLandState::Exit()
 	//landSe->Stop();
 }
 
-void PlayerLandState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
 
 void PlayerJumpFlipState::Enter()
 {
@@ -2224,12 +2136,6 @@ void PlayerJumpFlipState::Exit()
 {
 	//janpSe->Stop();
 
-}
-
-void PlayerJumpFlipState::End()
-{
-	// 解放
-	owner.lock().reset();
 }
 
 void PlayerQuickJabState::Enter()
@@ -2566,12 +2472,6 @@ void PlayerQuickJabState::Exit()
 
 }
 
-void PlayerQuickJabState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
-
 
 void PlayerSideCutState::Enter()
 {
@@ -2897,13 +2797,6 @@ void PlayerSideCutState::Exit()
 	
 }
 
-void PlayerSideCutState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
-
-
 void PlayerCycloneStrikeState::Enter()
 {
 	bool loop = false;
@@ -3184,13 +3077,6 @@ void PlayerCycloneStrikeState::Exit()
 	//slashSe->Stop();
 
 }
-
-void PlayerCycloneStrikeState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
-
 
 void PlayerSpecialAttackState::Enter()
 {
@@ -3640,12 +3526,6 @@ void PlayerSpecialAttackState::Exit()
 
 }
 
-void PlayerSpecialAttackState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
-
 void PlayerMagicState::Enter()
 {
 
@@ -3943,12 +3823,6 @@ void PlayerMagicState::Exit()
 	//flameStarteSe->Stop();
 	//iceStarteSe->Stop();
 	//lightningSe->Stop();
-}
-
-void PlayerMagicState::End()
-{
-	// 解放
-	owner.lock().reset();
 }
 
 void PlayerSpecialMagicState::Enter()
@@ -4360,13 +4234,6 @@ void PlayerSpecialMagicState::Exit()
 	//flameSpecialSaveSe->Stop();
 }
 
-void PlayerSpecialMagicState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
-
-
 void PlayerSpecialMagicIceState::Enter()
 {
 	// コンポネント取得
@@ -4722,13 +4589,6 @@ void PlayerSpecialMagicIceState::Exit()
 	}
 }
 
-void PlayerSpecialMagicIceState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
-
-
 void PlayerSpecialThanderMagicState::Enter()
 {
 }
@@ -4765,12 +4625,6 @@ void PlayerSpecialThanderMagicState::Exit()
 		bool stopFall = false;
 		enemyMove->SetStopFall(stopFall);
 	}
-}
-
-void PlayerSpecialThanderMagicState::End()
-{
-	// 解放
-	owner.lock().reset();
 }
 
 
@@ -4827,12 +4681,6 @@ void PlayerDamageState::Execute(float elapsedTime)
 void PlayerDamageState::Exit()
 {
 	//damageSe->Stop();
-}
-
-void PlayerDamageState::End()
-{
-	// 解放
-	owner.lock().reset();
 }
 
 void PlayerDeathState::Enter()
@@ -4920,12 +4768,6 @@ void PlayerDeathState::Exit()
 {
 }
 
-void PlayerDeathState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
-
 void PlayerReviveState::Enter()
 {
 
@@ -4937,12 +4779,6 @@ void PlayerReviveState::Execute(float elapsedTime)
 
 void PlayerReviveState::Exit()
 {
-}
-
-void PlayerReviveState::End()
-{
-	// 解放
-	owner.lock().reset();
 }
 
 // 回避初期化
@@ -5098,12 +4934,6 @@ void PlayerAvoidanceState::Exit()
 	//dushSe->Stop();
 }
 
-void PlayerAvoidanceState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
-
 // 反射開始
 void PlayerReflectionState::Enter()
 {
@@ -5173,12 +5003,6 @@ void PlayerReflectionState::Exit()
 	//reflectionStop->Stop();
 }
 
-void PlayerReflectionState::End()
-{
-	// 解放
-	owner.lock().reset();
-}
-
 void PlayerTitleIdleState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
@@ -5236,10 +5060,6 @@ void PlayerTitleIdleState::Execute(float elapsedTime)
 }
 
 void PlayerTitleIdleState::Exit()
-{
-}
-
-void PlayerTitleIdleState::End()
 {
 }
 
@@ -5462,10 +5282,6 @@ void PlayerTitlePushState::Exit()
 	//owner.lock()->GetComponent<Player>()->SetFreeCameraCheck(freeCameraCheck);
 }
 
-void PlayerTitlePushState::End()
-{
-}
-
 void PlayerClearIdleState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
@@ -5539,10 +5355,6 @@ void PlayerClearIdleState::Execute(float elapsedTime)
 }
 
 void PlayerClearIdleState::Exit()
-{
-}
-
-void PlayerClearIdleState::End()
 {
 }
 
@@ -5623,10 +5435,6 @@ void PlayerOverIdleState::Exit()
 {
 }
 
-void PlayerOverIdleState::End()
-{
-}
-
 void PlayerOverReviveState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
@@ -5672,8 +5480,3 @@ void PlayerOverReviveState::Execute(float elapsedTime)
 void PlayerOverReviveState::Exit()
 {
 }
-
-void PlayerOverReviveState::End()
-{
-}
-

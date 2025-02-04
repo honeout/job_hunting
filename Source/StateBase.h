@@ -20,8 +20,6 @@ public:
 	// ステートから出ていくときのメソッド
 	virtual void Exit() = 0;
 
-	virtual void End() = 0;
-
 
 protected:
 	std::weak_ptr<Actor> owner;

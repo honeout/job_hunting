@@ -355,6 +355,8 @@ void Player::Update(float elapsedTime)
             areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
 
             areWork->Play(position);
+            // SeÄ¶
+            InputAttackSE();
         }
 
         //@–‚–@“ü—Íˆ—
@@ -548,6 +550,23 @@ void Player::RenderShadowmap(RenderContext& rc)
 
     shader->End(rc);
     
+}
+
+void Player::InputAttackSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/•KŽE‹Z‰Š.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = true;
+
+    audioParam.volume = 1.0f;
+
+    Se.Play(audioParam);
 }
 
 void Player::UpdateCameraState(float elapsedTime)

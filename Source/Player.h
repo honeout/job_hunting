@@ -96,6 +96,9 @@ public:
     // シャドウマップ処理
     void RenderShadowmap(RenderContext& rc) override;
 
+    // SE再生
+    void InputAttackSE();
+
     // カメラ切り替え処理
     void UpdateCameraState(float elapsedTime);
 

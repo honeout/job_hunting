@@ -69,6 +69,11 @@ private:
 	// カメラ
 	CameraController* cameraControlle = nullptr;
 
+	//// BGM
+	//std::unique_ptr<AudioSource> bgm;
+	//// SE
+	//std::unique_ptr<AudioSource> se;
+
     // オフスクリーンレンダリング用描画ターゲット
     std::unique_ptr<RenderTarget> renderTarget;
 

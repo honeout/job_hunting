@@ -1,6 +1,6 @@
 #include "AudioResourceManager.h"
 
-std::shared_ptr<AudioResource> AudioResourceManager::LoadAudioResource(const char* filename, const char* keyName)
+std::shared_ptr<AudioResource> AudioResourceManager::LoadAudioResource(const char* filename)
 {
     AudioMap::iterator it = audios.find(filename);
     if (it != audios.end())
@@ -17,6 +17,6 @@ std::shared_ptr<AudioResource> AudioResourceManager::LoadAudioResource(const cha
     std::shared_ptr<AudioResource> audio;
     audio = std::make_shared<AudioResource>(filename);
 
-    audios[keyName] = std::weak_ptr<AudioResource>(audio);
+    audios[filename] = std::weak_ptr<AudioResource>(audio);
     return audio;
 }

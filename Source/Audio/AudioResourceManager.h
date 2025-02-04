@@ -17,7 +17,7 @@ public:
     ~AudioResourceManager() {}
 
     // modelƒŠƒ\[ƒX“Ç‚İ‚İ
-    std::shared_ptr<AudioResource> LoadAudioResource(const char* filename, const char* keyName);
+    std::shared_ptr<AudioResource> LoadAudioResource(const char* filename);
 
 private:
     using AudioMap = std::map<std::string, std::weak_ptr<AudioResource>>;

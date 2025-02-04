@@ -14,9 +14,14 @@ public:
 
 public:
 	// インスタンス取得
-	static Audio& Instance() { return *instance; }
+	//static Audio& Instance() { return *instance; }
 
-
+	static Audio& Instance()
+	{
+		// 様々な所で取り出したいだからシングルトンにする
+		static Audio instance;
+		return instance;
+	}
 
 	// 再生開始
 	void Play(AudioParam param);
@@ -29,7 +34,10 @@ public:
 
 
 	void Update();
+#ifdef _DEBUG
 
+	void DebugDrawGUI();
+#endif // DEBUG
 	//// オーディオソース読み込み
 	//std::unique_ptr<AudioSource> LoadAudioSource(const char* filename);
 	//std::unique_ptr<AudioSeSource> LoadAudioSource();
@@ -42,7 +50,7 @@ private:
 	std::vector<AudioSource*> audio_source_pool;
 
 private:
-	static Audio*			instance;
+	//static Audio*			instance;
 
 	IXAudio2*				xaudio = nullptr;
 	IXAudio2MasteringVoice* masteringVoice = nullptr;

@@ -27,15 +27,29 @@ public:
 
 	// ボリューム変更
 	void SetVolume(float volume) { sourceVoice->SetVolume(volume); }
+	void GetVolume(float* v) { sourceVoice->GetVolume(v); }
+	float GetVolume() { float v{}; sourceVoice->GetVolume(&v); return v; }
 
 	// 速度変更
 	void SetSpeed(float speed) { sourceVoice->SetFrequencyRatio(speed); }
-
-	
+#ifdef _DEBUG
+	// デバッグ
+	void DebugDrawGUI();
+#endif // DEBUG
 
 private:
+	using AudioSourceId = unsigned int;
+	static AudioSourceId Allocate()
+	{
+		static AudioSourceId id = 0;
+		if (id <= INT_MAX) id -= INT_MAX;
+		return id++;
+	}
+private:
+	std::string filename;
 	IXAudio2SourceVoice*			sourceVoice = nullptr;
 	std::shared_ptr<AudioResource>	resource;
+	AudioSourceId					id;
 };
 //
 //class AudioBgmSource 

@@ -28,7 +28,6 @@ void SceneTitle::Initialize()
 	InitializeComponent();
 
 
-
 	// ƒJƒƒ‰‰Šúİ’è Œ©‚¦‚éˆÊ’u’Ç‚¢‚©‚¯‚é‚à‚Ì‚È‚Ç
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();

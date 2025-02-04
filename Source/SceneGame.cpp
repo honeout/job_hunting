@@ -104,6 +104,8 @@ void SceneGame::Initialize()
 	cameraControlle = nullptr;
 	cameraControlle = new CameraController();
 
+	UpdateBgm();
+
 	// コンポネント登録
 	InitializeComponent();
 
@@ -250,6 +252,7 @@ void SceneGame::Initialize()
 	}
 
 
+
 	//bloomData.luminanceExtractionData.threshold = 0.41f;
 	//bloomData.luminanceExtractionData.intensity = 1.6f;
 
@@ -287,6 +290,7 @@ void SceneGame::Initialize()
 	//float radislBlurMaskRadiusEffectOn = 300;
 	//radialBlurData.mask_radius = radislBlurMaskRadiusNormal;
 
+
 }
 
 
@@ -307,6 +311,7 @@ void SceneGame::Finalize()
 	UiManager::Instance().Clear();
 
 	ProjectileManager::Instance().Clear();
+
 
 	//Bgm->Stop();
 
@@ -334,6 +339,11 @@ void SceneGame::Update(float elapsedTime)
 
 	ActorManager::Instance().Update(dlayTime);
 
+	Audio::Instance().Update();
+	
+	
+
+
 	// カメラ更新
 	cameraControlle->Update(elapsedTime);
 
@@ -344,7 +354,8 @@ void SceneGame::Update(float elapsedTime)
 	// エフェクトしてシェーダーを使う
 	PlayEffectsShaders(dlayTime);
 
-
+	//Audio::Instance().Update();
+	
 
 	//// position更新ソードトレイル
 	//{
@@ -620,6 +631,9 @@ void SceneGame::Render()
 	LightManager::Instanes().DrawDebugGUI();
 
 		postprocessingRenderer.DrawDebugGUI();
+
+		//Audio::Instance().DebugDrawGUI();
+
 		//postprocessingRenderer->DrawDebugGUI();
 		//	ImGui::Separator();
 		//	LightManager::Instanes().DrawDebugGUI();
@@ -2466,6 +2480,22 @@ void SceneGame::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
+}
+
+void SceneGame::UpdateBgm()
+{
+	Audio& bgm = Audio::Instance();
+
+
+	AudioParam audioParam;
+
+	audioParam.filename = "Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav";
+
+	audioParam.loop = true;
+
+	audioParam.volume = 3.0f;
+
+	bgm.Play(audioParam);
 }
 
 
