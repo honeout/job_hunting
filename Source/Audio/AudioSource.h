@@ -37,6 +37,9 @@ public:
 	void DebugDrawGUI();
 #endif // DEBUG
 
+	// –¼‘OŠl“¾
+	std::string GetFilename() { return filename; }
+
 private:
 	using AudioSourceId = unsigned int;
 	static AudioSourceId Allocate()

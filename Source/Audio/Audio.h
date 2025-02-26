@@ -25,6 +25,15 @@ public:
 
 	// 再生開始
 	void Play(AudioParam param);
+
+
+	// 再生停止
+	void Stop(AudioParam param);
+
+
+	// 既存の奴を停止
+	void Stop(std::string filename);
+
 	// 全てのオーディオを停止する
 	void AllStop();
 	// 全てのオーディオを再生させる

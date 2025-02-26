@@ -1729,17 +1729,19 @@ void Model::ReverseplaybackLowerBodyAnimation(float elapsedTime, const char* end
 	}
 }
 
-void Model::PlayUpeerBodyAnimation(int index, bool loop, float currentanimationseconds, float blendSeconds, float currentAnimationUpperAddSeconds, float keyFrameEndUpper)
+void Model::PlayUpeerBodyAnimation(ModelAnim animeRule)
 {
-	currentAnimationIndexUpeer = index;
-	currentAnimationSecondsUpeer = currentanimationseconds;
-	animationLoopFlagUpeer = loop;
+	
+	animeRule.index;
+	currentAnimationIndexUpeer = animeRule.index;
+	currentAnimationSecondsUpeer = animeRule.currentanimationseconds;
+	animationLoopFlagUpeer = animeRule.loop;
 	animationEndFlagUpeer = false;
 	animationBlendTimeUpeer = 0.0f;
-	animationBlendSecondsUpeer = blendSeconds;
-	this->currentAnimationUpperAddSeconds = currentAnimationUpperAddSeconds;
+	animationBlendSecondsUpeer = animeRule.blendSeconds;
+	this->currentAnimationUpperAddSeconds = animeRule.currentAnimationAddSeconds;
 
-	this->keyFrameEndUpper = keyFrameEndUpper;
+	this->keyFrameEndUpper = animeRule.keyFrameEnd;
 }
 
 void Model::PlayLowerBodyAnimation(int index, bool loop, float blendSeconds)
@@ -1753,35 +1755,35 @@ void Model::PlayLowerBodyAnimation(int index, bool loop, float blendSeconds)
 }
 
 // アニメーション再生
-void Model::PlayAnimation(int index, bool loop,float currentanimationseconds,float blendSeconds, float currentAnimationAddSeconds, float keyFrameEnd)
+void Model::PlayAnimation(ModelAnim animeRule)
 {
-	currentAnimationIndex = index;
-	currentAnimationSeconds = oldcurrentAnimationSeconds = currentanimationseconds;
-	animationLoopFlag = loop;
+	currentAnimationIndex = animeRule.index;
+	currentAnimationSeconds = oldcurrentAnimationSeconds = animeRule.currentanimationseconds;
+	animationLoopFlag = animeRule.loop;
 	animationEndFlag = false;
 
 	animationBlendTime = 0.0f;
-	animationBlendSeconds = blendSeconds;
+	animationBlendSeconds = animeRule.blendSeconds;
 
-	this->currentAnimationAddSeconds = currentAnimationAddSeconds;
+	this->currentAnimationAddSeconds = animeRule.currentAnimationAddSeconds;
 
-	this->keyFrameEnd = keyFrameEnd;
+	this->keyFrameEnd = animeRule.keyFrameEnd;
 }
 
-void Model::PlayReverseAnimation(int index, bool loop,float currentanimationseconds, float blendSeconds, float keyFrameEnd)
+void Model::PlayReverseAnimation(ModelAnim animeRule)
 {
 	//currentAnimationIndex = index;
-	currentAnimationIndex = index;
-	currentAnimationSeconds = currentanimationseconds;
-	animationLoopFlag = loop;
+	currentAnimationIndex = animeRule.index;
+	currentAnimationSeconds = animeRule.currentanimationseconds;
+	animationLoopFlag = animeRule.loop;
 	animationEndFlag = false;
 	animationBlendTime = 0.0f;
-	animationBlendSeconds = blendSeconds;
+	animationBlendSeconds = animeRule.blendSeconds;
 
-	this->keyFrameEnd = keyFrameEnd;
+	this->keyFrameEnd = animeRule.keyFrameEnd;
 }
 
-void Model::PlayAnimationBlend(int index,int index2, bool loop, float currentanimationseconds,float blendSeconds)
+void Model::PlayAnimationBlend(int index, int index2, bool loop, float currentanimationseconds, float blendSeconds)
 {
 	currentAnimationIndex = index;
 	currentAnimationIndexSeconds = index2;

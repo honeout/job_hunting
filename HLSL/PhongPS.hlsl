@@ -17,8 +17,14 @@ SamplerState shadowMapSamplerState : register(s1); // 法線マップ
 float4 main(VS_OUT pin) : SV_TARGET
 {
    pin.color.gb = colorGB;
-
     float4 diffuseColor = diffuseMap.Sample(diffuseMapSamplerState, pin.texcoord) * pin.color;
+
+    //if (StencilRef == 1)
+    //{
+    //    //return float4(1, 0, 0, 1);
+    //    clip(-1);
+    //}
+   
 
     // UNIT06
     // サンプルしている。
@@ -178,5 +184,28 @@ float4 main(VS_OUT pin) : SV_TARGET
         // リムライティング
         color.rgb += CalcRimLight(N, E, L, directionalLightData.color.rgb);
     }
-    return color;
+
+    //// Red
+    ////--------------------------------------------
+    //color.rgb = RedChange(color.rgb, colorValue);
+
+
+
+    //	フォグ
+    //--------------------------------------------
+    float3 fogColor = float3(0.1f,0.1f,0.1f);
+
+    float3 f = Fog(
+        //        diffuseColor.xyz,
+        color.rgb, //最終的に計算されたカラーに置き換える
+        viewPosition.xyz,
+        pin.world_position.xyz,
+        fogColor,
+        1.0f,
+        150.0f
+    );
+
+
+    //return color;
+    return float4(f, color.a);
 }

@@ -77,7 +77,7 @@ PostprocessingRenderer::~PostprocessingRenderer()
 
 void PostprocessingRenderer::Render(RenderContext rc)
 {
-
+    
     Graphics& graphics = Graphics::Instance();
 
     // 現在設定されているバッファを避難して初期化しておく
@@ -370,6 +370,10 @@ void PostprocessingRenderer::MoveTowards()
 
         radialBlurData.samplingCount = radialBlurDataMax.samplingCount + FLT_EPSILON <= radialBlurData.samplingCount - FLT_EPSILON ?
             radialBlurDataMax.samplingCount : radialBlurData.samplingCount + stepValueRadial;
+
+
+        radialBlurData.mask_radius = radialBlurDataMax.mask_radius + FLT_EPSILON <= radialBlurData.mask_radius - FLT_EPSILON ?
+            radialBlurDataMax.mask_radius : radialBlurData.mask_radius + stepValueRadial;
     }
     // 値減少
     else

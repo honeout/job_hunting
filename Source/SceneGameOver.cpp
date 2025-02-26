@@ -21,6 +21,9 @@ void SceneGameOver::Initialize()
     // コンポーネント初期化
     InitializeComponent();
 
+	// 音BGM
+	StartBgm();
+
     // スプライト初期化
     //sprite = new Sprite("Data/Sprite/仮End.png");
 
@@ -134,6 +137,8 @@ void SceneGameOver::Initialize()
 		//vignetteData.color.y = 97;
 		//vignetteData.color.z = 97;
 
+		vignetteData.color = { 1,1,1,1 };
+
 		vignetteData.intensity = 1.0f;
 		vignetteData.roundness = 1.0f;
 		vignetteData.smoothness = 0.2f;
@@ -144,7 +149,10 @@ void SceneGameOver::Initialize()
 
 
 		colorGradingData.saturation = 1.0f;
+		colorGradingData.hueShift = 0.2f;
+		colorGradingData.brigthness = 0.3f;
 		postprocessingRenderer.SetColorGradingData(colorGradingData);
+		postprocessingRenderer.SetColorGradingMinData(colorGradingData);
 
 		//postprocessingRenderer.SetColorGradingMinData(colorGradingData);
 	}
@@ -173,6 +181,10 @@ void SceneGameOver::Finalize()
 	UiManager::Instance().Clear();
 
 	ActorManager::Instance().Clear();
+
+	Audio::Instance().AllStop();
+
+	Audio::Instance().AllClear();
 
     if (cameraControlle != nullptr)
     {
@@ -305,21 +317,6 @@ void SceneGameOver::Render()
 
 		rc.deviceContext = dc;
 
-		rc.radialBlurData = radialBlurData;
-
-		rc.colorGradingData = colorGradingData;
-
-		rc.bloomData = bloomData;
-
-
-		// 周辺減光
-		rc.vignetteData.color = vignetteData.color;
-		rc.vignetteData.center = vignetteData.center;
-		rc.vignetteData.intensity = vignetteData.intensity;
-		rc.vignetteData.smoothness = vignetteData.smoothness;
-		rc.vignetteData.rounded = vignetteData.rounded;
-		rc.vignetteData.roundness = vignetteData.roundness;
-
 
 		// ポストプロセスを処理を行う
 		postprocessingRenderer.Render(rc);
@@ -409,6 +406,27 @@ void SceneGameOver::Render()
 			ImGui::SliderFloat("intensity", &vignetteData.intensity, -10, 10);
 			ImGui::SliderFloat("roundness", &vignetteData.roundness, -10, 10);
 			ImGui::SliderFloat("smoothness", &vignetteData.smoothness, -10, 10);
+
+			if (ImGui::Button("colorPushu"))
+			{
+				PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance().Instance();
+
+				postprocessingRenderer.SetVignetteData(vignetteData);
+			}
+
+			if (ImGui::Button("colorPushuMin"))
+			{
+				PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance().Instance();
+
+				postprocessingRenderer.SetVignetteMinData(vignetteData);
+			}
+
+			if (ImGui::Button("colorPushuMax"))
+			{
+				PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance().Instance();
+
+				postprocessingRenderer.SetVignetteMaxData(vignetteData);
+			}
 			
 			ImGui::TreePop();
 
@@ -876,7 +894,7 @@ void SceneGameOver::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/ゲーム戻る.png";
+		const char* filename = "Data/Sprite/スタート　非選択.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UIGame");
 		actor->AddComponent<SpriteControll>();
@@ -1009,4 +1027,21 @@ void SceneGameOver::SelectScene()
 	}
 
 	
+}
+
+void SceneGameOver::StartBgm()
+{
+	Audio& Se = Audio::Instance();
+
+	AudioParam audioParam;
+
+	audioParam.filename = "Data/Audio/BGM/maou_bgm_fantasy06.wav";
+
+	audioParam.keyName = "BGM";
+
+	audioParam.loop = false;
+
+	audioParam.volume = 3.0f;
+
+	Se.Play(audioParam);
 }

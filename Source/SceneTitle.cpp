@@ -27,6 +27,7 @@ void SceneTitle::Initialize()
 
 	InitializeComponent();
 
+	StartMusic();
 
 	// カメラ初期設定 見える位置追いかけるものなど
 	Graphics& graphics = Graphics::Instance();
@@ -128,6 +129,12 @@ void SceneTitle::Initialize()
 
 		postprocessingRenderer.SetBloomData(bloomData);
 
+		colorGradingData.hueShift = 3;
+		colorGradingData.saturation = 1;
+		colorGradingData.brigthness = 1.0f;
+		postprocessingRenderer.SetColorGradingData(colorGradingData);
+		postprocessingRenderer.SetColorGradingMinData(colorGradingData);
+
 		// 周辺減光
 		vignetteData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 		vignetteData.center = { 0.5f, 0.5f };
@@ -137,6 +144,7 @@ void SceneTitle::Initialize()
 		vignetteData.roundness = 0.0f;
 		
 		postprocessingRenderer.SetVignetteData(vignetteData);
+		postprocessingRenderer.SetVignetteMinData(vignetteData);
 	}
 
 
@@ -178,6 +186,11 @@ void SceneTitle::Finalize()
 
 	ActorManager::Instance().Clear();
 
+
+	Audio::Instance().AllStop();
+
+	Audio::Instance().AllClear();
+
 	if (cameraControlle != nullptr)
 	{
 		delete cameraControlle;
@@ -193,7 +206,10 @@ void SceneTitle::Update(float elapsedTime)
 	// カメラコントローラー更新処理
 	//cameraControlle->Update(elapsedTime);
 
+
 	ActorManager::Instance().Update(elapsedTime);
+	// 音更新
+	Audio::Instance().Update();
 
 	// カメラコントローラー更新処理
 	cameraControlle->Update(elapsedTime);
@@ -223,10 +239,15 @@ void SceneTitle::Update(float elapsedTime)
 	{
 		std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(i);
 
-		if (playerid.lock()->GetComponent<Player>()->GetFlashOn())
+		//if (playerid.lock()->GetComponent<Player>()->GetFlashOn())
+		//{
+		//	shaderPlayStateTimer = shaderPlayStateTimerMax;
+		//	shaderBlurStateTimer = shaderBlurStateTimerMax;
+		//}
+
+		if (playerid.lock()->GetComponent<Player>()->InputAttack())
 		{
-			shaderPlayStateTimer = shaderPlayStateTimerMax;
-			shaderBlurStateTimer = shaderBlurStateTimerMax;
+			StopMusic();
 		}
 
 		if (playerid.lock()->GetComponent<Player>()->GetEndState())
@@ -444,6 +465,29 @@ void SceneTitle::Render()
     //        1, 1, 1, 1);
     //    // {位置}{サイズ}{画像どこ
     //}
+}
+void SceneTitle::StartMusic()
+{
+	Audio& bgm = Audio::Instance();
+
+
+	AudioParam audioParam;
+
+	audioParam.filename = "Data/Audio/BGM/maou_bgm_healing17.wav";
+
+	audioParam.loop = true;
+
+	audioParam.volume = 3.0f;
+
+	bgm.Play(audioParam);
+}
+void SceneTitle::StopMusic()
+{
+	Audio& bgm = Audio::Instance();
+
+	std::string filename = "Data/Audio/SE/maou_bgm_healing17.wav";
+
+	bgm.Stop(filename);
 }
 //void SceneTitle::DebugGui()
 //{
@@ -781,7 +825,7 @@ void SceneTitle::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/ゲーム戻る.png";
+		const char* filename = "Data/Sprite/スタートボタン.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UIPush");
 		actor->AddComponent<SpriteControll>();
@@ -1104,16 +1148,18 @@ void SceneTitle::SelectScene()
 
 	case (int)Select::Game:
 	{
-		
-		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-			SetPositionY(exitUiPositionUnselected);
 
-		
-		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-			SetScale(exitUiScaleUnselected);
-		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
-			SetScale(gameUiScaleSelected);
+		// 大きさ変わる選択
+		{
+			UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
+				SetPositionY(exitUiPositionUnselected);
 
+
+			UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
+				SetScale(exitUiScaleUnselected);
+			UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
+				SetScale(gameUiScaleSelected);
+		}
 		//int playerCount = PlayerManager::Instance().GetPlayerCount();
 		//for (int i = 0; i < playerCount; ++i)
 		//{
@@ -1139,18 +1185,20 @@ void SceneTitle::SelectScene()
 	}
 	case (int)Select::Exit:
 	{
-		// ゲーム
-		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
-			SetPositionY(gameUiPositionSelected);
-		// タイトル
-		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-			SetPositionY(exitUiPositionSelected);
+		// 大きさ変わる選択
+		{
+			// ゲーム
+			UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
+				SetPositionY(gameUiPositionSelected);
+			// タイトル
+			UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
+				SetPositionY(exitUiPositionSelected);
 
-		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-			SetScale(exitUiScaleSelected);
-		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
-			SetScale(gameUiScaleUnselected);
-
+			UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
+				SetScale(exitUiScaleSelected);
+			UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
+				SetScale(gameUiScaleUnselected);
+		}
 
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
 		{

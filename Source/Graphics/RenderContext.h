@@ -40,9 +40,9 @@ static constexpr      int SpotLightMax = 8;
 // 色調補正情報
 struct ColorGradingData
 {
-	float hueShift = 0;// 色相調整
+	float hueShift = 3;// 色相調整
 	float saturation = 1;// 彩度調整
-	float brigthness = 1;// 明度調整
+	float brigthness = 1.0f;// 明度調整
 	float dummy;
 };
 
@@ -208,6 +208,8 @@ struct RenderContext
 	// リムライトをつける
 	int isRimRightning = 1;
 
+	// 描画するかどうか
+	int StencilRef = 0;
 
 
 

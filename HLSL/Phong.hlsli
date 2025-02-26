@@ -36,10 +36,21 @@ cbuffer CbScene : register(b0)
     //float2                  dummy2;
     //float2                  dummy2;
 
-    int texcoordMult; // テクスチャ入れる奴
+    // 解像度を上げるかどうか
+    int texcoordMult; 
     int isSpecular;
     int isRimLighting;
-    float dummy;
+    //float dummy;
+    //// 色を変える
+    //float colorValue;
+
+    //float dummy;
+
+    // 描画かどうか
+    int StencilRef;
+
+    //float3 dummy;
+    //float4 dummy2;
 
 };
 
@@ -61,4 +72,42 @@ cbuffer CbShadowmap : register(b3)
     row_major float4x4 lightViewProjection; // ライトビュープロジェクション行列
     float3             shadowColor;         // 影の色
     float              shadowBias;          // 深度値比較時のオフセット
+};
+
+
+//--------------------------------------------
+//	フォグ
+//--------------------------------------------
+//color		:現在の色
+//viewPos	:視点
+//Pos		:ピクセルの位置
+//fogColor	:フォグの色
+//Near		:フォグの近距離
+//Far		:フォグの遠距離
+float3 Fog(float3 color, float3 viewPos, float3 Pos, float3 fogColor, float Near, float Far)
+{
+    float Len = length(viewPos - Pos);
+    float fogalpha = saturate((Len - Near) / (Far - Near));
+    return color.rgb * (1.0 - fogalpha) + fogColor * fogalpha;
+};
+
+
+
+//--------------------------------------------
+//	一部赤くする
+//--------------------------------------------
+//color		:現在の色
+//changeColor	:変える色
+float3 RedChange(float3 color,float colorValue)
+{
+
+    float colorR = 0.5f;
+    float colorAfterChange = color.r >= colorValue ? saturate(color.r + colorValue) : color.r;
+
+
+
+    color.r = colorAfterChange;
+
+    //return color.rgb * (1.0 - colorValue) + changeColor * colorValue;
+    return color.rgb;
 };

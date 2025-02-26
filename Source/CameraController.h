@@ -17,6 +17,7 @@ class CameraController
 	{
 		FreeCamera,		// フリーカメラ
 		LockonCamera,	// ロックオンカメラ
+		LockonHeightCamera,	// ロックオンカメラ
 		MotionCamera,	// モーションカメラ
 	};
 
@@ -36,9 +37,9 @@ public:
 //
 //	// 更新処理
 //	void Update(float elapsedTime) override;
-//#ifdef _DEBUG
-//	void OnGUI() override;
-//#endif // _DEBUG
+#ifdef _DEBUG
+	void OnGUI();
+#endif // _DEBUG
 
 	bool GetCameraMortionDataTime();
 
@@ -49,6 +50,9 @@ private:
 	// ロックオンカメラ更新処理
 	void LockonCamera(float elapsedTime);
 
+	// ロックオン高さカメラ更新処理
+	void LockonTopHeightCamera(float elapsedTime);
+
 	// モーションカメラ更新処理
 	void MotionCamera(float elapsedTime);
 
@@ -58,6 +62,8 @@ private:
 
 	// ロックオンカメラ
 	void OnLockonMode(void* data);
+
+	void OnLockonTopHeightMode(void* data);
 
 	// モーションカメラ
 	void OnMotionMode(void* data);
@@ -91,11 +97,18 @@ private:
 	float				shakeTimer = 0;
 	float				shakePower = 1;
 
-	float               lengthMin = 1;
+	// ターゲットの最低距離
+	float               lengthMin = 5.5f;
+
+	// ターゲットの一定以上高い
+	float               topHeight = 3.0f;
+
+
 
 	// メッセージキー
 	uint64_t			CAMERACHANGEFREEMODEKEY;
 	uint64_t			CAMERACHANGELOCKONMODEKEY;
+	uint64_t			CAMERACHANGELOCKONTOPHEIGHTMODEKEY;
 	uint64_t			CAMERACHANGEMOTIONMODEKEY;
 	uint64_t			CAMERASHAKEKEY;
 

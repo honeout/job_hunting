@@ -42,6 +42,9 @@ public:
     // コンポネント登録
     void InitializeComponent();
 
+	// BGM再生
+	void StartBgm();
+
     // カメラの時間制御初期化
     void CameraInitialize();
     // カメラの時間制御

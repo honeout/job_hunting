@@ -44,6 +44,8 @@ public:
 
 	// ‚Ç‚ÌƒV[ƒ“‚És‚­‚©
 	void SelectScene();
+
+	void StartBgm();
 private:
 	enum class Select
 	{

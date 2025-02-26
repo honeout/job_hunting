@@ -47,7 +47,7 @@
 //   int texcoordMult;                  // Offset: 1040 Size:     4
 //   int isSpecular;                    // Offset: 1044 Size:     4 [unused]
 //   int isRimLighting;                 // Offset: 1048 Size:     4 [unused]
-//   float dummy;                       // Offset: 1052 Size:     4 [unused]
+//   int StencilRef;                    // Offset: 1052 Size:     4 [unused]
 //
 // }
 //
@@ -271,11 +271,11 @@ dp3 r1.w, r4.xyzx, r4.xyzx
 rsq r1.w, r1.w
 mul r4.xyz, r1.wwww, r4.xyzx  // r4.x <- vout.binormal.x; r4.y <- vout.binormal.y; r4.z <- vout.binormal.z
 
-#line 35
+#line 36
 itof r6.xy, cb0[65].xxxx
 mul r6.xy, r6.xyxx, v3.xyxx  // r6.x <- vout.texcoord.x; r6.y <- vout.texcoord.y
 
-#line 39
+#line 40
 nop 
 mov r5.x, r5.x
 mov r5.y, r5.y
@@ -319,10 +319,10 @@ add r7.xy, r6.zwzz, l(0.500000, 0.500000, 0.000000, 0.000000)  // r7.y <- worldV
 mov r7.xy, r7.xyxx  // r7.x <- <CalcShadowTexcoord return value>.x; r7.y <- <CalcShadowTexcoord return value>.y
 mov r7.z, r7.z  // r7.z <- <CalcShadowTexcoord return value>.z
 
-#line 39 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongVS.hlsl"
+#line 40 "C:\Users\2220261\Desktop\2年時前期\E年\個人製作\project\job_hunting\HLSL\PhongVS.hlsl"
 mov r7.xyz, r7.xyzx  // r7.x <- vout.shadowTexcoord.x; r7.y <- vout.shadowTexcoord.y; r7.z <- vout.shadowTexcoord.z
 
-#line 40
+#line 41
 mov o0.xyzw, r0.xyzw
 mov o6.xyzw, r3.xyzw
 mov o1.xyz, r5.xyzx

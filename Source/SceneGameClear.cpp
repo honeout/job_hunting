@@ -125,6 +125,23 @@ void SceneGameClear::Initialize()
 		bloomData.gaussianFilterData.deviation = 8.3f;
 
 		postprocessingRenderer.SetBloomData(bloomData);
+
+		vignetteData.smoothness = 0.0f;
+		vignetteData.intensity = 0.0;
+		vignetteData.color = { 0,0,0,1 };
+		postprocessingRenderer.SetVignetteData(vignetteData);
+		postprocessingRenderer.SetVignetteMinData(vignetteData);
+
+
+		// カラーグラディエンス
+		float colorGradingBrigthness = 1.0f;
+		float colorGradingHueShift = 3.5f;
+		colorGradingData.brigthness = colorGradingBrigthness;
+		colorGradingData.hueShift = colorGradingHueShift;
+
+
+		postprocessingRenderer.SetColorGradingData(colorGradingData);
+		postprocessingRenderer.SetColorGradingMinData(colorGradingData);
 	}
 
 	// カメラ初期化
@@ -154,6 +171,11 @@ void SceneGameClear::Finalize()
 	UiManager::Instance().Clear();
 
 	ActorManager::Instance().Clear();
+
+
+	Audio::Instance().AllStop();
+
+	Audio::Instance().AllClear();
 
 	if (cameraControlle != nullptr)
 	{
@@ -742,7 +764,7 @@ void SceneGameClear::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/タイトル戻る.png";
+		const char* filename = "Data/Sprite/スタート　非選択.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UITitle");
 		actor->AddComponent<SpriteControll>();
@@ -812,6 +834,8 @@ void SceneGameClear::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
+	// 音BGM
+	StartBgm();
 
 	//// UI タイトル名前
 	//{
@@ -886,6 +910,23 @@ void SceneGameClear::InitializeComponent()
 	//	UiManager::Instance().Register(actor);
 	//}
 
+}
+
+void SceneGameClear::StartBgm()
+{
+	Audio& Se = Audio::Instance();
+
+	AudioParam audioParam;
+
+	audioParam.filename = "Data/Audio/BGM/maou_bgm_healing14b.wav";
+
+	audioParam.keyName = "BGM";
+
+	audioParam.loop = false;
+
+	audioParam.volume = 3.0f;
+
+	Se.Play(audioParam);
 }
 
 void SceneGameClear::CameraInitialize()

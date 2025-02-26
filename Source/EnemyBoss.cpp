@@ -264,6 +264,9 @@ void EnemyBoss::Render(RenderContext& rc, ModelShader& shader)
 
         // 影オンオフ
         rc.isRimRightning = 0;
+
+        // 描画オンオフ
+        rc.StencilRef = 0;
         
         shader.Begin(rc);// シェーダーにカメラの情報を渡す
 
@@ -350,6 +353,127 @@ void EnemyBoss::DrawDebugPrimitive()
     debugRenderer->DrawCylinder(targetPosition, radius, height, DirectX::XMFLOAT4(1, 1, 0, 1));
 }
 
+void EnemyBoss::InputSlashSe()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/スラッシュ２回目.wav";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void EnemyBoss::InputStopSlashSe()
+{
+    Audio& Se = Audio::Instance();
+
+    std::string filename = "Data/Audio/SE/スラッシュ２回目.wav";
+
+    // 種類停止
+    Se.Stop(filename);
+}
+
+void EnemyBoss::InputJampSe()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/Enemy着地.wav";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void EnemyBoss::InputStopJampSe()
+{
+    Audio& Se = Audio::Instance();
+
+    std::string filename = "Data/Audio/SE/Enemy着地.wav";
+
+    // 種類停止
+    Se.Stop(filename);
+}
+
+void EnemyBoss::InputDashSe()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/Enemy着地.wav";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void EnemyBoss::InputStopDashSe()
+{
+    Audio& Se = Audio::Instance();
+
+    std::string filename = "Data/Audio/SE/Enemy着地.wav";
+
+    // 種類停止
+    Se.Stop(filename);
+}
+
+void EnemyBoss::InputAwakeSe()
+{
+    
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/maou_se_voice_tiger01.wav";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void EnemyBoss::InputImpactSe()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/衝撃波ヒット.wav";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void EnemyBoss::InputDamageSe()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/打撃.wav";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
 // 足踏み(衝撃波)の当たり判定
 void EnemyBoss::CollisionImpactVsPlayer()
 {
@@ -411,6 +535,8 @@ void EnemyBoss::CollisionImpactVsPlayer()
                     if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamageImpact, 0.5f))
                     {
                         player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+
+                        InputImpactSe();
 
                         // 吹き飛ばす
                         {
@@ -913,7 +1039,7 @@ void EnemyBoss::CollisionInpact()
             // 高さが一定以下なら通る
             if (bossLeftFootPosition.y + radiusInpactHeight < playerPosition.y) return;
             // ダメージを与える。
-            if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 0.5f))
+            if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamageImpact, 0.5f))
             {
                 player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
 
@@ -965,6 +1091,7 @@ void EnemyBoss::ManageAwakeTime(float elapsedTime)
 
         // 暴走状態
         isEnemyAwakened = true;
+
     }
 
     // 覚醒終了
@@ -1021,6 +1148,7 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
             // ダメージを与える。
             if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamage, 1.0f))
             {
+                InputSlashSe();
 
                 DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
                 DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
@@ -1462,7 +1590,7 @@ void EnemyBoss::TransitionWanderState()
     SetRandomTargetPosition();
 
     // 歩きアニメーション再生
-    model->PlayAnimation(EnemyBoss::Anim_Walk, true);
+    //model->PlayAnimation(EnemyBoss::Anim_Walk, true);
 }
 
 // 徘徊ステート更新処理
@@ -1760,7 +1888,7 @@ void EnemyBoss::TransitionDeathState()
     state = State::Death;
 
     // ダメージアニメーション再生
-    model->PlayAnimation(Anim_Die, false);
+    //model->PlayAnimation(Anim_Die, false);
 }
 
 void EnemyBoss::UpdateDeathState(float elapsedTime)

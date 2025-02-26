@@ -5,6 +5,9 @@
 #include <DirectXMath.h>
 #include "Graphics/ModelResource.h"
 
+
+
+
 // モデル
 class Model
 {
@@ -36,6 +39,16 @@ public:
 		DirectX::XMFLOAT3	scale = { 1, 1, 1 };
 	};
 
+
+	struct ModelAnim
+	{
+		int index = 0;
+		bool loop = false;
+		float currentanimationseconds = 0.0f;
+		float blendSeconds = 0.7f;
+		float currentAnimationAddSeconds = 0;
+		float keyFrameEnd = 0.0f;
+	};
 
 
 	//struct VectorKeyframe
@@ -117,17 +130,17 @@ public:
 	void ReverseplaybackLowerBodyAnimation(float elapsedTime, const char* end, bool blend = false);
 
 	//アニメーション再生
-	void PlayUpeerBodyAnimation(int index, bool loop, float currentanimationseconds, float blendSeconds = 0.2f , float currentAnimationUpperAddSeconds = 0, float keyFrameEndUpper = 0.0f);
+	void PlayUpeerBodyAnimation(ModelAnim animeRule);
 
 	//アニメーション再生
 	void PlayLowerBodyAnimation(int index, bool loop, float blendSeconds = 0.2f);
 
 
 	// アニメーション再生
-	void PlayAnimation(int index, bool loop,float currentanimationseconds = 0.0f, float blendSeconds = 0.2f, float currentAnimationAddSeconds = 0 , float keyFrameEnd = 0.0f);
+	void PlayAnimation(ModelAnim animeRule);
 
 	//逆再生アニメーション
-	void PlayReverseAnimation(int index, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f, float keyFrameEnd = 0.0f);
+	void PlayReverseAnimation(ModelAnim animeRule);
 
 	// 二つのアニメーションブレンド
 	void PlayAnimationBlend(int index,int index2, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);
@@ -151,6 +164,10 @@ public:
 
 	// 現在の上半身のアニメーション再生時間取得
 	float GetCurrentAnimationSecondsUpeer()const { return currentAnimationSecondsUpeer; }
+
+	// 現在のアニメーション種類
+	int GetCurrentAnimationIndex() { return currentAnimationIndex; }
+	int GetCurrentAnimationIndexUpeerIndex() { return currentAnimationIndexUpeer; }
 
 	int GetNodeIndex(const char* name)const;
 

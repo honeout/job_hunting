@@ -95,10 +95,36 @@ void Audio::Play(AudioParam param)
 	AudioResourceManager& audioResourceManager = AudioResourceManager::Instance();
 	//if (&audioResourceManager) return;
 	std::shared_ptr<AudioResource> resource = audioResourceManager.LoadAudioResource(param.filename.c_str());
+	
+	// オーディオソース作成
+	AudioSource* audio = audio_source_pool.emplace_back(new AudioSource(this->xaudio, resource, param));
+
+
+	audio->Play();
+}
+
+void Audio::Stop(AudioParam param)
+{
+	// リソース作成
+	AudioResourceManager& audioResourceManager = AudioResourceManager::Instance();
+	//if (&audioResourceManager) return;
+	std::shared_ptr<AudioResource> resource = audioResourceManager.LoadAudioResource(param.filename.c_str());
 	// オーディオソース作成
 	AudioSource* audio = this->audio_source_pool.emplace_back(new AudioSource(this->xaudio, resource, param));
 
-	audio->Play();
+	audio->Stop();
+}
+
+void Audio::Stop(std::string filename)
+{
+	for (AudioSource* source : this->audio_source_pool)
+	{
+		if (source->GetFilename() == filename)
+		{
+			source->Stop();
+			source->ClearBuffers();
+		}
+	}
 }
 
 void Audio::AllStop()
@@ -113,6 +139,7 @@ void Audio::AllStart()
 {
 	for (AudioSource* audio_source : this->audio_source_pool)
 	{
+		
 		audio_source->Play();
 	}
 }
@@ -172,6 +199,7 @@ void Audio::DebugDrawGUI()
 		{
 			AllClear();
 		}
+
 
 		// オーディオソース
 		{

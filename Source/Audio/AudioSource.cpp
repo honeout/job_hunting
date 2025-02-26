@@ -24,9 +24,12 @@ AudioSource::AudioSource(IXAudio2* xaudio, std::shared_ptr<AudioResource>& resou
 
 	sourceVoice->SubmitSourceBuffer(&buffer);
 
-#ifdef _DEBUG
+
 	filename = param.filename;
-#endif // DEBUG
+
+//#ifdef _DEBUG
+//	filename = param.filename;
+//#endif // DEBUG
 }
 
 // デストラクタ

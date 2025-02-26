@@ -56,58 +56,15 @@ void SceneGame::Initialize()
 		maxPos.z = 30;
 	}
 
-	//// ステージ初期化
-	//{
-	//	const char* filename = "Data/Model/ExampleStage/M_stage .mdl";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->AddComponent<ModelControll>();
-	//	actor->GetComponent<ModelControll>()->LoadModel(filename);
-	//	actor->SetName("StageMain");
-	//	actor->AddComponent<Transform>();
-
-	//	actor->GetComponent<Transform>()->
-	//		SetPosition(DirectX::XMFLOAT3(0, -25, 0));
-
-	//	actor->GetComponent<Transform>()->
-	//		SetAngle(DirectX::XMFLOAT3(0, 0, 0));
-
-	//	actor->GetComponent<Transform>()->
-	//		SetScale(DirectX::XMFLOAT3(1, 1, 1));
-
-
-
-
-	//	actor->AddComponent<StageMain>();
-
-	//	// 影シェーダー
-	//	actor->GetComponent<StageMain>()->SetIsRimRightning(0);
-
-	//	// 解像度
-	//	actor->GetComponent<StageMain>()->SetTexcoordMult(20);
-
-	//	// スペキュラー
-	//	actor->GetComponent<StageMain>()->SetIsSpecular(0);
-
-
-	//	// これが２Dかの確認
-	//	bool check2d = false;
-	//	actor->SetCheck2d(check2d);
-
-	//	StageManager::Instance().Register(actor);
-
-
-
-
-	//}
 
 		// カメラ初期化
 	cameraControlle = nullptr;
 	cameraControlle = new CameraController();
 
-	UpdateBgm();
-
 	// コンポネント登録
 	InitializeComponent();
+
+	UpdateBgm();
 
 
 	// カメラ初期設定 見える位置追いかけるものなど
@@ -187,109 +144,7 @@ void SceneGame::Initialize()
 	}
 
 	// ポストプロセス描画クラス生成
-	{
-		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-		//postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
-		// シーンテクスチャを設定しておく
-		ShaderResourceViewData srvData;
-		srvData.srv = renderTarget->GetShaderResourceView();
-		srvData.width = renderTarget->GetWidth();
-		srvData.height = renderTarget->GetHeight();
-		//srvData.width = 100;
-		//srvData.height = 100;
-		//postprocessingRenderer->SetSceneData(srvData);
-		postprocessingRenderer.SetSceneData(srvData);
-
-		bloomData.luminanceExtractionData.threshold = 0.41f;
-		bloomData.luminanceExtractionData.intensity = 1.6f;
-
-		bloomData.gaussianFilterData.kernelSize = 15;
-		bloomData.gaussianFilterData.deviation = 8.3f;
-
-		postprocessingRenderer.SetBloomMaxData(bloomData);
-
-		// ポストエフェクト
-		// 画面白ボケ
-        // カラーグラディエンス
-		float colorGradingBrigthness = 0.8f;
-		colorGradingDataMin.brigthness = colorGradingBrigthness;
-
-		
-		postprocessingRenderer.SetColorGradingMinData(colorGradingDataMin);
-		//colorGradingData.brigthness = 5;
-		//colorGradingData.hueShift = 3;
-		//colorGradingData.saturation = 0;
-
-		//postprocessingRenderer.SetColorGradingData(colorGradingData);
-
-		// ブラー
-		// ブラー範囲
-		float radislBlurRadius = 0;
-		radialBlurData.radius = radislBlurRadius;
-
-
-		//float radislBlurSamplingCount = 10;
-		//radialBlurData.samplingCount = radislBlurSamplingCount;
-		//float radislBlurMaskRadius = 30;
-		//radialBlurData.mask_radius = radislBlurMaskRadius;
-		// ブラーのかからない範囲
-		float radislBlurMaskRadiusNormal = 600;
-		radialBlurData.mask_radius = radislBlurMaskRadiusNormal;
-
-		postprocessingRenderer.SetRadialBlurMinData(radialBlurData);
-
-		// 周辺減光
-		vignetteData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-		vignetteData.center = { 0.5f, 0.5f };
-		vignetteData.intensity = 0.0f;
-		vignetteData.smoothness = 0.0f;
-		vignetteData.rounded = false;
-		vignetteData.roundness = 1.0f;
-
-		postprocessingRenderer.SetVignetteMinData(vignetteData);
-
-
-	}
-
-
-
-	//bloomData.luminanceExtractionData.threshold = 0.41f;
-	//bloomData.luminanceExtractionData.intensity = 1.6f;
-
-	//bloomData.gaussianFilterData.kernelSize = 15;
-	//bloomData.gaussianFilterData.deviation = 8.3f;
-
-
-
-	// テクスチャ
-	//texture = std::make_unique<Sprite>("Data/Sprite/player_status.png");
-
-	//// BGM
-	//Bgm = Audio::Instance().LoadAudioSource("Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav");
-	//Bgm->Play(true);
-	//Bgm->SetVolume(0.3f);
-
-
-	//// ポストエフェクト
-	//		// 画面白ボケ
-	//// カラーグラディエンス
-	//float colorGradingBrigthness = 0.8f;
-	//colorGradingData.brigthness = colorGradingBrigthness;
-
-	//// ブラー
-	//// ブラー範囲
-	//float radislBlurRadius = 0;
-	//radialBlurData.radius = radislBlurRadius;
-
-	////float radislBlurSamplingCount = 10;
-	////radialBlurData.samplingCount = radislBlurSamplingCount;
-	////float radislBlurMaskRadius = 30;
-	////radialBlurData.mask_radius = radislBlurMaskRadius;
-	//// ブラーのかからない範囲
-	//float radislBlurMaskRadiusNormal = 600;
-	//float radislBlurMaskRadiusEffectOn = 300;
-	//radialBlurData.mask_radius = radislBlurMaskRadiusNormal;
-
+	PostProcessingRendererInitialize();
 
 }
 
@@ -312,8 +167,12 @@ void SceneGame::Finalize()
 
 	ProjectileManager::Instance().Clear();
 
+	Audio::Instance().AllStop();
 
-	//Bgm->Stop();
+	Audio::Instance().AllClear();
+
+
+	/*Bgm->Stop();*/
 
 	if (cameraControlle != nullptr)
 	{
@@ -525,20 +384,20 @@ void SceneGame::Render()
 		
 		rc.deviceContext = dc;
 
-		rc.radialBlurData = radialBlurData;
+		//rc.radialBlurData = radialBlurData;
 
-		rc.colorGradingData = colorGradingData;
+		//rc.colorGradingData = colorGradingData;
 
-		rc.bloomData = bloomData;
+		//rc.bloomData = bloomData;
 
 
-		// 周辺減光
-		rc.vignetteData.color = vignette_color;
-		rc.vignetteData.center = vignette_center;
-		rc.vignetteData.intensity = vignette_intensity;
-		rc.vignetteData.smoothness = vignette_smoothness;
-		rc.vignetteData.rounded = vignette_rounded;
-		rc.vignetteData.roundness = vignette_roundness;
+		//// 周辺減光
+		//rc.vignetteData.color = vignette_color;
+		//rc.vignetteData.center = vignette_center;
+		//rc.vignetteData.intensity = vignette_intensity;
+		//rc.vignetteData.smoothness = vignette_smoothness;
+		//rc.vignetteData.rounded = vignette_rounded;
+		//rc.vignetteData.roundness = vignette_roundness;
 
 	
 		
@@ -575,6 +434,8 @@ void SceneGame::Render()
 
 
 #ifdef _DEBUG
+	
+	cameraControlle->OnGUI();
 		 //2DデバッグGUI描画
 	{
 		//ImGui::Separator();
@@ -628,11 +489,23 @@ void SceneGame::Render()
 		ImGui::Separator();
 	}
 
+	if (ImGui::TreeNode("audio"))
+	{
+		//if (ImGui::Button("AudioStart"))
+		//{
+		//	UpdateBgm();
+		//}
+		if (ImGui::Button("AudioStop"))
+		{
+			StopBgm();
+		}
+	}
+
 	LightManager::Instanes().DrawDebugGUI();
 
 		postprocessingRenderer.DrawDebugGUI();
 
-		//Audio::Instance().DebugDrawGUI();
+		Audio::Instance().DebugDrawGUI();
 
 		//postprocessingRenderer->DrawDebugGUI();
 		//	ImGui::Separator();
@@ -799,74 +672,140 @@ void SceneGame::RenderShadowmap()
 	}
 }
 
+void SceneGame::PostProcessingRendererInitialize()
+{
+
+	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+	//postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
+	// シーンテクスチャを設定しておく
+	ShaderResourceViewData srvData;
+	srvData.srv = renderTarget->GetShaderResourceView();
+	srvData.width = renderTarget->GetWidth();
+	srvData.height = renderTarget->GetHeight();
+	//srvData.width = 100;
+	//srvData.height = 100;
+	//postprocessingRenderer->SetSceneData(srvData);
+	postprocessingRenderer.SetSceneData(srvData);
+
+	bloomData.luminanceExtractionData.threshold = 0.41f;
+	bloomData.luminanceExtractionData.intensity = 1.6f;
+
+	bloomData.gaussianFilterData.kernelSize = 15;
+	bloomData.gaussianFilterData.deviation = 8.3f;
+
+	postprocessingRenderer.SetBloomMaxData(bloomData);
+
+	// ポストエフェクト
+	// 画面白ボケ
+	// カラーグラディエンス
+	float colorGradingBrigthness = 1.0f;
+	float colorGradingHueShift = 3.0f;
+	colorGradingDataMin.brigthness = colorGradingBrigthness;
+	colorGradingDataMin.hueShift = colorGradingHueShift;
+
+
+	postprocessingRenderer.SetColorGradingMinData(colorGradingDataMin);
+	//colorGradingData.brigthness = 5;
+	//colorGradingData.hueShift = 3;
+	//colorGradingData.saturation = 0;
+
+	//postprocessingRenderer.SetColorGradingData(colorGradingData);
+
+	// ブラー
+	// ブラー範囲
+	float radislBlurRadius = 0;
+	radialBlurData.radius = radislBlurRadius;
+
+
+	//float radislBlurSamplingCount = 10;
+	//radialBlurData.samplingCount = radislBlurSamplingCount;
+	//float radislBlurMaskRadius = 30;
+	//radialBlurData.mask_radius = radislBlurMaskRadius;
+	// ブラーのかからない範囲
+	float radislBlurMaskRadiusNormal = 600;
+	radialBlurData.mask_radius = radislBlurMaskRadiusNormal;
+
+	postprocessingRenderer.SetRadialBlurMinData(radialBlurData);
+
+	// 周辺減光
+	vignetteData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	vignetteData.center = { 0.5f, 0.5f };
+	vignetteData.intensity = 0.0f;
+	vignetteData.smoothness = 0.0f;
+	vignetteData.rounded = false;
+	vignetteData.roundness = 1.0f;
+
+	postprocessingRenderer.SetVignetteMinData(vignetteData);
+	postprocessingRenderer.SetVignetteData(vignetteData);
+
+
+
+}
+
+void SceneGame::PostProcessingRendererFinalize()
+{
+	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
+	// シーンテクスチャを設定しておく
+	ShaderResourceViewData srvData;
+	srvData.srv = renderTarget->GetShaderResourceView();
+	srvData.width = renderTarget->GetWidth();
+	srvData.height = renderTarget->GetHeight();
+
+	postprocessingRenderer.SetSceneData(srvData);
+
+	bloomData.luminanceExtractionData.threshold = 0.41f;
+	bloomData.luminanceExtractionData.intensity = 1.6f;
+
+	bloomData.gaussianFilterData.kernelSize = 15;
+	bloomData.gaussianFilterData.deviation = 8.3f;
+
+	postprocessingRenderer.SetBloomMinData(bloomData);
+	postprocessingRenderer.SetBloomData(bloomData);
+
+	// ポストエフェクト
+	// 画面白ボケ
+	// カラーグラディエンス
+	float colorGradingBrigthness = 1.0f;
+	float colorGradingHueShift = 3.0f;
+	colorGradingDataMin.brigthness = colorGradingBrigthness;
+	colorGradingDataMin.hueShift = colorGradingHueShift;
+
+
+	postprocessingRenderer.SetColorGradingMinData(colorGradingDataMin);
+	postprocessingRenderer.SetColorGradingData(colorGradingDataMin);
+
+	// ブラー
+	// ブラー範囲
+	float radislBlurRadius = 0;
+	radialBlurData.radius = radislBlurRadius;
+
+
+	// ブラーのかからない範囲
+	float radislBlurMaskRadiusNormal = 600;
+	radialBlurData.mask_radius = radislBlurMaskRadiusNormal;
+
+	postprocessingRenderer.SetRadialBlurMinData(radialBlurData);
+	postprocessingRenderer.SetRadialBlurData(radialBlurData);
+
+	// 周辺減光
+	vignetteData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	vignetteData.center = { 0.5f, 0.5f };
+	vignetteData.intensity = 0.0f;
+	vignetteData.smoothness = 0.0f;
+	vignetteData.rounded = false;
+	vignetteData.roundness = 1.0f;
+
+	postprocessingRenderer.SetVignetteMinData(vignetteData);
+	postprocessingRenderer.SetVignetteData(vignetteData);
+
+}
+
 void SceneGame::PlayEffectsShaders(float elapsedTime)
 {
 	Graphics& graphics = Graphics::Instance();
 
-	shaderPlayStateTimer -= elapsedTime;
-	// エフェクト
-	if (shaderPlayStateTimer > 0)
-	{
-		// 画面白ボケ開始
-		colorGradingData.brigthness = 
-			(colorGradingData.brigthness + FLT_EPSILON) > (colorGradingDataBrigthnessMax - FLT_EPSILON )?
-			colorGradingData.brigthness : colorGradingData.brigthness + (0.01f + elapsedTime);
-		// 画面真ん中
-		radialBlurData.center = { 0.5f ,0.5f };
-		// 画面ブラー
-		float radislBlurRadius = 200;
-		radialBlurData.radius = 
-			radialBlurData.radius + FLT_EPSILON > radialBlurDataRadislBlurRadiusMax - FLT_EPSILON ?
-			radialBlurData.radius : radialBlurData.radius + (5 + elapsedTime);
-			//radialBlurData.radius + FLT_EPSILON > radislBlurRadius - FLT_EPSILON ?
-			//radialBlurData.radius + (5 + elapsedTime) : radialBlurData.radius;
-		// 歪み具合
-		int radislBlurSamplingCount = 10;
-		radialBlurData.samplingCount = radislBlurSamplingCount;
-		// 自分が見える範囲
-		float radislBlurMaskRadius = 300;
-		radialBlurData.mask_radius = radislBlurMaskRadius;
-		if (!radialBlurData.radius + FLT_EPSILON > radialBlurDataRadislBlurRadiusMax - FLT_EPSILON)
-		{
-			radialBlurData.radius;
-		}
 
-		if (radialBlurData.radius + FLT_EPSILON > radialBlurDataRadislBlurRadiusMax - FLT_EPSILON)
-		{
-			radialBlurData.radius;
-		}
-
-		// ブルーム関係
-		{
-			bloomData.luminanceExtractionData.threshold;
-			bloomData.luminanceExtractionData.intensity;
-
-			bloomData.gaussianFilterData.kernelSize;
-			bloomData.gaussianFilterData.deviation;
-		}
-		
-	}
-	else
-	{
-		// 画面白ボケ
-		float colorGradingBrigthness = 0.8f;
-		colorGradingData.brigthness = colorGradingBrigthness + FLT_EPSILON > colorGradingData.brigthness - FLT_EPSILON ? colorGradingBrigthness : colorGradingData.brigthness - (0.01f + elapsedTime);
-
-		//shaderPlayStateTimer = shaderPlayStateTimerMax;
-
-		// ブラー範囲
-		float radislBlurRadius = 0;
-		radialBlurData.radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radialBlurData.radius - (5 + elapsedTime) : radislBlurRadius - FLT_EPSILON;
-
-		//float radislBlurSamplingCount = 10;
-		//radialBlurData.samplingCount = radislBlurSamplingCount;
-		//float radislBlurMaskRadius = 30;
-		//radialBlurData.mask_radius = radislBlurMaskRadius;
-		// ブラーのかからない範囲
-		float radislBlurMaskRadiusNormal = 600;
-		float radislBlurMaskRadiusEffectOn = 300;
-		radialBlurData.mask_radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radislBlurMaskRadiusEffectOn : radislBlurMaskRadiusNormal;
-	}
 
 	// 画面スロー
 	bool hitCheck = PlayerManager::Instance().GetPlayer(0)->GetComponent<Player>()->GetHitCheck();
@@ -878,22 +817,17 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 	}
 	if (dlayStateTimer - FLT_EPSILON > 0.0f + FLT_EPSILON)
 	{
-		dlayStateTimer -= 0.1f;
+		dlayStateTimer -= elapsedTime;
 
 		dlayTimeCheck = true;
 
-		float saturationGageMin = 0.0f;
 
-		colorGradingData.saturation = saturationGageMin - FLT_EPSILON > colorGradingData.saturation + FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation - (0.01f + elapsedTime);
 	}
 
 	else
 	{
 		dlayTimeCheck = false;
 
-		float saturationGageMax = 1;
-
-		colorGradingData.saturation = saturationGageMax + FLT_EPSILON < colorGradingData.saturation - FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation + (0.01f + elapsedTime);
 	}
 
 
@@ -1186,7 +1120,8 @@ void SceneGame::InitializeComponent()
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new AwakeStartState(actor));
 
 		// ステートセット
-		actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::State::AwakeStart));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::State::Jump));
+		//actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::State::Idle));
 
 		// これが２Dかの確認
 		bool check2d = false;
@@ -2496,6 +2431,19 @@ void SceneGame::UpdateBgm()
 	audioParam.volume = 3.0f;
 
 	bgm.Play(audioParam);
+}
+
+void SceneGame::StopBgm()
+{
+	Audio& bgm = Audio::Instance();
+
+
+	AudioParam audioParam;
+
+	audioParam.filename = "Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav";
+
+
+	bgm.Stop(audioParam);
 }
 
 

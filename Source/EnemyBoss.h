@@ -42,6 +42,31 @@ public:
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
 
+
+    // SE再生 切り裂き
+    void InputSlashSe();
+    void InputStopSlashSe();
+
+    // SE再生 ジャンプ
+    void InputJampSe();
+    void InputStopJampSe();
+
+
+    // SE再生 ダッシュ
+    void InputDashSe();
+    // SE再生 ダッシュ
+    void InputStopDashSe();
+
+
+    // SE叫び声
+    void InputAwakeSe();
+
+    // SE衝撃波
+    void InputImpactSe();
+
+    // SEダメージ音
+    void InputDamageSe();
+
     // 当たり判定衝撃波
     void CollisionImpactVsPlayer();
 
@@ -150,6 +175,12 @@ public:
         AssaultAttack,
         JumpStompAttack,
         DushAttack,
+    };
+
+    enum class ExitRoot
+    {
+        ExitJamp,
+        Confusion
     };
 public:
     // ステートタイマー設定
@@ -294,6 +325,10 @@ private:
     std::weak_ptr<HP>	hp;
     std::weak_ptr<Transform>	transform;
 
+
+
+
+
     // 覚醒有無
     bool isEnemyAwakened = false;
     // 覚醒時間
@@ -434,11 +469,11 @@ private:
 
 
     // ダメージ
-    int applyDamageSlash = 8;
-    int applyDamageJamp = 5;
-    int applyDamageStamp = 8;
-    int applyDamageImpact = 8;
-    int applyDamageDush = 6;
+    int applyDamageSlash = 5;
+    int applyDamageJamp = 4;
+    int applyDamageStamp = 6;
+    int applyDamageImpact = 5;
+    int applyDamageDush = 7;
 };
 
 // エネミーマネージャー

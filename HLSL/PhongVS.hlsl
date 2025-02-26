@@ -32,6 +32,7 @@ VS_OUT main(
     // 法線マップの計算
     vout.binormal = normalize(cross(vout.normal,vout.tangent));
 
+    // テクスチャの解像度を上げる。
     vout.texcoord = texcoord * texcoordMult;
 
     // UNIT11

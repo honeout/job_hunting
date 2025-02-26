@@ -30,8 +30,8 @@ Framework::Framework(HWND hWnd)
 
 	// ƒV[ƒ“‰Šú‰»
 	//sceneGame.Initialize();
-	//SceneManager::Instance().ChangeScene(new SceneTitle);
-	SceneManager::Instance().ChangeScene(new SceneGame);
+	SceneManager::Instance().ChangeScene(new SceneTitle);
+	//SceneManager::Instance().ChangeScene(new SceneGame);
 	//SceneManager::Instance().ChangeScene(new SceneGameClear);
 	//SceneManager::Instance().ChangeScene(new SceneGameOver);
 }

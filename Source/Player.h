@@ -96,8 +96,42 @@ public:
     // シャドウマップ処理
     void RenderShadowmap(RenderContext& rc) override;
 
-    // SE再生
-    void InputAttackSE();
+    // SE再生 歩き
+    void InputWalkSE();
+    void InputStopWalkSE();
+
+    // SE再生 ジャンプ
+    void InputJampSE();
+    void InputStopJampSE();
+
+    // SE再生 空中
+    void InputAreWalkSE();
+
+    // SE再生 ダッシュ
+    void InputDashSE();
+
+    // SE再生 斬撃
+    void InputAttackSlashSE();
+
+    // SE再生 魔法　炎
+    void InputAttackFlameSE();
+
+    // SE再生 魔法　雷
+    void InputAttackThanderSE();
+    void InputStopAttackThanderSE();
+
+    // SE再生 魔法　氷
+    void InputAttackIceSE();
+
+    // SE再生 魔法　回復
+    void InputAttackHealeSE();
+
+
+    // SE再生 必殺技斬撃
+    void InputAttackSlashSpecileLightningStrikeSE();
+
+    // SE再生 必殺技魔法　炎
+    void InputAttackFlameSpecileSE();
 
     // カメラ切り替え処理
     void UpdateCameraState(float elapsedTime);
@@ -215,6 +249,9 @@ public:
 
     // 攻撃入力
     bool InputAttack();
+
+    // 魔法入力
+    bool InputMagick();
 
 
     // メニュー開く入力
@@ -575,6 +612,9 @@ public:
     void SetEndState(bool endState) { this->endState = endState; }
     bool GetEndState() { return endState; }
 
+    // 必殺技中のロックオフ
+    void SetSpecialRockOff(bool specialRockOff) { this->specialRockOff = specialRockOff; }
+
 private:
     //std::shared_ptr<Movement>	movement;
     //std::shared_ptr<HP>	hp;
@@ -587,6 +627,14 @@ private:
 
     
     DirectX::XMFLOAT3 velocity = { 0,0,0 };
+
+    // 空中行動許可
+    bool isAreAttack = false;
+
+    // 空中行動許可間隔
+    float areAttackState = .0;
+    float areAttackStateEnd = .0;
+    float areAttackStateMax = 2.0f;
 
     // UI処理を出すかチェック
     bool             uiControlleCheck = false;
@@ -830,11 +878,12 @@ private:
 
     // 特殊攻撃出るまで
     float specialAttackCharge = 0.0f;
+    float specialAttackChargeMax = 1.5f;
     float specialShotCharge = 0.0f;
 
     // 攻撃ヒット回数
     int attackNumberSave;
-    int attackNumberSaveMax = 5;
+    int attackNumberSaveMax = 4;
 
     // 特殊技のチャージ
     int attackEnergyCharge = 0;
@@ -902,10 +951,19 @@ private:
 
 
     // ダメージ量
-    int applyDamageNormal = 5;
+    int applyDamageNormal = 3;
+
+    int applyDamageFire = 4;
+    int applyDamageThander = 2;
+    int applyDamageIce = 3;
+
+    // マジックダメージ
+    int applyDamageMagic = 0;
+
+
 
     // 必殺技ダメージ量
-    int applyDamageSpecial = 3;
+    int applyDamageSpecial = 2;
 
     int hitMortion = 0;
     int hitMortionMax = 180;
@@ -961,6 +1019,13 @@ private:
     bool testcolor = false;
     // 回復値
     int healing = 30;
+
+    // 必殺技中ロック外す
+    bool specialRockOff = false;
+
+    // ターゲットの一定以上高い
+    float               topHeight = 3.0f;
+    float               minHeight = 2.0f;
 };
 
 // プレイヤーマネージャー

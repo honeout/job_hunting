@@ -83,11 +83,11 @@ bool Mp::MpCharge(float elapedTime)
 
 
 
-bool Mp::Consumption()
-{
-    //--health;
-    return true;
-}
+//bool Mp::Consumption()
+//{
+//    //--health;
+//    return true;
+//}
 
 bool Mp::OnDead()
 {

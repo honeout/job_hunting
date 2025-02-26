@@ -43,7 +43,11 @@ private:
         // ƒŠƒ€ƒ‰ƒCƒg
         int           isRimRightning;
 
-        float dummy;
+        //int dummy;
+        int          StencilRef;
+
+        //DirectX::XMFLOAT2 dummy;
+        //float dummy;
         //DirectX::XMFLOAT2 dummy;
     };
 
@@ -80,6 +84,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11BlendState> blendState;
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerState;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilMask;
 
     Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
     Microsoft::WRL::ComPtr<ID3D11SamplerState> shadowMapSamplerState;

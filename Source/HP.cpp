@@ -120,6 +120,15 @@ void HP::SetIsBonusHpActive(bool isBonusHpActive)
         bonusHp = bonusHpEnd;
     }
 }
+void HP::AddHealth(int health)
+{
+    this->health += health;
+    if (this->health >= maxHealth)
+    {
+        this->health = maxHealth;
+    }
+}
+
 bool HP::OnDamaged()
 {
     //--health;

@@ -37,7 +37,11 @@ public:
 	// HP‚ğ“Ë‚Á‚Ş
 	void SetHealth(int health) {
 		this->health = health;
+
 	}
+
+	// HP‚ğ“Ë‚Á‚Ş
+	void AddHealth(int health);
 
 	// Å‘åHP‚ğæ‚èo‚·
 	int GetMaxHealth() const { return maxHealth; }

@@ -54,6 +54,9 @@ private:
 
 	void AfterimageTime(float elapsedTime);
 
+	void PostProcessingRendererInitialize();
+	void PostProcessingRendererFinalize();
+
 	void PlayEffectsShaders(float elapsedTime);
 
 	bool InputMenue();
@@ -64,10 +67,13 @@ private:
 	// BGM再生
 	void UpdateBgm();
 
+	// BGM停止
+	void StopBgm();
+
 private:
 	// BGM
 	/*AudioSource* Bgm;*/
-	//std::unique_ptr<Audio> Bgm;
+	std::unique_ptr<Audio> Bgm;
 	//std::unique_ptr<AudioSource>Bgm;
 
 	// シェーダーをエフェクトして再生
@@ -161,7 +167,7 @@ private:
 
 	// スロー時間
 	float dlayStateTimer = 0.0f;
-	float dlayStateTimerMax = 4.5f;
+	float dlayStateTimerMax = 0.5f;
 
 	float lightRange = 130;
 	//float lightRange = 186.400;
@@ -180,5 +186,7 @@ private:
 
 	// テクスチャ
 	//std::unique_ptr<Sprite> texture;
+
+	bool isAudioDebug = true;
 
 };

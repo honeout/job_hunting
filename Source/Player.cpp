@@ -287,7 +287,7 @@ void Player::Start()
 // elapsedTime(経過時間)
 void Player::Update(float elapsedTime)
 {
-    if (isMenue) return;
+  //  if (isMenue) return;
 
     GamePad& gamePad = Input::Instance().GetGamePad();
     //// ステート毎の処理
@@ -302,16 +302,22 @@ void Player::Update(float elapsedTime)
         areWork->SetPosition(areWork->GetEfeHandle(), position);
     }
 
-    if (InputMenue())
-    {
-        isMenue = isMenue ? isMenueOf : isMenueOn;
-    }
+    //if (InputMenue())
+    //{
+    //    isMenue = isMenue ? isMenueOf : isMenueOn;
+    //}
 
     // ポストエフェクトｈｐの一定以下
     PinchMode(elapsedTime);
 
     // ソードトレイル
     //UpdateSwordeTraile();
+    //
+    areAttackState -= elapsedTime;
+    if (areAttackState - FLT_EPSILON <= areAttackStateEnd + FLT_EPSILON)
+    {
+        isAreAttack = false;
+    }
     
     // コマンド操作
     if (uiControlleCheck &&
@@ -339,10 +345,20 @@ void Player::Update(float elapsedTime)
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::SideCut)&&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::CycloneStrike)&&
                 GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) && 
-                    GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) 
+                    GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) &&
+                        !isAreAttack
             )
         {
+
+            if (!movement.lock()->GetOnLadius())
+            {
+                isAreAttack = true;
+                areAttackState = areAttackStateMax;
+            }
+
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
+
+            InputAttackSlashSE();
 
             // 炎音
             //Bgm->Play(false);
@@ -356,18 +372,25 @@ void Player::Update(float elapsedTime)
 
             areWork->Play(position);
             // Se再生
-            InputAttackSE();
+            //InputAttackSE();
         }
 
         //　魔法入力処理
-        if (InputAttack() && GetSelectCheck() == (int)Player::CommandAttack::Magic && 
+        if (InputMagick() && GetSelectCheck() == (int)Player::CommandAttack::Magic &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Magic) && 
-            !mp.lock()->GetMpEmpth() &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) && 
             !gamePad.GetButtonDownCountinue()
                 )
         {
+            if (mp.lock()->GetMpEmpth())
+            {
+                magicAction = false;
+                selectCheck = (int)CommandAttack::Attack;
+
+                return;
+            }
+
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
 
 
@@ -378,6 +401,10 @@ void Player::Update(float elapsedTime)
 
             areWork->Play(position);
         }
+
+
+        
+
  
         if(GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
@@ -527,6 +554,9 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
     // 影オンオフ
     rc.isRimRightning = 1;
 
+    // modelオンオフ
+    rc.StencilRef = 1;
+
     Graphics& graphics = Graphics::Instance();
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
     
@@ -552,7 +582,208 @@ void Player::RenderShadowmap(RenderContext& rc)
     
 }
 
-void Player::InputAttackSE()
+void Player::InputWalkSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/足音.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = true;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void Player::InputStopWalkSE()
+{
+    Audio& Se = Audio::Instance();
+
+    std::string filename = "Data/Audio/SE/足音.wav";
+
+    // 種類停止
+    Se.Stop(filename);
+}
+
+void Player::InputJampSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/Enemy歩き攻撃ヒット.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void Player::InputStopJampSE()
+{
+    Audio& Se = Audio::Instance();
+
+    std::string filename = "Data/Audio/SE/Enemy歩き攻撃ヒット.wav";
+
+    // 種類停止
+    Se.Stop(filename);
+}
+
+void Player::InputAreWalkSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/空中攻撃時.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void Player::InputDashSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/ヒットストップ.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+// SE再生 斬撃
+void Player::InputAttackSlashSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/スラッシュ２回目.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void Player::InputAttackFlameSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/炎飛行時.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void Player::InputAttackThanderSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/雷.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void Player::InputStopAttackThanderSE()
+{
+    Audio& Se = Audio::Instance();
+
+    std::string filename = "Data/Audio/SE/雷.wav";
+
+    // 種類停止
+    Se.Stop(filename);
+}
+
+void Player::InputAttackIceSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/氷発射.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void Player::InputAttackHealeSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/maou_se_magical11.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void Player::InputAttackSlashSpecileLightningStrikeSE()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/必殺技雷.wav";
+
+    audioParam.keyName = "BGM";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void Player::InputAttackFlameSpecileSE()
 {
     Audio& Se = Audio::Instance();
 
@@ -562,9 +793,9 @@ void Player::InputAttackSE()
 
     audioParam.keyName = "BGM";
 
-    audioParam.loop = true;
+    audioParam.loop = false;
 
-    audioParam.volume = 1.0f;
+    audioParam.volume = 3.0f;
 
     Se.Play(audioParam);
 }
@@ -654,10 +885,20 @@ void Player::UpdateCameraState(float elapsedTime)
                     characterWorld->worldTransform._42,
                     characterWorld->worldTransform._43
                 };
+
+                if (character.y >= topHeight)
+                {
+                    lockonState = CameraState::AttackLock;
+                    
+                }
+                
                 //if (character == oldLockonCharacter)
                 //{
                 //lockonCharactor = character;
-                lockonState = CameraState::LockOn;
+                else
+                {
+                    lockonState = CameraState::LockOn;
+                }
                 p = DirectX::XMLoadFloat3(&pPosition);
                 t = DirectX::XMLoadFloat3(&character);
                 v = DirectX::XMVectorSubtract(t, p);
@@ -727,12 +968,45 @@ void Player::UpdateCameraState(float elapsedTime)
             }
             break;
         }
+        case CameraState::AttackLock:
+        {
+            lockonState = CameraState::AttackLock;
+
+            int enemyCount = EnemyManager::Instance().GetEnemyCount();
+            for (int ii = 0; ii < enemyCount; ++ii)
+            {
+                Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
+
+                DirectX::XMFLOAT3 character;
+
+                character = 
+                    EnemyManager::Instance().GetEnemy(ii)->
+                    GetComponent<ModelControll>()->GetModel()->
+                    ConvertLocalToWorld(characterWorld);
+
+               
+
+                if (character.y <= minHeight)
+                {
+                    lockonState = CameraState::LockOn;
+                }
+            }
+
+
+            break;
+        }
         }
         if (lockonState == CameraState::LockOn)
         {
             MessageData::CAMERACHANGELOCKONMODEDATA	p = { pPosition, lockonCharactor };
             Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONMODE, &p);
             //break;
+        }
+
+        if (lockonState == CameraState::AttackLock)
+        {
+            MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA	p = { pPosition, lockonCharactor };
+            Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONTOPHEIGHTMODE, &p);
         }
     }
     else if(freeCameraCheck)
@@ -878,11 +1152,12 @@ void Player::OnGUI()
 
         Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
+        Model::ModelAnim modelAnim;
+
+        modelAnim.index = Player::Animation::Anim_SpecialAttack;
+
         // アニメーション再生
-        model->PlayAnimation(
-            Player::Anim_SpecialAttack, false,
-            0.0f, 0.2f
-        );
+        model->PlayAnimation(modelAnim);
 
 
         angleCameraCheck = true;
@@ -944,6 +1219,35 @@ void Player::OnGUI()
   
         }
     }
+    if (ImGui::Button("ChargeSpeciale"))
+    {
+        // 攻撃チャージ
+        specialAttackCharge = 1.2f;
+
+
+        // 斬撃必殺技チャージ解消
+        attackEnergyCharge = 3;
+    }
+
+    if (ImGui::Button("ChargeSlashSpeciale"))
+    {
+        // 一度発動すると初期化
+        specialAttackCharge = specialAttackChargeMax;
+
+        // 斬撃必殺技チャージ解消
+        attackEnergyCharge = energyChargeMax;
+
+    }
+
+    if (ImGui::Button("ChargeFireSpeciale"))
+    {
+        // 一度発動すると初期化
+        specialAttackCharge = specialAttackChargeMax;
+
+        // 火必殺技チャージ解消
+        fireEnergyCharge = energyChargeMax;
+    }
+
 
 
 
@@ -951,64 +1255,6 @@ void Player::OnGUI()
     ImGui::SliderFloat("hueShift", &colorGradingData.hueShift,0.0f ,10.0f);
     ImGui::SliderFloat("saturation", &colorGradingData.saturation,0.0f ,10.0f);
 
-    if (ImGui::Button("PostEffectColor"))
-    {
-        // ポストエフェクトインスタンスゲット
-        PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-
-        colorGradingPostData.brigthness = 5;
-        colorGradingPostData.hueShift = 3;
-        //colorGradingPostData.saturation = 0;
-
-        postprocessingRenderer.SetColorGradingMaxData(colorGradingPostData);
-    }
-
-    if (ImGui::Button("PostEffectVig"))
-    {
-        checkVignette = checkVignette ? false : true;
-
-
-    }
-
-    if (checkVignette)
-    {
-        // ポストエフェクトインスタンスゲット
-        PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-
-        vignetteData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-        //vignetteData.intensity = 2.5f;
-
-        postprocessingRenderer.SetVignetteMaxData(vignetteData);
-    }
-    if (ImGui::Button("PostEffectColorSatulate"))
-    {
-        testcolor = testcolor ? false : true;
-
-
-
-    }
-
-    if (testcolor)
-    {
-        // ポストエフェクトインスタンスゲット
-        PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-
-        //colorGradingPostData.brigthness = 5;
-        //colorGradingPostData.hueShift = 3;
-
-        colorGradingPostData.saturation = -0.3f;
-
-        postprocessingRenderer.SetColorGradingMinData(colorGradingPostData);
-    }
-    else
-    {
-        // ポストエフェクトインスタンスゲット
-        PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-
-        colorGradingPostData.saturation = 1.0f;
-
-        postprocessingRenderer.SetColorGradingMaxData(colorGradingPostData);
-    }
 
 }
 #endif // _DEBUG
@@ -1188,8 +1434,13 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
 
         //float healthRate = enemy->GetHealth() / static_cast<float>(enemy->GetMaxHealth());
 
+        if (rockCheck || !specialRockOff)
+        {
+            bool drawCheck = true;
+            uiIdSight.lock()->SetDrawCheck(drawCheck);
+        }
 
-        if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f && !rockCheck)
+        if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f || !rockCheck || specialRockOff)
         {
             bool drawCheck = false;
             uiIdSight.lock()->SetDrawCheck(drawCheck);
@@ -1198,9 +1449,6 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
 
             continue;
         }
-
-        bool drawCheck = true;
-        uiIdSight.lock()->SetDrawCheck(drawCheck);
 
        // uiIdSightMove->SetDrawCheck(drawCheck);
 
@@ -1363,6 +1611,33 @@ bool Player::InputSelectMagicCheck()
         selectMagicCheck = (int)CommandMagic::Heale;
     }
 
+    ///////////////////////////
+    // ショートカットキー 試し中
+    if (InputShortCutkeyMagic() &&
+        gamePad.GetButtonDown() & GamePad::BTN_X )
+    {
+        selectMagicCheck = (int)CommandMagic::Fire;
+    }
+
+    if (InputShortCutkeyMagic() &&
+        gamePad.GetButtonDown() & GamePad::BTN_B)
+    {
+        selectMagicCheck = (int)CommandMagic::Thander;
+    }
+
+    if (InputShortCutkeyMagic() &&
+        gamePad.GetButtonDown() & GamePad::BTN_A )
+    {
+        selectMagicCheck = (int)CommandMagic::Heale;
+    }
+
+    if (InputShortCutkeyMagic() &&
+        gamePad.GetButtonDown() & GamePad::BTN_Y )
+    {
+        selectMagicCheck = (int)CommandMagic::Ice;
+    }
+    /////////////////////////
+
     if (!magicAction)
     {
         selectMagicCheck = (int)CommandMagic::Normal;
@@ -1519,6 +1794,7 @@ bool Player::InputShortCutkeyMagic()
     if (gamePad.GetButtonUp() & GamePad::BTN_LEFT_SHOULDER)
     {
         selectMagicCheck = (int)CommandMagic::Normal;
+        selectCheck = (int)CommandAttack::Attack;
         magicAction = false;
     }
     return false;
@@ -1532,7 +1808,7 @@ bool Player::InputSpecialAttackCharge()
     // ui無かったら
     if (uiCount <= uiCountMax) return false;
 
-    if (specialAttackCharge >= 1.5f)
+    if (specialAttackCharge >= specialAttackChargeMax)
     {
         std::weak_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
@@ -2548,7 +2824,7 @@ void Player::CollisionProjectilesVsEnemies()
             std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
             DirectX::XMFLOAT3 projectilePosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
             float projectileRadius = projectile.lock()->GetComponent<Transform>()->GetRadius();
-
+            
 
 
             //// 衝突処理
@@ -2636,8 +2912,42 @@ void Player::CollisionProjectilesVsEnemies()
 
                 //        {
                 if (!projectile.lock()->GetComponent<ProjectileHoming>() && !projectile.lock()->GetComponent<ProjectileSunder>())return;
-                            // ダメージを与える。
-                if (enemy.lock()->GetComponent<HP>()->ApplyDamage(3, 0.5f))
+                
+                if (projectile.lock()->GetComponent<ProjectileSunder>())
+                {
+                    ++ThanderEnergyCharge;
+                    hitThander->Play(projectilePosition);
+
+                    // 雷ダメージ
+                    applyDamageMagic = applyDamageThander;
+                }
+                else
+                {
+                    switch (projectile.lock()->GetComponent<ProjectileHoming>()->GetMagicNumber())
+                    {
+                    case (int)ProjectileHoming::MagicNumber::Fire:
+                    {
+                        ++fireEnergyCharge;
+                        hitFire->Play(projectilePosition);
+                        // 炎ダメージ
+                        applyDamageMagic = applyDamageFire;
+                        break;
+                    }
+                    case (int)ProjectileHoming::MagicNumber::Ice:
+                    {
+                        ++iceEnergyCharge;
+                        hitIce->Play(projectilePosition);
+                        // 氷ダメージ
+                        applyDamageMagic = applyDamageIce;
+                        break;
+                    }
+                    }
+
+                }
+                hitEffect->Play(projectilePosition);
+                
+                // ダメージを与える。
+                if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageMagic, 0.5f))
                 {
 
                     if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
@@ -2651,38 +2961,38 @@ void Player::CollisionProjectilesVsEnemies()
                     }
 
 
-                    // ヒットエフェクト再生
-                    {
-                        //DirectX::XMFLOAT3 e = enemyPosition;
-                        //e.y += enemyHeight * 0.5f;
-                        if (projectile.lock()->GetComponent<ProjectileSunder>())
-                        {
-                            ++ThanderEnergyCharge;
-                            hitThander->Play(projectilePosition);
-                        }
-                        else
-                        {
-                            switch (projectile.lock()->GetComponent<ProjectileHoming>()->GetMagicNumber())
-                            {
-                            case (int)ProjectileHoming::MagicNumber::Fire:
-                            {
-                                ++fireEnergyCharge;
-                                hitFire->Play(projectilePosition);
-                                break;
-                            }
-                            case (int)ProjectileHoming::MagicNumber::Ice:
-                            {
-                                ++iceEnergyCharge;
-                                hitIce->Play(projectilePosition);
-                                break;
-                            }
-                            }
-                        }
+                    //// ヒットエフェクト再生
+                    //{
+                    //    //DirectX::XMFLOAT3 e = enemyPosition;
+                    //    //e.y += enemyHeight * 0.5f;
+                    //    if (projectile.lock()->GetComponent<ProjectileSunder>())
+                    //    {
+                    //        ++ThanderEnergyCharge;
+                    //        hitThander->Play(projectilePosition);
+                    //    }
+                    //    else
+                    //    {
+                    //        switch (projectile.lock()->GetComponent<ProjectileHoming>()->GetMagicNumber())
+                    //        {
+                    //        case (int)ProjectileHoming::MagicNumber::Fire:
+                    //        {
+                    //            ++fireEnergyCharge;
+                    //            hitFire->Play(projectilePosition);
+                    //            break;
+                    //        }
+                    //        case (int)ProjectileHoming::MagicNumber::Ice:
+                    //        {
+                    //            ++iceEnergyCharge;
+                    //            hitIce->Play(projectilePosition);
+                    //            break;
+                    //        }
+                    //        }
+                    //    }
 
-                        hitEffect->Play(projectilePosition);
+                    //    hitEffect->Play(projectilePosition);
 
 
-                    }
+                    //}
                     // 当たった時の副次的効果
                     {
                         specialAttackCharge += 0.2f;
@@ -3085,53 +3395,73 @@ bool Player::CollisionNodeVsEnemies(
         {
             if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
             {
-
-
+                // 斬撃音
+                InputAttackSlashSE();
                 hitSlash->Play(nodePosition, slashScale);
 
                     if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
                         enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump&&
-                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle &&
-                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack
+                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle
                         )
                     {
                         // ダメージステートへ
                         //enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
                         // 再生ループ
-                        bool  loop = false;
+                        //bool  loop = false;
 
-                        // 再生開始時間 
-                        float currentAnimationStartSeconds = 1.0f;
+                        //// 再生開始時間 
+                        //float currentAnimationStartSeconds = 1.0f;
 
-                        // 再生時間加算分の値
-                        float currentAnimationAddSeconds = 0.00f;
+                        //// 再生時間加算分の値
+                        //float currentAnimationAddSeconds = 0.00f;
 
-                        // キーフレームの終了
-                        float keyFrameEnd = 153.0f;
+                        //// キーフレームの終了
+                        //float keyFrameEnd = 153.0f;
 
-                        // アニメーションブレンド
-                        float blendSeconds = 0.35f;
+                        //// アニメーションブレンド
+                        //float blendSeconds = 0.35f;
 
-                        // 通常
-                        enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemyBoss::Animation::Anim_Movie, loop
-                            , currentAnimationStartSeconds, blendSeconds, currentAnimationAddSeconds, keyFrameEnd);
+                        if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack)
+                        {
 
-                        
+                            Model::ModelAnim modelAnim;
+
+                            modelAnim.index = EnemyBoss::Animation::Anim_Movie;
+
+                            modelAnim.currentanimationseconds = 1.0f;
+
+                            modelAnim.keyFrameEnd = 153.0f;
+
+                            // 通常
+                            enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(modelAnim);
+
+
+                        }
+
 
                         // 死んだとき
                         if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle)
                         {
 
-                            // 再生開始時間 
-                            currentAnimationStartSeconds = 0.3f;
+                            //// 再生開始時間 
+                            //currentAnimationStartSeconds = 0.3f;
 
 
-                            // キーフレームの終了
-                            keyFrameEnd = 55.0f;
+                            //// キーフレームの終了
+                            //keyFrameEnd = 55.0f;
+                            
+                            // model情報
+                            Model::ModelAnim modelAnim;
 
-                            enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(EnemyBoss::Animation::Anim_Die, loop
-                                , currentAnimationStartSeconds, blendSeconds, currentAnimationAddSeconds, keyFrameEnd);
+
+                            modelAnim.index = EnemyBoss::Animation::Anim_Die;
+
+                            modelAnim.currentanimationseconds = 0.3f;
+
+                            modelAnim.keyFrameEnd = 55.0f;
+
+                            enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(modelAnim);
                         }
 
                         // 混乱状態
@@ -3145,6 +3475,8 @@ bool Player::CollisionNodeVsEnemies(
                             attackNumberSave = 0;
                         }
 
+
+
    
         
                     }
@@ -3157,6 +3489,10 @@ bool Player::CollisionNodeVsEnemies(
 
                     // 攻撃ヒット回数
                     ++attackNumberSave;
+
+             
+
+
 
                     return true;
           
@@ -3789,12 +4125,14 @@ void Player::PinchMode(float elapsedTime)
     {
         PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 
+        vignetteData.color = { 1,0,0,1 };
         vignetteData.smoothness = 3.0f;
         vignetteData.intensity = 0.8;
 
         postprocessingRenderer.SetVignetteMaxData(vignetteData);
+        postprocessingRenderer.SetVignetteDataColor(vignetteData.color);
 
-        colorGradingData.brigthness = 3;
+        colorGradingData.brigthness = 1;
 
         postprocessingRenderer.SetColorGradingMinData(colorGradingData);
     }
@@ -3804,8 +4142,11 @@ void Player::PinchMode(float elapsedTime)
 
         vignetteData.smoothness = 0.0f;
         vignetteData.intensity = 0.0;
+        vignetteData.color = { 0,0,0,1 };
 
-        postprocessingRenderer.SetVignetteMaxData(vignetteData);
+        postprocessingRenderer.SetVignetteData(vignetteData);
+
+
     }
 }
 
@@ -4050,6 +4391,45 @@ bool Player::InputAttack()
     return false;
 }
 
+bool Player::InputMagick()
+{
+
+    GamePad& gamePad = Input::Instance().GetGamePad();
+
+
+    // 魔法
+    if (gamePad.GetButtonDown() & GamePad::BTN_B)
+    {
+
+        return true;
+    }
+
+
+    // 魔法
+    if (gamePad.GetButtonDown() & GamePad::BTN_A)
+    {
+
+        return true;
+    }
+
+    // 魔法
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y)
+    {
+
+        return true;
+    }
+
+    // 魔法
+    if (gamePad.GetButtonDown() & GamePad::BTN_X)
+    {
+
+        return true;
+    }
+
+
+    return false;
+}
+
 // メニュー開くボタン
 bool Player::InputMenue()
 {
@@ -4073,7 +4453,7 @@ void Player::TransitionIdleState()
     updateanim = UpAnim::Normal;
 
     // 待機アニメーション再生
-    model->PlayAnimation(Anim_Idle, true);
+    //model->PlayAnimation(Anim_Idle, true);
 
     
 }
@@ -4842,7 +5222,7 @@ bool Player::InputMagicHealing()
     // mp消費
     mp.lock()->ApplyConsumption(mp.lock()->GetMaxMagic());
     
-    hp.lock()->SetHealth(healing);
+    hp.lock()->AddHealth(healing);
 
 
     return true;
@@ -4920,7 +5300,7 @@ void Player::AttackCheckUI()
     
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
-    if (uiCount <= uiCountMax) return;
+    if (uiCount <= uiCountMax || !rockCheck || specialRockOff) return;
 
     EnemyManager& enemyManager = EnemyManager::Instance();
 

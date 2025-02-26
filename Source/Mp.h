@@ -43,7 +43,7 @@ public:
 	void SetMaxMagic(int maxMagic) { this->maxMagic = maxMagic; }
 
 	// ƒ_ƒ[ƒW‚ğó‚¯‚½‚ÉŒÄ‚Î‚ê‚é
-	bool Consumption();
+	//bool Consumption();
 	// €–S‚µ‚½‚ÉŒÄ‚Î‚ê‚é
 	bool OnDead();
 

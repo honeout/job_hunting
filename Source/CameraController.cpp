@@ -12,6 +12,7 @@ CameraController::CameraController()
 	newPosition = Camera::Instance().GetEye();
 	CAMERACHANGEFREEMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEFREEMODE, [&](void* data) { OnFreeMode(data); });
 	CAMERACHANGELOCKONMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGELOCKONMODE, [&](void* data) { OnLockonMode(data); });
+	CAMERACHANGELOCKONTOPHEIGHTMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGELOCKONTOPHEIGHTMODE, [&](void* data) { OnLockonTopHeightMode(data); });
 	CAMERACHANGEMOTIONMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEMOTIONMODE, [&](void* data) { OnMotionMode(data); });
 	CAMERASHAKEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERASHAKE, [&](void* data) { OnShake(data); });
 }
@@ -20,6 +21,7 @@ CameraController::~CameraController()
 {
 	Messenger::Instance().RemoveReceiver(CAMERACHANGEFREEMODEKEY);
 	Messenger::Instance().RemoveReceiver(CAMERACHANGELOCKONMODEKEY);
+	Messenger::Instance().RemoveReceiver(CAMERACHANGELOCKONTOPHEIGHTMODEKEY);
 	Messenger::Instance().RemoveReceiver(CAMERACHANGEMOTIONMODEKEY);
 	Messenger::Instance().RemoveReceiver(CAMERASHAKEKEY);
 }
@@ -42,6 +44,7 @@ void CameraController::Update(float elapsedTime)
 	{
 	case	Mode::FreeCamera:	FreeCamera(elapsedTime);	break;
 	case	Mode::LockonCamera:	LockonCamera(elapsedTime);	break;
+	case	Mode::LockonHeightCamera:	LockonTopHeightCamera(elapsedTime);	break;
 	case	Mode::MotionCamera:	MotionCamera(elapsedTime);	break;
 	}
 
@@ -105,12 +108,19 @@ void CameraController::Update(float elapsedTime)
 	// カメラに視点を注視点を設定
 	Camera::Instance().SetLookAt(position, target, DirectX::XMFLOAT3(0, 1, 0));
 }
-//#ifdef _DEBUG
-//void CameraController::OnGUI()
-//{
-//
-//}
-//#endif // _DEBUG
+#ifdef _DEBUG
+void CameraController::OnGUI()
+{
+	if (ImGui::TreeNode("camera"))
+	{
+		ImGui::SliderFloat3("Position", &position.x, 0.0f, 10.0f);
+		ImGui::SliderFloat3("Angle", &angle.x, 0.0f, 10.0f);
+
+		ImGui::TreePop();
+	}
+	ImGui::Separator();
+}
+#endif // _DEBUG
 
 bool CameraController::GetCameraMortionDataTime()
 {
@@ -178,7 +188,9 @@ void CameraController::LockonCamera(float elapsedTime)
 	DirectX::XMVECTOR	t1 = DirectX::XMVectorSet(targetWork[1].x, targetWork[1].y, targetWork[1].z, 0);
 	DirectX::XMVECTOR	crv = DirectX::XMLoadFloat3(&Camera::Instance().GetRight());
 	DirectX::XMVECTOR	cuv = DirectX::XMVectorSet(0, 1, 0, 0);
+	DirectX::XMVECTOR   spacingValue = DirectX::XMVectorSet(0, 1, 1, 0);
 	DirectX::XMVECTOR	v = DirectX::XMVectorSubtract(t1, t0);
+
 	//DirectX::XMVECTOR   d = DirectX::XMVector3Normalize(v);
 	DirectX::XMVECTOR	l = DirectX::XMVector3Length(v);
 	float len;
@@ -206,9 +218,110 @@ void CameraController::LockonCamera(float elapsedTime)
 	t0 = DirectX::XMVectorMultiplyAdd(l, DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), t0);
 	// 少し右
 	//t0 = DirectX::XMVectorMultiplyAdd(crv, DirectX::XMVectorReplicate(sideValue * 3.0f), t0);
-	// 少し上
-	t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
-	DirectX::XMStoreFloat3(&newPosition, t0);
+
+	//// 高さ
+	//if (targetWork[1].y >= topHeight)
+	//{
+	//	// 少し上
+	//	t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
+	//	// 少し離れる
+	//	t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(20.0f), t0);
+
+	//	DirectX::XMStoreFloat3(&newPosition, t0);
+
+	//	newPosition.y = targetWork[1].y - 1.0f;
+
+	//	return;
+	//}
+
+	// 距離が一定以上
+	if (lengthMin <= len)
+	{
+		// 少し上
+		t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
+
+		DirectX::XMStoreFloat3(&newPosition, t0);
+
+
+	}
+	else
+	{
+		// 少し上
+		t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
+		// 少し離れる
+		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(16.5f), t0);
+
+		DirectX::XMStoreFloat3(&newPosition, t0);
+
+		newPosition.y = -2.0f;
+	}
+
+
+	
+}
+
+void CameraController::LockonTopHeightCamera(float elapsedTime)
+{
+	//	後方斜に移動させる
+	DirectX::XMVECTOR	t0 = DirectX::XMVectorSet(targetWork[0].x, targetWork[0].y, targetWork[0].z, 0);
+	DirectX::XMVECTOR	t1 = DirectX::XMVectorSet(targetWork[1].x, targetWork[1].y, targetWork[1].z, 0);
+	DirectX::XMVECTOR	crv = DirectX::XMLoadFloat3(&Camera::Instance().GetRight());
+	DirectX::XMVECTOR	cuv = DirectX::XMVectorSet(0, 1, 0, 0);
+	DirectX::XMVECTOR   spacingValue = DirectX::XMVectorSet(0, 1, 1, 0);
+	DirectX::XMVECTOR	v = DirectX::XMVectorSubtract(t1, t0);
+	DirectX::XMVECTOR	l = DirectX::XMVector3Length(v);
+	float len;
+	DirectX::XMStoreFloat(&len, l);
+
+
+	t0 = DirectX::XMLoadFloat3(&targetWork[0]);
+	t1 = DirectX::XMLoadFloat3(&targetWork[1]);
+
+	//	新しい注視点を算出
+	DirectX::XMStoreFloat3(&newTarget, DirectX::XMVectorMultiplyAdd(v, DirectX::XMVectorReplicate(0.5f), t0));
+
+	//	新しい座標を算出
+	l = DirectX::XMVectorClamp(l
+		, DirectX::XMVectorReplicate(lengthLimit[0])
+		, DirectX::XMVectorReplicate(lengthLimit[1]));
+	t0 = DirectX::XMVectorMultiplyAdd(l, DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), t0);
+
+	//// 高さ
+	//if (targetWork[1].y >= topHeight)
+	//{
+		// 少し上
+		t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
+		// 少し離れる
+		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(16.0f), t0);
+
+		DirectX::XMStoreFloat3(&newPosition, t0);
+
+		newPosition.y = targetWork[1].y - 1.0f;
+
+		return;
+	//
+
+	//// 距離が一定以上
+	//if (lengthMin <= len)
+	//{
+	//	// 少し上
+	//	t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
+
+	//	DirectX::XMStoreFloat3(&newPosition, t0);
+
+
+	//}
+	//else
+	//{
+	//	// 少し上
+	//	t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
+	//	// 少し離れる
+	//	t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(20.0f), t0);
+
+	//	DirectX::XMStoreFloat3(&newPosition, t0);
+
+	//	newPosition.y = -2.0f;
+	//}
 }
 
 void CameraController::MotionCamera(float elapsedTime)
@@ -299,6 +412,7 @@ void CameraController::OnFreeMode(void* data)
 		angle.x = atan2f(sinf(angle.x), cosf(angle.x));
 	}
 	this->mode = Mode::FreeCamera;
+	this->position.y = -2.0f;
 	this->newTarget = p->target;
 	this->newTarget.y += 0.01f;
 }
@@ -310,6 +424,19 @@ void CameraController::OnLockonMode(void* data)
 		sideValue = CalcSide(p->start, p->target);
 
 	this->mode = Mode::LockonCamera;
+	targetWork[0] = p->start;
+	targetWork[1] = p->target;
+	targetWork[0].y += 0.01f;
+	targetWork[1].y += 0.01f;
+}
+
+void CameraController::OnLockonTopHeightMode(void* data)
+{
+	MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA* p = static_cast<MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA*>(data);
+	if (this->mode != Mode::LockonHeightCamera)
+		sideValue = CalcSide(p->start, p->target);
+
+	this->mode = Mode::LockonHeightCamera;
 	targetWork[0] = p->start;
 	targetWork[1] = p->target;
 	targetWork[0].y += 0.01f;

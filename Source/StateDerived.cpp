@@ -29,11 +29,11 @@ void WanderState::Enter()
 {
 	
 
-
 	// owner呼び出し
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
+	
 
 	//walkSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav", "walk");
 	//walkSe->Play("walk",loopSe);
@@ -44,7 +44,7 @@ void WanderState::Enter()
 	// 縄張り
 	enemyid.lock()->SetRandomTargetPosition();
 	// アニメーション終了キーフレーム
-	currentAnimationEndSeconds = 300.0f;
+	//currentAnimationEndSeconds = 300.0f;
 	// 攻撃回数
 	attackCount = attackCountMax;
 
@@ -52,14 +52,25 @@ void WanderState::Enter()
 	if (enemyid.lock()->GetIsEnemyAwakened())
 	{
 		attackCount = attackCountMin;
-		currentAnimationEndSeconds = 288;
+		//currentAnimationEndSeconds = 288;
+		modelAnim.keyFrameEnd = 288;
 	}
+
+	modelAnim.index = (int)EnemyBoss::Animation::Anim_Movie;
+
+	modelAnim.loop = false;
+
+	modelAnim.currentanimationseconds = 3.3f;
+
+	modelAnim.blendSeconds = 0.7f;
+
+	modelAnim.currentAnimationAddSeconds = 0.00f;
+
+	modelAnim.keyFrameEnd = 300.0f;
 
 	// アニメーション再生
 	model->
-		PlayAnimation(EnemyBoss::Animation::Anim_Movie,
-			loop, currentAnimationStartSeconds, blendSeconds,
-			currentAnimationAddSeconds, currentAnimationEndSeconds);
+		PlayAnimation(modelAnim);
 
 
 
@@ -133,13 +144,14 @@ void WanderState::Execute(float elapsedTime)
 		++attackCount;
 
 		// アニメーション終了キーフレーム
-		currentAnimationEndSeconds = 288;
+		modelAnim.keyFrameEnd = 288;
 
 		// アニメーション再生
 		model->
-			PlayAnimation(EnemyBoss::Animation::Anim_Movie,
-				loop, currentAnimationStartSeconds, blendSeconds,
-				currentAnimationAddSeconds, currentAnimationEndSeconds);
+			PlayAnimation(modelAnim);
+		//PlayAnimation(EnemyBoss::Animation::Anim_Movie,
+		//		loop, currentAnimationStartSeconds, blendSeconds,
+		//		currentAnimationAddSeconds, currentAnimationEndSeconds);
 	}
 
 	// 目的地へ着いた
@@ -208,6 +220,9 @@ void WanderState::Execute(float elapsedTime)
 		if (animationTime + FLT_EPSILON >= 4.0f - FLT_EPSILON &&
 			animationTime - FLT_EPSILON <= 4.1f + FLT_EPSILON)
 		{
+			// 音
+			enemyid.lock()->InputJampSe();
+
 			smorker->Play(bossRightFootPosition, scaleEffect);
 
 			// 左足
@@ -230,6 +245,8 @@ void WanderState::Execute(float elapsedTime)
 		if (animationTime + FLT_EPSILON >= 4.6f - FLT_EPSILON &&
 			animationTime - FLT_EPSILON <= 4.7f + FLT_EPSILON)
 		{
+			// 音
+			enemyid.lock()->InputJampSe();
 
 			smorker->Play(bossLeftFootPosition, scaleEffect);
 			// 左足
@@ -294,10 +311,15 @@ void WanderState::Execute(float elapsedTime)
 // 徘徊ステートから出ていくときのメソッド
 void WanderState::Exit()
 {
+	// owner呼び出し
+	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+
 	//walkSe->Stop("walk");
 
 	// 連続攻撃
 	attackCount = attackCountMin;
+
+	enemyid.lock()->InputSlashSe();
 }
 
 
@@ -312,16 +334,28 @@ void IdleState::Enter()
 	std::weak_ptr<HP> hp = owner.lock()->GetComponent<HP>();
 
 	//model = owner->GetComponent<ModelControll>();
-	model->PlayAnimation(EnemyBoss::Anim_Standby, loop, currentAnimationStartSeconds,blendSeconds);
+
+	modelAnim.index = EnemyBoss::Anim_Standby;
+
+	modelAnim.loop = true;
+
+	modelAnim.currentanimationseconds = 0.0f;
+
+	modelAnim.blendSeconds = 0.7f;
+
+	model->PlayAnimation(modelAnim);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 	
 	// 待機処理
 	//stateTimer = stateTimerMax;
-	stateTimer = Mathf::RandomRange(stateTimerMin, stateTimerMax);
+	//stateTimer = Mathf::RandomRange(stateTimerMin, stateTimerMax);
+	stateTimer = stateTimerMax;
 
 	// 逃げる条件初期化
 	hp.lock()->ResetOnDamageThresholdTime();
+
+	randRoot = rand() % 2;
 }
 
 // update
@@ -344,7 +378,8 @@ void IdleState::Execute(float elapsedTime)
 	float damageThreshold = 10;
 	float timeLimit = 5;
 	// 逃走
-	if (hp.lock()->CheckDamageThresholdWithinTime(elapsedTime, damageThreshold, timeLimit))
+	if (hp.lock()->CheckDamageThresholdWithinTime(elapsedTime, damageThreshold, timeLimit)&&
+		randRoot == (int)EnemyBoss::ExitRoot::ExitJamp)
 	{
 		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Jump));
 	}
@@ -352,7 +387,7 @@ void IdleState::Execute(float elapsedTime)
 	// ダメージモーション対策
 	if (!model->IsPlayAnimation())
 	{
-		model->PlayAnimation(EnemyBoss::Anim_Standby, loop, currentAnimationStartSeconds, blendSeconds);
+		model->PlayAnimation(modelAnim);
 	}
 }
 
@@ -371,18 +406,26 @@ void PursuitState::Enter()
 	// プレイヤーコンポーネントアクセス
 	//playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount() - 1)->GetComponent<Player>();
 
-	--mortionLimit;
+	//--mortionLimit;
+
+	modelAnim.index = EnemyBoss::Animation::Anim_Standby;
+
+	modelAnim.loop = true;
+
+	modelAnim.currentanimationseconds = 0.0f;
+
+	modelAnim.blendSeconds = 0.7f;
 
 	// エネミーアクセス用
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 	enemyid.lock()->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
-		EnemyBoss::Animation::Anim_Standby, loop,currentAnimationStartSeconds,  blendSeconds);
+		modelAnim);
 
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
 	// 数秒間追跡するタイマーをランダム設定
-	stateTimer = Mathf::RandomRange(3.0f, 5.0f);
+	//stateTimer = Mathf::RandomRange(3.0f, 5.0f);
 
 	// 攻撃の種類を出す
 	randamAttack = rand() % 3;
@@ -434,18 +477,19 @@ void PursuitState::Execute(float elapsedTime)
 
 	enemyid.lock()->SetTargetPosition(targetPosition);
 
-	if (mortionLimit < 0)
-	{
-		// 待機時間再設定
-		//mortionLimit = Mathf::RandomRange(3.0f, mortionLimitMax);
-		mortionLimit = rand() % mortionLimitMax + 3;
-		// 限界がきたので休憩
-		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::IdleBattle));
-		return;
-	}
+	//// ３階行動すると混乱
+	//if (mortionLimit < 0)
+	//{
+	//	// 待機時間再設定
+	//	//mortionLimit = Mathf::RandomRange(3.0f, mortionLimitMax);
+	//	mortionLimit = rand() % mortionLimitMax + 3;
+	//	// 限界がきたので休憩
+	//	enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::IdleBattle));
+	//	return;
+	//}
 
 	// タイマー処理
-	stateTimer -= elapsedTime;
+	//stateTimer -= elapsedTime;
 
 
 	float vx = targetPosition.x - enemyid.lock()->GetPosition().x;
@@ -458,7 +502,7 @@ void PursuitState::Execute(float elapsedTime)
 	//if (dist < attackRange)
 	//	enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Attack));
 
-	if (stateTimer >= stateTimerMin) return;
+	//if (stateTimer >= stateTimerMin) return;
 
 	switch (randamAttack)
 	{
@@ -561,11 +605,25 @@ void JumpState::Enter()
 {
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 
+
+
 	// SE 否設定
 	//janpSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","janp");
 	//landSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","land");
 
 	//moveid = owner.lock()->GetComponent<Movement>();
+
+	modelAnim.index = EnemyBoss::Animation::Anim_Attack;
+
+	modelAnim.loop = true;
+
+	modelAnim.currentanimationseconds = 2.0f;
+
+	modelAnim.blendSeconds = 0.7f;
+
+	modelAnim.currentAnimationAddSeconds = 0.01f;
+
+
 	Model* model =  owner.lock()->GetComponent<ModelControll>()->GetModel();
 	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
 	// 縄張り
@@ -573,9 +631,7 @@ void JumpState::Enter()
 
 	// アニメーション再生
 	model->
-		PlayAnimation(EnemyBoss::Animation::Anim_Attack,
-			loop, currentAnimationStartSeconds, blendSeconds,
-			currentAnimationAddSeconds, keyFrameEnd);
+		PlayAnimation(modelAnim);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Reverseplayback);
 
@@ -695,6 +751,8 @@ void JumpState::Execute(float elapsedTime)
 		enemyid.lock()->InputImpact(enemyid.lock()->GetPosition());
 		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
 
+		enemyid.lock()->InputJump();
+
 		// 煙エフェクト
 		smorker->Play(bossLeftFootPosition, scaleEffect);
 		//landSe->Play(loopSe);
@@ -729,6 +787,8 @@ void AttackState::Enter()
 {
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 
+
+
 	//stateTimer = stateTimerMax;
 
 
@@ -742,14 +802,28 @@ void AttackState::Enter()
 	// 縄張り
 	enemyid.lock()->SetRandomTargetPosition();
 
-	// 再生開始時間 
-	currentAnimationStartSeconds = 2.3f;
+	modelAnim.index = EnemyBoss::Animation::Anim_Attack;
+
+	modelAnim.currentanimationseconds = 2.3f;
+
+	modelAnim.loop = false;
+
+	modelAnim.blendSeconds = 0.7f;
+
+	modelAnim.currentAnimationAddSeconds = 0.015f;
+
+	modelAnim.keyFrameEnd = 0.0f;
+
+	//// 再生開始時間 
+	//currentAnimationStartSeconds = 2.3f;
+
+	//loop = false;
+
+	//currentAnimationAddSeconds = 0.015f;
 
 	// アニメーション再生
 	model->
-		PlayAnimation(EnemyBoss::Animation::Anim_Attack,
-			loop, currentAnimationStartSeconds, blendSeconds,
-			currentAnimationAddSeconds);
+		PlayAnimation(modelAnim);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Reverseplayback);
 
@@ -782,6 +856,7 @@ void AttackState::Enter()
 	smorker = std::make_unique<Effect>("Data/Effect/smorkeDash.efk");
 	charge = std::make_unique<Effect>("Data/Effect/effectCharge.efk");
 	chargeCompleate = std::make_unique<Effect>("Data/Effect/chargecompleted.efk");
+
 
 
 
@@ -835,19 +910,28 @@ void AttackState::Execute(float elapsedTime)
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	std::weak_ptr<HP> hpid = owner.lock()->GetComponent<HP>();
+	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
+	if (PlayerManager::Instance().GetPlayerCount() >= 1)
+	{
+		std::weak_ptr<Transform> pTransformId = PlayerManager::Instance().GetPlayer(0)->GetComponent<Transform>();
 
-	enemyid.lock()->SetTargetPosition(targetPosition);
-
+		targetPosition = pTransformId.lock()->GetPosition();
+	}
 
 	DirectX::XMVECTOR targetPositionVec = DirectX::XMLoadFloat3(&targetPosition);
 	DirectX::XMVECTOR enemyPositionVec = DirectX::XMLoadFloat3(&enemyid.lock()->GetPosition());
 
 	DirectX::XMVECTOR directionVec = DirectX::XMVectorSubtract(targetPositionVec, enemyPositionVec);
 
-	DirectX::XMFLOAT3 direction;
 
-	DirectX::XMStoreFloat3(&direction, directionVec);
+	DirectX::XMStoreFloat3(&directionP, directionVec);
+
+	angle = transformid.lock()->GetAngle();
+
+	direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
+	direction.y = 0;
+	direction.z = cosf(angle.y);
 
 	//// 目的地へ着いた
 	//if (stateTimer < 0.0f)
@@ -861,10 +945,14 @@ void AttackState::Execute(float elapsedTime)
 
 	// 左足ボーン
 	//Model::Node* bossLeftFoot = model->FindNode("boss_left_foot1");
-	Model::Node* bossLeftFoot = model->FindNode("boss_right_foot1");
+	Model::Node* bossRightFoot = model->FindNode("boss_right_foot1");
+	Model::Node* bossLeftFoot = model->FindNode("boss_left_foot1");
 	Model::Node* bossEye = model->FindNode("body2");
 	// ノード位置取得
 	// 左足
+	DirectX::XMFLOAT3 bossRightFootPosition;
+	bossRightFootPosition = model->ConvertLocalToWorld(bossRightFoot);
+
 	DirectX::XMFLOAT3 bossLeftFootPosition;
 	bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
 
@@ -947,15 +1035,14 @@ void AttackState::Execute(float elapsedTime)
 	if (animationTime - FLT_EPSILON >= 1.5f + FLT_EPSILON &&
 			animationTime - FLT_EPSILON <= 1.6f + FLT_EPSILON && !chargeInitilize)
 	{
-
+		enemyid.lock()->InputJampSe();
 		charge->Play(bossEyePosition);
 
 		chargeCompleate->Play(bossEyePosition);
 
-
-
 		// チャージ中
 		stateChargeTimer = stateChargeTimerMax;
+
 
 		chargeInitilize = true;
 
@@ -967,32 +1054,52 @@ void AttackState::Execute(float elapsedTime)
 	if (!dushStart)
 	{
 		stateChargeTimer -= 0.01f;
-		moveid.lock()->Turn(direction, turnSpeed, elapsedTime);
+		moveid.lock()->Turn(directionP, turnSpeed, elapsedTime);
 	}
 
 
 	// ダッシュ初期化
 	if (chargeInitilize && stateChargeTimer <= stateChargeCompletionTimerEnd && !dushStart)
 	{
-		dushStart = true;
+		
 
-		// 再生開始時間 
-		currentAnimationStartSeconds = 1.9f;
+		//// 再生開始時間 
+		//currentAnimationStartSeconds = 0.0f;
+
+		//loop = true;
+
+		//currentAnimationAddSeconds = 0.2f;
+
+		modelAnim.index = EnemyBoss::Animation::Anim_Walk;
+
+		modelAnim.currentanimationseconds = 0.0f;
+
+		modelAnim.loop = true;
+
+		modelAnim.currentAnimationAddSeconds = 0.2f;
+
+		modelAnim.keyFrameEnd = 0.0f;
 
 		// アニメーション再生
 		model->
-			PlayAnimation(EnemyBoss::Animation::Anim_Attack,
-				loop, currentAnimationStartSeconds, blendSeconds,
-				currentAnimationAddSeconds);
+			PlayAnimation(modelAnim);
 		// アニメーションルール
-		enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Reverseplayback);
+		enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 		// チャージ完了後のダッシュ時間
 		stateChargeCompletionTimer = stateChargeCompletionTimerMax;
 	}
+
+	// チャージ時間
+	if (chargeInitilize && stateChargeTimer <= stateChargeCompletionTimerEnd)
+	{
+		dushStart = true;
+	}
 	
 	// ダッシュ中
-	if (dushStart && animationTime <= 0.9f)
+	if (dushStart)
 	{
+		enemyid.lock()->InputDashSe();
+
 		charge->Stop(charge->GetEfeHandle());
 
 		// 煙エフェクト
@@ -1000,10 +1107,12 @@ void AttackState::Execute(float elapsedTime)
 
 		moveid.lock()->Move(direction, moveSpeed, elapsedTime);
 
-		// アニメーションルール
-		enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Stop);
-
 		stateChargeCompletionTimer -= 0.01f;
+
+		// 右足当たり判定
+		enemyid.lock()->DetectHitByBodyPart(bossRightFootPosition, applyDamageAttack);
+		// 左足当たり判定
+		enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamageAttack);
 
 	}
 
@@ -1013,14 +1122,24 @@ void AttackState::Execute(float elapsedTime)
 	{
 		enemyid.lock()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
 
+
+
+
 	}
+
+	//if (model->GetCurrentAnimationIndex() == EnemyBoss::Animation::Anim_Movie &&
+	//	model->IsPlayAnimation())
+	//{
+
+	//}
+
+
 	//enemyid.lock()->CollisitionNodeVsPlayer("boss_left_foot1",enemyid.lock()->GetRadius());
 
 	//Model::Node* bossLeftFoot = model->FindNode("boss_left_hand1");
 
 
-	// 左足当たり判定
-	enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamageAttack);
+
 
 	//std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 	//Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
@@ -1068,7 +1187,16 @@ void AttackState::Execute(float elapsedTime)
 // 最後にやりたい処理全般
 void AttackState::Exit()
 {
+	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
+
+	enemyid.lock()->InputStopDashSe();
+
+	chargeInitilize = false;
+
+	if(charge->GetEfeHandle())
+	charge->Stop(charge->GetEfeHandle());
 }
+
 
 // 初期設定
 void AttackShotState::Enter()
@@ -1079,7 +1207,9 @@ void AttackShotState::Enter()
 	
 
 	currentAnimationStartSeconds = 0.0f;
-	model->PlayAnimation(EnemyBoss::Animation::Anim_Shot, loop, currentAnimationStartSeconds, blendSeconds);
+
+
+	//model->PlayAnimation(EnemyBoss::Animation::Anim_Shot, loop, currentAnimationStartSeconds, blendSeconds);
 
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
@@ -1124,7 +1254,7 @@ void AttackShotState::Execute(float elapsedTime)
 	{
 		// アニメ再生
 		currentAnimationStartSeconds = 0.1f;
-		model->PlayAnimation(EnemyBoss::Animation::Anim_Shot, loop, currentAnimationStartSeconds ,blendSeconds);
+		//model->PlayAnimation(EnemyBoss::Animation::Anim_Shot, loop, currentAnimationStartSeconds ,blendSeconds);
 		++attackCount;
 
 
@@ -1176,7 +1306,7 @@ void AttackShotThrowingState::Enter()
 	//std::shared_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 
 	currentAnimationStartSecondsf = 0.0f;
-	model->PlayReverseAnimation(EnemyBoss::Animation::Anim_jewelattack, loop,currentAnimationStartSecondsf,blendSeconds);
+	//model->PlayReverseAnimation(EnemyBoss::Animation::Anim_jewelattack, loop,currentAnimationStartSecondsf,blendSeconds);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Reverseplayback);
 
@@ -1312,7 +1442,7 @@ void AttackShotThrowingState::Execute(float elapsedTime)
 		// アニメーション再生時間
 		currentAnimationStartSecondsf = 0.7f;
 
-		model->PlayAnimation(EnemyBoss::Animation::Anim_Shot, loop, currentAnimationStartSecondsf, blendSeconds);
+		//model->PlayAnimation(EnemyBoss::Animation::Anim_Shot, loop, currentAnimationStartSecondsf, blendSeconds);
 		// アニメーションルール
 		enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
@@ -1354,6 +1484,19 @@ void DamageState::Enter()
 {
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
 
+	enemyid.lock()->InputDamageSe();
+
+	modelAnim.index = EnemyBoss::Animation::Anim_Die;
+
+	modelAnim.loop = true;
+
+	modelAnim.currentanimationseconds = 2.5f;
+
+	modelAnim.blendSeconds = 0.7f;
+
+	modelAnim.currentAnimationAddSeconds = 0.025f;
+
+	modelAnim.keyFrameEnd = 3.0f;
 
 	// ダメージ
 	//damageSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/炎飛行時.wav");
@@ -1362,9 +1505,7 @@ void DamageState::Enter()
 	Model* momdel = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	momdel->
 		PlayAnimation(
-			EnemyBoss::Animation::Anim_Die, loop,
-			currentAnimationStartSeconds,currentAnimationAddSeconds,
-			keyFrameEnd);
+			modelAnim);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
@@ -1403,8 +1544,20 @@ void ConfusionState::Enter()
 	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
 	//model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	model->PlayAnimation(EnemyBoss::Animation::Anim_Die, loop, currentAnimationStartSeconds, blendSeconds,
-		currentAnimationAddSeconds, keyFrameEnd);
+	modelAnim.index = EnemyBoss::Animation::Anim_Die;
+
+	modelAnim.loop = false;
+
+	modelAnim.currentanimationseconds = 0.426f;
+
+	modelAnim.blendSeconds = 0.35f;
+
+	modelAnim.currentAnimationAddSeconds = 0.000f;
+
+	modelAnim.keyFrameEnd = 70.0f;
+
+
+	model->PlayAnimation(modelAnim);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
@@ -1445,8 +1598,7 @@ void ConfusionState::Execute(float elapsedTime)
 	//}
 
 	if (!model->IsPlayAnimation())
-		model->PlayAnimation(EnemyBoss::Animation::Anim_Die, loop, currentAnimationStartSeconds, blendSeconds,
-			currentAnimationAddSeconds, keyFrameEnd);
+		model->PlayAnimation(modelAnim);
 
 	if (stateTimer > stateTimerEnd)return;
 	switch (randamAttack)
@@ -1484,13 +1636,17 @@ void DeathState::Enter()
 	//deathSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/Enemy着地.wav","death");
 
 
+	modelAnim.index = EnemyBoss::Animation::Anim_Die;
+
+	modelAnim.loop = false;
+
+
 	Model* model;
 
 	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
 	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	model->
-		PlayAnimation(
-			EnemyBoss::Animation::Anim_Die, loop);
+		PlayAnimation(modelAnim);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
@@ -1553,11 +1709,20 @@ void AwakeStartState::Enter()
 
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
+	modelAnim.index = EnemyBoss::Animation::Anim_Movie;
+
+	modelAnim.loop = false;
+
+	modelAnim.currentanimationseconds = 5.829f;
+
+	modelAnim.blendSeconds = 0.35f;
+
+	modelAnim.currentAnimationAddSeconds = 0.025f;
+
+	modelAnim.keyFrameEnd = 3.0f;
+
 	model->
-		PlayAnimation(
-			EnemyBoss::Animation::Anim_Movie, loop,
-			currentAnimationStartSeconds, blendSeconds,
-			currentAnimationAddSeconds, keyFrameEnd);
+		PlayAnimation(modelAnim);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
@@ -1629,15 +1794,20 @@ void ClearState::Enter()
 
 	transformid.lock()->SetAngle(angle);
 
+	modelAnim.index = EnemyBoss::Animation::Anim_Die;
+
+	modelAnim.loop = false;
+
+	modelAnim.blendSeconds = 0.7f;
+
+	modelAnim.currentanimationseconds = 1.5f;
 
 	Model* model;
 
 	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
 	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	model->
-		PlayAnimation(
-			EnemyBoss::Animation::Anim_Die, loop,
-			currentAnimationStartSeconds);
+		PlayAnimation(modelAnim);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
@@ -1748,15 +1918,20 @@ void ClearReviveState::Enter()
 
 	transformid.lock()->SetAngle(angle);
 
+	modelAnim.index = EnemyBoss::Animation::Anim_Die;
+
+	modelAnim.loop = false;
+
+	modelAnim.currentanimationseconds = 1.5f;
+
+	modelAnim.blendSeconds = 0.7f;
 
 	Model* model;
 
 	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
 	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	model->
-		PlayAnimation(
-			EnemyBoss::Animation::Anim_Die, loop,
-			currentAnimationStartSeconds);
+		PlayAnimation(modelAnim);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
@@ -1785,9 +1960,13 @@ void PlayerIdleState::Enter()
 
 	//modelid = owner.lock()->GetComponent<ModelControll>();
 
-	model->PlayAnimation(
-		Player::Anim_Idle, loop,currentAnimationStartSeconds,blendSeconds
-	);
+	modelAnim.index = Player::Anim_Idle;
+
+	modelAnim.loop = true;
+
+	modelAnim.blendSeconds = 0.5f;
+
+	model->PlayAnimation(modelAnim);
 	
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -1844,6 +2023,9 @@ void PlayerMovestate::Enter()
 
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 
+	// se再生
+	playerid.lock()->InputWalkSE();
+
 
 	// 歩きSe否設定
 	//walkSe = Audio::Instance().LoadAudioSource("Data/Audio/SE/足音.wav");
@@ -1852,15 +2034,19 @@ void PlayerMovestate::Enter()
 
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
+	modelAnim.index = Player::Anim_Running;
+
+	modelAnim.loop = true;
+
+	modelAnim.blendSeconds = 0.7f;
+
+	modelAnim.currentAnimationAddSeconds = 0.025f;
 
 
 	//modelid = owner.lock()->GetComponent<ModelControll>();
 
 		//Player::Anim_Move, loop,
-	model->PlayAnimation(
-		Player::Anim_Running, loop,
-		currentAnimationStartSeconds, blendSeconds
-	);
+	model->PlayAnimation(modelAnim);
 
 	//	//Player::Anim_Move, loop,
 	//owner.lock()->GetComponent<ModelControll>()->GetModel()->PlayUpeerBodyAnimation(
@@ -1929,9 +2115,10 @@ void PlayerMovestate::Execute(float elapsedTime)
 void PlayerMovestate::Exit()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
-	// SE再生
-	//playerid.lock()->PlaySE()->Stop("walk");
-	//walkSe->Stop();
+
+	//se再生削除
+	playerid.lock()->InputStopWalkSE();
+
 }
 
 
@@ -1949,9 +2136,13 @@ void PlayerJumpState::Enter()
 	//model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	//moveid = owner.lock()->GetComponent<Movement>();
 
-	model->PlayAnimation(
-		Player::Anim_Jump, loop,
-	currentAnimationStartSeconds, blendSeconds);
+	modelAnim.index = Player::Animation::Anim_Jump;
+
+	modelAnim.keyFrameEnd = 46.0f;
+
+	
+
+	model->PlayAnimation(modelAnim);
 
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -1960,6 +2151,9 @@ void PlayerJumpState::Enter()
 	// 落ちる
 	//bool stop = false;
 	moveid.lock()->SetStopMove(false);
+
+	// se作成
+	playerid.lock()->InputJampSE();
 
 	//playerid.lock()->PlaySE()->Play("land");
 }
@@ -1975,12 +2169,16 @@ void PlayerJumpState::Execute(float elapsedTime)
 	// ロックオン処理
 	playerid.lock()->UpdateCameraState(elapsedTime);
 
+	//// 移動
+	//if (playerid.lock()->InputMove(elapsedTime))
+	//{
+	//	playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+	//}
 	// 移動
 	if (playerid.lock()->InputMove(elapsedTime))
 	{
-		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+		playerid.lock()->GetMoveVec(elapsedTime);
 	}
-
 
 	// ジャンプ入力処理
 	if (playerid.lock()->InputJump())
@@ -1998,10 +2196,19 @@ void PlayerJumpState::Execute(float elapsedTime)
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 	}
 
+
+
+
 	// 着地
 	if (moveid.lock()->GetOnLadius())
 	{
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Land));
+	}
+
+	// 着地移動
+	if (moveid.lock()->GetOnLadius() && playerid.lock()->InputMove(elapsedTime))
+	{
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 	}
 
 
@@ -2012,6 +2219,11 @@ void PlayerJumpState::Execute(float elapsedTime)
 
 void PlayerJumpState::Exit()
 {
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+	// ジャンプ音
+	playerid.lock()->InputJampSE();
+
 	//janpSe->Stop();
 }
 
@@ -2031,13 +2243,17 @@ void PlayerLandState::Enter()
 	//moveid = owner.lock()->GetComponent<Movement>();
 	//moveid->SetOnLadius(false);
 
-	model->PlayAnimation(
-		Player::Anim_Land, loop,
-		currentAnimationStartSeconds, blendSeconds
-	);
+	modelAnim.index = Player::Anim_Land;
+
+	modelAnim.currentanimationseconds = 0.35f;
+
+	model->PlayAnimation(modelAnim);
 
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
+
+	// se作成
+	playerid.lock()->InputJampSE();
 }
 
 void PlayerLandState::Execute(float elapsedTime)
@@ -2077,7 +2293,10 @@ void PlayerLandState::Execute(float elapsedTime)
 
 void PlayerLandState::Exit()
 {
-	//landSe->Stop();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
+
+		// ジャンプ音
+	playerid.lock()->InputJampSE();
 }
 
 
@@ -2095,12 +2314,19 @@ void PlayerJumpFlipState::Enter()
 	/*model = owner.lock()->GetComponent<ModelControll>()->GetModel();*/
 	//moveid = owner.lock()->GetComponent<Movement>();
 
-	model->PlayAnimation(
-		Player::Anim_Jump, loop,
-		currentAnimationStartSeconds , blendSeconds);
+	modelAnim.index = Player::Anim_Jump;
+
+	modelAnim.currentAnimationAddSeconds = 0.03f;
+
+	modelAnim.keyFrameEnd = 25.0f;
+
+	model->PlayAnimation(modelAnim);
 
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
+
+	// se作成
+	playerid.lock()->InputJampSE();
 }
 
 void PlayerJumpFlipState::Execute(float elapsedTime)
@@ -2134,8 +2360,9 @@ void PlayerJumpFlipState::Execute(float elapsedTime)
 
 void PlayerJumpFlipState::Exit()
 {
-	//janpSe->Stop();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
+	playerid.lock()->InputStopJampSE();
 }
 
 void PlayerQuickJabState::Enter()
@@ -2158,35 +2385,38 @@ void PlayerQuickJabState::Enter()
 	
 	if (!moveid.lock()->GetOnLadius())
 	{
+		// アニメーションルール
+		Model::ModelAnim modelAnim;
+		Model::ModelAnim modelAnimUpperBody;
+
+		modelAnim.index = Player::Anim_Slash;
+		modelAnimUpperBody.index = Player::Anim_Jump;
+
 		// 再生開始時間 
-		float currentAnimationStartSeconds = 0.6f;
-		float currentAnimationUpperStartSeconds = 0.0f;
+		//float currentAnimationStartSeconds = 0.6f;
+		//float currentAnimationUpperStartSeconds = 0.0f;
+		modelAnim.currentanimationseconds = 0.6f;
 
 		// ループ
-		bool loop = true;
-		bool loopUpper = false;
+		//bool loop = true;
+		//bool loopUpper = false;
+		modelAnim.loop = true;
 
 		// 再生時間加算分の値
-		float currentAnimationAddSeconds = 0.03f;
-		float currentAnimationUpperAddSeconds = 0.03f;
+		//float currentAnimationAddSeconds = 0.03f;
+		//float currentAnimationUpperAddSeconds = 0.03f;
+		modelAnim.currentAnimationAddSeconds = 0.03f;
+		modelAnimUpperBody.currentAnimationAddSeconds = 0.03f;
 
-		float keyFrameEnd = 40.0f;
+		//float keyFrameEnd = 40.0f;
+		modelAnimUpperBody.keyFrameEnd = 40.0f;
 
 		// アニメーション再生
-		model->PlayAnimation(
-			Player::Anim_Jump, loop,
-			currentAnimationStartSeconds, blendSeconds
-			, currentAnimationAddSeconds, keyFrameEnd
-		);
+		model->PlayAnimation(modelAnim);
 
 
 		// アニメーション上半身再生
-		model->PlayUpeerBodyAnimation(
-			Player::Anim_Slash, loopUpper,
-			currentAnimationUpperStartSeconds, blendSeconds,
-			currentAnimationUpperAddSeconds
-			
-		);
+		model->PlayUpeerBodyAnimation(modelAnimUpperBody);
 		// 攻撃三回で一度強制終了
 		++attackMemory;
 
@@ -2201,22 +2431,24 @@ void PlayerQuickJabState::Enter()
 	}
 	else
 	{
-		// 再生開始時間 
-		float currentAnimationStartSeconds = 0.0f;
+		//// 再生開始時間 
+		//float currentAnimationStartSeconds = 0.0f;
 
-		// ループ
-		bool loop = false;
+		//// ループ
+		//bool loop = false;
 
-		// 再生時間加算分の値
-		float currentAnimationAddSeconds = 0.03f;
+		//// 再生時間加算分の値
+		//float currentAnimationAddSeconds = 0.03f;
 
+		// アニメーションルール
+		Model::ModelAnim modelAnim;
+
+		modelAnim.index = Player::Animation::Anim_Slash;
+
+		modelAnim.currentAnimationAddSeconds = 0.03f;
 
 		// アニメーション再生
-		model->PlayAnimation(
-			Player::Anim_Slash, loop,
-			currentAnimationStartSeconds, blendSeconds
-			, currentAnimationAddSeconds
-		);
+		model->PlayAnimation(modelAnim);
 		// 攻撃三回で一度強制終了
 		++attackMemory;
 
@@ -2489,34 +2721,38 @@ void PlayerSideCutState::Enter()
 
 	if (!moveid.lock()->GetOnLadius())
 	{
+		// アニメーションルール
+		Model::ModelAnim modelAnim;
+		Model::ModelAnim modelAnimUpperBody;
+		modelAnim.index = Player::Animation::Anim_Jump;
+		modelAnimUpperBody.index = Player::Animation::Anim_SlashBeside;
+
 		// 再生開始時間 
-		float currentAnimationStartSeconds = 0.6f;
-		float currentAnimationUpperStartSeconds = 0.0f;
+		//float currentAnimationStartSeconds = 0.6f;
+		//float currentAnimationUpperStartSeconds = 0.0f;
+		modelAnim.currentanimationseconds = 0.6f;
 
 		// ループ
 		bool loop = true;
-		bool loopUpper = false;
+		//bool loopUpper = false;
+		modelAnim.loop = true;
 
 		// 再生時間加算分の値
-		float currentAnimationAddSeconds = 0.03f;
-		float currentAnimationUpperAddSeconds = 0.03f;
+		//float currentAnimationAddSeconds = 0.03f;
+		//float currentAnimationUpperAddSeconds = 0.03f;
+		modelAnim.currentAnimationAddSeconds = 0.03f;
+		modelAnimUpperBody.currentAnimationAddSeconds = 0.03f;
 
-		float keyFrameEnd = 0.63f;
+
+		//float keyFrameEnd = 0.63f;
+		modelAnim.keyFrameEnd = 0.63f;
 
 		// アニメーション再生
-		//model->GetModel()->PlayAnimation(
-		//	Player::Anim_Jump, loop,
-		//	currentAnimationStartSeconds, blendSeconds
-		//	, currentAnimationAddSeconds, keyFrameEnd
-		//);
+		model->PlayAnimation(modelAnim);
 
 
 		// アニメーション上半身再生
-		model->PlayUpeerBodyAnimation(
-			Player::Anim_SlashBeside, loopUpper,
-			currentAnimationUpperStartSeconds, blendSeconds
-
-		);
+		model->PlayUpeerBodyAnimation(modelAnimUpperBody);
 		// 攻撃三回で一度強制終了
 		++attackMemory;
 
@@ -2525,22 +2761,27 @@ void PlayerSideCutState::Enter()
 	}
 	else
 	{
-		// 再生開始時間 
-		float currentAnimationStartSeconds = 0.2f;
+		// アニメーションルール
+		Model::ModelAnim modelAnim;
 
-		// ループ
-		bool loop = false;
+		//// 再生開始時間 
+		//float currentAnimationStartSeconds = 0.2f;
 
-		// 再生時間加算分の値
-		float currentAnimationAddSeconds = 0.03f;
+		//// ループ
+		//bool loop = false;
+
+		//// 再生時間加算分の値
+		//float currentAnimationAddSeconds = 0.03f;
+
+		modelAnim.index = Player::Animation::Anim_SlashBeside;
+
+		modelAnim.currentanimationseconds = 0.2f;
+
+		modelAnim.currentAnimationAddSeconds = 0.03f;
 
 
 		// アニメーション再生
-		model->PlayAnimation(
-			Player::Anim_SlashBeside, loop,
-			currentAnimationStartSeconds, blendSeconds
-			, currentAnimationAddSeconds
-		);
+		model->PlayAnimation(modelAnim);
 		// 攻撃三回で一度強制終了
 		++attackMemory;
 
@@ -2813,19 +3054,19 @@ void PlayerCycloneStrikeState::Enter()
 
 	if (!moveid.lock()->GetOnLadius())
 	{
-		// 再生開始時間 
-		float currentAnimationStartSeconds = 0.6f;
-		float currentAnimationUpperStartSeconds = 0.0f;
+		//// 再生開始時間 
+		//float currentAnimationStartSeconds = 0.6f;
+		//float currentAnimationUpperStartSeconds = 0.0f;
 
-		// ループ
-		bool loop = true;
-		bool loopUpper = false;
+		//// ループ
+		//bool loop = true;
+		//bool loopUpper = false;
 
-		// 再生時間加算分の値
-		float currentAnimationAddSeconds = 0.03f;
-		float currentAnimationUpperAddSeconds = 0.03f;
+		//// 再生時間加算分の値
+		//float currentAnimationAddSeconds = 0.03f;
+		//float currentAnimationUpperAddSeconds = 0.03f;
 
-		float keyFrameEnd = 0.63f;
+		//float keyFrameEnd = 0.63f;
 
 		// アニメーション再生
 		//model->GetModel()->PlayAnimation(
@@ -2834,13 +3075,16 @@ void PlayerCycloneStrikeState::Enter()
 		//	, currentAnimationAddSeconds, keyFrameEnd
 		//);
 
+	    // アニメーションルール
+		Model::ModelAnim modelAnimUpper;
+
+		modelAnimUpper.index = Player::Animation::Anim_SlashThree;
+
+		modelAnimUpper.currentanimationseconds = 0.03f;
+
 
 		// アニメーション上半身再生
-		model->PlayUpeerBodyAnimation(
-			Player::Anim_SlashThree, loopUpper,
-			currentAnimationUpperStartSeconds, blendSeconds
-
-		);
+		model->PlayUpeerBodyAnimation(modelAnimUpper);
 		// 攻撃三回で一度強制終了
 		++attackMemory;
 
@@ -2849,22 +3093,26 @@ void PlayerCycloneStrikeState::Enter()
 	}
 	else
 	{
-		// 再生開始時間 
-		float currentAnimationStartSeconds = 0.7f;
+		//// 再生開始時間 
+		//float currentAnimationStartSeconds = 0.7f;
 
-		// ループ
-		bool loop = false;
+		//// ループ
+		//bool loop = false;
 
-		// 再生時間加算分の値
-		float currentAnimationAddSeconds = 0.03f;
+		//// 再生時間加算分の値
+		//float currentAnimationAddSeconds = 0.03f;
 
+		// アニメーションルール
+		Model::ModelAnim modelAnim;
+
+		modelAnim.index = Player::Animation::Anim_SlashThree;
+
+		modelAnim.currentanimationseconds = 0.7f;
+
+		modelAnim.currentAnimationAddSeconds = 0.03f;
 
 		// アニメーション再生
-		model->PlayAnimation(
-			Player::Anim_SlashThree, loop,
-			currentAnimationStartSeconds, blendSeconds
-			, currentAnimationAddSeconds
-		);
+		model->PlayAnimation(modelAnim);
 		// 攻撃三回で一度強制終了
 		++attackMemory;
 
@@ -2937,12 +3185,22 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	//moveid->Move(direction, attackSpeed, elapsedTime);
 
 	// 回避
-	if (playerid.lock()->InputAvoidance())
+	if (playerid.lock()->InputAvoidance() && playerid.lock()->InputMove(elapsedTime))
 	{
+		bool stop = false;
+		moveid.lock()->SetStopMove(stop);
+
+		DirectX::XMFLOAT3 vec;
+		vec = playerid.lock()->GetMoveVec(elapsedTime);
+
+		moveid.lock()->Turn(vec, turnSpeed, elapsedTime);
+
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 
 		button = false;
 		buttonSeconde = false;
+
+		return;
 	}
 
 
@@ -3110,37 +3368,41 @@ void PlayerSpecialAttackState::Enter()
 
 	if (!moveid.lock()->GetOnLadius())
 	{
-		// 再生開始時間 
-		float currentAnimationStartSeconds = 0.6f;
-		float currentAnimationUpperStartSeconds = 0.0f;
+		//// 再生開始時間 
+		//float currentAnimationStartSeconds = 0.6f;
+		//float currentAnimationUpperStartSeconds = 0.0f;
 
-		// ループ
-		bool loop = true;
-		bool loopUpper = false;
+		//// ループ
+		//bool loop = true;
+		//bool loopUpper = false;
 
-		// 再生時間加算分の値
-		float currentAnimationAddSeconds = 0.00f;
+		//// 再生時間加算分の値
+		//float currentAnimationAddSeconds = 0.00f;
 
 
-		// アニメーションブレンド
-		float blendSeconds = 0.5f;
+		//// アニメーションブレンド
+		//float blendSeconds = 0.5f;
 
-		float keyFrameEnd = 0.63f;
+		//float keyFrameEnd = 0.63f;
+
+		// アニメーションルール
+		Model::ModelAnim modelAnim;
+		Model::ModelAnim modelAnimUpperBody;
+
+		modelAnim.index = Player::Animation::Anim_Jump;
+		modelAnimUpperBody.index = Player::Animation::Anim_MagicSeconde;
+
+		modelAnim.loop = true;
+
+		modelAnim.keyFrameEnd = 0.63f;
+
 
 		// アニメーション再生
-		model->PlayAnimation(
-			Player::Anim_Jump, loop,
-			currentAnimationStartSeconds, blendSeconds
-			, currentAnimationAddSeconds, keyFrameEnd
-		);
+		model->PlayAnimation(modelAnim);
 
 
 		// アニメーション上半身再生
-		model->PlayUpeerBodyAnimation(
-			Player::Anim_MagicSeconde, loopUpper,
-			currentAnimationUpperStartSeconds, blendSeconds
-
-		);
+		model->PlayUpeerBodyAnimation(modelAnimUpperBody);
 
 		// アニメーション上半身下半身再生
 		playerid.lock()->SetUpdateAnim(Player::UpAnim::Doble);
@@ -3157,12 +3419,13 @@ void PlayerSpecialAttackState::Enter()
 		// アニメーションブレンド
 		float blendSeconds = 0.5f;
 
+		// アニメーションルール
+		Model::ModelAnim modelAnim;
+
+		modelAnim.index = Player::Animation::Anim_MagicSeconde;
+
 		// アニメーション再生
-		model->PlayAnimation(
-			Player::Anim_MagicSeconde, loop,
-			currentAnimationStartSeconds, blendSeconds
-			
-		);
+		model->PlayAnimation(modelAnim);
 
 		// アニメーション再生
 		playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -3190,7 +3453,7 @@ void PlayerSpecialAttackState::Enter()
 	flashOn = true;
 
 
-	
+	playerid.lock()->InputAttackThanderSE();
 
 
 	//p.data.push_back({ 180, {position.x + (pos.x * length) ,
@@ -3206,6 +3469,9 @@ void PlayerSpecialAttackState::Enter()
 
 	// 回転許可
 	isRotate = true;
+
+	bool specialRockOff = true;
+	playerid.lock()->SetSpecialRockOff(specialRockOff);
 
 	//// 加速
 	//currentAnimationAddSeconds = 0.0f;
@@ -3336,60 +3602,63 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 
 			if (!moveid.lock()->GetOnLadius())
 			{
-				// 再生開始時間 
-				float currentAnimationStartSeconds = 0.6f;
-				float currentAnimationUpperStartSeconds = 0.0f;
+				//// 再生開始時間 
+				//float currentAnimationStartSeconds = 0.6f;
+				//float currentAnimationUpperStartSeconds = 0.0f;
 
-				// ループ
-				bool loop = true;
-				bool loopUpper = false;
+				//// ループ
+				//bool loop = true;
+				//bool loopUpper = false;
 
-				// 再生時間加算分の値
-				float currentAnimationAddSeconds = 0.00f;
+				//// 再生時間加算分の値
+				//float currentAnimationAddSeconds = 0.00f;
 
 
-				// アニメーションブレンド
-				float blendSeconds = 0.5f;
+				//// アニメーションブレンド
+				//float blendSeconds = 0.5f;
 
-				float keyFrameEnd = 0.63f;
+				//float keyFrameEnd = 0.63f;
+
+				// アニメーションルール
+				Model::ModelAnim modelAnim;
+				Model::ModelAnim modelAnimUpperBody;
+
+				modelAnim.index = Player::Animation::Anim_Jump;
+				modelAnimUpperBody.index = Player::Animation::Anim_SpecialAttack;
+
+				modelAnim.loop = true;
+
+				modelAnim.keyFrameEnd = 0.63f;
 
 				// アニメーション再生
-				model->PlayAnimation(
-					Player::Anim_Jump, loop,
-					currentAnimationStartSeconds, blendSeconds
-					, currentAnimationAddSeconds, keyFrameEnd
-				);
+				model->PlayAnimation(modelAnim);
 
 
 				// アニメーション上半身再生
-				model->PlayUpeerBodyAnimation(
-					Player::Anim_SpecialAttack, loopUpper,
-					currentAnimationUpperStartSeconds, blendSeconds
-
-				);
+				model->PlayUpeerBodyAnimation(modelAnimUpperBody);
 
 
 			}
 			else
 			{
-				// 再生ループ
-				bool  loop = false;
+				//// 再生ループ
+				//bool  loop = false;
 
-				// 再生開始時間 
-				float currentAnimationStartSeconds = 0.0f;
-				// 再生時間加算分の値
-				float currentAnimationAddSeconds = 0.00f;
+				//// 再生開始時間 
+				//float currentAnimationStartSeconds = 0.0f;
+				//// 再生時間加算分の値
+				//float currentAnimationAddSeconds = 0.00f;
 
-				// アニメーションブレンド
-				float blendSeconds = 0.5f;
+				//// アニメーションブレンド
+				//float blendSeconds = 0.5f;
 
+				// アニメーションルール
+				Model::ModelAnim modelAnim;
+
+				modelAnim.index = Player::Animation::Anim_SpecialAttack;
 
 				// アニメーション再生
-				model->PlayAnimation(
-					Player::Anim_SpecialAttack, loop,
-					currentAnimationStartSeconds, blendSeconds
-					, currentAnimationAddSeconds
-				);
+				model->PlayAnimation(modelAnim);
 			}
 			button = false;
 
@@ -3405,7 +3674,8 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			//rockCheck = true;
 			//owner.lock()->GetComponent<Player>()->SetRockCheck(rockCheck);
 
-
+			// 雷停止
+			playerid.lock()->InputStopAttackThanderSE();
 			
 		}
 	}
@@ -3420,7 +3690,25 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 		// スローモーションと色を明るく
 		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON)
 		{
-			playerid.lock()->SetFlashOn(flashOn);
+			//playerid.lock()->SetFlashOn(flashOn);
+			PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+			ColorGradingData colorGradingData;
+			colorGradingData.brigthness = 1.5f;
+			colorGradingData.saturation = 0.0f;
+			
+
+
+			float colorGradingAdd = 0.01f;
+			float radialAdd = 0.01f;
+			postprocessingRenderer.StepValueColor(colorGradingAdd);
+			postprocessingRenderer.StepValueRadial(radialAdd);
+
+
+			postprocessingRenderer.SetColorGradingMaxData(colorGradingData);
+			postprocessingRenderer.SetColorGradingMinData(colorGradingData);
+
+
+			
 			playerid.lock()->SetHitCheck(true);
 		}
 		// アニメーション切りつけ
@@ -3429,8 +3717,20 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			/*float invincibleTimer = 0.0f;
 			owner.lock()->GetComponent<HP>()->SetInvincibleTimer(invincibleTimer);*/
 
+			PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+			ColorGradingData colorGradingData;
+			colorGradingData.brigthness = 5.5f;
 
+			RadialBlurData radialBlurData;
+			radialBlurData.radius = 500;
+			radialBlurData.mask_radius = 300;
 
+			radialBlurData.samplingCount = 10;
+			postprocessingRenderer.SetColorGradingMaxData(colorGradingData);
+			postprocessingRenderer.SetRadialBlurMaxData(radialBlurData);
+
+			float value = 5;
+			postprocessingRenderer.StepValueRadial(value);
 
 			// カメラ振動
 			MessageData::CAMERASHAKEDATA cameraShakeData;
@@ -3453,7 +3753,8 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 
 			lightningAttack->Play(pPosition);
 			
-
+			// 必殺技音
+			playerid.lock()->InputAttackSlashSpecileLightningStrikeSE();
 			
 			if (enemyHpId.lock()->ApplyDamage(10, 0.5f)) 
 			{
@@ -3512,6 +3813,16 @@ void PlayerSpecialAttackState::Exit()
 		enemyMove->SetStopFall(stopFall);
 	}
 
+	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
+	// 最低値設定
+	postprocessingRenderer.StepValueMin();
+
+    ColorGradingData colorGradingData;
+
+	postprocessingRenderer.SetColorGradingMinData(colorGradingData);
+
+
 	//se 停止
 	//slashSe->Stop();
 	//lighteningStrikeSpecialSe->Stop();
@@ -3523,7 +3834,8 @@ void PlayerSpecialAttackState::Exit()
 	//// フリーカメラのロックをとどめる
 	//bool freeCameraCheck = true;
 	//owner.lock()->GetComponent<Player>()->SetFreeCameraCheck(freeCameraCheck);
-
+	bool specialRockOff = false;
+	playerid.lock()->SetSpecialRockOff(specialRockOff);
 }
 
 void PlayerMagicState::Enter()
@@ -3573,33 +3885,28 @@ void PlayerMagicState::Enter()
 	{
 	case (int)Player::CommandMagic::Fire:
 	{
+		modelAnim.index = Player::Animation::Anim_Magic;
 		// アニメーション再生
-		model->PlayAnimation(
-			Player::Anim_Magic, loop,
-			currentAnimationStartSeconds, blendSeconds
-		);
+		model->PlayAnimation(modelAnim);
 
 
 		break;
 	}
 	case (int)Player::CommandMagic::Ice:
 	{
+		modelAnim.index = Player::Animation::Anim_Magic;
+
 		// アニメーション再生
-		model->PlayAnimation(
-			Player::Anim_Magic, loop,
-			currentAnimationStartSeconds, blendSeconds
-		);
+		model->PlayAnimation(modelAnim);
 
 		break;
 	}
 
 	case ((int)Player::CommandMagic::Thander):
 	{
+		modelAnim.index = Player::Animation::Anim_MagicSeconde;
 		// アニメーション再生
-		model->PlayAnimation(
-			Player::Anim_MagicSeconde, loop,
-			currentAnimationStartSeconds, blendSeconds
-		);
+		model->PlayAnimation(modelAnim);
 
 
 		break;
@@ -3607,11 +3914,9 @@ void PlayerMagicState::Enter()
 
 	case ((int)Player::CommandMagic::Heale):
 	{
+		modelAnim.index = Player::Animation::Anim_MagicSeconde;
 		// アニメーション再生
-		model->PlayAnimation(
-			Player::Anim_MagicSeconde, loop,
-			currentAnimationStartSeconds, blendSeconds
-		);
+		model->PlayAnimation(modelAnim);
 		// エフェクト回復
 		heale = std::make_unique<Effect>("Data/Effect/heale.efk");
 
@@ -3683,7 +3988,8 @@ void PlayerMagicState::Execute(float elapsedTime)
 	}
 
 	// 魔法内ながら移動
-	if (playerid.lock()->InputMove(elapsedTime) && !isMove)
+	if (playerid.lock()->InputMove(elapsedTime) && !isMove
+		&& magicType != (int)Player::CommandMagic::Heale)
 	{
 		bool stop = false;
 		moveid.lock()->SetStopMove(stop);
@@ -3744,6 +4050,9 @@ void PlayerMagicState::Execute(float elapsedTime)
 		// 炎発射
 		owner.lock()->GetComponent<Player>()->InputMagicframe();
 
+		// SE炎
+		owner.lock()->GetComponent<Player>()->InputAttackFlameSE();
+
 		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Idle);
 		// 炎se
 		//flameStarteSe->Play(loopSe);
@@ -3755,6 +4064,9 @@ void PlayerMagicState::Execute(float elapsedTime)
 	{
 		// 時間
 		if (animationTime <= 1.1f)return;
+
+		// 雷音
+		owner.lock()->GetComponent<Player>()->InputAttackThanderSE();
 
 		// 雷発射
 		owner.lock()->GetComponent<Player>()->InputMagicLightning();
@@ -3768,6 +4080,10 @@ void PlayerMagicState::Execute(float elapsedTime)
 	{
 		// 時間
 		if (animationTime <= 0.5f)return;
+
+		// 氷音
+		owner.lock()->GetComponent<Player>()->InputAttackIceSE();
+
 		// 氷発射
 		owner.lock()->GetComponent<Player>()->InputMagicIce();
 		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Idle);
@@ -3783,6 +4099,8 @@ void PlayerMagicState::Execute(float elapsedTime)
 		// 時間
 		if (animationTime <= 1.1f)return;
 
+		// 回復音
+		owner.lock()->GetComponent<Player>()->InputAttackHealeSE();
 		// 雷発射
 		owner.lock()->GetComponent<Player>()->InputMagicHealing();
 		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Idle);
@@ -3840,14 +4158,12 @@ void PlayerSpecialMagicState::Enter()
 	fire = std::make_unique<Effect>("Data/Effect/fire.efk");
 	fireAttack = std::make_unique<Effect>("Data/Effect/hit fire.efk");
 	// 再生開始時間
-	currentAnimationStartSeconds = 0.0f;
+	//currentAnimationStartSeconds = 0.0f;
+
+	modelAnim.index = Player::Animation::Anim_SlashThree;
 
 	// アニメーション再生
-	model->PlayAnimation(
-		Player::Anim_SlashThree, loop,
-		currentAnimationStartSeconds, blendSeconds
-		, currentAnimationAddSeconds
-	);
+	model->PlayAnimation(modelAnim);
 	// アニメーション再生
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
@@ -3860,6 +4176,8 @@ void PlayerSpecialMagicState::Enter()
 				pHPosiiton->worldTransform._42,
 				pHPosiiton->worldTransform._43
 	};
+	// 音炎
+	playerid.lock()->InputAttackFlameSE();
 
 	fire->Play(pPosition);
 	// 落ちるの停止
@@ -3942,6 +4260,9 @@ void PlayerSpecialMagicState::Enter()
 
 
 	//Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
+
+	bool specialRockOff = true;
+	playerid.lock()->SetSpecialRockOff(specialRockOff);
 
 
 }
@@ -4086,14 +4407,12 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 		if (!model->IsPlayAnimation())
 		{
 			// 再生開始時間
-			currentAnimationStartSeconds = 0.0f;
+			//currentAnimationStartSeconds = 0.0f;
+
+			modelAnim.index = Player::Animation::Anim_MagicSeconde;
 
 			// アニメーション再生
-			model->PlayAnimation(
-				Player::Anim_MagicSeconde, loop,
-				currentAnimationStartSeconds, blendSeconds
-				, currentAnimationAddSeconds
-			);
+			model->PlayAnimation(modelAnim);
 			button = false;
 
 			// 手の炎エフェクト停止
@@ -4147,21 +4466,42 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 
 
 
-			// 魔法発射のタイミング
-			if (!startMagic)
-			playerid.lock()->
-				InputSpecialMagicframe();
-
-			// 最初だけ魔法を発動するため
-			startMagic = true;
+			//// 魔法発射のタイミング
+			//if (!startMagic)
+			//{
+			//	playerid.lock()->
+			//		InputSpecialMagicframe();
+			//	playerid.lock()->InputAttackFlameSpecileSE();
+			//}
+			//// 最初だけ魔法を発動するため
+			//startMagic = true;
 
 
 			// 必殺技を放った後の経過時間
 			specialMoveWaitTime += elapsedTime;
 
+			PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+			ColorGradingData colorGradingData;
+			colorGradingData.brigthness = 1.5f;
+			
+			
+			postprocessingRenderer.SetColorGradingData(colorGradingData);
+
+			//float colorGradingValue = 0.1f;
+			//postprocessingRenderer.StepValueColor(colorGradingValue);
+
+
+
 			// Se
 			//flameSpecialStarteSe->Play(loopSe);
 
+		}
+
+		if (animationTime >= 1.1f && animationTime <= 1.2f)
+		{
+			playerid.lock()->
+				InputSpecialMagicframe();
+			playerid.lock()->InputAttackFlameSpecileSE();
 		}
 	}
 
@@ -4200,6 +4540,7 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 void PlayerSpecialMagicState::Exit()
 {
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
 	// 落ちるの再開
 	bool stopFall = false;
@@ -4229,9 +4570,17 @@ void PlayerSpecialMagicState::Exit()
 		enemyMove->SetStopFall(stopFall);
 	}
 
+	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+
+	// 最低値設定
+	postprocessingRenderer.StepValueMin();
+
 	//// Se
 	//flameSpecialStarteSe->Stop();
 	//flameSpecialSaveSe->Stop();
+
+	bool specialRockOff = false;
+	playerid.lock()->SetSpecialRockOff(specialRockOff);
 }
 
 void PlayerSpecialMagicIceState::Enter()
@@ -4248,12 +4597,10 @@ void PlayerSpecialMagicIceState::Enter()
 	//// 再生開始時間
 	//currentAnimationStartSeconds = 0.0f;
 
+	modelAnim.keyFrameEnd = 64.0f;
+
 	// アニメーション再生
-	model->PlayAnimation(
-		Player::Anim_Magic, loop,
-		currentAnimationStartSeconds, blendSeconds
-		, currentAnimationAddSeconds, keyFrameEnd
-	);
+	model->PlayAnimation(modelAnim);
 	// アニメーション再生
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
@@ -4371,6 +4718,9 @@ void PlayerSpecialMagicIceState::Enter()
 	Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 
 	//playerid.lock()->Set
+
+	bool specialRockOff = true;
+	playerid.lock()->SetSpecialRockOff(specialRockOff);
 }
 
 void PlayerSpecialMagicIceState::Execute(float elapsedTime)
@@ -4436,12 +4786,12 @@ void PlayerSpecialMagicIceState::Execute(float elapsedTime)
 			//// 再生開始時間
 			//currentAnimationStartSeconds = 0.0f;
 
+			modelAnim.index = Player::Animation::Anim_Slash;
+
+			modelAnim.keyFrameEnd = 0.0f;
+
 			// アニメーション再生
-			model->PlayAnimation(
-				Player::Anim_Slash, loop,
-				currentAnimationStartSeconds, blendSeconds
-				, currentAnimationAddSeconds
-			);
+			model->PlayAnimation(modelAnim);
 			//model->PlayAnimation(
 			//	Player::Anim_MagicSeconde, loop,
 			//	currentAnimationStartSeconds, blendSeconds
@@ -4561,6 +4911,7 @@ void PlayerSpecialMagicIceState::Exit()
 	// コンポネント取得
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
+	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
 	// 落ちるの再開
 	bool stopFall = false;
@@ -4587,10 +4938,15 @@ void PlayerSpecialMagicIceState::Exit()
 		bool stopFall = false;
 		enemyMove.lock()->SetStopFall(stopFall);
 	}
+
+	bool specialRockOff = false;
+	playerid.lock()->SetSpecialRockOff(specialRockOff);
 }
 
 void PlayerSpecialThanderMagicState::Enter()
 {
+
+
 }
 
 void PlayerSpecialThanderMagicState::Execute(float elapsedTime)
@@ -4653,11 +5009,9 @@ void PlayerDamageState::Enter()
 	bool stopFall = false;
 	moveid.lock()->SetStopFall(stopFall);
 
-
+	modelAnim.index = Player::Animation::Anim_Pain;
 		//Player::Anim_Pain, loop,
-	model->PlayAnimation(
-		Player::Anim_Pain, loop,
-		currentAnimationStartSeconds, blendSeconds);
+	model->PlayAnimation(modelAnim);
 
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 }
@@ -4692,12 +5046,9 @@ void PlayerDeathState::Enter()
 	
 	float				stateTimer = 0.0f;
 
-
+	modelAnim.index = Player::Animation::Anim_Deth;
 		//Player::Anim_Deth, loop,
-	model->PlayAnimation(
-		Player::Anim_Deth, loop,
-		currentAnimationStartSeconds ,blendSeconds
-	);
+	model->PlayAnimation(modelAnim);
 
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
@@ -4790,12 +5141,17 @@ void PlayerAvoidanceState::Enter()
 
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
+	// 下半身
+	modelAnim.index = Player::Animation::Anim_Dush;
+
+	modelAnim.currentanimationseconds = 0.3f;
+
+	modelAnim.currentAnimationAddSeconds = 0.025f;
+
+
 
 	//Player::Anim_Slash, loop
-	model->PlayAnimation(
-		Player::Anim_Dush, loop
-		, currentAnimationStartSeconds, blendSeconds,
-		currentAnimationAddSeconds);
+	model->PlayAnimation(modelAnim);
 
 
 	// 当たり判定の有無
@@ -4810,6 +5166,7 @@ void PlayerAvoidanceState::Enter()
 	bool stopFall = true;
 	moveid.lock()->SetStopFall(stopFall);
 
+	playerid.lock()->InputDashSE();
 
 	// エフェクト設定
 	wind = std::make_unique<Effect>("Data/Effect/dashu.efk");
@@ -4854,6 +5211,7 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 	
 	// 任意のアニメーション再生区間
 	float animationTime = owner.lock()->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	//float animationTime = owner.lock()->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
 	
 	// 位置更新
 	wind->SetPosition(wind->GetEfeHandle(),
@@ -4945,12 +5303,10 @@ void PlayerReflectionState::Enter()
 
 	bool loop = false;
 
-
+	modelAnim.index = Player::Animation::Anim_Counter;
 
 		//Player::Anim_Counter, loop,
-	model->PlayAnimation(
-		Player::Anim_Counter, loop,
-		currentAnimationStartSeconds, blendSeconds);
+	model->PlayAnimation(modelAnim);
 
 	// アニメーション種類 通常
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -5009,9 +5365,10 @@ void PlayerTitleIdleState::Enter()
 
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	model->PlayAnimation(
-		Player::Anim_Idle, loop, currentAnimationStartSeconds, blendSeconds
-	);
+	modelAnim.index = Player::Animation::Anim_Idle;
+
+	modelAnim.loop = true;
+	model->PlayAnimation(modelAnim);
 
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -5080,22 +5437,19 @@ void PlayerTitlePushState::Enter()
 	lightningHit = std::make_unique<Effect>("Data/Effect/lightningStrike.efk");
 
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 
+	modelAnim.index = Player::Animation::Anim_MagicSeconde;
 	// アニメーション再生
-	model->PlayAnimation(
-		Player::Anim_MagicSeconde, loop,
-		currentAnimationStartSeconds, blendSeconds
-
-	);
+	model->PlayAnimation(modelAnim);
 
 	// アニメーション再生
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -5129,7 +5483,7 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON && !secondeMortion)
 		{
 
-			
+			playerid.lock()->InputAttackThanderSE();
 
 				// 再生ループ
 				bool  loop = false;
@@ -5142,13 +5496,9 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 				// アニメーションブレンド
 				float blendSeconds = 0.5f;
 
-
+				modelAnim.index = Player::Animation::Anim_SpecialAttack;
 				// アニメーション再生
-				model->PlayAnimation(
-					Player::Anim_SpecialAttack, loop,
-					currentAnimationStartSeconds, blendSeconds
-					, currentAnimationAddSeconds
-				);
+				model->PlayAnimation(modelAnim);
 
 				Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
 
@@ -5178,7 +5528,7 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 		if (animationTime >= 1.5f - FLT_EPSILON && animationTime <= 1.6f + FLT_EPSILON && secondeMortion)
 		{
 
-
+			playerid.lock()->InputAttackSlashSpecileLightningStrikeSE();
 
 			//// 再生ループ
 			//bool  loop = false;
@@ -5288,10 +5638,11 @@ void PlayerClearIdleState::Enter()
 
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	model->PlayAnimation(
-		Player::Anim_MagicSeconde, loop, currentAnimationStartSeconds, blendSeconds,
-		currentAnimationAddSeconds, keyFrameEnd
-	);
+	modelAnim.index = Player::Animation::Anim_MagicSeconde;
+
+	modelAnim.keyFrameEnd = 68.0f;
+
+	model->PlayAnimation(modelAnim);
 
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -5365,10 +5716,11 @@ void PlayerClearEscapeState::Enter()
 
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	model->PlayAnimation(
-		Player::Anim_MagicSeconde, loop, currentAnimationStartSeconds, blendSeconds,
-		currentAnimationAddSeconds, keyFrameEnd
-	);
+	modelAnim.index = Player::Animation::Anim_MagicSeconde;
+
+	modelAnim.keyFrameEnd = 68.0f;
+
+	model->PlayAnimation(modelAnim);
 
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -5396,10 +5748,16 @@ void PlayerOverIdleState::Enter()
 
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	model->PlayAnimation(
-		Player::Anim_Deth, loop, currentAnimationStartSeconds, blendSeconds
-	
-	);
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
+
+	modelAnim.index = Player::Animation::Anim_Deth;
+
+	modelAnim.currentanimationseconds = 1.7f;
+
+	//modelAnim.keyFrameEnd = 105.0f;
+
+	model->PlayAnimation(modelAnim);
 
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -5441,10 +5799,9 @@ void PlayerOverReviveState::Enter()
 
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
-	model->PlayAnimation(
-		Player::Anim_Magic, loop, currentAnimationStartSeconds, blendSeconds
+	modelAnim.index = Player::Animation::Anim_Magic;
 
-	);
+	model->PlayAnimation(modelAnim);
 
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
@@ -5459,10 +5816,8 @@ void PlayerOverReviveState::Execute(float elapsedTime)
 	if (!model->IsPlayAnimation() && !isPoseStarte)
 	{
 
-		model->PlayAnimation(
-			Player::Anim_Jump, loop, currentAnimationStartSeconds, blendSeconds
-
-		);
+		modelAnim.index = Player::Animation::Anim_Jump;
+		model->PlayAnimation(modelAnim);
 
 		isPoseStarte = true;
 		return;

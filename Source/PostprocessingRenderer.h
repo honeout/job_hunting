@@ -94,6 +94,11 @@ public:
 
         this->vignetteDataMax = vignetteDataMax;
     }
+    // 色を変える
+    void SetVignetteDataColor(DirectX::XMFLOAT4	vignetteDataColor) {
+
+        this->vignetteData.color = vignetteDataColor;
+    }
 
 
     // ブルーム最低値データ
@@ -107,6 +112,26 @@ public:
         isIncreasingModeVignetteData = true;
 
         this->vignetteDataMin = vignetteMinData; 
+    }
+
+    // 加算
+    void StepValueColor(float add) {
+        stepValueColor = add;
+    }
+    // 加算
+    void StepValueRadial(float add) {
+        stepValueRadial = add;
+    }
+    // 加算
+    void StepValuevignette(float add) {
+        stepValuevignette = add;
+    }
+
+    // 最低値
+    void StepValueMin() {
+        stepValueColor = stepValueColorMin;
+        stepValueRadial = stepValueRadialMin;
+        stepValuevignette = stepValuevignetteMin;
     }
 
 private:
@@ -198,8 +223,11 @@ private:
 
     // 値を少しずつ減少
     float stepValueColor = 0.03f;
+    float stepValueColorMin = 0.03f;
     float stepValueRadial = 0.5f;
+    float stepValueRadialMin = 5.5f;
     float stepValuevignette = 0.03f;
+    float stepValuevignetteMin = 0.03f;
     //float stepDownValue = 0.03f;
 
     // 値の変化チェック

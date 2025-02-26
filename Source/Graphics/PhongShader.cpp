@@ -133,13 +133,33 @@ PhonShader::PhonShader(ID3D11Device* device)
 
     // 深度ステンシルステート
     {
-        D3D11_DEPTH_STENCIL_DESC desc;
+        D3D11_DEPTH_STENCIL_DESC desc = {};
         ::memset(&desc, 0, sizeof(desc));
         desc.DepthEnable = true;
+        //desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+        //desc.DepthFunc = D3D11_COMPARISON_LESS;
         desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
         desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+        // ステンシルステート有効
+        desc.StencilEnable = true;
+        desc.StencilWriteMask = 0xFF;
+        desc.StencilReadMask = 0xFF;
+
+        desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+        desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+        desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+        desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+        desc.BackFace = desc.FrontFace;
 
         HRESULT hr = device->CreateDepthStencilState(&desc, depthStencilState.GetAddressOf());
+        _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+
+        desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+        //desc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+        //desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+
+        hr = device->CreateDepthStencilState(&desc, depthStencilMask.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
     }
 
@@ -220,7 +240,15 @@ void PhonShader::Begin(const RenderContext& rc)
 
     const float blend_factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
     rc.deviceContext->OMSetBlendState(blendState.Get(), blend_factor, 0xFFFFFFFF);
-    rc.deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
+    if (rc.StencilRef == 1)
+    {
+        rc.deviceContext->OMSetDepthStencilState(depthStencilMask.Get(), rc.StencilRef);
+    }
+    else
+    {
+        rc.deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
+    }
+    
     rc.deviceContext->RSSetState(rasterizerState.Get());
     //rc.deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
 
@@ -264,7 +292,8 @@ void PhonShader::Begin(const RenderContext& rc)
     cbScene.isSpecular = rc.isSpecular;
     // 影シェーダー
     cbScene.isRimRightning = rc.isRimRightning;
-
+    // 描画の有無
+    cbScene.StencilRef = rc.StencilRef;
 
     rc.deviceContext->UpdateSubresource(sceneConstantBuffer.Get(), 0, 0, &cbScene, 0, 0);
 
@@ -295,6 +324,7 @@ void PhonShader::Draw(const RenderContext& rc, const Model* model)
 
     for (const ModelResource::Mesh& mesh : resource->GetMeshes())
     {
+
         // メッシュ用定数バッファ更新
         CbMesh cbMesh;
         ::memset(&cbMesh, 0, sizeof(cbMesh));

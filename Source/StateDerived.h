@@ -63,24 +63,24 @@ private:
 	bool                upOnLading = false;
 
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 3.3f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 3.3f;
 
-	// 再生終了時間
-	float currentAnimationEndSeconds = 300.0f;
+	//// 再生終了時間
+	//float currentAnimationEndSeconds = 300.0f;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
-	//float currentAnimationAddSeconds = 0.06f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
+	////float currentAnimationAddSeconds = 0.06f;
 
-	// キーフレームの終了
-	float keyFrameEnd = 0.0f;
+	//// キーフレームの終了
+	//float keyFrameEnd = 0.0f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.7f;
 
 	// 歩き速度
 	float moveSpeed = 3;
@@ -92,6 +92,9 @@ private:
 	DirectX::XMFLOAT3 targetPosition = {.0f,.0f,.0f};
 
 	RadialBlurData radialBlurData;
+
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 };
 
 // 待機ステートオブジェクト
@@ -118,17 +121,23 @@ private:
 	
 	float               stateTimerEnd = 0.0f;
 	float				stateTimer = 0.0f;
-	float				stateTimerMax = 3.0f;
+	float				stateTimerMax = 2.5f;
 	float				stateTimerMin = 1.0f;
 
-	// 再生ループ
-	bool  loop = true;
+	//// 再生ループ
+	//bool  loop = true;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.7f;
+
+	// 行動種類
+	int  randRoot = 0;
+
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 };
 
 // 追跡ステートオブジェクト
@@ -161,14 +170,17 @@ private:
 
 	int                 attackType = 0;
 
-	// 再生ループ
-	bool  loop = true;
+	//// 再生ループ
+	//bool  loop = true;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.7f;
+
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
 
 	// 行動制限最大数
@@ -236,20 +248,23 @@ private:
 	bool                upOnLading = false;
 
 
-	// 再生ループ
-	bool  loop = true;
+	//// 再生ループ
+	//bool  loop = true;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 2.0f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 2.0f;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.025f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.025f;
 
-	// キーフレームの終了
-	float keyFrameEnd = 0.8f;
+	//// キーフレームの終了
+	//float keyFrameEnd = 0.8f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.7f;
+
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
 	// 歩き速度
 	float moveSpeed = 10;
@@ -289,6 +304,10 @@ private:
 	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
 
 	//std::shared_ptr<HP> hpid = nullptr;
+	
+
+	DirectX::XMFLOAT3 angle;
+
 	// チャージ時間
 	float				stateChargeTimer = 0.0f;
 	float				stateChargeTimerEnd = 0.0f;
@@ -314,21 +333,23 @@ private:
 	std::unique_ptr<Effect> charge;
 	std::unique_ptr<Effect> chargeCompleate;
 	
-	// 再生ループ
-	bool  loop = false;
-	// チャージ中
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 2.3f;
+	//// 再生ループ
+	//bool  loop = false;
+	//// チャージ中
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 2.3f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.7f;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.015f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.015f;
 
-	// キーフレームの終了
-	float keyFrameEnd = 120.8f;
+	//// キーフレームの終了
+	//float keyFrameEnd = 120.8f;
 
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
 	// 歩き速度
 	float moveSpeed = 10;
@@ -345,7 +366,10 @@ private:
 	// アニメーション終了
 	bool dushStart = false;
 
+	DirectX::XMFLOAT3 direction;
 
+
+	DirectX::XMFLOAT3 directionP;
 
 };
 
@@ -374,6 +398,8 @@ private:
 
 	int                 attackCount = 0;
 	int                 attackCountMax = 0;
+
+
 
 	// 再生ループ
 	bool  loop = false;
@@ -461,20 +487,23 @@ private:
 	//// アニメーションブレンド
 	//float blendSeconds = 0.7f;
 
-	// 再生ループ
-	bool  loop = true;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 2.5f;
+	//// 再生ループ
+	//bool  loop = true;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.025f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 2.5f;
 
-	// キーフレームの終了
-	float keyFrameEnd = 3.0f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.025f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
+	//// キーフレームの終了
+	//float keyFrameEnd = 3.0f;
+
+	//// アニメーションブレンド
+	//float blendSeconds = 0.7f;
 };
 
 // 混乱ステートオブジェクト
@@ -500,24 +529,28 @@ private:
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
-	float				stateTimerMax = 0.8f;
+	float				stateTimerMax = 2.8f;
 
 	float				stateTimerEnd = 0.0f;
 
-	// 再生ループ
-	bool  loop = false;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.426f;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// キーフレームの終了
-	float keyFrameEnd = 70.0f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.426f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.35f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
+
+	//// キーフレームの終了
+	//float keyFrameEnd = 70.0f;
+
+	//// アニメーションブレンド
+	//float blendSeconds = 0.35f;
 
 	// 攻撃種類
 		// 行動をランダムで
@@ -554,14 +587,17 @@ private:
 	float				stateTimer = 0.0f;
 
 
-	// 再生ループ
-	bool  loop = false;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+
+	//// アニメーションブレンド
+	//float blendSeconds = 0.7f;
 
 	// クリア確認
 	bool clearCheck = true;
@@ -585,21 +621,23 @@ public:
 
 private:
 
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 5.829f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 5.829f;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
 
-	// キーフレームの終了
-	float keyFrameEnd = 491.0f;
+	//// キーフレームの終了
+	//float keyFrameEnd = 491.0f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.35f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.35f;
 
 
 	// クリア確認
@@ -645,15 +683,17 @@ private:
 
 	float				stateTimer = 0.0f;
 
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 1.5f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 1.5f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.7f;
 
 	// クリア確認
 	bool clearCheck = true;
@@ -684,15 +724,17 @@ private:
 
 	float				stateTimer = 0.0f;
 
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 1.5f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 1.5f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.7f;
 
 	// クリア確認
 	bool clearCheck = true;
@@ -727,14 +769,17 @@ private:
 
 	float				stateTimer = 0.0f;
 
-	// 再生ループ
-	bool  loop = true;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生ループ
+	//bool  loop = true;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 };
 
 // 移動ステートオブジェクト
@@ -760,18 +805,20 @@ private:
 
 	//std::shared_ptr<Movement> moveid;
 
+		// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生ループ
-	bool  loop = true;
+	//// 再生ループ
+	//bool  loop = true;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.05f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.05f;
 };
 
 
@@ -805,14 +852,17 @@ private:
 	bool                jumpCheck = false;
 	//bool				loop = false;
 
-	// 再生ループ
-	bool  loop = false;
+		// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 };
 
 // 着地ステートオブジェクト
@@ -842,21 +892,24 @@ private:
 
 	float				stateTimer = 0.0f;
 
-	// 再生ループ
-	bool  loop = false;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.35f;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.35f;
 
-	// キーフレームの終了
-	float keyFrameEnd = 40.0f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
+
+	//// キーフレームの終了
+	//float keyFrameEnd = 40.0f;
 
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 };
 
 // ジャンプ中ステートオブジェクト
@@ -886,14 +939,20 @@ private:
 
 	float				stateTimer = 0.0f;
 
-	// 再生ループ
-	bool  loop = false;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.3f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+
+	//// アニメーションブレンド
+	//float blendSeconds = 0.3f;
+
+	//float currentAnimationAddSeconds = 0.03f;
+	//float keyFrameEnd = 25.0f;
 
 	// 回転スピード
 	float turnSpeed = DirectX::XMConvertToRadians(720);
@@ -1337,14 +1396,17 @@ private:
 	// se
 	bool loopSe = false;
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
+
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
 	// 魔法発射種類
 	int                       magicType = 0;
@@ -1423,16 +1485,19 @@ private:
 	std::unique_ptr<Effect> fire;
 	std::unique_ptr<Effect> fireAttack;
 
-	// 再生ループ
-	bool  loop = false;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
+
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 
 
 	bool button = false;
@@ -1515,19 +1580,22 @@ private:
 	std::unique_ptr<Effect> ice;
 	//std::unique_ptr<Effect> fireAttack;
 
-	// 再生ループ
-	bool  loop = false;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
 
-	// キーフレーム終了
-	float keyFrameEnd = 64.00f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
+
+	//// キーフレーム終了
+	//float keyFrameEnd = 64.00f;
 
 
 	bool button = false;
@@ -1651,16 +1719,19 @@ private:
 	//std::unique_ptr<AudioSource> damageSe;
 	bool loopSe = false;
 
-	float				stateTimer = 0.0f;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生ループ
-	bool  loop = false;
+	//float				stateTimer = 0.0f;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 };
 
 // 回避ステートオブジェクト
@@ -1697,18 +1768,20 @@ private:
 	float               speed = 4.5f;
 	float               flySpeed = 3.0f;
 
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
+	Model::ModelAnim modelAnimUpper;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.3f;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.3f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.025f;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.025f;
-
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 
 	// 可速度
 	float addHeight = 1.0f;
@@ -1738,14 +1811,16 @@ private:
 
 	float				stateTimer = 0.0f;
 
-	// 再生ループ
-	bool  loop = false;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 };
 
 // 死亡ステートオブジェクト
@@ -1773,14 +1848,16 @@ private:
 	// 死亡音声敵
 	//std::unique_ptr<AudioSource> deathSe;
 
-	// 再生ループ
-	bool  loop = false;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 
 	// 経過時間最大
 	float stateTimer = 0.0f;
@@ -1837,14 +1914,17 @@ public:
 private:
 	float				stateTimer = 0.0f;
 
-	// 再生ループ
-	bool  loop = true;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
+	//// 再生ループ
+	//bool  loop = true;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
+
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 };
 
 
@@ -1867,14 +1947,17 @@ public:
 private:
 	float				stateTimer = 0.0f;
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
+
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
 	// 過ぎたら
 	bool secondeMortion = false;
@@ -1907,20 +1990,23 @@ public:
 private:
 	float				stateTimer = 0.0f;
 
-	// 再生ループ
-	bool  loop = false;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 
-	// キーフレーム終了
-	float keyFrameEnd = 68.00f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
+
+	//// キーフレーム終了
+	//float keyFrameEnd = 68.00f;
 };
 
 
@@ -1942,21 +2028,22 @@ public:
 
 private:
 	float				stateTimer = 0.0f;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
-
-	// キーフレーム終了
-	float keyFrameEnd = 68.00f;
+	//// キーフレーム終了
+	//float keyFrameEnd = 68.00f;
 };
 
 
@@ -1979,20 +2066,22 @@ public:
 private:
 	float				stateTimer = 0.0f;
 
-	// 再生ループ
-	bool  loop = false;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 1.7f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 1.7f;
 
-	// キーフレーム終了
-	float keyFrameEnd = 105.00f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
+
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
+
+	//// キーフレーム終了
+	//float keyFrameEnd = 105.00f;
 };
 
 
@@ -2013,21 +2102,22 @@ public:
 
 private:
 	float				stateTimer = 0.0f;
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
+	//// 再生ループ
+	//bool  loop = false;
 
-	// 再生ループ
-	bool  loop = false;
+	//// 再生開始時間 
+	//float currentAnimationStartSeconds = 0.0f;
 
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
+	//// アニメーションブレンド
+	//float blendSeconds = 0.5f;
 
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
+	//// 再生時間加算分の値
+	//float currentAnimationAddSeconds = 0.00f;
 
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
-
-	// キーフレーム終了
-	float keyFrameEnd = 0.0f;
+	//// キーフレーム終了
+	//float keyFrameEnd = 0.0f;
 
 	// ポーズ切り替え
 	bool isPoseStarte = false;

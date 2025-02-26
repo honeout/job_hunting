@@ -40,6 +40,11 @@ public:
 	void DebugGui();
 #endif // _DEBUG
 
+	// bgmŠJŽn
+	void StartMusic();
+	void StopMusic();
+
+
 	// 3D‹óŠÔ‚Ì•`‰æ
 	void Render3DScene();
 
