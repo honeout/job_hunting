@@ -10,6 +10,7 @@ CameraController::CameraController()
 {
 	position = Camera::Instance().GetEye();
 	newPosition = Camera::Instance().GetEye();
+	CAMERACHANGEFREESELECTMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEFREESELECTMODE, [&](void* data) { OnFreeSelectMode(data); });
 	CAMERACHANGEFREEMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEFREEMODE, [&](void* data) { OnFreeMode(data); });
 	CAMERACHANGELOCKONMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGELOCKONMODE, [&](void* data) { OnLockonMode(data); });
 	CAMERACHANGELOCKONTOPHEIGHTMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGELOCKONTOPHEIGHTMODE, [&](void* data) { OnLockonTopHeightMode(data); });
@@ -19,6 +20,7 @@ CameraController::CameraController()
 
 CameraController::~CameraController()
 {
+	Messenger::Instance().RemoveReceiver(CAMERACHANGEFREESELECTMODEKEY);
 	Messenger::Instance().RemoveReceiver(CAMERACHANGEFREEMODEKEY);
 	Messenger::Instance().RemoveReceiver(CAMERACHANGELOCKONMODEKEY);
 	Messenger::Instance().RemoveReceiver(CAMERACHANGELOCKONTOPHEIGHTMODEKEY);
@@ -42,6 +44,7 @@ void CameraController::Update(float elapsedTime)
 	// 各モードでの処理
 	switch (mode)
 	{
+	case Mode::FreeSelectCamera: FreeSelectCamera(elapsedTime); break;
 	case	Mode::FreeCamera:	FreeCamera(elapsedTime);	break;
 	case	Mode::LockonCamera:	LockonCamera(elapsedTime);	break;
 	case	Mode::LockonHeightCamera:	LockonTopHeightCamera(elapsedTime);	break;
@@ -115,6 +118,8 @@ void CameraController::OnGUI()
 	{
 		ImGui::SliderFloat3("Position", &position.x, 0.0f, 10.0f);
 		ImGui::SliderFloat3("Angle", &angle.x, 0.0f, 10.0f);
+		ImGui::SliderFloat("length", &lengthMinRock, 0.0f, 20.0f);
+		ImGui::SliderFloat("height", &heightMaxRock, -20.0f, 20.0f);
 
 		ImGui::TreePop();
 	}
@@ -134,6 +139,51 @@ bool CameraController::GetCameraMortionDataTime()
 	}
 
 	return isEffect;
+}
+
+void CameraController::FreeSelectCamera(float elapsedTime)
+{
+	//GamePad& gamePad = Input::Instance().GetGamePad();
+	//float ax = gamePad.GetAxisRX();
+	//float ay = gamePad.GetAxisRY();
+	//// カメラの回転速度
+	//float speed = rollSpeed * elapsedTime;
+
+	//// スティックの入力値に合わせてX軸とY軸を回転
+	//angle.x += ay * speed;
+	//angle.y += ax * speed;
+
+	// X軸のカメラ回転を制限
+	if (angle.x < minAngleX)
+	{
+		angle.x = minAngleX;
+	}
+	if (angle.x > maxAngleX)
+	{
+		angle.x = maxAngleX;
+	}
+	// Y軸の回転値を-3.14～3.14に収まるようにする
+	if (angle.y < -DirectX::XM_PI)
+	{
+		angle.y += DirectX::XM_2PI;
+	}
+	if (angle.y > DirectX::XM_PI)
+	{
+		angle.y -= DirectX::XM_2PI;
+	}
+
+	// カメラ回転値を回転行列に変換
+	DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
+
+	// 回転行列から前方向ベクトルを取り出す
+	DirectX::XMVECTOR Front = Transform.r[2];
+	DirectX::XMFLOAT3 front;
+	DirectX::XMStoreFloat3(&front, Front);
+
+	// 注視点から後ろベクトル方向に一定距離離れたカメラ視点を求める
+	newPosition.x = target.x - front.x * range;
+	newPosition.y = target.y - front.y * range;
+	newPosition.z = target.z - front.z * range;
 }
 
 void CameraController::FreeCamera(float elapsedTime)
@@ -238,7 +288,7 @@ void CameraController::LockonCamera(float elapsedTime)
 	if (lengthMin <= len)
 	{
 		// 少し上
-		t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
+		t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(topHeight), t0);
 
 		DirectX::XMStoreFloat3(&newPosition, t0);
 
@@ -247,13 +297,14 @@ void CameraController::LockonCamera(float elapsedTime)
 	else
 	{
 		// 少し上
-		t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
+		//t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(heightMaxRock), t0);
 		// 少し離れる
-		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(16.5f), t0);
+		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(lengthMinRock), t0);
 
 		DirectX::XMStoreFloat3(&newPosition, t0);
 
-		newPosition.y = -2.0f;
+		//newPosition.y = -2.5f;
+		newPosition.y = heightMaxRock;
 	}
 
 
@@ -280,6 +331,8 @@ void CameraController::LockonTopHeightCamera(float elapsedTime)
 	//	新しい注視点を算出
 	DirectX::XMStoreFloat3(&newTarget, DirectX::XMVectorMultiplyAdd(v, DirectX::XMVectorReplicate(0.5f), t0));
 
+
+
 	//	新しい座標を算出
 	l = DirectX::XMVectorClamp(l
 		, DirectX::XMVectorReplicate(lengthLimit[0])
@@ -290,15 +343,16 @@ void CameraController::LockonTopHeightCamera(float elapsedTime)
 	//if (targetWork[1].y >= topHeight)
 	//{
 		// 少し上
-		t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
-		// 少し離れる
-		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(16.0f), t0);
+		//t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(topHeight), t0);
+		// 少し離れる 16.0f
+		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(lengthMinRock), t0);
 
 		DirectX::XMStoreFloat3(&newPosition, t0);
 
-		newPosition.y = targetWork[1].y - 1.0f;
+		//newPosition.y = targetWork[1].y - 1.0f;
+		newPosition.y = topHeight;
 
-		return;
+
 	//
 
 	//// 距離が一定以上
@@ -393,6 +447,28 @@ void CameraController::MotionCamera(float elapsedTime)
 			}
 		}
 	}
+}
+
+void CameraController::OnFreeSelectMode(void* data)
+{
+	MessageData::CAMERACHANGEFREESELECTMODEDATA* p = static_cast<MessageData::CAMERACHANGEFREESELECTMODEDATA*>(data);
+	if (this->mode != Mode::FreeSelectCamera)
+	{
+		// 角度算出
+		DirectX::XMFLOAT3	v;
+		v.x = newPosition.x - newTarget.x;
+		v.y = newPosition.y - newTarget.y;
+		v.z = newPosition.z - newTarget.z;
+		angle.y = atan2f(v.x, v.z) + DirectX::XM_PI;
+		angle.x = atan2f(v.y, v.z);
+		//	角度の正規化
+		angle.y = atan2f(sinf(angle.y), cosf(angle.y));
+		angle.x = atan2f(sinf(angle.x), cosf(angle.x));
+	}
+	this->mode = Mode::FreeSelectCamera;
+	this->position.y = -2.0f;
+	this->newTarget = p->target;
+	this->newTarget.y += 0.01f;
 }
 
 void CameraController::OnFreeMode(void* data)

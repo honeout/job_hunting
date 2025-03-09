@@ -386,6 +386,8 @@ void PostprocessingRenderer::MoveTowards()
             radialBlurDataMin.samplingCount : radialBlurData.samplingCount - stepValueRadial;
 
 
+        radialBlurData.mask_radius = radialBlurDataMin.mask_radius + FLT_EPSILON >= radialBlurData.mask_radius - FLT_EPSILON ?
+            radialBlurDataMin.mask_radius : radialBlurData.mask_radius + stepValueRadial;
     }
 
 

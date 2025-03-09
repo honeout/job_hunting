@@ -74,7 +74,32 @@ public:
         Sight,
         SightCheck,
         Mp,
+        PlayerCommandShortCutFire,
+        PlayerCommandShortCutSunder,
+        PlayerCommandShortCutIce,
+        PlayerCommandShortCutKeule,
+        Push,
+        Push2,
+        PushShort,
+        ShortCut,
+    };
 
+    enum class UiCountTitle
+    {
+        TitleSprite = 0,
+        Start,
+        Exit,
+        Push,
+        Select,
+    };
+
+    enum class UiCountGameOver
+    {
+        GameOverSprite = 0,
+        Title,
+        ReStart,
+        Push,
+        Select,
     };
 
 private:

@@ -169,4 +169,22 @@ private:
 
 	// どれを選択しているかUI
 	int selectPush = 0;
+
+	// debug
+	float debugShakePower = 0.5f;
+	float debugShakeTimer = 0.2f;
+
+	DirectX::XMFLOAT2 startPos = { 543, 477 };
+	DirectX::XMFLOAT2 exitPos = { 543, 577 };
+
+	DirectX::XMFLOAT2 buttonPos = {0,0};
+
+	// ボタン用位置の大きさ分
+	float buttonPosYAdd = 20.0f;
+
+	// ボタンを押すと描画する
+	bool isDrawButton = true;
+
+	// ボタン確認
+	bool isPush = false;
 };

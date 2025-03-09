@@ -17,6 +17,14 @@ struct CameraMotionData
 
 namespace	MessageData
 {
+	// フリセレクトーカメラ
+	static	constexpr	char* CAMERACHANGEFREESELECTMODE = "CAMERA CHANGE FREESELECTMODE";
+	struct	CAMERACHANGEFREESELECTMODEDATA
+	{
+		DirectX::XMFLOAT3	target;
+	};
+
+
 // フリーカメラ
 static	constexpr	char*	CAMERACHANGEFREEMODE	= "CAMERA CHANGE FREEMODE";
 struct	CAMERACHANGEFREEMODEDATA

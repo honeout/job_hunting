@@ -211,7 +211,7 @@ void SceneGame::Update(float elapsedTime)
 
 
 	// エフェクトしてシェーダーを使う
-	PlayEffectsShaders(dlayTime);
+	//PlayEffectsShaders(dlayTime);
 
 	//Audio::Instance().Update();
 	
@@ -438,6 +438,28 @@ void SceneGame::Render()
 	cameraControlle->OnGUI();
 		 //2DデバッグGUI描画
 	{
+		if (ImGui::TreeNode("2DUI"))
+		{
+			ImGui::SliderFloat2("debugPush2Pos", &debugPush2Pos.x, 0.0f, 1200.0f);
+			ImGui::SliderFloat2("debugShortCutPos", &debugShortCutPos.x, 0.0f, 1200.0f);
+			ImGui::SliderFloat2("debugShortPushPos", &debugShortPushPos.x, 0.0f, 1200.0f);
+
+			ImGui::SliderFloat2("debugPush2Scale", &debugPush2Scale.x, 0.0f, 200.1f);
+			ImGui::SliderFloat2("debugShortCutScale", &debugShortCutScale.x, 0.0f, 200.1f);
+			ImGui::SliderFloat2("debugShortPushScale", &debugShortPushScale.x, 0.0f, 200.1f);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCount::Push2)->GetComponent<TransForm2D>()->SetPosition(debugPush2Pos);
+			UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut)->GetComponent<TransForm2D>()->SetPosition(debugShortCutPos);
+			UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->GetComponent<TransForm2D>()->SetPosition(debugShortPushPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCount::Push2)->GetComponent<TransForm2D>()->SetScale(debugPush2Scale);
+			UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut)->GetComponent<TransForm2D>()->SetScale(debugShortCutScale);
+			UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->GetComponent<TransForm2D>()->SetScale(debugShortPushScale);
+
+			ImGui::TreePop();
+		}
+		ImGui::Separator();
+
 		//ImGui::Separator();
 		 //UNIT11
 		if (ImGui::TreeNode("shadowmap"))
@@ -1120,8 +1142,8 @@ void SceneGame::InitializeComponent()
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new AwakeStartState(actor));
 
 		// ステートセット
-		actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::State::Jump));
-		//actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::State::Idle));
+		//actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::State::Jump));
+		actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::State::Idle));
 
 		// これが２Dかの確認
 		bool check2d = false;
@@ -2415,6 +2437,313 @@ void SceneGame::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
+
+
+
+	// UI PlayerCommandShortCutFireCheck
+	{
+		const char* filename = "Data/Sprite/コマンド　非選択　ショートカットファイアー.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandShortCutFireCheck");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 340 };
+		transform2D->SetPosition(pos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(scale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(false);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
+	// UI PlayerCommandShortCutSunderCheck
+	{
+		const char* filename = "Data/Sprite/コマンド　非選択　ショートカットサンダラ.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandShortCutSunderCheck");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 440 };
+		transform2D->SetPosition(pos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(scale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(false);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
+
+	// UI PlayerCommandShortCutBrezerdCheck
+	{
+		const char* filename = "Data/Sprite/コマンド　非選択　ショートカットブリザラ.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandRigtningCheck");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 540 };
+		transform2D->SetPosition(pos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(scale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(false);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PlayerCommandShortCutKeuleCheck
+	{
+		const char* filename = "Data/Sprite/コマンド　非選択　ショートカットケアル.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerCommandShortCutKeuleCheck");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 640};
+		transform2D->SetPosition(pos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(scale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+				// UI揺らす範囲を指定揺らす場合
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(false);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
+	// UI Push
+	{
+		const char* filename = "Data/Sprite/選択.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("Push");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 285 };
+		transform2D->SetPosition(pos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(scale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(false);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI Push2
+	{
+		const char* filename = "Data/Sprite/選択.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("Push2");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 285 };
+		transform2D->SetPosition(debugPush2Pos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(debugPush2Scale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI PushShort
+	{
+		const char* filename = "Data/Sprite/選択ヒント.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PushShort");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 285 };
+		transform2D->SetPosition(debugShortPushPos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(debugShortPushScale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+	// UI ShortCut
+	{
+		const char* filename = "Data/Sprite/ショートカット.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("ShortCut");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 179, 285 };
+		transform2D->SetPosition(debugShortCutPos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(debugShortCutScale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(true);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
+
 }
 
 void SceneGame::UpdateBgm()

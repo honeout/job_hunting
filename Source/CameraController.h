@@ -15,6 +15,7 @@ class CameraController
 	// モード
 	enum class Mode
 	{
+		FreeSelectCamera, // フリーセレクトカメラ
 		FreeCamera,		// フリーカメラ
 		LockonCamera,	// ロックオンカメラ
 		LockonHeightCamera,	// ロックオンカメラ
@@ -44,6 +45,10 @@ public:
 	bool GetCameraMortionDataTime();
 
 private:
+	// フリーセレクトカメラ更新処理
+	void FreeSelectCamera(float elapsedTime);
+
+
 	// フリーカメラ更新処理
 	void FreeCamera(float elapsedTime);
 
@@ -57,6 +62,9 @@ private:
 	void MotionCamera(float elapsedTime);
 
 private:
+	// フリセレクトーカメラ
+	void OnFreeSelectMode(void* data);
+
 	// フリーカメラ
 	void OnFreeMode(void* data);
 
@@ -98,14 +106,23 @@ private:
 	float				shakePower = 1;
 
 	// ターゲットの最低距離
-	float               lengthMin = 5.5f;
+	float               lengthMin = 8.5f;
+	//float               lengthMin = 5.5f;
+
+
+
+	// 敵との
+	float				lengthMinRock = 10.0f;
+	//float				lengthMinRock = 16.5f;
+	float				heightMaxRock = 0.0f;
+	//float				heightMaxRock = 3.0f;
 
 	// ターゲットの一定以上高い
 	float               topHeight = 3.0f;
 
 
-
 	// メッセージキー
+	uint64_t			CAMERACHANGEFREESELECTMODEKEY;
 	uint64_t			CAMERACHANGEFREEMODEKEY;
 	uint64_t			CAMERACHANGELOCKONMODEKEY;
 	uint64_t			CAMERACHANGELOCKONTOPHEIGHTMODEKEY;

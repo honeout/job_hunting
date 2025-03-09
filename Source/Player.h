@@ -173,6 +173,12 @@ protected:
 
 public:
 
+    // 曲再生
+    void PlayPintchSe();
+    void StopPintchSe();
+    // 必殺技ため終了
+    void PlaySpecialChargeCompleteSe();
+
 
 
     // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
@@ -615,6 +621,16 @@ public:
     // 必殺技中のロックオフ
     void SetSpecialRockOff(bool specialRockOff) { this->specialRockOff = specialRockOff; }
 
+    // 空中行動許可確認
+    void SetAreAttackState(float areAttackState) { this->areAttackState = areAttackState; }
+
+    void AreAttackDecreaseAmount();
+
+    // 経過時間
+    bool UpdateElapsedTime(float timeMax, float elapsedTime);
+
+
+
 private:
     //std::shared_ptr<Movement>	movement;
     //std::shared_ptr<HP>	hp;
@@ -632,9 +648,19 @@ private:
     bool isAreAttack = false;
 
     // 空中行動許可間隔
-    float areAttackState = .0;
-    float areAttackStateEnd = .0;
-    float areAttackStateMax = 2.0f;
+    int areAttackState = 0;
+    int areAttackStateEnd = 0;
+    int areAttackStateMax = 2;
+
+    // 空中行動間隔時間
+    float areAttackTime = 0.0f;
+    float areAttackTimeEnd = 0.0f;
+    float areAttackTimeMax = 1.0f;
+    float areAttackTimeValue = 0.1f;
+
+    // 経過時間を測る
+    float timeElapsed = 0.0f;
+    float timeElapsedHintMax = 1.0f;
 
     // UI処理を出すかチェック
     bool             uiControlleCheck = false;
@@ -770,6 +796,7 @@ private:
 
     // 足もとに竜巻
     std::unique_ptr<Effect> areWork;
+    std::unique_ptr<Effect> effectFocus2D;
 
     State                   state = State::Idle;
     State                   stated = State::Idle;
@@ -977,6 +1004,7 @@ private:
     float shakePower = 0.3f;
 
 
+
     // ロックオン以外の狙いをプレイヤー中心かどうか
     bool freeCameraCheck = true;
     // デバッグ
@@ -994,10 +1022,10 @@ private:
     static const int MAX_POLYGON = 32;
     DirectX::XMFLOAT3					trailPositions[2][MAX_POLYGON];
 
-    int stateSize = 2;
+    int stateSize = 5;
 
     // uiCount最大値
-    int uiCountMax = 3;
+    int uiCountMax = 5;
 
     // 終了タイミング
     bool endState = false;
@@ -1026,6 +1054,25 @@ private:
     // ターゲットの一定以上高い
     float               topHeight = 3.0f;
     float               minHeight = 2.0f;
+
+
+    // shortecut pos
+    DirectX::XMFLOAT2 fireShorteCutPos = { 179, 200 };
+    DirectX::XMFLOAT2 thunderShorteCutPos = { 179, 285 };
+    DirectX::XMFLOAT2 iceShorteCutPos = { 179, 370 };
+    DirectX::XMFLOAT2 healeShorteCutPos = { 200, 525 };
+
+
+    // ステートエネミーロックオン用
+    int stateEnemyIndex = 0;
+
+
+    // ヒント描画するかどうか
+    bool hintDrawCheck = false;
+
+    // ピンチかどうか
+    bool isPintch = false;
+
 };
 
 // プレイヤーマネージャー

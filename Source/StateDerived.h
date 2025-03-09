@@ -311,7 +311,7 @@ private:
 	// チャージ時間
 	float				stateChargeTimer = 0.0f;
 	float				stateChargeTimerEnd = 0.0f;
-	float				stateChargeTimerMax = 2.0f;
+	float				stateChargeTimerMax = 1.0f;
 
 	// チャージ完了後のダッシュ時間
 	float				stateChargeCompletionTimer = 0.0f;
@@ -767,6 +767,8 @@ private:
 	//std::shared_ptr<Actor> playerid;
 	//std::shared_ptr<Movement> moveid;
 
+
+
 	float				stateTimer = 0.0f;
 
 	// アニメーションルール
@@ -1055,7 +1057,7 @@ private:
 	int frame = 150;
 
 	// 角度範囲
-	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
+	DirectX::XMFLOAT2 angleRange = { 0.1f,0.1f };
 
 	bool              oneAttackCheck = false;
 };
@@ -1914,6 +1916,8 @@ public:
 private:
 	float				stateTimer = 0.0f;
 
+	// ステート最大値
+	int					stateSize = 2;
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;

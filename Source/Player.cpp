@@ -1,4 +1,4 @@
-#include <imgui.h>
+ï»¿#include <imgui.h>
 #include "Player.h"
 #include "Input/Input.h"
 #include "Camera.h"
@@ -33,7 +33,7 @@
 
 
 
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 Player::~Player()
 {
 
@@ -102,57 +102,57 @@ void Player::Start()
 {
 
     // BGM
-    //Bgm = Audio::Instance().LoadAudioSource("Data/Audio/SE/‰Š”òs.wav");
+    //Bgm = Audio::Instance().LoadAudioSource("Data/Audio/SE/ç‚é£›è¡Œæ™‚.wav");
 
     //// SE
-    //SePlayer = Audio::Instance().LoadAudioSource("Data/Audio/SE/‰Š’…’e.wav","flame");
+    //SePlayer = Audio::Instance().LoadAudioSource("Data/Audio/SE/ç‚ç€å¼¾æ™‚.wav","flame");
 
-    // ƒ€[ƒuƒƒ“ƒgŠÖ”‚ğg‚¦‚é‚æ‚¤‚É
+    // ãƒ ãƒ¼ãƒ–ãƒ¡ãƒ³ãƒˆé–¢æ•°ã‚’ä½¿ãˆã‚‹ã‚ˆã†ã«
     movement = GetActor()->GetComponent<Movement>();
 
-    // —‰º’â~
+    // è½ä¸‹åœæ­¢
     bool stopFall = false;
     movement.lock()->SetStopFall(stopFall);
 
-    // ˆÚ“®‚Ì’â~
+    // ç§»å‹•ã®åœæ­¢
     bool stopMove = false;
     movement.lock()->SetStopMove(stopMove);
 
-    // hpŠÖ”‚ğg‚¦‚é‚æ‚¤‚É
+    // hpé–¢æ•°ã‚’ä½¿ãˆã‚‹ã‚ˆã†ã«
     hp = GetActor()->GetComponent<HP>();
 
-    // mpŠÖ”‚ğg‚¦‚é‚æ‚¤‚É
+    // mpé–¢æ•°ã‚’ä½¿ãˆã‚‹ã‚ˆã†ã«
     mp = GetActor()->GetComponent<Mp>();
 
-    // ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€ŠÖ”‚ğŒÄ‚Ño‚µ
+    // ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ é–¢æ•°ã‚’å‘¼ã³å‡ºã—
     transform = GetActor()->GetComponent<Transform>();
 
-    // ˆÊ’u“™
+    // ä½ç½®ç­‰
     position = transform.lock()->GetPosition();
 
     angle = transform.lock()->GetAngle();
 
     scale = transform.lock()->GetScale();
 
-    // d—Íİ’è
+    // é‡åŠ›è¨­å®š
     movement.lock()->SetGravity(gravity);
 
-    // ƒ‚ƒfƒ‹ƒf[ƒ^‚ğ“ü‚ê‚éB
+    // ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’å…¥ã‚Œã‚‹ã€‚
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
-    //// ƒJƒƒ‰‰Šú‰»
+    //// ã‚«ãƒ¡ãƒ©åˆæœŸåŒ–
     //cameraControlle = nullptr;
     //cameraControlle = new CameraController();
 
-    // ƒqƒbƒgƒGƒtƒFƒNƒg“Ç 
+    // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆèª­è¾¼ 
     hitEffect = new Effect("Data/Effect/Hit.efk");
     ImpactEffect = new Effect("Data/Effect/rehleckte.efk");
     desEffect = new Effect("Data/Effect/F.efk");
 
-    // ƒGƒtƒFƒNƒg“Ç‚İ‚İ
+    // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆèª­ã¿è¾¼ã¿
     float effectScale = 1.0f;
 
-    // aŒ‚
+    // æ–¬æ’ƒ
     hitSlash = std::make_unique<Effect>("Data/Effect/slashHit.efk");
 
     hitFire = std::make_unique<Effect>("Data/Effect/hit fire.efk");
@@ -162,71 +162,73 @@ void Player::Start()
     lightningAttack = std::make_unique<Effect>("Data/Effect/sunder.efk");
 
 
-    // ƒGƒtƒFƒNƒg—³Šª
+    // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç«œå·»
     areWork = std::make_unique<Effect>("Data/Effect/tornade.efk");
 
+    // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆï¼’Dæ³¨ç›®
+    effectFocus2D = std::make_unique<Effect>("Data/Effect/effectFocus2D.efk");
 
 
     //// SE
     //seSouce = Audio::Instance().LoadAudioSource();
-    //seSouce->LoadSE("Data/Audio/SE/‘«‰¹.wav","walk");
-    //seSouce->LoadSE("Data/Audio/SE/‘ÅŒ‚.wav","hitButton");
-    //seSouce->LoadSE("Data/Audio/SE/Enemy’…’n.wav","land");
-    //seSouce->LoadSE("Data/Audio/SE/ƒXƒ‰ƒbƒVƒ…‚P‰ñ–Ú.wav","slash");
-    //seSouce->LoadSE("Data/Audio/SE/ƒXƒ‰ƒbƒVƒ…‚Q‰ñ–Ú.wav","slashTwo");
-    //seSouce->LoadSE("Data/Audio/SE/‰Š’…’e.wav","flamePush");
-    //seSouce->LoadSE("Data/Audio/SE/‰Š”òs.wav","flame");
-    //seSouce->LoadSE("Data/Audio/SE/•X’…’e.wav","icePush");
-    //seSouce->LoadSE("Data/Audio/SE/•X”­Ë.wav","ice");
-    //seSouce->LoadSE("Data/Audio/SE/—‹.wav","lightningStrike");
-    //seSouce->LoadSE("Data/Audio/SE/ƒqƒbƒgƒXƒgƒbƒv.wav","hitStop");
-    //seSouce->LoadSE("Data/Audio/SE/•KE‹Z‰Š.wav","specileFirePush");
-    //seSouce->LoadSE("Data/Audio/SE/•KE‹Z‰Š‚½‚ß.wav","specileFireCharge");
-    //seSouce->LoadSE("Data/Audio/SE/•KE‹Z‚½‚ßŠ®—¹.wav","specileChargeClear");
-    //seSouce->LoadSE("Data/Audio/SE/•KE‹Z—‹.wav","specileLightning");
-    //seSouce->LoadSE("Data/Audio/SE/•KE‹Z—‹‚½‚ß.wav","specileLightningCharge");
-    //seSouce->LoadSE("Data/Audio/SE/ƒqƒbƒgƒXƒgƒbƒv.wav","hitStop");
+    //seSouce->LoadSE("Data/Audio/SE/è¶³éŸ³.wav","walk");
+    //seSouce->LoadSE("Data/Audio/SE/æ‰“æ’ƒ.wav","hitButton");
+    //seSouce->LoadSE("Data/Audio/SE/Enemyç€åœ°.wav","land");
+    //seSouce->LoadSE("Data/Audio/SE/ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ï¼‘å›ç›®.wav","slash");
+    //seSouce->LoadSE("Data/Audio/SE/ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ï¼’å›ç›®.wav","slashTwo");
+    //seSouce->LoadSE("Data/Audio/SE/ç‚ç€å¼¾æ™‚.wav","flamePush");
+    //seSouce->LoadSE("Data/Audio/SE/ç‚é£›è¡Œæ™‚.wav","flame");
+    //seSouce->LoadSE("Data/Audio/SE/æ°·ç€å¼¾æ™‚.wav","icePush");
+    //seSouce->LoadSE("Data/Audio/SE/æ°·ç™ºå°„.wav","ice");
+    //seSouce->LoadSE("Data/Audio/SE/é›·.wav","lightningStrike");
+    //seSouce->LoadSE("Data/Audio/SE/ãƒ’ãƒƒãƒˆã‚¹ãƒˆãƒƒãƒ—.wav","hitStop");
+    //seSouce->LoadSE("Data/Audio/SE/å¿…æ®ºæŠ€ç‚.wav","specileFirePush");
+    //seSouce->LoadSE("Data/Audio/SE/å¿…æ®ºæŠ€ç‚ãŸã‚.wav","specileFireCharge");
+    //seSouce->LoadSE("Data/Audio/SE/å¿…æ®ºæŠ€ãŸã‚å®Œäº†.wav","specileChargeClear");
+    //seSouce->LoadSE("Data/Audio/SE/å¿…æ®ºæŠ€é›·.wav","specileLightning");
+    //seSouce->LoadSE("Data/Audio/SE/å¿…æ®ºæŠ€é›·ãŸã‚.wav","specileLightningCharge");
+    //seSouce->LoadSE("Data/Audio/SE/ãƒ’ãƒƒãƒˆã‚¹ãƒˆãƒƒãƒ—.wav","hitStop");
 
-    //// ã”¼g
+    //// ä¸ŠåŠèº«
     //bornUpStartPoint = "mixamorig:Hips";
-    //// ‰º”¼g
+    //// ä¸‹åŠèº«
     //bornDownerEndPoint = "mixamorig:LeftUpLeg";
 
-     // ã”¼gƒXƒ^[ƒgÄ¶ŠJnêŠ
+     // ä¸ŠåŠèº«ã‚¹ã‚¿ãƒ¼ãƒˆå†ç”Ÿé–‹å§‹å ´æ‰€
     bornUpStartPoint = "mixamorig:Hips";
-    // ã”¼gƒGƒ“ƒhÄ¶’â~êŠ
+    // ä¸ŠåŠèº«ã‚¨ãƒ³ãƒ‰å†ç”Ÿåœæ­¢å ´æ‰€
     bornUpEndPoint = "mixamorig:LeftUpLeg";
-    // ‰º”¼gƒXƒ^[ƒgÄ¶ŠJnêŠ
+    // ä¸‹åŠèº«ã‚¹ã‚¿ãƒ¼ãƒˆå†ç”Ÿé–‹å§‹å ´æ‰€
     bornDownerStartPoint = "mixamorig:LeftUpLeg";
-    // ‰º”¼gƒGƒ“ƒhÄ¶’â~êŠ
+    // ä¸‹åŠèº«ã‚¨ãƒ³ãƒ‰å†ç”Ÿåœæ­¢å ´æ‰€
     bornDownerEndPoint = "mixamorig:RightToe_End";
 
-    // hpİ’è
+    // hpè¨­å®š
     hp.lock()->SetHealth(health);
-    // hpÅ‘å’l‚Ìİ’è
+    // hpæœ€å¤§å€¤ã®è¨­å®š
     hp.lock()->SetMaxHealth(maxHealth);
 
 
-    // mpİ’è
+    // mpè¨­å®š
     mp.lock()->SetMagic(magicPoint);
-    // mpÅ‘å’l
+    // mpæœ€å¤§å€¤
     mp.lock()->SetMaxMagic(magicPoint);
 
-    // ”¼Œa
+    // åŠå¾„
     transform.lock()->SetRadius(radius);
-    // g’·
+    // èº«é•·
     transform.lock()->SetHeight(height);
 
-    // ƒRƒ}ƒ“ƒh‘€ì—p
+    // ã‚³ãƒãƒ³ãƒ‰æ“ä½œç”¨
     selectCheck = (int)CommandAttack::Attack;
 
-    // –‚–@‘I‘ğ—p
+    // é­”æ³•é¸æŠç”¨
     selectMagicCheck = (int)CommandMagic::Normal;
 
-    // “ÁêUŒ‚‚½‚ß‰Šú’l
+    // ç‰¹æ®Šæ”»æ’ƒãŸã‚åˆæœŸå€¤
     specialAttackCharge = 0.0f;
 
-    // ƒXƒe[ƒgƒ}ƒVƒ“
+    // ã‚¹ãƒ†ãƒ¼ãƒˆãƒã‚·ãƒ³
     //stateMachine = new StateMachine();
     //stateMachine = std::make_unique<StateMachine>();
 
@@ -249,54 +251,58 @@ void Player::Start()
     //stateMachine->RegisterState(new PlayerAvoidanceState(GetActor()));
     //stateMachine->RegisterState(new PlayerReflectionState(GetActor()));
 
-    //// ƒXƒe[ƒgƒZƒbƒg
+    //// ã‚¹ãƒ†ãƒ¼ãƒˆã‚»ãƒƒãƒˆ
     //stateMachine->SetState(static_cast<int>(State::Idle));
 
-    // ƒAƒjƒ[ƒVƒ‡ƒ“ƒ‹[ƒ‹
+    // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ«ãƒ¼ãƒ«
     updateanim = UpAnim::Normal;
 
     moveSpeedAnimation = 0.0f;
 
-    // “ÁêƒAƒNƒVƒ‡ƒ“‚Ìí—Ş
+    // ç‰¹æ®Šã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã®ç¨®é¡
     //specialAttack.push((int)SpecialAttack::Normal);
 
-    // “ÁêƒAƒNƒVƒ‡ƒ“”­“®•s
+    // ç‰¹æ®Šã‚¢ã‚¯ã‚·ãƒ§ãƒ³ç™ºå‹•ä¸
     specialAttackTime = false;
 
-    // —h‚êƒ‚[ƒh
+    // æºã‚Œãƒ¢ãƒ¼ãƒ‰
     shakeMode = false;
 
-    // ‰ñ“]Šm”F
+    // å›è»¢ç¢ºèª
     angleCheck = false;
 
-    // ‹È‚ª‚é‘¬“x
+    // æ›²ãŒã‚‹é€Ÿåº¦
     turnSpeedAdd = 0;
 
     
-    // UŒ‚ƒqƒbƒg‰ñ”‰Šú‰»
+    // æ”»æ’ƒãƒ’ãƒƒãƒˆå›æ•°åˆæœŸåŒ–
     attackNumberSave = 0;
 
 
     endState = false;
 
-    
+    // ã‚¨ãƒãƒŸãƒ¼ãƒ­ãƒƒã‚¯ã‚ªãƒ³ç”¨ã‚¹ãƒ†ãƒ¼ãƒˆç¢ºèª
+    stateEnemyIndex = 0;
 
+
+    // çµŒéæ™‚é–“æ¸¬ã‚‹ç”¨
+    timeElapsed = 0.0f;
 }
 
-// XVˆ—
-// elapsedTime(Œo‰ßŠÔ)
+// æ›´æ–°å‡¦ç†
+// elapsedTime(çµŒéæ™‚é–“)
 void Player::Update(float elapsedTime)
 {
   //  if (isMenue) return;
 
     GamePad& gamePad = Input::Instance().GetGamePad();
-    //// ƒXƒe[ƒg–ˆ‚Ìˆ—
+    //// ã‚¹ãƒ†ãƒ¼ãƒˆæ¯ã®å‡¦ç†
     stateMachine->Update(elapsedTime);
 
-    //// ƒJƒƒ‰ƒRƒ“ƒgƒ[ƒ‰[XVˆ—
+    //// ã‚«ãƒ¡ãƒ©ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼æ›´æ–°å‡¦ç†
     //cameraControlle->Update(elapsedTime);
 
-    // ƒGƒtƒFƒNƒgˆÊ’uXV
+    // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆä½ç½®æ›´æ–°
     if (areWork->GetEfeHandle())
     {
         areWork->SetPosition(areWork->GetEfeHandle(), position);
@@ -307,37 +313,64 @@ void Player::Update(float elapsedTime)
     //    isMenue = isMenue ? isMenueOf : isMenueOn;
     //}
 
-    // ƒ|ƒXƒgƒGƒtƒFƒNƒg‚ˆ‚‚Ìˆê’èˆÈ‰º
-    PinchMode(elapsedTime);
 
-    // ƒ\[ƒhƒgƒŒƒCƒ‹
+
+    // ã‚½ãƒ¼ãƒ‰ãƒˆãƒ¬ã‚¤ãƒ«
     //UpdateSwordeTraile();
     //
-    areAttackState -= elapsedTime;
-    if (areAttackState - FLT_EPSILON <= areAttackStateEnd + FLT_EPSILON)
+
+    // è¡Œå‹•æ™‚é–“
+    areAttackTime -= areAttackTimeValue;
+
+    // ç©ºä¸­è¡Œå‹•å›æ•°åˆ¶é™
+    if (areAttackState <= areAttackStateEnd && !isAreAttack)
     {
+        // æ”»æ’ƒç¦æ­¢
+        isAreAttack = true;
+        // ç©ºä¸­æ”»æ’ƒé–“éš”æ™‚é–“
+        areAttackTime = areAttackTimeMax;
+
+    }
+
+    // åœ°ä¸Š
+    if (movement.lock()->GetOnLadius())
+    {
+        // æ”»æ’ƒè¨±å¯
         isAreAttack = false;
+        // æ”»æ’ƒå›æ•°
+        areAttackState = areAttackStateMax;
+        
+    }
+
+    if (areAttackTime <= areAttackTimeEnd && isAreAttack)
+    {
+        // æ”»æ’ƒè¨±å¯
+        isAreAttack = false;
+        // æ”»æ’ƒå›æ•°
+        areAttackState = areAttackStateMax;
     }
     
-    // ƒRƒ}ƒ“ƒh‘€ì
+    // ã‚³ãƒãƒ³ãƒ‰æ“ä½œ
     if (uiControlleCheck &&
-        stateMachine->GetStateSize() != stateSize)
+        stateMachine->GetStateSize() > stateSize)
     {
-        // s“®‘I‘ğ
+        // è¡Œå‹•é¸æŠ
         InputSelectCheck();
-        // –‚–@‘I‘ğ
+        // é­”æ³•é¸æŠ
         InputSelectMagicCheck();
-        // –‚–@‘I‘ğƒVƒ‡[ƒgƒJƒbƒgƒL[
+        // é­”æ³•é¸æŠã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚­ãƒ¼
         InputShortCutkeyMagic();
 
+        // ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆï½ˆï½ã®ä¸€å®šä»¥ä¸‹
+        PinchMode(elapsedTime);
 
 
-        // ’…’n‚ÉƒGƒtƒFƒNƒgØ‚é
+        // ç€åœ°æ™‚ã«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆåˆ‡ã‚‹
         if (movement.lock()->GetOnLadius() || GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
         {
             areWork->Stop(areWork->GetEfeHandle());
         }
-        // UŒ‚‚Ì‚ÉƒXƒe[ƒg‚ğ•ÏX
+        // æ”»æ’ƒã®æ™‚ã«ã‚¹ãƒ†ãƒ¼ãƒˆã‚’å¤‰æ›´
         if (
             InputAttack() && GetSelectCheck() ==
             (int)Player::CommandAttack::Attack &&
@@ -349,33 +382,27 @@ void Player::Update(float elapsedTime)
                         !isAreAttack
             )
         {
-
-            if (!movement.lock()->GetOnLadius())
-            {
-                isAreAttack = true;
-                areAttackState = areAttackStateMax;
-            }
-
+            // ã‚¹ãƒ†ãƒ¼ãƒˆé·ç§»
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
-
+            // éŸ³å†ç”Ÿ
             InputAttackSlashSE();
 
-            // ‰Š‰¹
+            // ç‚éŸ³
             //Bgm->Play(false);
-            // ‰¹‘å‚«‚¢
+            // éŸ³å¤§ãã„
             //Bgm->SetVolume(2.0f);
             
-            // ‚à‚µ’n–Ê‚È‚ç‰½‚à‚µ‚È‚¢
+            // ã‚‚ã—åœ°é¢ãªã‚‰ä½•ã‚‚ã—ãªã„
             bool noStart = false;
-            // ƒGƒtƒFƒNƒgÄ¶
+            // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
             areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
 
             areWork->Play(position);
-            // SeÄ¶
+            // Seå†ç”Ÿ
             //InputAttackSE();
         }
 
-        //@–‚–@“ü—Íˆ—
+        //ã€€é­”æ³•å…¥åŠ›å‡¦ç†
         if (InputMagick() && GetSelectCheck() == (int)Player::CommandAttack::Magic &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Magic) && 
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
@@ -394,9 +421,9 @@ void Player::Update(float elapsedTime)
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
 
 
-            // ‚à‚µ’n–Ê‚È‚ç‰½‚à‚µ‚È‚¢
+            // ã‚‚ã—åœ°é¢ãªã‚‰ä½•ã‚‚ã—ãªã„
             bool noStart = false;
-            // ƒGƒtƒFƒNƒgÄ¶
+            // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
             areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
 
             areWork->Play(position);
@@ -408,17 +435,17 @@ void Player::Update(float elapsedTime)
  
         if(GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
-        // “ÁêUŒ‚
+        // ç‰¹æ®Šæ”»æ’ƒ
         InputSpecialAttackCharge();
 
-        // UI•KE‹Z‰‰o
+        // UIå¿…æ®ºæŠ€æ¼”å‡º
         SpecialPlayUlEffect(elapsedTime);
 
-        // UŒ‚”ÍˆÍ“à‚È‚Ì‚ÅUI•`‰æ
+        // æ”»æ’ƒç¯„å›²å†…ãªã®ã§UIæç”»
         AttackCheckUI();
 
 
-        // ƒQ[ƒWŠÇ—
+        // ã‚²ãƒ¼ã‚¸ç®¡ç†
         UiControlle(elapsedTime);
 
         //if (InputSpecialAttackCharge())
@@ -426,32 +453,32 @@ void Player::Update(float elapsedTime)
         //    
         //    //TransitionAttackState();
         //    GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialAttack));
-        //    // “ÁêUŒ‚‚Ì”­¶ğŒ ‰ğÁ
+        //    // ç‰¹æ®Šæ”»æ’ƒã®ç™ºç”Ÿæ¡ä»¶ è§£æ¶ˆ
         //    specialAttackTime = false;
 
 
-        //    // ‚à‚µ’n–Ê‚È‚ç‰½‚à‚µ‚È‚¢
+        //    // ã‚‚ã—åœ°é¢ãªã‚‰ä½•ã‚‚ã—ãªã„
         //    bool noStart = false;
-        //    // ƒGƒtƒFƒNƒgÄ¶
+        //    // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
         //    areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
 
         //    areWork->Play(position);
         //        
         //}
-        //// “Áê–‚–@
+        //// ç‰¹æ®Šé­”æ³•
         //if (InputSpecialShotCharge())
         //{
 
         //    GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagic));
 
         //    /*InputProjectile();*/
-        //    // “ÁêUŒ‚‚Ì”­¶ğŒ ‰ğÁ
+        //    // ç‰¹æ®Šæ”»æ’ƒã®ç™ºç”Ÿæ¡ä»¶ è§£æ¶ˆ
         //    specialAttackTime = false;
 
 
-        //    // ‚à‚µ’n–Ê‚È‚ç‰½‚à‚µ‚È‚¢
+        //    // ã‚‚ã—åœ°é¢ãªã‚‰ä½•ã‚‚ã—ãªã„
         //    bool noStart = false;
-        //    // ƒGƒtƒFƒNƒgÄ¶
+        //    // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
         //    areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
 
         //    areWork->Play(position);
@@ -459,7 +486,7 @@ void Player::Update(float elapsedTime)
 
     }
 
-    // ‘¬—Íˆ—XV
+    // é€ŸåŠ›å‡¦ç†æ›´æ–°
 
 
     position = transform.lock()->GetPosition();
@@ -470,66 +497,66 @@ void Player::Update(float elapsedTime)
 
     hp.lock()->UpdateInbincibleTimer(elapsedTime);
 
-    // ƒ}ƒWƒbƒN‰ñ•œ
+    // ãƒã‚¸ãƒƒã‚¯å›å¾©
     mp.lock()->MpCharge(elapsedTime);
 
-    //// ƒƒbƒNƒIƒ“
+    //// ãƒ­ãƒƒã‚¯ã‚ªãƒ³
     InputRockOn();
 
     hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
-    // ‰Á‘¬“x“™
+    // åŠ é€Ÿåº¦ç­‰
     movement.lock()->UpdateVelocity(elapsedTime);
     
 
-    // ƒvƒŒƒCƒ„[‚Æ“G‚Æ‚ÌÕ“Ëˆ—
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨æ•µã¨ã®è¡çªå‡¦ç†
     //CollisionBornVsProjectile("shoulder");
     CollisionBornVsProjectile("body2");
     CollisionPlayerVsEnemies();
-    // ’eŠÛ“–‚½‚è”»’è
+    // å¼¾ä¸¸å½“ãŸã‚Šåˆ¤å®š
     CollisionProjectilesVsEnemies();
-    // ƒ‹ƒr[“–‚½‚è”»’è
+    // ãƒ«ãƒ“ãƒ¼å½“ãŸã‚Šåˆ¤å®š
     CollisionRubyVsEnemies();
 
 
-    // ˆÊ’uXV
+    // ä½ç½®æ›´æ–°
     transform.lock()->UpdateTransform();
 
 
 
 
-    // ƒ‚[ƒVƒ‡ƒ“XVˆ—
+    // ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°å‡¦ç†
     switch (updateanim)
     {
     case UpAnim::Stop:
     {
         break;
     }
-    // ’ÊíƒAƒjƒ[ƒVƒ‡ƒ“
+    // é€šå¸¸ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
     case UpAnim::Normal:
     {
-        // ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
         model->UpdateAnimation(elapsedTime, true);
         break;
     }
-    // •”•ªÄ¶
+    // éƒ¨åˆ†å†ç”Ÿ
     case UpAnim::Doble:
     {
-        // ƒ‚ƒfƒ‹•”•ªƒAƒjƒ[ƒVƒ‡ƒ“XVˆ—
+        // ãƒ¢ãƒ‡ãƒ«éƒ¨åˆ†ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°å‡¦ç†
         model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, bornUpEndPoint,true);
         model->UpdateLowerBodyAnimation(elapsedTime, bornDownerStartPoint, bornDownerEndPoint, true);
         break;
     }
-    // •¡”ƒuƒŒƒ“ƒhÄ¶
+    // è¤‡æ•°ãƒ–ãƒ¬ãƒ³ãƒ‰å†ç”Ÿ
     case UpAnim::Blend:
     {
-        // ƒ‚ƒfƒ‹•¡”ƒuƒŒƒ“ƒhƒAƒjƒ[ƒVƒ‡ƒ“XVˆ—
+        // ãƒ¢ãƒ‡ãƒ«è¤‡æ•°ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°å‡¦ç†
         model->Update_blend_animations(elapsedTime, true);
         break;
     }
 
     case UpAnim::Reverseplayback:
     {
-        // ƒ‚ƒfƒ‹‹tÄ¶ƒAƒjƒ[ƒVƒ‡ƒ“XVˆ—
+        // ãƒ¢ãƒ‡ãƒ«é€†å†ç”Ÿã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°å‡¦ç†
         model->ReverseplaybackAnimation(elapsedTime, true);
         break;
 
@@ -537,7 +564,7 @@ void Player::Update(float elapsedTime)
     }
 
 
-    // ˆÊ’uXV
+    // ä½ç½®æ›´æ–°
     model->UpdateTransform(transform.lock()->GetTransform());
     
 }
@@ -546,19 +573,21 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
 {
     RockOnUI(rc.deviceContext,rc.view,rc.projection);
 
+
+
     rc.colorGradingData = colorGradingData;
 
-    // ƒXƒyƒLƒ…ƒ‰[–³Œø‰»
+    // ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ¼ç„¡åŠ¹åŒ–
     rc.isSpecular = 0;
 
-    // ‰eƒIƒ“ƒIƒt
+    // å½±ã‚ªãƒ³ã‚ªãƒ•
     rc.isRimRightning = 1;
 
-    // modelƒIƒ“ƒIƒt
+    // modelã‚ªãƒ³ã‚ªãƒ•
     rc.StencilRef = 1;
 
     Graphics& graphics = Graphics::Instance();
-    shader.Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
+    shader.Begin(rc);// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«ã‚«ãƒ¡ãƒ©ã®æƒ…å ±ã‚’æ¸¡ã™
     
     
     shader.Draw(rc, model);
@@ -568,12 +597,12 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
 
 }
 
-// ƒVƒƒƒhƒEƒ}ƒbƒv
+// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—
 void Player::RenderShadowmap(RenderContext& rc)
 {
     Graphics& graphics = Graphics::Instance();
     ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
-    shader->Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
+    shader->Begin(rc);// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«ã‚«ãƒ¡ãƒ©ã®æƒ…å ±ã‚’æ¸¡ã™
 
 
     shader->Draw(rc, model);
@@ -588,7 +617,7 @@ void Player::InputWalkSE()
 
     AudioParam audioParam;
 
-    audioParam.filename = "Data/Audio/SE/‘«‰¹.wav";
+    audioParam.filename = "Data/Audio/SE/è¶³éŸ³.wav";
 
     audioParam.keyName = "BGM";
 
@@ -603,9 +632,9 @@ void Player::InputStopWalkSE()
 {
     Audio& Se = Audio::Instance();
 
-    std::string filename = "Data/Audio/SE/‘«‰¹.wav";
+    std::string filename = "Data/Audio/SE/è¶³éŸ³.wav";
 
-    // í—Ş’â~
+    // ç¨®é¡åœæ­¢
     Se.Stop(filename);
 }
 
@@ -615,7 +644,7 @@ void Player::InputJampSE()
 
     AudioParam audioParam;
 
-    audioParam.filename = "Data/Audio/SE/Enemy•à‚«UŒ‚ƒqƒbƒg.wav";
+    audioParam.filename = "Data/Audio/SE/Enemyæ­©ãæ”»æ’ƒãƒ’ãƒƒãƒˆ.wav";
 
     audioParam.keyName = "BGM";
 
@@ -630,9 +659,9 @@ void Player::InputStopJampSE()
 {
     Audio& Se = Audio::Instance();
 
-    std::string filename = "Data/Audio/SE/Enemy•à‚«UŒ‚ƒqƒbƒg.wav";
+    std::string filename = "Data/Audio/SE/Enemyæ­©ãæ”»æ’ƒãƒ’ãƒƒãƒˆ.wav";
 
-    // í—Ş’â~
+    // ç¨®é¡åœæ­¢
     Se.Stop(filename);
 }
 
@@ -642,7 +671,7 @@ void Player::InputAreWalkSE()
 
     AudioParam audioParam;
 
-    audioParam.filename = "Data/Audio/SE/‹ó’†UŒ‚.wav";
+    audioParam.filename = "Data/Audio/SE/ç©ºä¸­æ”»æ’ƒæ™‚.wav";
 
     audioParam.keyName = "BGM";
 
@@ -659,7 +688,7 @@ void Player::InputDashSE()
 
     AudioParam audioParam;
 
-    audioParam.filename = "Data/Audio/SE/ƒqƒbƒgƒXƒgƒbƒv.wav";
+    audioParam.filename = "Data/Audio/SE/ãƒ’ãƒƒãƒˆã‚¹ãƒˆãƒƒãƒ—.wav";
 
     audioParam.keyName = "BGM";
 
@@ -670,14 +699,14 @@ void Player::InputDashSE()
     Se.Play(audioParam);
 }
 
-// SEÄ¶ aŒ‚
+// SEå†ç”Ÿ æ–¬æ’ƒ
 void Player::InputAttackSlashSE()
 {
     Audio& Se = Audio::Instance();
 
     AudioParam audioParam;
 
-    audioParam.filename = "Data/Audio/SE/ƒXƒ‰ƒbƒVƒ…‚Q‰ñ–Ú.wav";
+    audioParam.filename = "Data/Audio/SE/ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ï¼’å›ç›®.wav";
 
     audioParam.keyName = "BGM";
 
@@ -694,7 +723,7 @@ void Player::InputAttackFlameSE()
 
     AudioParam audioParam;
 
-    audioParam.filename = "Data/Audio/SE/‰Š”òs.wav";
+    audioParam.filename = "Data/Audio/SE/ç‚é£›è¡Œæ™‚.wav";
 
     audioParam.keyName = "BGM";
 
@@ -711,7 +740,7 @@ void Player::InputAttackThanderSE()
 
     AudioParam audioParam;
 
-    audioParam.filename = "Data/Audio/SE/—‹.wav";
+    audioParam.filename = "Data/Audio/SE/é›·.wav";
 
     audioParam.keyName = "BGM";
 
@@ -726,9 +755,9 @@ void Player::InputStopAttackThanderSE()
 {
     Audio& Se = Audio::Instance();
 
-    std::string filename = "Data/Audio/SE/—‹.wav";
+    std::string filename = "Data/Audio/SE/é›·.wav";
 
-    // í—Ş’â~
+    // ç¨®é¡åœæ­¢
     Se.Stop(filename);
 }
 
@@ -738,7 +767,7 @@ void Player::InputAttackIceSE()
 
     AudioParam audioParam;
 
-    audioParam.filename = "Data/Audio/SE/•X”­Ë.wav";
+    audioParam.filename = "Data/Audio/SE/æ°·ç™ºå°„.wav";
 
     audioParam.keyName = "BGM";
 
@@ -772,7 +801,7 @@ void Player::InputAttackSlashSpecileLightningStrikeSE()
 
     AudioParam audioParam;
 
-    audioParam.filename = "Data/Audio/SE/•KE‹Z—‹.wav";
+    audioParam.filename = "Data/Audio/SE/å¿…æ®ºæŠ€é›·.wav";
 
     audioParam.keyName = "BGM";
 
@@ -789,7 +818,7 @@ void Player::InputAttackFlameSpecileSE()
 
     AudioParam audioParam;
 
-    audioParam.filename = "Data/Audio/SE/•KE‹Z‰Š.wav";
+    audioParam.filename = "Data/Audio/SE/å¿…æ®ºæŠ€ç‚.wav";
 
     audioParam.keyName = "BGM";
 
@@ -807,8 +836,24 @@ void Player::UpdateCameraState(float elapsedTime)
     lockonState = CameraState::NotLockOn;
     lockonCharactor = {0,0,0};
 
-    
-        // ƒƒbƒNƒIƒ“ƒ‚[ƒh
+    //if (stateMachine->GetStateSize() <= stateSize)
+    //{
+    //    Model::Node* PRock = model->FindNode("mixamorig:Spine1");
+    //    DirectX::XMFLOAT3 pPosition =
+    //    {
+    //                PRock->worldTransform._41,
+    //                PRock->worldTransform._42,
+    //                PRock->worldTransform._43
+    //    };
+
+    //    MessageData::CAMERACHANGEFREESELECTMODEDATA	p = { pPosition };
+    //    Messenger::Instance().SendData(MessageData::CAMERACHANGEFREESELECTMODE, &p);
+
+
+    //    return;
+    //}
+
+        // ãƒ­ãƒƒã‚¯ã‚ªãƒ³ãƒ¢ãƒ¼ãƒ‰
     if (rockCheck)
     {
         Model::Node* PRock = model->FindNode("mixamorig:Spine1");
@@ -825,12 +870,13 @@ void Player::UpdateCameraState(float elapsedTime)
         {
         case	CameraState::NotLockOn:
         {
-            // ˆê”Ô‹ß‚¢‹——£‚ÌƒLƒƒƒ‰ƒNƒ^[‚ğŒŸõ
+            // ä¸€ç•ªè¿‘ã„è·é›¢ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã‚’æ¤œç´¢
             float	length1, length2;
             int enemyCount = EnemyManager::Instance().GetEnemyCount();
             for (int ii = 0; ii < enemyCount; ++ii)
             {
-                Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
+                Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("shoulder");
+                //Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
                 
                 DirectX::XMFLOAT3 character = 
                 {
@@ -872,8 +918,8 @@ void Player::UpdateCameraState(float elapsedTime)
         }
         case	CameraState::LockOn:
         {
-            // ƒƒbƒNƒIƒ“‘ÎÛ‚ª‘¶İ‚µ‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN‚µ‚Ä
-            // ‘ÎÛ‚ª‚¢‚ê‚ÎƒƒbƒNƒIƒ“‚ğŒp‘±‚³‚¹‚é
+            // ãƒ­ãƒƒã‚¯ã‚ªãƒ³å¯¾è±¡ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã—ã¦
+            // å¯¾è±¡ãŒã„ã‚Œã°ãƒ­ãƒƒã‚¯ã‚ªãƒ³ã‚’ç¶™ç¶šã•ã›ã‚‹
             int enemyCount = EnemyManager::Instance().GetEnemyCount();
             for (int ii = 0; ii < enemyCount; ++ii)
             {
@@ -886,11 +932,21 @@ void Player::UpdateCameraState(float elapsedTime)
                     characterWorld->worldTransform._43
                 };
 
-                if (character.y >= topHeight)
+                //if (character.y >= topHeight)
+                //{
+                //    lockonState = CameraState::AttackLock;
+                //    
+                //}
+
+                stateEnemyIndex = EnemyManager::Instance().GetEnemy(ii)->GetComponent<EnemyBoss>()->GetStateMachine()->
+                    GetStateIndex();
+
+                if (stateEnemyIndex == (int)EnemyBoss::State::Jump ||
+                    stateEnemyIndex == (int)EnemyBoss::State::Attack)
                 {
                     lockonState = CameraState::AttackLock;
-                    
                 }
+
                 
                 //if (character == oldLockonCharacter)
                 //{
@@ -899,6 +955,8 @@ void Player::UpdateCameraState(float elapsedTime)
                 {
                     lockonState = CameraState::LockOn;
                 }
+
+
                 p = DirectX::XMLoadFloat3(&pPosition);
                 t = DirectX::XMLoadFloat3(&character);
                 v = DirectX::XMVectorSubtract(t, p);
@@ -908,23 +966,23 @@ void Player::UpdateCameraState(float elapsedTime)
                 //break;
 
             }
-            // ‰EƒXƒeƒBƒbƒN‚ÅƒƒbƒNƒIƒ“‘ÎÛ‚ğ•ÏX‚·‚éˆ—
+            // å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã§ãƒ­ãƒƒã‚¯ã‚ªãƒ³å¯¾è±¡ã‚’å¤‰æ›´ã™ã‚‹å‡¦ç†
             GamePad& gamePad = Input::Instance().GetGamePad();
-            float ax = gamePad.GetAxisRX();	// …•½‚Ì‚İ
-            // ‚’¼•ûŒü‚Íg‚í‚È‚¢‚Å‚¨‚­
+            float ax = gamePad.GetAxisRX();	// æ°´å¹³ã®ã¿
+            // å‚ç›´æ–¹å‘ã¯ä½¿ã‚ãªã„ã§ãŠã
             lockonTargetChangeTime -= 60.0f * elapsedTime;
             if (
                 lockonTargetChangeTime <= 0 &&
                 ax * ax > 0.3f)
             {
                 lockonTargetChangeTime = lockonTargetChangeTimeMax;
-                // ƒƒbƒNƒIƒ“‘ÎÛ‚Æ©•ª©g‚ÌˆÊ’u‚©‚çƒxƒNƒgƒ‹‚ğZo
+                // ãƒ­ãƒƒã‚¯ã‚ªãƒ³å¯¾è±¡ã¨è‡ªåˆ†è‡ªèº«ã®ä½ç½®ã‹ã‚‰ãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡º
                 float dx = oldLockonCharacter.x - pPosition.x;
                 float dz = oldLockonCharacter.z - pPosition.z;
                 float l = sqrtf(dx * dx + dz * dz);
                 dx /= l;
                 dz /= l;
-                // ŠOÏ‚ğ—p‚¢‚Ä¶‰E”»’è‚ğs‚¢AŠp“x“I‚ÉÅ‚à‹ß‚¢‘ÎÛ‚ÉƒƒbƒNƒIƒ“‚ğ•Ï‚¦‚é
+                // å¤–ç©ã‚’ç”¨ã„ã¦å·¦å³åˆ¤å®šã‚’è¡Œã„ã€è§’åº¦çš„ã«æœ€ã‚‚è¿‘ã„å¯¾è±¡ã«ãƒ­ãƒƒã‚¯ã‚ªãƒ³ã‚’å¤‰ãˆã‚‹
                 float angleMax = FLT_MAX;
                 for (int ii = 0; ii < enemyCount; ++ii)
                 {
@@ -979,17 +1037,22 @@ void Player::UpdateCameraState(float elapsedTime)
 
                 DirectX::XMFLOAT3 character;
 
-                character = 
+                lockonCharactor =
                     EnemyManager::Instance().GetEnemy(ii)->
                     GetComponent<ModelControll>()->GetModel()->
                     ConvertLocalToWorld(characterWorld);
 
-               
+                stateEnemyIndex = EnemyManager::Instance().GetEnemy(ii)->GetComponent<EnemyBoss>()->GetStateMachine()->
+                    GetStateIndex();
 
-                if (character.y <= minHeight)
+                //if (character.y <= minHeight)
+                if (stateEnemyIndex != (int)EnemyBoss::State::Jump &&
+                    stateEnemyIndex != (int)EnemyBoss::State::Attack)
                 {
                     lockonState = CameraState::LockOn;
                 }
+
+                //lockonCharactor = character;
             }
 
 
@@ -1030,16 +1093,16 @@ void Player::UpdateCameraState(float elapsedTime)
 
 
 
-// ƒfƒoƒbƒOƒvƒŠƒ~ƒeƒBƒu•`‰æ
+// ãƒ‡ãƒãƒƒã‚°ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»
 void Player::DrawDebugPrimitive()
 {
-    // ‚à‚µ—§–@‘Ì“™‚Ù‚µ‚¢‚È‚ç©•ª‚Å’Ç‰Á
+    // ã‚‚ã—ç«‹æ³•ä½“ç­‰ã»ã—ã„ãªã‚‰è‡ªåˆ†ã§è¿½åŠ 
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
 
-    //// Õ“Ë”»’è—p‚ÌƒfƒoƒbƒO‹…‚ğ•`‰æ
+    //// è¡çªåˆ¤å®šç”¨ã®ãƒ‡ãƒãƒƒã‚°çƒã‚’æç”»
     debugRenderer->DrawSphere(position, radius, DirectX::XMFLOAT4(0, 0, 0, 1));
 
-    // Õ“Ë”»’è—p‚ÌƒfƒoƒbƒO‰~’Œ‚ğ•`‰æ
+    // è¡çªåˆ¤å®šç”¨ã®ãƒ‡ãƒãƒƒã‚°å††æŸ±ã‚’æç”»
     debugRenderer->DrawCylinder( 
             position, radius, height, DirectX::XMFLOAT4(0, 0, 1, 1));
 
@@ -1048,7 +1111,7 @@ void Player::DrawDebugPrimitive()
     {
 
 
-        // UŒ‚Õ“Ë—p‚Ì¶èƒm[ƒhƒfƒoƒbƒO‹…‚ğ•`‰æ
+        // æ”»æ’ƒè¡çªç”¨ã®å·¦æ‰‹ãƒãƒ¼ãƒ‰ãƒ‡ãƒãƒƒã‚°çƒã‚’æç”»
         Model::Node* leftHandBone = model->FindNode("mixamorig:LeftHand");
         debugRenderer->DrawSphere(DirectX::XMFLOAT3(
             leftHandBone->worldTransform._41,
@@ -1083,9 +1146,10 @@ void Player::OnGUI()
     ImGui::SliderFloat("ShakeTimer", &shakeTimer,0,10);
     ImGui::SliderFloat("shakePower", &shakePower, 0, 10);
 
+
     if (ImGui::Button("CameraShake"))
     {
-        // ƒJƒƒ‰U“®
+        // ã‚«ãƒ¡ãƒ©æŒ¯å‹•
         MessageData::CAMERASHAKEDATA cameraShakeData;
 
 
@@ -1156,7 +1220,7 @@ void Player::OnGUI()
 
         modelAnim.index = Player::Animation::Anim_SpecialAttack;
 
-        // ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
         model->PlayAnimation(modelAnim);
 
 
@@ -1189,7 +1253,7 @@ void Player::OnGUI()
         };
 
 
-        // ”CˆÓ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“Ä¶‹æŠÔ‚Å‚Ì‚İÕ“Ë”»’èˆ—‚ğ‚·‚é
+        // ä»»æ„ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”ŸåŒºé–“ã§ã®ã¿è¡çªåˆ¤å®šå‡¦ç†ã‚’ã™ã‚‹
         float animationTime = model->GetCurrentANimationSeconds();
 
         if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON)
@@ -1197,10 +1261,10 @@ void Player::OnGUI()
             hitCheck = true;
         }
 
-        // ƒAƒjƒ[ƒVƒ‡ƒ“
+        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
         if (animationTime >= 1.6f)
         {
-            // ƒJƒƒ‰U“®
+            // ã‚«ãƒ¡ãƒ©æŒ¯å‹•
             MessageData::CAMERASHAKEDATA cameraShakeData;
 
             //float shakeTimer = 0.5f;
@@ -1221,30 +1285,30 @@ void Player::OnGUI()
     }
     if (ImGui::Button("ChargeSpeciale"))
     {
-        // UŒ‚ƒ`ƒƒ[ƒW
+        // æ”»æ’ƒãƒãƒ£ãƒ¼ã‚¸
         specialAttackCharge = 1.2f;
 
 
-        // aŒ‚•KE‹Zƒ`ƒƒ[ƒW‰ğÁ
+        // æ–¬æ’ƒå¿…æ®ºæŠ€ãƒãƒ£ãƒ¼ã‚¸è§£æ¶ˆ
         attackEnergyCharge = 3;
     }
 
     if (ImGui::Button("ChargeSlashSpeciale"))
     {
-        // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+        // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
         specialAttackCharge = specialAttackChargeMax;
 
-        // aŒ‚•KE‹Zƒ`ƒƒ[ƒW‰ğÁ
+        // æ–¬æ’ƒå¿…æ®ºæŠ€ãƒãƒ£ãƒ¼ã‚¸è§£æ¶ˆ
         attackEnergyCharge = energyChargeMax;
 
     }
 
     if (ImGui::Button("ChargeFireSpeciale"))
     {
-        // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+        // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
         specialAttackCharge = specialAttackChargeMax;
 
-        // ‰Î•KE‹Zƒ`ƒƒ[ƒW‰ğÁ
+        // ç«å¿…æ®ºæŠ€ãƒãƒ£ãƒ¼ã‚¸è§£æ¶ˆ
         fireEnergyCharge = energyChargeMax;
     }
 
@@ -1259,16 +1323,16 @@ void Player::OnGUI()
 }
 #endif // _DEBUG
 
-// ˆÚ“®“ü—Íˆ—
+// ç§»å‹•å…¥åŠ›å‡¦ç†
 bool Player::InputMove(float elapsedTime)
 {
 
-    // “ü—Íî•ñ‚ğæ“¾
+    // å…¥åŠ›æƒ…å ±ã‚’å–å¾—
     GamePad& gamePad = Input::Instance().GetGamePad();
     float ax = gamePad.GetAxisLX();
     float ay = gamePad.GetAxisLY();
 
-    // ’¼i’eŠÛ”­Ë@rƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚ç
+    // ç›´é€²å¼¾ä¸¸ç™ºå°„ã€€rãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã‚‰
   
     if (ax + FLT_EPSILON != 0.0f + FLT_EPSILON &&
         GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
@@ -1308,12 +1372,12 @@ bool Player::InputMove(float elapsedTime)
     //}
 
 
-    //// isƒxƒNƒgƒ‹æ“¾
+    //// é€²è¡Œãƒ™ã‚¯ãƒˆãƒ«å–å¾—
     ////DirectX::XMFLOAT3 moveVec = GetMoveVec();
     //moveVec = GetMoveVec(elapsedTime);
 
     //
-    //// isƒxƒNƒgƒ‹‚ªƒ[ƒƒxƒNƒgƒ‹‚Å‚È‚¢ê‡‚Í“ü—Í‚³‚ê‚½
+    //// é€²è¡Œãƒ™ã‚¯ãƒˆãƒ«ãŒã‚¼ãƒ­ãƒ™ã‚¯ãƒˆãƒ«ã§ãªã„å ´åˆã¯å…¥åŠ›ã•ã‚ŒãŸ
     //if(GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage))
     //return moveVec.x != 0.0f || moveVec.y != 0.0f || moveVec.z != 0.0f;
 
@@ -1354,17 +1418,17 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
     const DirectX::XMFLOAT4X4& projection)
 {
     //if (!rockCheck)return;
-    // ƒrƒ…[ƒ|[ƒg ‰æ–Ê‚ÌƒTƒCƒY“™
-    // ƒrƒ…[ƒ|[ƒg‚Æ‚Í2D‚Ì‰æ–Ê‚É•`‰æ”ÍˆÍ‚Ìw’è(ƒNƒŠƒbƒsƒ“ƒOw’è‚ào—ˆ‚é)ˆÊ’u‚ğw’è
+    // ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆ ç”»é¢ã®ã‚µã‚¤ã‚ºç­‰
+    // ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã¨ã¯2Dã®ç”»é¢ã«æç”»ç¯„å›²ã®æŒ‡å®š(ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°æŒ‡å®šã‚‚å‡ºæ¥ã‚‹)ä½ç½®ã‚’æŒ‡å®š
     D3D11_VIEWPORT viewport;
     UINT numViewports = 1;
-    // ƒ‰ƒXƒ^ƒ‰ƒCƒU[ƒXƒe[ƒg‚ÉƒoƒCƒ“ƒh‚³‚ê‚Ä‚¢‚éƒrƒ…[ƒ|[ƒg”z—ñ‚ğæ“¾
+    // ãƒ©ã‚¹ã‚¿ãƒ©ã‚¤ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆã«ãƒã‚¤ãƒ³ãƒ‰ã•ã‚Œã¦ã„ã‚‹ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆé…åˆ—ã‚’å–å¾—
     dc->RSGetViewports(&numViewports, &viewport);
 
-    // •ÏŠ·s—ñ
+    // å¤‰æ›è¡Œåˆ—
     DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&view);
     DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
-    // ƒ[ƒJƒ‹‚©‚çƒ[ƒ‹ƒh‚És‚­‚Æ‚«‚É‚¢‚é“z‘Šè‚Ìƒ|ƒWƒVƒ‡ƒ“‚ğ“n‚·B
+    // ãƒ­ãƒ¼ã‚«ãƒ«ã‹ã‚‰ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¡Œãã¨ãã«ã„ã‚‹å¥´ç›¸æ‰‹ã®ãƒã‚¸ã‚·ãƒ§ãƒ³ã‚’æ¸¡ã™ã€‚
     DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
 
     std::weak_ptr<Ui> uiIdSight;
@@ -1381,7 +1445,7 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
         uiIdSightMove = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
         uiIdSightMoveTransform = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<TransForm2D>();
     
-    // ‘S‚Ä‚Ì“G‚Ì“ªã‚ÉHPƒQ[ƒW‚ğ•\¦
+    // å…¨ã¦ã®æ•µã®é ­ä¸Šã«HPã‚²ãƒ¼ã‚¸ã‚’è¡¨ç¤º
     EnemyManager& enemyManager = EnemyManager::Instance();
     int enemyCount = enemyManager.GetEnemyCount();
 
@@ -1389,10 +1453,11 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
     {
 
 
-        Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(i)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
+        //Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(i)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
+        Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(i)->GetComponent<ModelControll>()->GetModel()->FindNode("shoulder");
 
         //std::shared_ptr <Transform> enemy = enemyManager.GetEnemy(i)->GetComponent<Transform>();
-        // ƒGƒlƒ~[“ªã
+        // ã‚¨ãƒãƒŸãƒ¼é ­ä¸Š
         DirectX::XMFLOAT3 worldPosition =
         {
             
@@ -1401,7 +1466,7 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
             characterWorld->worldTransform._43
         };
 
-        // ƒ[ƒ‹ƒh‚©‚çƒXƒNƒŠ[ƒ“
+        // ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
         DirectX::XMVECTOR WorldPosition = DirectX::XMLoadFloat3(&worldPosition);
 
 
@@ -1409,7 +1474,7 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
 
 
 
-        // ƒQ[ƒW•`‰æ // ƒ[ƒ‹ƒh‚©‚çƒXƒNƒŠ[ƒ“
+        // ã‚²ãƒ¼ã‚¸æç”» // ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 
         DirectX::XMVECTOR ScreenPosition = DirectX::XMVector3Project(
             WorldPosition,
@@ -1424,11 +1489,11 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
             World
 
         );
-        // ƒXƒNƒŠ[ƒ“À•W
+        // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™
         DirectX::XMFLOAT3 scereenPosition;
         DirectX::XMStoreFloat3(&scereenPosition, ScreenPosition);
 
-        // ƒQ[ƒW’·‚³
+        // ã‚²ãƒ¼ã‚¸é•·ã•
         //const float gaugeWidth = 30.0f;
         //const float gaugeHeight = 5.0f;
 
@@ -1452,7 +1517,7 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
 
        // uiIdSightMove->SetDrawCheck(drawCheck);
 
-        // 2DƒXƒvƒ‰ƒCƒg•`‰æ
+        // 2Dã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæç”»
         {
             uiIdSightTransform.lock()->SetPosition(
                 { 
@@ -1465,7 +1530,7 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
                     scereenPosition.y - 25
                 });
 
-            //// •`‰æ
+            //// æç”»
             //gauge->Render(dc,
             //    scereenPosition.x - gaugeWidth * 0.5f,
             //    scereenPosition.y - gaugeHeight
@@ -1476,8 +1541,8 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
             //    static_cast<float> (gauge->GetTextureHeight()),
             //    0.0f,
             //    1, 0, 0, 1);
-            // {ˆÊ’u}{ƒTƒCƒY}{‰æ‘œ‚Ç‚±‚©‚ç}{‰æ‘œ‰½ˆ‚Ü‚Å}
-            // dc , o”ÍˆÍpop
+            // {ä½ç½®}{ã‚µã‚¤ã‚º}{ç”»åƒã©ã“ã‹ã‚‰}{ç”»åƒä½•å‡¦ã¾ã§}
+            // dc , ï½›ç¯„å›²ï½ï½›ï½
         }
 
 
@@ -1485,7 +1550,7 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
     }
 
 }
-// UŒ‚•û–@‘I‘ğ
+// æ”»æ’ƒæ–¹æ³•é¸æŠ
 bool Player::InputSelectCheck()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
@@ -1497,7 +1562,7 @@ bool Player::InputSelectCheck()
     {
         --selectCheck;
     }
-    // ƒRƒ}ƒ“ƒh‘€ìŠK‘w‰º‚°
+    // ã‚³ãƒãƒ³ãƒ‰æ“ä½œéšå±¤ä¸‹ã’
     if (gamePad.GetButtonDown() & GamePad::BTN_B && selectCheck == (int)CommandAttack::Magic && !magicAction)
     {
         magicAction = true;
@@ -1505,34 +1570,34 @@ bool Player::InputSelectCheck()
         gamePad.SetButtonDownCountinue(true);
         return true;
     }
-    // ˆê“x—£‚·‚Ü‚Åƒ{ƒ^ƒ“Œø‚©‚È‚¢
+    // ä¸€åº¦é›¢ã™ã¾ã§ãƒœã‚¿ãƒ³åŠ¹ã‹ãªã„
     if (gamePad.GetButtonUp() & GamePad::BTN_B)
     {
         gamePad.SetButtonDownCountinue(false);
     }
-    // ƒRƒ}ƒ“ƒh‘€ìŠK‘w‰º‚°
+    // ã‚³ãƒãƒ³ãƒ‰æ“ä½œéšå±¤ä¸‹ã’
     if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT && selectCheck == (int)CommandAttack::Magic)
     {
         magicAction = true;
         return true;
     }
-    // ƒ‹[ƒv‘€ì Å‘å‚É‚¢‚Á‚½‚ç
+    // ãƒ«ãƒ¼ãƒ—æ“ä½œ æœ€å¤§ã«ã„ã£ãŸã‚‰
     if (selectCheck > (int)CommandAttack::Magic)
     {
         selectCheck = (int)CommandAttack::Attack;
     }
-    // ƒ‹[ƒv‘€ì@Å¬‚És‚Á‚½‚ç
+    // ãƒ«ãƒ¼ãƒ—æ“ä½œã€€æœ€å°ã«è¡Œã£ãŸã‚‰
     if (selectCheck < (int)CommandAttack::Attack)
     {
         selectCheck = (int)CommandAttack::Magic;
     }
 
     int uiCount = UiManager::Instance().GetUiesCount();
-    // ui–³‚©‚Á‚½‚ç
+    // uiç„¡ã‹ã£ãŸã‚‰
     if (uiCount <= uiCountMax) return false;
 
-    // UIİ’è ŠK‘w‰º‚ª‚é‘O ‘I‚Ô
-    // UŒ‚‘I‚Ô
+    // UIè¨­å®š éšå±¤ä¸‹ãŒã‚‹å‰ é¸ã¶
+    // æ”»æ’ƒé¸ã¶
     if (selectCheck == (int)CommandAttack::Attack)
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
@@ -1542,7 +1607,7 @@ bool Player::InputSelectCheck()
         uiIdAttack.lock()->SetDrawCheck(false);
         uiIdAttackCheck.lock()->SetDrawCheck(true);
     }
-    // –‚–@‘I‚ñ‚¾
+    // é­”æ³•é¸ã‚“ã æ™‚
     else
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
@@ -1552,7 +1617,7 @@ bool Player::InputSelectCheck()
         uiIdAttack.lock()->SetDrawCheck(true);
         uiIdAttackCheck.lock()->SetDrawCheck(false);
     }
-    // –‚–@‘I‚ñ‚¾
+    // é­”æ³•é¸ã‚“ã æ™‚
     if (selectCheck == (int)CommandAttack::Magic)
     {
         std::weak_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
@@ -1562,7 +1627,7 @@ bool Player::InputSelectCheck()
         uiIdMagick.lock()->SetDrawCheck(false);
         uiIdMagickCheck.lock()->SetDrawCheck(true);
     }
-    // UŒ‚‘I‚Ô
+    // æ”»æ’ƒé¸ã¶
     else
     {
         std::weak_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
@@ -1577,7 +1642,7 @@ bool Player::InputSelectCheck()
     return false;
 }
 
-// –‚–@‚ÌƒRƒ}ƒ“ƒh
+// é­”æ³•ã®ã‚³ãƒãƒ³ãƒ‰
 bool Player::InputSelectMagicCheck()
 {
 
@@ -1612,29 +1677,98 @@ bool Player::InputSelectMagicCheck()
     }
 
     ///////////////////////////
-    // ƒVƒ‡[ƒgƒJƒbƒgƒL[ ‚µ’†
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚­ãƒ¼ è©¦ã—ä¸­
+
+
+    if (gamePad.GetButtonUp())
+    {
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::Push)->GetComponent<Ui>();
+
+        uiIdAttackCheck.lock()->SetDrawCheck(false);
+    }
+
     if (InputShortCutkeyMagic() &&
-        gamePad.GetButtonDown() & GamePad::BTN_X )
+        gamePad.GetButtonDown() & GamePad::BTN_B )
     {
         selectMagicCheck = (int)CommandMagic::Fire;
+
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::Push)->GetComponent<Ui>();
+
+
+        std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::Push)->GetComponent<TransForm2D>();
+        DirectX::XMFLOAT2 pos = { 179, 340 };
+
+
+
+        uiIdAttackCheck.lock()->SetDrawCheck(true);
+
+        uiIdAttackCheckPos.lock()->SetPosition(pos);
     }
 
+
     if (InputShortCutkeyMagic() &&
-        gamePad.GetButtonDown() & GamePad::BTN_B)
+        gamePad.GetButtonDown() & GamePad::BTN_X)
     {
         selectMagicCheck = (int)CommandMagic::Thander;
-    }
 
-    if (InputShortCutkeyMagic() &&
-        gamePad.GetButtonDown() & GamePad::BTN_A )
-    {
-        selectMagicCheck = (int)CommandMagic::Heale;
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::Push)->GetComponent<Ui>();
+
+
+        std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::Push)->GetComponent<TransForm2D>();
+        DirectX::XMFLOAT2 pos = { 179, 440 };
+
+
+
+        uiIdAttackCheck.lock()->SetDrawCheck(true);
+        
+        uiIdAttackCheckPos.lock()->SetPosition(pos);
     }
 
     if (InputShortCutkeyMagic() &&
         gamePad.GetButtonDown() & GamePad::BTN_Y )
     {
+        selectMagicCheck = (int)CommandMagic::Heale;
+
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::Push)->GetComponent<Ui>();
+
+       
+        std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::Push)->GetComponent<TransForm2D>();
+        DirectX::XMFLOAT2 pos = { 200, 640 };
+
+
+
+        uiIdAttackCheck.lock()->SetDrawCheck(true);
+
+        uiIdAttackCheckPos.lock()->SetPosition(pos);
+    }
+ 
+
+
+    if (InputShortCutkeyMagic() &&
+        gamePad.GetButtonDown() & GamePad::BTN_A )
+    {
         selectMagicCheck = (int)CommandMagic::Ice;
+
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::Push)->GetComponent<Ui>();
+
+
+        std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::Push)->GetComponent<TransForm2D>();
+        DirectX::XMFLOAT2 pos = { 179, 540 };
+
+
+
+        uiIdAttackCheck.lock()->SetDrawCheck(true);
+
+        uiIdAttackCheckPos.lock()->SetPosition(pos);
     }
     /////////////////////////
 
@@ -1643,11 +1777,13 @@ bool Player::InputSelectMagicCheck()
         selectMagicCheck = (int)CommandMagic::Normal;
     }
 
+    if (InputShortCutkeyMagic()) return false;
+
     int uiCount = UiManager::Instance().GetUiesCount();
-    // ui–³‚©‚Á‚½‚ç
+    // uiç„¡ã‹ã£ãŸã‚‰
     if (uiCount <= uiCountMax) return false;
 
-    // UIİ’è ‰Š
+    // UIè¨­å®š ç‚
     if (selectMagicCheck == (int)CommandMagic::Fire && magicAction)
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
@@ -1677,7 +1813,7 @@ bool Player::InputSelectMagicCheck()
     }
 
 
-    // UIİ’è —‹
+    // UIè¨­å®š é›·
     if (selectMagicCheck == (int)CommandMagic::Thander && magicAction)
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
@@ -1707,7 +1843,7 @@ bool Player::InputSelectMagicCheck()
     }
 
 
-    // UIİ’è •X
+    // UIè¨­å®š æ°·
     if (selectMagicCheck == (int)CommandMagic::Ice && magicAction)
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
@@ -1738,7 +1874,7 @@ bool Player::InputSelectMagicCheck()
 
 
 
-    // UIİ’è ‰ñ•œ
+    // UIè¨­å®š å›å¾©
     if (selectMagicCheck == (int)CommandMagic::Heale && magicAction)
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<Ui>();
@@ -1775,27 +1911,78 @@ bool Player::InputSelectMagicCheck()
 bool Player::InputShortCutkeyMagic()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    // L1 ƒVƒ‡[ƒgƒJƒbƒg–‚–@
+    // L1 ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆé­”æ³•
     if (gamePad.GetButtonDown() & GamePad::BTN_LEFT_SHOULDER)
     {
         selectCheck = (int)CommandAttack::Magic;
         selectMagicCheck = (int)CommandMagic::Fire;
         magicAction = true;
 
+
         return true;
     }
-    // ‰Ÿ‚µ‚Ä‚éŠÔ‘I‘ğ
+    // æŠ¼ã—ã¦ã‚‹é–“é¸æŠ
     if (gamePad.GetButton() & GamePad::BTN_LEFT_SHOULDER)
     {
         magicAction = true;
+
+        // ç‚
+        std::weak_ptr<Ui> uiIdAttackCheckFire = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutFire)->GetComponent<Ui>();
+
+        uiIdAttackCheckFire.lock()->SetDrawCheck(true);
+
+        // é›·
+        std::weak_ptr<Ui> uiIdAttackCheckSunder = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutSunder)->GetComponent<Ui>();
+
+        uiIdAttackCheckSunder.lock()->SetDrawCheck(true);
+
+        // æ°·
+        std::weak_ptr<Ui> uiIdAttackCheckIce = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutIce)->GetComponent<Ui>();
+
+        uiIdAttackCheckIce.lock()->SetDrawCheck(true);
+
+        // å›å¾©
+        std::weak_ptr<Ui> uiIdAttackCheckHeale = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutKeule)->GetComponent<Ui>();
+
+        uiIdAttackCheckHeale.lock()->SetDrawCheck(true);
+
         return true;
     }
-    // —£‚µ‚½‚ç
+    // é›¢ã—ãŸã‚‰
     if (gamePad.GetButtonUp() & GamePad::BTN_LEFT_SHOULDER)
     {
         selectMagicCheck = (int)CommandMagic::Normal;
         selectCheck = (int)CommandAttack::Attack;
         magicAction = false;
+
+        // ç‚
+        std::weak_ptr<Ui> uiIdAttackCheckFire = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutFire)->GetComponent<Ui>();
+
+        uiIdAttackCheckFire.lock()->SetDrawCheck(false);
+
+        // é›·
+        std::weak_ptr<Ui> uiIdAttackCheckSunder = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutSunder)->GetComponent<Ui>();
+
+        uiIdAttackCheckSunder.lock()->SetDrawCheck(false);
+
+        // æ°·
+        std::weak_ptr<Ui> uiIdAttackCheckIce = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutIce)->GetComponent<Ui>();
+
+        uiIdAttackCheckIce.lock()->SetDrawCheck(false);
+
+        // å›å¾©
+        std::weak_ptr<Ui> uiIdAttackCheckHeale = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutKeule)->GetComponent<Ui>();
+
+        uiIdAttackCheckHeale.lock()->SetDrawCheck(false);
+
     }
     return false;
 }
@@ -1805,7 +1992,7 @@ bool Player::InputSpecialAttackCharge()
     GamePad& gamePad = Input::Instance().GetGamePad();
 
     int uiCount = UiManager::Instance().GetUiesCount();
-    // ui–³‚©‚Á‚½‚ç
+    // uiç„¡ã‹ã£ãŸã‚‰
     if (uiCount <= uiCountMax) return false;
 
     if (specialAttackCharge >= specialAttackChargeMax)
@@ -1814,12 +2001,15 @@ bool Player::InputSpecialAttackCharge()
         std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
 
-        //// ‹ZŠm’è
+        // å¿…æ®ºæŠ€ãŸã¾ã£ãŸéŸ³
+        PlaySpecialChargeCompleteSe();
+
+        //// æŠ€ç¢ºå®š
         //std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
         //std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
 
 
-        //// ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+        //// ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
         specialAttackCharge = 0.0f;
         //specialAttack.push((int)SpecialAttack::Attack);
 
@@ -1835,10 +2025,10 @@ bool Player::InputSpecialAttackCharge()
         //    specialAttack;
         //}
 
-            // Œ•UŒ‚‚ğˆê’èˆÈã—­‚ß‚½‚ç
+            // å‰£æ”»æ’ƒã‚’ä¸€å®šä»¥ä¸Šæºœã‚ãŸã‚‰
             if (attackEnergyCharge >= energyChargeMax)
             {
-                // ‹ZŠm’è
+                // æŠ€ç¢ºå®š
                 std::weak_ptr<Ui> uiIdAttackSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
                 std::weak_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
 
@@ -1847,7 +2037,7 @@ bool Player::InputSpecialAttackCharge()
                 uiIdAttackSpecial.lock()->SetDrawCheck(drawCheck);
 
 
-                // •KE‹Z‰½‚ª“o˜^‚³‚ê‚½‚© aŒ‚
+                // å¿…æ®ºæŠ€ä½•ãŒç™»éŒ²ã•ã‚ŒãŸã‹ æ–¬æ’ƒ
                 specialAttack.push((int)SpecialAttack::Attack);
 
 
@@ -1859,18 +2049,18 @@ bool Player::InputSpecialAttackCharge()
                     pos.y = pos.y - (add * (float)specialAttack.size());
                 uiIdSpecialAttackTransForm2D.lock()->SetPosition(pos);
 
-                // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+                // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
                 specialAttackCharge = 0.0f;
 
-                // aŒ‚•KE‹Zƒ`ƒƒ[ƒW‰ğÁ
+                // æ–¬æ’ƒå¿…æ®ºæŠ€ãƒãƒ£ãƒ¼ã‚¸è§£æ¶ˆ
                 attackEnergyCharge = 0;
             }
 
 
-            // ‰Š–‚–@‚ğˆê’èˆÈã—­‚ß‚½‚ç
+            // ç‚é­”æ³•ã‚’ä¸€å®šä»¥ä¸Šæºœã‚ãŸã‚‰
             if (fireEnergyCharge >= energyChargeMax)
             {
-                // ‹ZŠm’è
+                // æŠ€ç¢ºå®š
                 std::weak_ptr<Ui> uiIdSpecialFire = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
                 std::weak_ptr<TransForm2D> uiIdSpecialFireTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
 
@@ -1878,7 +2068,7 @@ bool Player::InputSpecialAttackCharge()
                 bool drawCheck = true;
                 uiIdSpecialFire.lock()->SetDrawCheck(drawCheck);
 
-                // •KE‹Z‰½‚ª“o˜^‚³‚ê‚½‚© ‰Î
+                // å¿…æ®ºæŠ€ä½•ãŒç™»éŒ²ã•ã‚ŒãŸã‹ ç«
                 specialAttack.push((int)SpecialAttack::MagicFire);
 
                 DirectX::XMFLOAT2 pos;
@@ -1888,74 +2078,74 @@ bool Player::InputSpecialAttackCharge()
                     pos.y = pos.y - (add * (float)specialAttack.size());
                 uiIdSpecialFireTransForm2D.lock()->SetPosition(pos);
 
-                // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+                // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
                 specialAttackCharge = 0.0f;
 
 
-                // ‰Î•KE‹Zƒ`ƒƒ[ƒW‰ğÁ
+                // ç«å¿…æ®ºæŠ€ãƒãƒ£ãƒ¼ã‚¸è§£æ¶ˆ
                 fireEnergyCharge = 0;
             }
 
-            // —‹–‚–@‚ğˆê’èˆÈã—­‚ß‚½‚ç
-            if (ThanderEnergyCharge >= energyChargeMax)
-            {
+            //// é›·é­”æ³•ã‚’ä¸€å®šä»¥ä¸Šæºœã‚ãŸã‚‰
+            //if (ThanderEnergyCharge >= energyChargeMax)
+            //{
 
 
-                // ‹ZŠm’è
-                std::weak_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
-                std::weak_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
+            //    // æŠ€ç¢ºå®š
+            //    std::weak_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
+            //    std::weak_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
 
 
-                bool drawCheck = true;
-                uiIdSpecialThander.lock()->SetDrawCheck(drawCheck);
+            //    bool drawCheck = true;
+            //    uiIdSpecialThander.lock()->SetDrawCheck(drawCheck);
 
-                // •KE‹Z‰½‚ª“o˜^‚³‚ê‚½‚© aŒ‚
-                specialAttack.push((int)SpecialAttack::MagicThander);
+            //    // å¿…æ®ºæŠ€ä½•ãŒç™»éŒ²ã•ã‚ŒãŸã‹ æ–¬æ’ƒ
+            //    specialAttack.push((int)SpecialAttack::MagicThander);
 
-                DirectX::XMFLOAT2 pos;
-                pos = { 94,240 };
-                float add = 30;
-                if (2 < (int)specialAttack.size())
-                    pos.y = pos.y - (add * (float)specialAttack.size());
-                uiIdSpecialThanderTransForm2D.lock()->SetPosition(pos);
+            //    DirectX::XMFLOAT2 pos;
+            //    pos = { 94,240 };
+            //    float add = 30;
+            //    if (2 < (int)specialAttack.size())
+            //        pos.y = pos.y - (add * (float)specialAttack.size());
+            //    uiIdSpecialThanderTransForm2D.lock()->SetPosition(pos);
 
-                // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
-                specialAttackCharge = 0.0f;
-
-
-                // —‹•KE‹Zƒ`ƒƒ[ƒW‰ğÁ
-                ThanderEnergyCharge = 0;
-            }
-
-            // •X–‚–@‚ğˆê’èˆÈã—­‚ß‚½‚ç
-            if (iceEnergyCharge >= energyChargeMax)
-            {
-                // ‹ZŠm’è
-                std::weak_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
-                std::weak_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
+            //    // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
+            //    specialAttackCharge = 0.0f;
 
 
-                bool drawCheck = true;
-                uiIdSpecialIce.lock()->SetDrawCheck(drawCheck);
+            //    // é›·å¿…æ®ºæŠ€ãƒãƒ£ãƒ¼ã‚¸è§£æ¶ˆ
+            //    ThanderEnergyCharge = 0;
+            //}
 
-                // •KE‹Z‰½‚ª“o˜^‚³‚ê‚½‚© •X
-                specialAttack.push((int)SpecialAttack::MagicIce);
-
-                DirectX::XMFLOAT2 pos;
-                pos = { 94,240 };
-                float add = 30;
-                if (2 < (int)specialAttack.size())
-                    pos.y = pos.y - (add * (float)specialAttack.size());
-                uiIdSpecialIceTransForm2D.lock()->SetPosition(pos);
+            //// æ°·é­”æ³•ã‚’ä¸€å®šä»¥ä¸Šæºœã‚ãŸã‚‰
+            //if (iceEnergyCharge >= energyChargeMax)
+            //{
+            //    // æŠ€ç¢ºå®š
+            //    std::weak_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
+            //    std::weak_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
 
 
-                // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
-                specialAttackCharge = 0.0f;
+            //    bool drawCheck = true;
+            //    uiIdSpecialIce.lock()->SetDrawCheck(drawCheck);
+
+            //    // å¿…æ®ºæŠ€ä½•ãŒç™»éŒ²ã•ã‚ŒãŸã‹ æ°·
+            //    specialAttack.push((int)SpecialAttack::MagicIce);
+
+            //    DirectX::XMFLOAT2 pos;
+            //    pos = { 94,240 };
+            //    float add = 30;
+            //    if (2 < (int)specialAttack.size())
+            //        pos.y = pos.y - (add * (float)specialAttack.size());
+            //    uiIdSpecialIceTransForm2D.lock()->SetPosition(pos);
 
 
-                // •X•KE‹Zƒ`ƒƒ[ƒW‰ğÁ
-                iceEnergyCharge = 0;
-            }
+            //    // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
+            //    specialAttackCharge = 0.0f;
+
+
+            //    // æ°·å¿…æ®ºæŠ€ãƒãƒ£ãƒ¼ã‚¸è§£æ¶ˆ
+            //    iceEnergyCharge = 0;
+            //}
 
        
 
@@ -1971,12 +2161,12 @@ bool Player::InputSpecialAttackCharge()
 
     }
     //if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::Attack && !specialAttackTime)
-    // ‹Z‚ğ•ú‚Â
+    // æŠ€ã‚’æ”¾ã¤
     if (gamePad.GetButtonDown() & GamePad::BTN_Y &&  !specialAttackTime && specialAttack.size() > 0)
     {
 
 
-        //// ‹ZŠm’è
+        //// æŠ€ç¢ºå®š
         //std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
         //std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
         //std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
@@ -1994,11 +2184,11 @@ bool Player::InputSpecialAttackCharge()
         ////    pos.y = pos.y - (add * (float)specialAttack.size());
         //uiIdSpecialShurashuPushTransForm2D->SetPosition(pos);
 
-        // ƒGƒlƒ~[ŒÄ‚Ô“z
+        // ã‚¨ãƒãƒŸãƒ¼å‘¼ã¶å¥´
         EnemyManager& enemyManager = EnemyManager::Instance();
         int enemyManagerCount = enemyManager.GetEnemyCount();
 
-        // “®ì‚³‚¹‚é‚©‚Ç‚¤‚©
+        // å‹•ä½œã•ã›ã‚‹ã‹ã©ã†ã‹
         if (enemyManagerCount > 0)
         {
 
@@ -2008,21 +2198,21 @@ bool Player::InputSpecialAttackCharge()
             bool moveCheck = false;
             enemy.lock()->SetMoveCheck(moveCheck);
 
-            // ‘¬“x’â~
+            // é€Ÿåº¦åœæ­¢
             bool stopVelocity = true;
             enemyMove.lock()->SetStopMove(stopVelocity);
-            // —‚¿‚é‚Ì’â~
+            // è½ã¡ã‚‹ã®åœæ­¢
             bool stopFall = true;
             enemyMove.lock()->SetStopFall(stopFall);
         }
 
         switch (specialAttack.top())
         {
-        // aŒ‚
+        // æ–¬æ’ƒ
         case (int)SpecialAttack::Attack:
         {
 
-            // ‹ZŠm’è
+            // æŠ€ç¢ºå®š
             std::weak_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
             std::weak_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
             std::weak_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
@@ -2044,19 +2234,19 @@ bool Player::InputSpecialAttackCharge()
 
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialAttack));
 
-            // ‚à‚µ’n–Ê‚È‚ç‰½‚à‚µ‚È‚¢
+            // ã‚‚ã—åœ°é¢ãªã‚‰ä½•ã‚‚ã—ãªã„
             bool noStart = false;
-            // ƒGƒtƒFƒNƒgÄ¶
+            // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
             areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
 
             areWork->Play(position);
 
             break;
         }
-        // –‚–@‰Î
+        // é­”æ³•ç«
         case (int)SpecialAttack::MagicFire:
         {
-            // ‹ZŠm’è
+            // æŠ€ç¢ºå®š
             std::weak_ptr<Ui> uiIdSpecialFrame = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
             std::weak_ptr<Ui> uiIdSpecialFramePush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
             std::weak_ptr<TransForm2D> uiIdSpecialFrameTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
@@ -2076,19 +2266,19 @@ bool Player::InputSpecialAttackCharge()
 
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagic));
 
-            // ‚à‚µ’n–Ê‚È‚ç‰½‚à‚µ‚È‚¢
+            // ã‚‚ã—åœ°é¢ãªã‚‰ä½•ã‚‚ã—ãªã„
             bool noStart = false;
-            // ƒGƒtƒFƒNƒgÄ¶
+            // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
             areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
 
             areWork->Play(position);
 
             break;
         }
-        // –‚–@•X
+        // é­”æ³•æ°·
         case (int)SpecialAttack::MagicIce:
         {
-            // ‹ZŠm’è
+            // æŠ€ç¢ºå®š
             std::weak_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
             std::weak_ptr<Ui> uiIdSpecialIceePush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
             std::weak_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
@@ -2109,19 +2299,19 @@ bool Player::InputSpecialAttackCharge()
 
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagicIce));
 
-            // ‚à‚µ’n–Ê‚È‚ç‰½‚à‚µ‚È‚¢
+            // ã‚‚ã—åœ°é¢ãªã‚‰ä½•ã‚‚ã—ãªã„
             bool noStart = false;
-            // ƒGƒtƒFƒNƒgÄ¶
+            // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
             areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
 
             areWork->Play(position);
 
             break;
         }
-        // –‚–@—‹
+        // é­”æ³•é›·
         case (int)SpecialAttack::MagicThander:
         {
-            // ‹ZŠm’è
+            // æŠ€ç¢ºå®š
             std::weak_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
             std::weak_ptr<Ui> uiIdSpecialThanderPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
             std::weak_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
@@ -2141,9 +2331,9 @@ bool Player::InputSpecialAttackCharge()
 
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagicThander));
 
-            // ‚à‚µ’n–Ê‚È‚ç‰½‚à‚µ‚È‚¢
+            // ã‚‚ã—åœ°é¢ãªã‚‰ä½•ã‚‚ã—ãªã„
             bool noStart = false;
-            // ƒGƒtƒFƒNƒgÄ¶
+            // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
             areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
 
             areWork->Play(position);
@@ -2158,7 +2348,7 @@ bool Player::InputSpecialAttackCharge()
    
 
 
-        // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+        // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
         //if (specialAttack.top() != (int)SpecialAttack::Normal)
         //    specialAttack.pop();
         specialAttackTime = true;
@@ -2169,7 +2359,7 @@ bool Player::InputSpecialAttackCharge()
     {
         specialAttackTime = false;
 
-        // ‹ZŠm’è
+        // æŠ€ç¢ºå®š
         //std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
 
         //bool drawCheck = false;
@@ -2177,7 +2367,7 @@ bool Player::InputSpecialAttackCharge()
     }
 
 
-    // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
+    // ãƒãƒ£ãƒ¼ã‚¸ã‚’è¦‹ã‚„ã™ã
     if (specialAttackCharge >= 0.4f && specialAttackCharge < 0.8f)
     {
         std::weak_ptr<TransForm2D> uiIdSpecialTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
@@ -2191,7 +2381,7 @@ bool Player::InputSpecialAttackCharge()
     }
 
 
-    // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
+    // ãƒãƒ£ãƒ¼ã‚¸ã‚’è¦‹ã‚„ã™ã
     if (specialAttackCharge >= 0.8f && specialAttackCharge < 1.2f)
     {
         std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
@@ -2212,7 +2402,7 @@ bool Player::InputSpecialAttackCharge()
         uiIdSpecialTransForm2DSecond.lock()->SetPosition(pos);
     }
 
-    // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
+    // ãƒãƒ£ãƒ¼ã‚¸ã‚’è¦‹ã‚„ã™ã
     if (specialAttackCharge >= 1.2f && specialAttackCharge < 1.5f)
     {
         std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
@@ -2251,12 +2441,12 @@ bool Player::InputSpecialAttackCharge()
     //    std::shared_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
     //    std::shared_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
 
-    //    // ‹ZŠm’è
+    //    // æŠ€ç¢ºå®š
     //    std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
     //    std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
 
 
-    //    // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+    //    // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
     //    specialAttackCharge = 0.0f;
     //    specialAttack.push((int)SpecialAttack::Attack);
 
@@ -2278,12 +2468,12 @@ bool Player::InputSpecialAttackCharge()
     //    uiIdSpecialShurashuTransForm2D->SetPosition(pos);
 
     //}
-    //// ‹Z‚ğ•ú‚Â
+    //// æŠ€ã‚’æ”¾ã¤
     //if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::Attack && !specialAttackTime)
     //{
     // 
 
-    //    // ‹ZŠm’è
+    //    // æŠ€ç¢ºå®š
     //    std::shared_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
     //    std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
     //    std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
@@ -2301,7 +2491,7 @@ bool Player::InputSpecialAttackCharge()
     //    //    pos.y = pos.y - (add * (float)specialAttack.size());
     //    uiIdSpecialShurashuPushTransForm2D->SetPosition(pos);
 
-    //    // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+    //    // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
     //    if (specialAttack.top() != (int)SpecialAttack::Normal)
     //        specialAttack.pop();
     //    specialAttackTime = true;
@@ -2312,7 +2502,7 @@ bool Player::InputSpecialAttackCharge()
     //{
     //    specialAttackTime = false;
 
-    //    // ‹ZŠm’è
+    //    // æŠ€ç¢ºå®š
     //    std::shared_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
 
     //    bool drawCheck = false;
@@ -2320,7 +2510,7 @@ bool Player::InputSpecialAttackCharge()
     //}
 
 
-    //// ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
+    //// ãƒãƒ£ãƒ¼ã‚¸ã‚’è¦‹ã‚„ã™ã
     //if (specialAttackCharge >= 0.4f && specialAttackCharge < 0.8f)
     //{
     //    std::shared_ptr<TransForm2D> uiIdSpecialTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
@@ -2334,7 +2524,7 @@ bool Player::InputSpecialAttackCharge()
     //}
 
 
-    //// ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
+    //// ãƒãƒ£ãƒ¼ã‚¸ã‚’è¦‹ã‚„ã™ã
     //if (specialAttackCharge >= 0.8f && specialAttackCharge < 1.2f)
     //{
     //    std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
@@ -2355,7 +2545,7 @@ bool Player::InputSpecialAttackCharge()
     //    uiIdSpecialTransForm2DSecond->SetPosition(pos);
     //}
 
-    //// ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
+    //// ãƒãƒ£ãƒ¼ã‚¸ã‚’è¦‹ã‚„ã™ã
     //if (specialAttackCharge >= 1.2f && specialAttackCharge < 1.5f)
     //{
     //    std::shared_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
@@ -2392,7 +2582,7 @@ bool Player::InputSpecialShotCharge()
     GamePad& gamePad = Input::Instance().GetGamePad();
 
     int uiCount = UiManager::Instance().GetUiesCount();
-    // ui–³‚©‚Á‚½‚ç
+    // uiç„¡ã‹ã£ãŸã‚‰
     if (uiCount <= uiCountMax) return false;
 
     if (specialShotCharge >= 1.5f)
@@ -2401,12 +2591,12 @@ bool Player::InputSpecialShotCharge()
         std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
 
-        // ‹ZŠm’è
+        // æŠ€ç¢ºå®š
         std::weak_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
 
 
-        // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+        // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
         specialShotCharge = 0.0f;
         specialAttack.push((int)SpecialAttack::MagicFire);
 
@@ -2433,7 +2623,7 @@ bool Player::InputSpecialShotCharge()
 
     if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::MagicFire && !specialAttackTime)
     {
-        // ‹ZŠm’è
+        // æŠ€ç¢ºå®š
         std::weak_ptr<Ui> uiIdSpecialMagic = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdSpecialMagicPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialMagicTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
@@ -2451,7 +2641,7 @@ bool Player::InputSpecialShotCharge()
         //    pos.y = pos.y - (add * (float)specialAttack.size());
         uiIdSpecialMagicPushTransForm2D.lock()->SetPosition(pos);
 
-        // ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+        // ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
         if (specialAttack.top() != (int)SpecialAttack::Normal)
             specialAttack.pop();
         specialAttackTime = true;
@@ -2461,7 +2651,7 @@ bool Player::InputSpecialShotCharge()
     {
         specialAttackTime = false;
 
-        // ‹ZŠm’è
+        // æŠ€ç¢ºå®š
         std::weak_ptr<Ui> uiIdSpecialMagicPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
 
         bool drawCheck = false;
@@ -2469,7 +2659,7 @@ bool Player::InputSpecialShotCharge()
     }
 
 
-    // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
+    // ãƒãƒ£ãƒ¼ã‚¸ã‚’è¦‹ã‚„ã™ã
     if (specialShotCharge >= 0.4f && specialShotCharge < 0.8f)
     {
         std::weak_ptr<TransForm2D> uiIdSpecialTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
@@ -2483,7 +2673,7 @@ bool Player::InputSpecialShotCharge()
     }
 
 
-    // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
+    // ãƒãƒ£ãƒ¼ã‚¸ã‚’è¦‹ã‚„ã™ã
     if (specialShotCharge >= 0.8f && specialShotCharge < 1.2f)
     {
         std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
@@ -2504,7 +2694,7 @@ bool Player::InputSpecialShotCharge()
         uiIdSpecialTransForm2DSecond.lock()->SetPosition(pos);
     }
 
-    // ƒ`ƒƒ[ƒW‚ğŒ©‚â‚·‚­
+    // ãƒãƒ£ãƒ¼ã‚¸ã‚’è¦‹ã‚„ã™ã
     if (specialShotCharge >= 1.2f && specialShotCharge < 1.5f)
     {
         std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
@@ -2535,7 +2725,7 @@ bool Player::InputSpecialShotCharge()
 
     return false;
 }
-// •KE‹Z‰‰o
+// å¿…æ®ºæŠ€æ¼”å‡º
 void Player::SpecialPlayUlEffect(float elapsedTime)
 {
 
@@ -2544,7 +2734,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
     {
     case (int)SpecialAttack::Attack:
     {
-        // ‹ßÚUŒ‚
+        // è¿‘æ¥æ”»æ’ƒ
         std::weak_ptr<Ui> uiIdAttackSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
         if (uiIdAttackSpecial.lock()->GetDrawCheck())
@@ -2556,7 +2746,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
     }
     case (int)SpecialAttack::MagicFire:
     {
-        // ‰Š
+        // ç‚
         std::weak_ptr<Ui> uiIdSpecialFire = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialFireTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
         if (uiIdSpecialFire.lock()->GetDrawCheck())
@@ -2567,7 +2757,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
     }
     case (int)SpecialAttack::MagicIce:
     {
-        // •X
+        // æ°·
         std::weak_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
         if (uiIdSpecialIce.lock()->GetDrawCheck())
@@ -2578,7 +2768,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
     }
     case (int)SpecialAttack::MagicThander:
     {
-        // —‹
+        // é›·
         std::weak_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
         if (uiIdSpecialThander.lock()->GetDrawCheck())
@@ -2595,13 +2785,13 @@ void Player::ChargeSpecialEnergyMultiple()
 {
 
     int uiCount = UiManager::Instance().GetUiesCount();
-    // ui–³‚©‚Á‚½‚ç
+    // uiç„¡ã‹ã£ãŸã‚‰
     if (uiCount <= uiCountMax) return;
 
-    // ‰Š–‚–@‚ğˆê’èˆÈã—­‚ß‚½‚ç
+    // ç‚é­”æ³•ã‚’ä¸€å®šä»¥ä¸Šæºœã‚ãŸã‚‰
     if (fireEnergyCharge >= energyChargeMax)
     {
-        // ‹ZŠm’è
+        // æŠ€ç¢ºå®š
         std::weak_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
 
@@ -2617,50 +2807,94 @@ void Player::ChargeSpecialEnergyMultiple()
         uiIdSpecialShurashuTransForm2D.lock()->SetPosition(pos);
     }
 
-    // —‹–‚–@‚ğˆê’èˆÈã—­‚ß‚½‚ç
+    // é›·é­”æ³•ã‚’ä¸€å®šä»¥ä¸Šæºœã‚ãŸã‚‰
     if (ThanderEnergyCharge >= energyChargeMax)
     {
 
     }
 
-    // •X–‚–@‚ğˆê’èˆÈã—­‚ß‚½‚ç
+    // æ°·é­”æ³•ã‚’ä¸€å®šä»¥ä¸Šæºœã‚ãŸã‚‰
     if (iceEnergyCharge >= energyChargeMax)
     {
 
     }
 
 
-    // ‚±‚±‚Ü‚Å’Ê‚Á‚½‚ç–‚–@‚ª‚½‚Ü‚Á‚½–‚ª•ª‚©‚é‚Ì‚Å
+    // ã“ã“ã¾ã§é€šã£ãŸã‚‰é­”æ³•ãŒãŸã¾ã£ãŸäº‹ãŒåˆ†ã‹ã‚‹ã®ã§
     isSpecialChargeComplete = false;
 
 }
 
+void Player::PlayPintchSe()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/HPå±é™º.wav";
+
+    audioParam.loop = false;
+
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
+void Player::StopPintchSe()
+{
+    Audio& bgm = Audio::Instance();
+
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/ã‹å±é™º.wav";
+
+
+    bgm.Stop(audioParam);
+}
+
+void Player::PlaySpecialChargeCompleteSe()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/å¿…æ®ºæŠ€ãŸã‚.wav";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
 DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 {
-    // “ü—Íî•ñ‚ğæ“¾
+    // å…¥åŠ›æƒ…å ±ã‚’å–å¾—
     GamePad& gamePad = Input::Instance().GetGamePad();
     float ax = gamePad.GetAxisLX();
     float ay = gamePad.GetAxisLY();
 
-    // ƒJƒƒ‰•ûŒü‚ÆƒXƒeƒBƒbƒN‚Ì“ü—Í’l‚É‚æ‚Á‚Äis•ûŒü‚ğŒvZ‚·‚é
+    // ã‚«ãƒ¡ãƒ©æ–¹å‘ã¨ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›å€¤ã«ã‚ˆã£ã¦é€²è¡Œæ–¹å‘ã‚’è¨ˆç®—ã™ã‚‹
     Camera& camera = Camera::Instance();
     const DirectX::XMFLOAT3& cameraRight = camera.GetRight();
     const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
 
-    // ˆÚ“®ƒxƒNƒgƒ‹‚ÍXZ•½–Ê‚É…•½‚ÈƒxƒNƒgƒ‹‚É‚È‚é‚æ‚¤‚É‚·‚é
+    // ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã¯XZå¹³é¢ã«æ°´å¹³ãªãƒ™ã‚¯ãƒˆãƒ«ã«ãªã‚‹ã‚ˆã†ã«ã™ã‚‹
 
-    // ƒJƒƒ‰‰E•ûŒüƒxƒNƒgƒ‹‚Í‚w‚y•½–Ê‚É…•½‚ÈƒxƒNƒgƒ‹‚É•ÏŠ·
+    // ã‚«ãƒ¡ãƒ©å³æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã¯ï¼¸ï¼ºå¹³é¢ã«æ°´å¹³ãªãƒ™ã‚¯ãƒˆãƒ«ã«å¤‰æ›
     float cameraRightX =  cameraRight.x;
     float cameraRightZ =  cameraRight.z;
-    // y¬•ª‚ğæ‚ç‚¸‚É@–îˆó‚Ì’·‚³‚ğæ“¾
+    // yæˆåˆ†ã‚’å–ã‚‰ãšã«ã€€çŸ¢å°ã®é•·ã•ã‚’å–å¾—
     float cameraRightLength = sqrtf(cameraRightX * cameraRightX + cameraRightZ * cameraRightZ);
 
-    // ‰½ŒÌY•ûŒü‚ğÁ‚µ‚Ä‚é‚©@‰E•ûŒü‚ªÎ‚ß‚Å‚à^‚Á’¼‚®i‚ñ‚Å‚Ù‚µ‚¢Y‚ğ‚O
-    //@‚É‚·‚é­‚µ‹——£‚ª•Ï‚í‚é‚¾‚©‚ç’PˆÊƒxƒNƒgƒ‹‚É‚·‚é‚PD‚O‚É
+    // ä½•æ•…Yæ–¹å‘ã‚’æ¶ˆã—ã¦ã‚‹ã‹ã€€å³æ–¹å‘ãŒæ–œã‚ã§ã‚‚çœŸã£ç›´ãé€²ã‚“ã§ã»ã—ã„Yã‚’ï¼
+    //ã€€ã«ã™ã‚‹å°‘ã—è·é›¢ãŒå¤‰ã‚ã‚‹ã ã‹ã‚‰å˜ä½ãƒ™ã‚¯ãƒˆãƒ«ã«ã™ã‚‹ï¼‘ï¼ï¼ã«
     if (cameraRightLength > 0.0f)
     {
-        // ’PˆÊƒxƒNƒgƒ‹‰»
-        // ‰E•ûŒü‚Ì’PˆÊƒxƒNƒgƒ‹ 
+        // å˜ä½ãƒ™ã‚¯ãƒˆãƒ«åŒ–
+        // å³æ–¹å‘ã®å˜ä½ãƒ™ã‚¯ãƒˆãƒ« 
         cameraRightX = cameraRightX/cameraRightLength ;
         cameraRightZ = cameraRightZ / cameraRightLength;
         
@@ -2668,25 +2902,25 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
 
 
-    // ƒJƒƒ‰‘O•ûŒüƒxƒNƒgƒ‹‚ğXZ’PˆÊƒxƒNƒgƒ‹‚É•ÏŠ·
+    // ã‚«ãƒ¡ãƒ©å‰æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’XZå˜ä½ãƒ™ã‚¯ãƒˆãƒ«ã«å¤‰æ›
     float cameraFrontX = cameraFront.x;
     float cameraFrontZ = cameraFront.z;
     float cameraFrontLength = sqrtf(cameraFrontX * cameraFrontX + cameraFrontZ * cameraFrontZ);
     if (cameraFrontLength > 0.0f)
     {
-        // ’PˆÊƒxƒNƒgƒ‹‰»
+        // å˜ä½ãƒ™ã‚¯ãƒˆãƒ«åŒ–
         cameraFrontX = cameraFrontX / cameraFrontLength;
         cameraFrontZ = cameraFrontZ / cameraFrontLength;
     
     }
 
-    // ƒXƒeƒBƒbƒN‚Ì…•½“ü—Í’l‚ğƒJƒƒ‰‰E•ûŒü‚É”½‰f‚µA
-    // ƒXƒeƒBƒbƒN‚Ì‚’¼“ü—Í’l‚ğƒJƒƒ‰‘O•ûŒü‚É”½‰f‚µA
-    // isƒxƒNƒgƒ‹‚ğŒvZ‚·‚é
-    DirectX::XMFLOAT3 vec;// ˆÚ“®•ûŒüi‚Ş‚×‚«•ûŒüisƒxƒNƒgƒ‹
-    vec.x = (cameraRightX* ax) + (cameraFrontX * ay);// ‰E•ûŒü
-    vec.z = (cameraRightZ *ax) + (cameraFrontZ * ay);// ‚Ü‚·‚Á‚®
-    // Y²•ûŒü‚É‚ÍˆÚ“®‚µ‚È‚¢
+    // ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®æ°´å¹³å…¥åŠ›å€¤ã‚’ã‚«ãƒ¡ãƒ©å³æ–¹å‘ã«åæ˜ ã—ã€
+    // ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å‚ç›´å…¥åŠ›å€¤ã‚’ã‚«ãƒ¡ãƒ©å‰æ–¹å‘ã«åæ˜ ã—ã€
+    // é€²è¡Œãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—ã™ã‚‹
+    DirectX::XMFLOAT3 vec;// ç§»å‹•æ–¹å‘é€²ã‚€ã¹ãæ–¹å‘é€²è¡Œãƒ™ã‚¯ãƒˆãƒ«
+    vec.x = (cameraRightX* ax) + (cameraFrontX * ay);// å³æ–¹å‘
+    vec.z = (cameraRightZ *ax) + (cameraFrontZ * ay);// ã¾ã™ã£ã
+    // Yè»¸æ–¹å‘ã«ã¯ç§»å‹•ã—ãªã„
     vec.y = 0.0f;
 
     if (vec.x != 0 || vec.y != 0 || vec.z != 0)
@@ -2703,30 +2937,30 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime) const
 
 DirectX::XMFLOAT3 Player::GetMagicMoveVec(float elapsedTime) const
 {
-    // “ü—Íî•ñ‚ğæ“¾
+    // å…¥åŠ›æƒ…å ±ã‚’å–å¾—
     GamePad& gamePad = Input::Instance().GetGamePad();
     float ax = gamePad.GetAxisLX();
     float ay = gamePad.GetAxisLY();
 
-    // ƒJƒƒ‰•ûŒü‚ÆƒXƒeƒBƒbƒN‚Ì“ü—Í’l‚É‚æ‚Á‚Äis•ûŒü‚ğŒvZ‚·‚é
+    // ã‚«ãƒ¡ãƒ©æ–¹å‘ã¨ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›å€¤ã«ã‚ˆã£ã¦é€²è¡Œæ–¹å‘ã‚’è¨ˆç®—ã™ã‚‹
     Camera& camera = Camera::Instance();
     const DirectX::XMFLOAT3& cameraRight = camera.GetRight();
     const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
 
-    // ˆÚ“®ƒxƒNƒgƒ‹‚ÍXZ•½–Ê‚É…•½‚ÈƒxƒNƒgƒ‹‚É‚È‚é‚æ‚¤‚É‚·‚é
+    // ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã¯XZå¹³é¢ã«æ°´å¹³ãªãƒ™ã‚¯ãƒˆãƒ«ã«ãªã‚‹ã‚ˆã†ã«ã™ã‚‹
 
-    // ƒJƒƒ‰‰E•ûŒüƒxƒNƒgƒ‹‚Í‚w‚y•½–Ê‚É…•½‚ÈƒxƒNƒgƒ‹‚É•ÏŠ·
+    // ã‚«ãƒ¡ãƒ©å³æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã¯ï¼¸ï¼ºå¹³é¢ã«æ°´å¹³ãªãƒ™ã‚¯ãƒˆãƒ«ã«å¤‰æ›
     float cameraRightX = cameraRight.x;
     float cameraRightZ = cameraRight.z;
-    // y¬•ª‚ğæ‚ç‚¸‚É@–îˆó‚Ì’·‚³‚ğæ“¾
+    // yæˆåˆ†ã‚’å–ã‚‰ãšã«ã€€çŸ¢å°ã®é•·ã•ã‚’å–å¾—
     float cameraRightLength = sqrtf(cameraRightX * cameraRightX + cameraRightZ * cameraRightZ);
 
-    // ‰½ŒÌY•ûŒü‚ğÁ‚µ‚Ä‚é‚©@‰E•ûŒü‚ªÎ‚ß‚Å‚à^‚Á’¼‚®i‚ñ‚Å‚Ù‚µ‚¢Y‚ğ‚O
-    //@‚É‚·‚é­‚µ‹——£‚ª•Ï‚í‚é‚¾‚©‚ç’PˆÊƒxƒNƒgƒ‹‚É‚·‚é‚PD‚O‚É
+    // ä½•æ•…Yæ–¹å‘ã‚’æ¶ˆã—ã¦ã‚‹ã‹ã€€å³æ–¹å‘ãŒæ–œã‚ã§ã‚‚çœŸã£ç›´ãé€²ã‚“ã§ã»ã—ã„Yã‚’ï¼
+    //ã€€ã«ã™ã‚‹å°‘ã—è·é›¢ãŒå¤‰ã‚ã‚‹ã ã‹ã‚‰å˜ä½ãƒ™ã‚¯ãƒˆãƒ«ã«ã™ã‚‹ï¼‘ï¼ï¼ã«
     if (cameraRightLength > 0.0f)
     {
-        // ’PˆÊƒxƒNƒgƒ‹‰»
-        // ‰E•ûŒü‚Ì’PˆÊƒxƒNƒgƒ‹ 
+        // å˜ä½ãƒ™ã‚¯ãƒˆãƒ«åŒ–
+        // å³æ–¹å‘ã®å˜ä½ãƒ™ã‚¯ãƒˆãƒ« 
         cameraRightX = cameraRightX / cameraRightLength;
         cameraRightZ = cameraRightZ / cameraRightLength;
 
@@ -2734,25 +2968,25 @@ DirectX::XMFLOAT3 Player::GetMagicMoveVec(float elapsedTime) const
 
 
 
-    // ƒJƒƒ‰‘O•ûŒüƒxƒNƒgƒ‹‚ğXZ’PˆÊƒxƒNƒgƒ‹‚É•ÏŠ·
+    // ã‚«ãƒ¡ãƒ©å‰æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’XZå˜ä½ãƒ™ã‚¯ãƒˆãƒ«ã«å¤‰æ›
     float cameraFrontX = cameraFront.x;
     float cameraFrontZ = cameraFront.z;
     float cameraFrontLength = sqrtf(cameraFrontX * cameraFrontX + cameraFrontZ * cameraFrontZ);
     if (cameraFrontLength > 0.0f)
     {
-        // ’PˆÊƒxƒNƒgƒ‹‰»
+        // å˜ä½ãƒ™ã‚¯ãƒˆãƒ«åŒ–
         cameraFrontX = cameraFrontX / cameraFrontLength;
         cameraFrontZ = cameraFrontZ / cameraFrontLength;
 
     }
 
-    // ƒXƒeƒBƒbƒN‚Ì…•½“ü—Í’l‚ğƒJƒƒ‰‰E•ûŒü‚É”½‰f‚µA
-    // ƒXƒeƒBƒbƒN‚Ì‚’¼“ü—Í’l‚ğƒJƒƒ‰‘O•ûŒü‚É”½‰f‚µA
-    // isƒxƒNƒgƒ‹‚ğŒvZ‚·‚é
-    DirectX::XMFLOAT3 vec;// ˆÚ“®•ûŒüi‚Ş‚×‚«•ûŒüisƒxƒNƒgƒ‹
-    vec.x = (cameraRightX * ax) + (cameraFrontX * ay);// ‰E•ûŒü
-    vec.z = (cameraRightZ * ax) + (cameraFrontZ * ay);// ‚Ü‚·‚Á‚®
-    // Y²•ûŒü‚É‚ÍˆÚ“®‚µ‚È‚¢
+    // ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®æ°´å¹³å…¥åŠ›å€¤ã‚’ã‚«ãƒ¡ãƒ©å³æ–¹å‘ã«åæ˜ ã—ã€
+    // ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å‚ç›´å…¥åŠ›å€¤ã‚’ã‚«ãƒ¡ãƒ©å‰æ–¹å‘ã«åæ˜ ã—ã€
+    // é€²è¡Œãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—ã™ã‚‹
+    DirectX::XMFLOAT3 vec;// ç§»å‹•æ–¹å‘é€²ã‚€ã¹ãæ–¹å‘é€²è¡Œãƒ™ã‚¯ãƒˆãƒ«
+    vec.x = (cameraRightX * ax) + (cameraFrontX * ay);// å³æ–¹å‘
+    vec.z = (cameraRightZ * ax) + (cameraFrontZ * ay);// ã¾ã™ã£ã
+    // Yè»¸æ–¹å‘ã«ã¯ç§»å‹•ã—ãªã„
     vec.y = 0.0f;
 
     if (vec.x != 0 || vec.y != 0 || vec.z != 0)
@@ -2766,7 +3000,7 @@ DirectX::XMFLOAT3 Player::GetMagicMoveVec(float elapsedTime) const
 }
 
 
-// ’eŠÛ‚Æ“G‚ÌÕ“Ëˆ—
+// å¼¾ä¸¸ã¨æ•µã®è¡çªå‡¦ç†
 void Player::CollisionProjectilesVsEnemies()
 {
     EnemyManager& enemyManager = EnemyManager::Instance();
@@ -2775,7 +3009,7 @@ void Player::CollisionProjectilesVsEnemies()
    
     projectileManager = ProjectileManager::Instance();
 
-    // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // å…¨ã¦ã®æ•µã¨ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     int projectileCount = projectileManager.GetProjectileCount();
     
 
@@ -2783,7 +3017,7 @@ void Player::CollisionProjectilesVsEnemies()
     {
 
         int enemyCount = enemyManager.GetEnemyCount();
-        // w’è‚Ìƒm[ƒh‚Æ‘S‚Ä‚Ì“G‚ğ‘“–‚½‚è‚ÅÕ“Ëˆ—
+        // æŒ‡å®šã®ãƒãƒ¼ãƒ‰ã¨å…¨ã¦ã®æ•µã‚’ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
         for (int i = 0; i < enemyCount; ++i)
         {
             std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
@@ -2798,7 +3032,7 @@ void Player::CollisionProjectilesVsEnemies()
             Model::Node* nodeHeart = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("body2");
             Model::Node* nodeLeftArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("boss_left_hand2");
             Model::Node* nodeRightArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("boss_right_hand2");
-            // S‘ŸˆÊ’u
+            // å¿ƒè‡“ä½ç½®
             DirectX::XMFLOAT3 nodeHeartPosition;
             nodeHeartPosition = {
             nodeHeart->worldTransform._41,
@@ -2806,7 +3040,7 @@ void Player::CollisionProjectilesVsEnemies()
             nodeHeart->worldTransform._43
             };
 
-            //  ¶˜rˆÊ’u
+            //  å·¦è…•ä½ç½®
             DirectX::XMFLOAT3 nodeLeftArmPosition;
             nodeLeftArmPosition = {
             nodeLeftArm->worldTransform._41,
@@ -2814,7 +3048,7 @@ void Player::CollisionProjectilesVsEnemies()
             nodeLeftArm->worldTransform._43
             };
 
-            // ‰E˜rˆÊ’u
+            // å³è…•ä½ç½®
             DirectX::XMFLOAT3 nodeRightArmPosition;
             nodeRightArmPosition = {
             nodeRightArm->worldTransform._41,
@@ -2827,7 +3061,7 @@ void Player::CollisionProjectilesVsEnemies()
             
 
 
-            //// Õ“Ëˆ—
+            //// è¡çªå‡¦ç†
             DirectX::XMFLOAT3 outPositon;
 
 
@@ -2892,12 +3126,12 @@ void Player::CollisionProjectilesVsEnemies()
                 //        float enemyRadius = enemy->GetComponent<Transform>()->GetRadius();
                 //        float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();
 
-                //        // Õ“Ëˆ—
+                //        // è¡çªå‡¦ç†
                 //        DirectX::XMFLOAT3 outPositon;
                 //      
                 //        if (!projectile->GetComponent<ProjectileHoming>() && !projectile->GetComponent<ProjectileSunder>())return;
 
-                //        // ‰~’Œ‚Æ‰~
+                //        // å††æŸ±ã¨å††
                 //        if (Collision::IntersectSphereVsCylinder(
                 //            projectilePosition,
                 //            projectileRadius,
@@ -2918,7 +3152,7 @@ void Player::CollisionProjectilesVsEnemies()
                     ++ThanderEnergyCharge;
                     hitThander->Play(projectilePosition);
 
-                    // —‹ƒ_ƒ[ƒW
+                    // é›·ãƒ€ãƒ¡ãƒ¼ã‚¸
                     applyDamageMagic = applyDamageThander;
                 }
                 else
@@ -2929,7 +3163,7 @@ void Player::CollisionProjectilesVsEnemies()
                     {
                         ++fireEnergyCharge;
                         hitFire->Play(projectilePosition);
-                        // ‰Šƒ_ƒ[ƒW
+                        // ç‚ãƒ€ãƒ¡ãƒ¼ã‚¸
                         applyDamageMagic = applyDamageFire;
                         break;
                     }
@@ -2937,7 +3171,7 @@ void Player::CollisionProjectilesVsEnemies()
                     {
                         ++iceEnergyCharge;
                         hitIce->Play(projectilePosition);
-                        // •Xƒ_ƒ[ƒW
+                        // æ°·ãƒ€ãƒ¡ãƒ¼ã‚¸
                         applyDamageMagic = applyDamageIce;
                         break;
                     }
@@ -2946,7 +3180,7 @@ void Player::CollisionProjectilesVsEnemies()
                 }
                 hitEffect->Play(projectilePosition);
                 
-                // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+                // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
                 if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageMagic, 0.5f))
                 {
 
@@ -2956,12 +3190,12 @@ void Player::CollisionProjectilesVsEnemies()
                         enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack
                         )
                     {
-                        // ƒ_ƒ[ƒWƒXƒe[ƒg‚Ö
+                        // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ãƒˆã¸
                         enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
                     }
 
 
-                    //// ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+                    //// ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
                     //{
                     //    //DirectX::XMFLOAT3 e = enemyPosition;
                     //    //e.y += enemyHeight * 0.5f;
@@ -2993,14 +3227,14 @@ void Player::CollisionProjectilesVsEnemies()
 
 
                     //}
-                    // “–‚½‚Á‚½‚Ì•›Ÿ“IŒø‰Ê
+                    // å½“ãŸã£ãŸæ™‚ã®å‰¯æ¬¡çš„åŠ¹æœ
                     {
                         specialAttackCharge += 0.2f;
                         //specialShotCharge += 0.1f;
                         //specialShotCharge += 1.5f;
                     }
                     if (projectile.lock()->GetComponent<ProjectileHoming>())
-                        // ’eŠÛ”jŠü
+                        // å¼¾ä¸¸ç ´æ£„
                         projectile.lock()->GetComponent<BulletFiring>()->Destroy();
                 }
             }
@@ -3014,7 +3248,7 @@ void Player::CollisionRubyVsEnemies()
 
     projectileManager = ProjectileManager::Instance();
 
-    // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // å…¨ã¦ã®æ•µã¨ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     int projectileCount = projectileManager.GetProjectileCount();
 
     for (int i = 0; i < projectileCount; ++i)
@@ -3032,7 +3266,7 @@ void Player::CollisionRubyVsEnemies()
             float enemyRadius = enemy.lock()->GetComponent<Transform>()->GetRadius();
             float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
 
-            // Õ“Ëˆ—
+            // è¡çªå‡¦ç†
             DirectX::XMFLOAT3 outPositon;
 
             if (!projectile.lock()->GetComponent<ProjectileThrowing>() )return;
@@ -3040,7 +3274,7 @@ void Player::CollisionRubyVsEnemies()
             bool counterCheck;
             counterCheck = projectile.lock()->GetComponent<ProjectileThrowing>()->GetCounterCheck();
 
-            // ‰~’Œ‚Æ‰~
+            // å††æŸ±ã¨å††
             if (Collision::IntersectSphereVsCylinder(
                 projectilePosition,
                 projectileRadius,
@@ -3055,14 +3289,14 @@ void Player::CollisionRubyVsEnemies()
 
             {
 
-                // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+                // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
                 if (enemy.lock()->GetComponent<HP>()->ApplyDamage(1, 0.5f))
                 {
-                    // ‚«”ò‚Î‚·
+                    // å¹ãé£›ã°ã™
                     {
                       
                     }
-                    // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+                    // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
                     {
                         DirectX::XMFLOAT3 e = enemyPosition;
                         e.y += enemyHeight * 0.5f;
@@ -3070,11 +3304,11 @@ void Player::CollisionRubyVsEnemies()
 
                         hitEffect->Play(e);
                     }
-                    // “–‚½‚Á‚½‚Ì•›Ÿ“IŒø‰Ê
+                    // å½“ãŸã£ãŸæ™‚ã®å‰¯æ¬¡çš„åŠ¹æœ
                     {
                         specialShotCharge += 0.1f;
                     }
-                    // ’eŠÛ”jŠü
+                    // å¼¾ä¸¸ç ´æ£„
                     projectile.lock()->GetComponent<BulletFiring>()->Destroy();
                     enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState
                     ((int)EnemyBoss::State::IdleBattle);
@@ -3088,12 +3322,12 @@ void Player::CollisionRubyVsEnemies()
     }
 }
 
-// ƒvƒŒƒCƒ„[‚ÆƒGƒlƒ~[‚Æ‚ÌÕ“Ëˆ—
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨ã‚¨ãƒãƒŸãƒ¼ã¨ã®è¡çªå‡¦ç†
 void Player::CollisionPlayerVsEnemies()
 {
     EnemyManager& enemyManager = EnemyManager::Instance();
 
-    // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // å…¨ã¦ã®æ•µã¨ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
 
     int enemyCount = enemyManager.GetEnemyCount();
 
@@ -3103,7 +3337,7 @@ void Player::CollisionPlayerVsEnemies()
             std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
 
-            //// Õ“Ëˆ—
+            //// è¡çªå‡¦ç†
             DirectX::XMFLOAT3 outPositon;
 
             DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
@@ -3140,7 +3374,7 @@ void Player::CollisionPlayerVsEnemies()
                     //if (normal.y > 0.8f)
                     //{
 
-                    //    //¬ƒWƒƒƒ“ƒv
+                    //    //å°ã‚¸ãƒ£ãƒ³ãƒ—
                     //    //Jump(jumpSpeed * 0.5f);
                     //   // movement->JumpVelocity(jumpSpeed * 0.5f);
 
@@ -3149,7 +3383,7 @@ void Player::CollisionPlayerVsEnemies()
                     //else
                     //{
                     //    
-                    //    // ‰Ÿ‚µo‚µŒã‚ÌˆÊ’uİ’è@
+                    //    // æŠ¼ã—å‡ºã—å¾Œã®ä½ç½®è¨­å®šã€€
                     //    //enemy->GetComponent<Transform>()->SetPosition(outPositon);
                     //    //position = outPositon;
                     //    //position = outPositon;
@@ -3184,12 +3418,12 @@ void Player::CollisionPlayerVsEnemies()
 void Player::CollisionBornVsProjectile(const char* bornname)
 {
 
-    // ƒm[ƒhæ“¾
+    // ãƒãƒ¼ãƒ‰å–å¾—
     //Model::Node* nodehand = model->FindNode(bornname);
 
     EnemyManager& enemyManager = EnemyManager::Instance();
 
-    // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // å…¨ã¦ã®æ•µã¨ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
 
     int enemyCount = enemyManager.GetEnemyCount();
 
@@ -3198,10 +3432,10 @@ void Player::CollisionBornVsProjectile(const char* bornname)
     {
         std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
 
-        // ƒm[ƒhæ“¾
+        // ãƒãƒ¼ãƒ‰å–å¾—
         Model::Node* node = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(bornname);
 
-        // ƒm[ƒhˆÊ’uæ“¾
+        // ãƒãƒ¼ãƒ‰ä½ç½®å–å¾—
         DirectX::XMFLOAT3 nodePosition;
         nodePosition = {
             node->worldTransform._41,
@@ -3209,7 +3443,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
             node->worldTransform._43
         };
 
-        //// Õ“Ëˆ—
+        //// è¡çªå‡¦ç†
         DirectX::XMFLOAT3 outPositon;
 
         DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
@@ -3243,7 +3477,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
             if (normal.y > 0.8f)
             {
 
-                //¬ƒWƒƒƒ“ƒv
+                //å°ã‚¸ãƒ£ãƒ³ãƒ—
                 //Jump(jumpSpeed * 0.5f);
                 //movement->JumpVelocity(jumpSpeed * 0.5f);
 
@@ -3251,7 +3485,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
             }
             else
             {
-                // ‰Ÿ‚µo‚µŒã‚ÌˆÊ’uİ’è@
+                // æŠ¼ã—å‡ºã—å¾Œã®ä½ç½®è¨­å®šã€€
                 //enemy->GetComponent<Transform>()->SetPosition(outPositon);
                 //
                 //const float power = 1.3f;
@@ -3276,7 +3510,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
     }
 }
 
-// ƒm[ƒh‚Æ“G‚ÌÕ“Ë”»’è
+// ãƒãƒ¼ãƒ‰ã¨æ•µã®è¡çªåˆ¤å®š
 bool Player::CollisionNodeVsEnemies(
     const char* nodeName, float nodeRadius,
     const char* nodeHeartName,
@@ -3285,13 +3519,13 @@ bool Player::CollisionNodeVsEnemies(
 )
 {
 
-    // ƒm[ƒhæ“¾
+    // ãƒãƒ¼ãƒ‰å–å¾—
     Model::Node* node = model->FindNode(nodeName);
 
     
     //worldTransform
     //localTransform
-    // ƒm[ƒhˆÊ’uæ“¾
+    // ãƒãƒ¼ãƒ‰ä½ç½®å–å¾—
     DirectX::XMFLOAT3 nodePosition;
     nodePosition = {
         node->worldTransform._41,
@@ -3300,11 +3534,11 @@ bool Player::CollisionNodeVsEnemies(
     };
 
 
-    // ƒ}ƒl[ƒWƒƒ[æ“¾
+    // ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼å–å¾—
     EnemyManager& enemyManager = EnemyManager::Instance();
 
     int enemyCount = enemyManager.GetEnemyCount();
-    // w’è‚Ìƒm[ƒh‚Æ‘S‚Ä‚Ì“G‚ğ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // æŒ‡å®šã®ãƒãƒ¼ãƒ‰ã¨å…¨ã¦ã®æ•µã‚’ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     for (int i = 0; i < enemyCount; ++i)
     {
         std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
@@ -3319,7 +3553,7 @@ bool Player::CollisionNodeVsEnemies(
         Model::Node* nodeHeart = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(nodeHeartName);
         Model::Node* nodeLeftArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(nodeLeftArmName);
         Model::Node* nodeRightArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(nodeRightArmName);
-        // S‘ŸˆÊ’u
+        // å¿ƒè‡“ä½ç½®
         DirectX::XMFLOAT3 nodeHeartPosition;
         nodeHeartPosition = {
         nodeHeart->worldTransform._41,
@@ -3327,7 +3561,7 @@ bool Player::CollisionNodeVsEnemies(
         nodeHeart->worldTransform._43
         };
 
-        //  ¶˜rˆÊ’u
+        //  å·¦è…•ä½ç½®
         DirectX::XMFLOAT3 nodeLeftArmPosition;
         nodeLeftArmPosition = {
         nodeLeftArm->worldTransform._41,
@@ -3335,7 +3569,7 @@ bool Player::CollisionNodeVsEnemies(
         nodeLeftArm->worldTransform._43
         };
 
-        // ‰E˜rˆÊ’u
+        // å³è…•ä½ç½®
         DirectX::XMFLOAT3 nodeRightArmPosition;
         nodeRightArmPosition = {
         nodeRightArm->worldTransform._41,
@@ -3344,7 +3578,7 @@ bool Player::CollisionNodeVsEnemies(
         };
 
 
-        //// Õ“Ëˆ—
+        //// è¡çªå‡¦ç†
         DirectX::XMFLOAT3 outPositon;
 
 
@@ -3395,7 +3629,7 @@ bool Player::CollisionNodeVsEnemies(
         {
             if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
             {
-                // aŒ‚‰¹
+                // æ–¬æ’ƒéŸ³
                 InputAttackSlashSE();
                 hitSlash->Play(nodePosition, slashScale);
 
@@ -3404,22 +3638,22 @@ bool Player::CollisionNodeVsEnemies(
                         enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle
                         )
                     {
-                        // ƒ_ƒ[ƒWƒXƒe[ƒg‚Ö
+                        // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ãƒˆã¸
                         //enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
-                        // Ä¶ƒ‹[ƒv
+                        // å†ç”Ÿãƒ«ãƒ¼ãƒ—
                         //bool  loop = false;
 
-                        //// Ä¶ŠJnŠÔ 
+                        //// å†ç”Ÿé–‹å§‹æ™‚é–“ 
                         //float currentAnimationStartSeconds = 1.0f;
 
-                        //// Ä¶ŠÔ‰ÁZ•ª‚Ì’l
+                        //// å†ç”Ÿæ™‚é–“åŠ ç®—åˆ†ã®å€¤
                         //float currentAnimationAddSeconds = 0.00f;
 
-                        //// ƒL[ƒtƒŒ[ƒ€‚ÌI—¹
+                        //// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã®çµ‚äº†
                         //float keyFrameEnd = 153.0f;
 
-                        //// ƒAƒjƒ[ƒVƒ‡ƒ“ƒuƒŒƒ“ƒh
+                        //// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ–ãƒ¬ãƒ³ãƒ‰
                         //float blendSeconds = 0.35f;
 
                         if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack)
@@ -3433,25 +3667,25 @@ bool Player::CollisionNodeVsEnemies(
 
                             modelAnim.keyFrameEnd = 153.0f;
 
-                            // ’Êí
+                            // é€šå¸¸
                             enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(modelAnim);
 
 
                         }
 
 
-                        // €‚ñ‚¾‚Æ‚«
+                        // æ­»ã‚“ã ã¨ã
                         if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle)
                         {
 
-                            //// Ä¶ŠJnŠÔ 
+                            //// å†ç”Ÿé–‹å§‹æ™‚é–“ 
                             //currentAnimationStartSeconds = 0.3f;
 
 
-                            //// ƒL[ƒtƒŒ[ƒ€‚ÌI—¹
+                            //// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã®çµ‚äº†
                             //keyFrameEnd = 55.0f;
                             
-                            // modelî•ñ
+                            // modelæƒ…å ±
                             Model::ModelAnim modelAnim;
 
 
@@ -3464,14 +3698,14 @@ bool Player::CollisionNodeVsEnemies(
                             enemy.lock()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(modelAnim);
                         }
 
-                        // ¬—ó‘Ô
+                        // æ··ä¹±çŠ¶æ…‹
                         if (attackNumberSave >= attackNumberSaveMax && attackNumberSave <= attackNumberSaveMax &&
                             enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
                         {
                             enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(
                                 (int)EnemyBoss::State::IdleBattle);
 
-                            // UŒ‚˜A‘±ƒqƒbƒg’â~
+                            // æ”»æ’ƒé€£ç¶šãƒ’ãƒƒãƒˆåœæ­¢
                             attackNumberSave = 0;
                         }
 
@@ -3481,13 +3715,13 @@ bool Player::CollisionNodeVsEnemies(
         
                     }
 
-                    // “–‚½‚Á‚½‚Ì•›Ÿ“IŒø‰Ê
+                    // å½“ãŸã£ãŸæ™‚ã®å‰¯æ¬¡çš„åŠ¹æœ
                     specialAttackCharge += 0.1f;
 
-                    // aŒ‚ƒ`ƒƒ[ƒW
+                    // æ–¬æ’ƒãƒãƒ£ãƒ¼ã‚¸
                     ++attackEnergyCharge;
 
-                    // UŒ‚ƒqƒbƒg‰ñ”
+                    // æ”»æ’ƒãƒ’ãƒƒãƒˆå›æ•°
                     ++attackNumberSave;
 
              
@@ -3501,8 +3735,8 @@ bool Player::CollisionNodeVsEnemies(
     }
     return false;
 
-        //// ‰º”¼g
-        //// ‰~’Œ‚Æ‰~
+        //// ä¸‹åŠèº«
+        //// å††æŸ±ã¨å††
         //if (Collision::IntersectSphereVsCylinder(
         //    nodePosition,
         //    leftHandRadius, 
@@ -3517,25 +3751,25 @@ bool Player::CollisionNodeVsEnemies(
 
         //{
 
-        //    // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+        //    // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
         //    //enemy->ApplyDamage(1);
-        //// ƒ_ƒ[ƒW‚ª’Ê‚Á‚½‚çÁ‚¦‚éBTRUE‚É‚È‚é‚©‚ç
+        //// ãƒ€ãƒ¡ãƒ¼ã‚¸ãŒé€šã£ãŸã‚‰æ¶ˆãˆã‚‹ã€‚TRUEã«ãªã‚‹ã‹ã‚‰
         //    if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
         //    {
 
      
-        //        // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+        //        // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
         //        {
       
 
         //            hitEffect->Play(nodePosition);
 
-        //            // ƒ_ƒ[ƒWƒXƒe[ƒg‚Ö
+        //            // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ãƒˆã¸
         //            enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
 
         //        }
-        //        // “–‚½‚Á‚½‚Ì•›Ÿ“IŒø‰Ê
+        //        // å½“ãŸã£ãŸæ™‚ã®å‰¯æ¬¡çš„åŠ¹æœ
         //        {
         //            specialAttackCharge += 0.1f;
         //        }
@@ -3543,8 +3777,8 @@ bool Player::CollisionNodeVsEnemies(
         //    }
         //}
      
-       // // ‹¹
-       // // ‰~’Œ‚Æ‰~
+       // // èƒ¸
+       // // å††æŸ±ã¨å††
        // if (Collision::IntersectSpherVsSphere(
        //     nodePosition,
        //     leftHandRadius,
@@ -3558,31 +3792,31 @@ bool Player::CollisionNodeVsEnemies(
 
        // {
 
-       //     // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+       //     // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
        //     //enemy->ApplyDamage(1);
-       // // ƒ_ƒ[ƒW‚ª’Ê‚Á‚½‚çÁ‚¦‚éBTRUE‚É‚È‚é‚©‚ç
+       // // ãƒ€ãƒ¡ãƒ¼ã‚¸ãŒé€šã£ãŸã‚‰æ¶ˆãˆã‚‹ã€‚TRUEã«ãªã‚‹ã‹ã‚‰
        //     if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
        //     {
 
 
-       //         // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+       //         // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
        //         {
 
 
        //             hitEffect->Play(nodePosition);
-       //             // ƒ_ƒ[ƒWƒXƒe[ƒg‚Ö
+       //             // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ãƒˆã¸
        //             enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
        //         }
-       //         // “–‚½‚Á‚½‚Ì•›Ÿ“IŒø‰Ê
+       //         // å½“ãŸã£ãŸæ™‚ã®å‰¯æ¬¡çš„åŠ¹æœ
        //         {
        //             specialAttackCharge += 0.1f;
        //         }
        //      
        //     }
        // }
-       // // ¶˜r
-       // // ‰~’Œ‚Æ‰~
+       // // å·¦è…•
+       // // å††æŸ±ã¨å††
        // if (Collision::IntersectSphereVsCylinder(
        //     nodePosition,
        //     leftHandRadius,
@@ -3597,24 +3831,24 @@ bool Player::CollisionNodeVsEnemies(
 
        // {
 
-       //     // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+       //     // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
        //     //enemy->ApplyDamage(1);
-       // // ƒ_ƒ[ƒW‚ª’Ê‚Á‚½‚çÁ‚¦‚éBTRUE‚É‚È‚é‚©‚ç
+       // // ãƒ€ãƒ¡ãƒ¼ã‚¸ãŒé€šã£ãŸã‚‰æ¶ˆãˆã‚‹ã€‚TRUEã«ãªã‚‹ã‹ã‚‰
        //     if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
        //     {
 
 
-       //         // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+       //         // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
        //         {
 
 
 
        //             hitEffect->Play(nodePosition);
-       //             // ƒ_ƒ[ƒWƒXƒe[ƒg‚Ö
+       //             // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ãƒˆã¸
        //             enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
        //         }
-       //         // “–‚½‚Á‚½‚Ì•›Ÿ“IŒø‰Ê
+       //         // å½“ãŸã£ãŸæ™‚ã®å‰¯æ¬¡çš„åŠ¹æœ
        //         {
        //             specialAttackCharge += 0.1f;
        //         }
@@ -3622,8 +3856,8 @@ bool Player::CollisionNodeVsEnemies(
        //     }
        // }
 
-       // // ‰E˜r
-       //// ‰~’Œ‚Æ‰~
+       // // å³è…•
+       //// å††æŸ±ã¨å††
        // if (Collision::IntersectSphereVsCylinder(
        //     nodePosition,
        //     leftHandRadius,
@@ -3638,30 +3872,30 @@ bool Player::CollisionNodeVsEnemies(
 
        // {
 
-       //     // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+       //     // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
        //     //enemy->ApplyDamage(1);
-       // // ƒ_ƒ[ƒW‚ª’Ê‚Á‚½‚çÁ‚¦‚éBTRUE‚É‚È‚é‚©‚ç
+       // // ãƒ€ãƒ¡ãƒ¼ã‚¸ãŒé€šã£ãŸã‚‰æ¶ˆãˆã‚‹ã€‚TRUEã«ãªã‚‹ã‹ã‚‰
        //     if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
        //     {
 
 
-       //         // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+       //         // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
        //         {
 
 
        //             hitEffect->Play(nodePosition);
-       //             // ƒ_ƒ[ƒWƒXƒe[ƒg‚Ö
+       //             // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ãƒˆã¸
        //             enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
 
        //         }
-       //         // “–‚½‚Á‚½‚Ì•›Ÿ“IŒø‰Ê
+       //         // å½“ãŸã£ãŸæ™‚ã®å‰¯æ¬¡çš„åŠ¹æœ
        //         {
        //             specialAttackCharge += 0.1f;
        //         }
        //         
        //     }
        // }
-        //// ƒ_ƒ[ƒWŠm”F
+        //// ãƒ€ãƒ¡ãƒ¼ã‚¸ç¢ºèª
         //if (enemy->GetComponent<HP>()->InvincibleTimerCheck())
         //{
         //    hitMortion = 0;
@@ -3694,24 +3928,24 @@ bool Player::CollisionNodeVsEnemies(
 
 void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius)
 {
-    // ƒm[ƒhæ“¾
+    // ãƒãƒ¼ãƒ‰å–å¾—
     Model::Node* node = model->FindNode(nodeName);
     //worldTransform
     //localTransform
-    // ƒm[ƒhˆÊ’uæ“¾
+    // ãƒãƒ¼ãƒ‰ä½ç½®å–å¾—
     DirectX::XMFLOAT3 nodePosition;
     nodePosition = {
         node->worldTransform._41,
         node->worldTransform._42,
         node->worldTransform._43
     };
-    // ƒ}ƒl[ƒWƒƒ[æ“¾
+    // ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼å–å¾—
     EnemyManager& enemyManager = EnemyManager::Instance();
     ProjectileManager& projectileManager = ProjectileManager::Instance();
 
     int enemyCount = enemyManager.GetEnemyCount();
     int projectileCount = projectileManager.GetProjectileCount();
-    // w’è‚Ìƒm[ƒh‚Æ‘S‚Ä‚Ì“G‚ğ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // æŒ‡å®šã®ãƒãƒ¼ãƒ‰ã¨å…¨ã¦ã®æ•µã‚’ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     for (int i = 0; i < projectileCount; ++i)
     {
         for (int j = 0; j < enemyCount; ++j)
@@ -3734,13 +3968,13 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
             float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();*/
 
 
-            //// Õ“Ëˆ—
+            //// è¡çªå‡¦ç†
             DirectX::XMFLOAT3 outPositon;
 
             std::weak_ptr<EnemyBoss> enemyBoss = enemy.lock()->GetComponent<EnemyBoss>();
 
 
-            // ‹…‚Æ‹…
+            // çƒã¨çƒ
             if (Collision::IntersectSpherVsSphere(
                 nodePosition,
                 nodeRadius,
@@ -3755,12 +3989,12 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
                     outPositon) &&projectille.lock()->GetComponent<ProjectileImpact>()) /*&&
                 EnemyBoss->GetCounterJudgment())*/
             {
-                // ‚‚³‚ªˆê’èˆÈ‰º‚È‚ç’Ê‚é
+                // é«˜ã•ãŒä¸€å®šä»¥ä¸‹ãªã‚‰é€šã‚‹
                 if (projectilePosition.y + projectileHeight < nodePosition.y) return;
 
 
                 //EnemyBoss->GetStateMachine()->ChangeState((int)EnemyBoss::State::Idle);
-                // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+                // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
                 {
                     //DirectX::XMFLOAT3 e = enemyPosition;
                     //e.y += enemyHeight * 0.5f;
@@ -3769,7 +4003,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
 
                     ImpactEffect->Play(nodePosition);
 
-                    // ƒqƒbƒg­‚µƒXƒ[‚É
+                    // ãƒ’ãƒƒãƒˆæ™‚å°‘ã—ã‚¹ãƒ­ãƒ¼ã«
                     hitCheck = true;
 
                     //desEffect->Play(e);
@@ -3787,25 +4021,25 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
 
 void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
 {
-    // ƒm[ƒhæ“¾
+    // ãƒãƒ¼ãƒ‰å–å¾—
     Model::Node* node = model->FindNode(nodeName);
 
     //worldTransform
     //localTransform
-    // ƒm[ƒhˆÊ’uæ“¾
+    // ãƒãƒ¼ãƒ‰ä½ç½®å–å¾—
     DirectX::XMFLOAT3 nodePosition;
     nodePosition = {
         node->worldTransform._41,
         node->worldTransform._42,
         node->worldTransform._43
     };
-    // ƒ}ƒl[ƒWƒƒ[æ“¾
+    // ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼å–å¾—
     EnemyManager& enemyManager = EnemyManager::Instance();
     ProjectileManager& projectileManager = ProjectileManager::Instance();
 
     int enemyCount = enemyManager.GetEnemyCount();
     int projectileCount = projectileManager.GetProjectileCount();
-    // w’è‚Ìƒm[ƒh‚Æ‘S‚Ä‚Ì“G‚ğ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // æŒ‡å®šã®ãƒãƒ¼ãƒ‰ã¨å…¨ã¦ã®æ•µã‚’ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     for (int i = 0; i < projectileCount; ++i)
     {
         for (int j = 0; j < enemyCount; ++j)
@@ -3829,13 +4063,13 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
             float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();*/
 
 
-            //// Õ“Ëˆ—
+            //// è¡çªå‡¦ç†
             DirectX::XMFLOAT3 outPositon;
 
             std::weak_ptr<EnemyBoss> enemyBoss = enemy.lock()->GetComponent<EnemyBoss>();
 
 
-            // ‹…‚Æ‹…
+            // çƒã¨çƒ
             if (Collision::IntersectSpherVsSphere(
                 nodePosition,
                 nodeRadius,
@@ -3844,12 +4078,12 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
                 outPositon)) /*&&
                 EnemyBoss->GetCounterJudgment())*/
             {
-                // ‚‚³‚ªˆê’èˆÈ‰º‚È‚ç’Ê‚é
+                // é«˜ã•ãŒä¸€å®šä»¥ä¸‹ãªã‚‰é€šã‚‹
                 if (projectilePosition.y + projectileHeight < nodePosition.y) return;
 
 
                 //EnemyBoss->GetStateMachine()->ChangeState((int)EnemyBoss::State::Idle);
-                // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+                // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
                 {
                     //DirectX::XMFLOAT3 e = enemyPosition;
                     //e.y += enemyHeight * 0.5f;
@@ -3859,7 +4093,7 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
 
                     ImpactEffect->Play(nodePosition);
 
-                    // ƒqƒbƒg­‚µƒXƒ[‚É
+                    // ãƒ’ãƒƒãƒˆæ™‚å°‘ã—ã‚¹ãƒ­ãƒ¼ã«
                     hitCheck = true;
 
                     //desEffect->Play(e);
@@ -3877,24 +4111,24 @@ void Player::CollisionNodeVsRubyCounter(const char* nodeName, float nodeRadius)
 
 void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float nodeRadius)
 {
-    // ƒm[ƒhæ“¾
+    // ãƒãƒ¼ãƒ‰å–å¾—
     Model::Node* node = model->FindNode(nodeName);
     //worldTransform
     //localTransform
-    // ƒm[ƒhˆÊ’uæ“¾
+    // ãƒãƒ¼ãƒ‰ä½ç½®å–å¾—
     DirectX::XMFLOAT3 nodePosition;
     nodePosition = {
         node->worldTransform._41,
         node->worldTransform._42,
         node->worldTransform._43
     };
-    // ƒ}ƒl[ƒWƒƒ[æ“¾
+    // ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼å–å¾—
     EnemyManager& enemyManager = EnemyManager::Instance();
     ProjectileManager& projectileManager = ProjectileManager::Instance();
 
     int enemyCount = enemyManager.GetEnemyCount();
     int projectileCount = projectileManager.GetProjectileCount();
-    // w’è‚Ìƒm[ƒh‚Æ‘S‚Ä‚Ì“G‚ğ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // æŒ‡å®šã®ãƒãƒ¼ãƒ‰ã¨å…¨ã¦ã®æ•µã‚’ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     for (int j = 0; j < enemyCount; ++j)
     {
             std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(j);
@@ -3918,13 +4152,13 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
             float enemyHeight = enemy->GetComponent<Transform>()->GetHeight();*/
 
 
-            //// Õ“Ëˆ—
+            //// è¡çªå‡¦ç†
             DirectX::XMFLOAT3 outPositon;
 
             std::weak_ptr<EnemyBoss> enemyBoss = enemy.lock()->GetComponent<EnemyBoss>();
 
 
-            // ‹…‚Æ‹…
+            // çƒã¨çƒ
             if (Collision::IntersectSpherVsSphere(
                 nodePosition,
                 nodeRadius,
@@ -3933,12 +4167,12 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
                 outPositon) && !counterCheck) /*&&
                 enemyBoss->GetCounterJudgment())*/
             {
-                // ‚‚³‚ªˆê’èˆÈ‰º‚È‚ç’Ê‚é
+                // é«˜ã•ãŒä¸€å®šä»¥ä¸‹ãªã‚‰é€šã‚‹
                /* if (projectilePosition.y + projectileHeight < nodePosition.y) return;*/
 
 
                 //EnemyBoss->GetStateMachine()->ChangeState((int)EnemyBoss::State::Idle);
-                // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+                // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
                 {
                     //DirectX::XMFLOAT3 e = enemyPosition;
                     //e.y += enemyHeight * 0.5f;
@@ -3962,7 +4196,7 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
                     counterCheck = true;
                     projectille.lock()->GetComponent<ProjectileThrowing>()->SetCounterCheck(counterCheck);
 
-                    // ƒqƒbƒg­‚µƒXƒ[‚É
+                    // ãƒ’ãƒƒãƒˆæ™‚å°‘ã—ã‚¹ãƒ­ãƒ¼ã«
                     hitCheck = true;
 
                     //desEffect->Play(e);
@@ -3980,18 +4214,18 @@ void Player::CollisionNodeVsRubyCounterBulletFring(const char* nodeName, float n
 
 
 
-// ƒfƒoƒbƒO—pGUI•`‰æ
+// ãƒ‡ãƒãƒƒã‚°ç”¨GUIæç”»
 void Player::DrawDebugGUI()
 {
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
-    // begin‚©‚çend‚Ü‚Å‚Ì“à—e‚ªo—ˆ‚é
+    // beginã‹ã‚‰endã¾ã§ã®å†…å®¹ãŒå‡ºæ¥ã‚‹
     if (ImGui::Begin("Player", nullptr, ImGuiWindowFlags_None))
     {
-        // ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+        // ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
         {
-            // ˆÊ’u@// ”’l‚ğ‚¢‚¶‚é
+            // ä½ç½®ã€€// æ•°å€¤ã‚’ã„ã˜ã‚‹
             ImGui::InputFloat3("Position", &position.x);
 
             //ImGui::SliderFloat3("Velocity", &velocity.x,5,0);
@@ -4003,9 +4237,9 @@ void Player::DrawDebugGUI()
             ImGui::SliderFloat("frontVec", &frontVec.x,-0.37f,1.0);
             ImGui::SliderFloat("frontVecY", &frontVec.y,-0.37f,1.0);
             //ImGui::SliderFloat("frontVecX", &frontVec.y,0.0f,1.5);
-        // ‰ñ“]
+        // å›è»¢
         DirectX::XMFLOAT3 a;
-        // XMConvertToDegrees•’Ê‚Ì”š‚ğ‰½“x‚É‚·‚é
+        // XMConvertToDegreesæ™®é€šã®æ•°å­—ã‚’ä½•åº¦ã«ã™ã‚‹
         a.x = DirectX::XMConvertToDegrees(angle.x);
         a.y = DirectX::XMConvertToDegrees(angle.y);
         a.z = DirectX::XMConvertToDegrees(angle.z);
@@ -4013,7 +4247,7 @@ void Player::DrawDebugGUI()
         angle.x = DirectX::XMConvertToRadians(a.x);
         angle.y = DirectX::XMConvertToRadians(a.y);
         angle.z = DirectX::XMConvertToRadians(a.z);
-        // ƒXƒP[ƒ‹
+        // ã‚¹ã‚±ãƒ¼ãƒ«
         //ImGui::InputFloat3("Scale", &scale.x);
 
        
@@ -4030,7 +4264,7 @@ void Player::Destroy()
 
 void Player::UpdateSwordeTraile()
 {
-    // Œ•‚ÌŒ´“_‚©‚çª–{‚Ææ’[‚Ü‚Å‚ÌƒIƒtƒZƒbƒg’l
+    // å‰£ã®åŸç‚¹ã‹ã‚‰æ ¹æœ¬ã¨å…ˆç«¯ã¾ã§ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆå€¤
     DirectX::XMVECTOR RootOffset = DirectX::XMVectorSet(0, 0, 0.5f, 0);
     DirectX::XMVECTOR TipOffset = DirectX::XMVectorSet(0, 0, 2.3f, 0);
 
@@ -4041,14 +4275,14 @@ void Player::UpdateSwordeTraile()
 
     /*DirectX::XMFLOAT3 dir = GetForwerd(angle);*/
 
-        // Œ•‚ÌèŒ³
+        // å‰£ã®æ‰‹å…ƒ
     DirectX::XMFLOAT3 swordeRootPosition;
     //SwordeRootPosition = model->ConvertLocalToWorld(SwordeRootName);
     swordeRootPosition = model->ConvertLocalToWorld(SwordeRootName);
 
-    // ‘O
+    // å‰
     DirectX::XMFLOAT3 dir;
-    dir.x = sinf(swordeRootPosition.y);// OŠp‚ğÎ‚ß‚É‚µ‚ÄˆÊ’u‚ğ•Ï‚¦‚½
+    dir.x = sinf(swordeRootPosition.y);// ä¸‰è§’ã‚’æ–œã‚ã«ã—ã¦ä½ç½®ã‚’å¤‰ãˆãŸ
     dir.y = cosf(swordeRootPosition.x);
     dir.z = cosf(swordeRootPosition.y);
 
@@ -4064,7 +4298,7 @@ void Player::UpdateSwordeTraile()
 
    // DirectX::XMStoreFloat3(&SwordeRootPosition, DirectX::XMVector3Transform(RootOffset, swordeRootPositionVec));
 
-    // Œ•æ
+    // å‰£å…ˆ
     DirectX::XMFLOAT3 swordeTipPosition = swordeRootPosition;
     //DirectX::XMVECTOR swordeTipPositionVec;
     //swordeTipPositionVec = DirectX::XMLoadFloat3(&swordeRootPosition);
@@ -4094,7 +4328,7 @@ void Player::UpdateSwordeTraile()
     trailPositions[0][0] = swordeRootPosition;
     trailPositions[1][0] = swordeTipPosition;
 
-    // ƒ|ƒŠƒSƒ“ì¬
+    // ãƒãƒªã‚´ãƒ³ä½œæˆ
     PrimitiveRenderer* primitiveRenderer = Graphics::Instance().GetPrimitiveRenderer();
 
     DirectX::XMFLOAT4 color = { 0,0,1,1 };
@@ -4102,14 +4336,14 @@ void Player::UpdateSwordeTraile()
 
     //primitiveRenderer->AddVertex(positionSwordeTraile, color);
 
-    // •Û‘¶‚µ‚Ä‚¢‚½’¸“_ƒoƒbƒtƒ@‚Åƒ|ƒŠƒSƒ“‚ğì‚é
+    // ä¿å­˜ã—ã¦ã„ãŸé ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã§ãƒãƒªã‚´ãƒ³ã‚’ä½œã‚‹
     for (int i = 0; i < MAX_POLYGON; ++i)
     {
         primitiveRenderer->AddVertex(trailPositions[0][i], color);
         primitiveRenderer->AddVertex(trailPositions[1][i], color);
     }
 
-    // ˆê‚ÂŒã‚ë‚É‚¸‚ç‚·
+    // ä¸€ã¤å¾Œã‚ã«ãšã‚‰ã™
     for (int i = MAX_POLYGON - 1; i > -1; --i)
     {
         trailPositions[0][i] = trailPositions[0][i - 1];
@@ -4123,6 +4357,33 @@ void Player::PinchMode(float elapsedTime)
 {
     if (hp.lock()->HealthPinch() && !hp.lock()->GetDead())
     {
+
+        if (UpdateElapsedTime(timeElapsedHintMax, elapsedTime) && 
+            !InputShortCutkeyMagic())
+        {
+            // Seå†ç”Ÿ
+            PlayPintchSe();
+
+            hintDrawCheck = hintDrawCheck ? false : true;
+
+            UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->
+                GetComponent<Ui>()->SetDrawCheck(hintDrawCheck);
+        }
+        if (InputShortCutkeyMagic())
+        {
+            hintDrawCheck = true;
+
+            UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->
+                GetComponent<Ui>()->SetDrawCheck(hintDrawCheck);
+        }
+            
+        UiManager::Instance().GetUies((int)UiManager::UiCount::Push2)->
+            GetComponent<Ui>()->SetDrawCheck(true);
+
+        UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut)->
+            GetComponent<Ui>()->SetDrawCheck(true);
+
+
         PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 
         vignetteData.color = { 1,0,0,1 };
@@ -4135,9 +4396,26 @@ void Player::PinchMode(float elapsedTime)
         colorGradingData.brigthness = 1;
 
         postprocessingRenderer.SetColorGradingMinData(colorGradingData);
+
+        // ãƒ”ãƒ³ãƒã‹ã©ã†ã‹
+        isPintch = true;
     }
     else
     {
+        // ãƒ”ãƒ³ãƒã‹ã©ã†ã‹
+        isPintch = false;
+
+        hintDrawCheck = false;
+
+        UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->
+            GetComponent<Ui>()->SetDrawCheck(hintDrawCheck);
+
+        UiManager::Instance().GetUies((int)UiManager::UiCount::Push2)->
+            GetComponent<Ui>()->SetDrawCheck(hintDrawCheck);
+
+        UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut)->
+            GetComponent<Ui>()->SetDrawCheck(hintDrawCheck);
+
         PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 
         vignetteData.smoothness = 0.0f;
@@ -4148,22 +4426,115 @@ void Player::PinchMode(float elapsedTime)
 
 
     }
+
+
+    if (mp.lock()->GetMpEmpth())
+    {
+        DirectX::XMFLOAT2 pos = { 179, 640 };
+
+        std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutKeule)->GetComponent<TransForm2D>();
+
+        uiIdAttackCheckPos.lock()->SetPosition(pos);
+
+        uiIdAttackCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<TransForm2D>();
+
+        pos = { 200, 525 };
+
+        uiIdAttackCheckPos.lock()->SetPosition(pos);
+
+        return;
+    }
+
+
+    // ãƒ”ãƒ³ãƒã®æ™‚ã«ãƒ’ãƒ³ãƒˆã‚’å‡ºã™
+    if (InputShortCutkeyMagic() &&
+        isPintch)
+    {
+
+
+
+        std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutKeule)->GetComponent<TransForm2D>();
+
+        uiIdAttackCheckPos.lock()->Shake();
+
+        //Graphics& graphics = Graphics::Instance();
+        //Camera& camera = Camera::Instance();
+
+        //// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆ ç”»é¢ã®ã‚µã‚¤ã‚ºç­‰
+        //// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã¨ã¯2Dã®ç”»é¢ã«æç”»ç¯„å›²ã®æŒ‡å®š(ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°æŒ‡å®šã‚‚å‡ºæ¥ã‚‹)ä½ç½®ã‚’æŒ‡å®š
+        //D3D11_VIEWPORT viewport;
+        //UINT numViewports = 1;
+        //// ãƒ©ã‚¹ã‚¿ãƒ©ã‚¤ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆã«ãƒã‚¤ãƒ³ãƒ‰ã•ã‚Œã¦ã„ã‚‹ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆé…åˆ—ã‚’å–å¾—
+        //dc->RSGetViewports(&numViewports, &viewport);
+
+
+
+
+        //// å¤‰æ›è¡Œåˆ—
+        //DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&view);
+        //DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
+        //// ãƒ­ãƒ¼ã‚«ãƒ«ã‹ã‚‰ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¡Œãã¨ãã«ã„ã‚‹å¥´ç›¸æ‰‹ã®ãƒã‚¸ã‚·ãƒ§ãƒ³ã‚’æ¸¡ã™ã€‚
+        //DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
+
+        //std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+        //    (int)UiManager::UiCount::Push)->GetComponent<TransForm2D>();
+
+        //// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ä½ç½®
+        //DirectX::XMVECTOR screenPositionV = DirectX::XMLoadFloat2(&uiIdAttackCheckPos.lock()->GetPosition());
+
+
+        //// ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
+        //DirectX::XMVECTOR WorldPositionV = DirectX::XMVector3Unproject(
+        //    screenPositionV,
+        //    viewport.TopLeftX,
+        //    viewport.TopLeftY,
+        //    viewport.Width,
+        //    viewport.Height,
+        //    viewport.MinDepth,
+        //    viewport.MaxDepth,
+        //    View,
+        //    Projection,
+        //    World);
+
+
+
+        //DirectX::XMFLOAT3 pos;
+
+        //DirectX::XMStoreFloat3(&pos, WorldPositionV);
+
+        //effectFocus2D->Play(pos);
+    }
+    if (magicAction &&
+        isPintch)
+    {
+        std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<TransForm2D>();
+
+        uiIdAttackCheckPos.lock()->Shake();
+    }
+
+
+
+
 }
 
-//// ’…’n‚µ‚½‚ÉŒÄ‚Î‚ê‚é
+//// ç€åœ°ã—ãŸæ™‚ã«å‘¼ã°ã‚Œã‚‹
 //void Player::OnLanding()
 //{
-//    // ’…’n‚µ‚½‚©‚çƒŠƒZƒbƒg
+//    // ç€åœ°ã—ãŸã‹ã‚‰ãƒªã‚»ãƒƒãƒˆ
 //    jumpCount = 0;
 //
 //
 //
-//    //// ‰º•ûŒü‚Ì‘¬—Í‚ªˆê’èˆÈã‚È‚ç’…’nƒXƒe[ƒg‚Ö  \•ª‚È‘¬“x‚Å—‚Æ‚·d—Í‚Ì‚T”{‚QA‚R•bŒã‚É’…’nƒ‚[ƒVƒ‡ƒ“‚ğ‚·‚éB
+//    //// ä¸‹æ–¹å‘ã®é€ŸåŠ›ãŒä¸€å®šä»¥ä¸Šãªã‚‰ç€åœ°ã‚¹ãƒ†ãƒ¼ãƒˆã¸  ååˆ†ãªé€Ÿåº¦ã§è½ã¨ã™é‡åŠ›ã®ï¼•å€ï¼’ã€ï¼“ç§’å¾Œã«ç€åœ°ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ã™ã‚‹ã€‚
 //    if (velocity.y < gravity * 5.0f)
 //    {
 //        if (state != State::Damage && state != State::Death)
 //        {
-//            // ’…’nƒXƒe[ƒg‚Ö‘JˆÚ
+//            // ç€åœ°ã‚¹ãƒ†ãƒ¼ãƒˆã¸é·ç§»
 //            TransitionLandState();
 //        }
 //    }
@@ -4173,30 +4544,30 @@ void Player::PinchMode(float elapsedTime)
 //{
 //
 //
-//    // €–SƒXƒe[ƒg‘JˆÚ
+//    // æ­»äº¡ã‚¹ãƒ†ãƒ¼ãƒˆé·ç§»
 //    TransitionDeathState();
 //}
 //
 //void Player::OnDamaged()
 //{
 //    
-//        // ƒ_ƒ[ƒWƒXƒe[ƒg‚Ö‘JˆÚ
+//        // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ãƒˆã¸é·ç§»
 //    TransitionDamageState();
 //}
 
 bool Player::InputJump()
 {
-    // ƒ{ƒ^ƒ“‚Å“ü—Í‚ÅƒWƒƒƒ“ƒviƒWƒƒƒ“ƒv‰ñ”§ŒÀ‚Â‚«j
+    // ãƒœã‚¿ãƒ³ã§å…¥åŠ›ã§ã‚¸ãƒ£ãƒ³ãƒ—ï¼ˆã‚¸ãƒ£ãƒ³ãƒ—å›æ•°åˆ¶é™ã¤ãï¼‰
     GamePad& gamePad = Input::Instance().GetGamePad();
     if (gamePad.GetButtonDown() & GamePad::BTN_A)
     {
-        // ’l‚ğ¬‚³‚­‚·‚é
+        // å€¤ã‚’å°ã•ãã™ã‚‹
         if (movement.lock()->GetJumpCount() < jumpLimit) {
            
             
             movement.lock()->JumpVelocity(jumpSpeed);
 
-            // ƒWƒƒƒ“ƒv“ü—Í‚µ‚½
+            // ã‚¸ãƒ£ãƒ³ãƒ—å…¥åŠ›ã—ãŸ
            return true;
         }
     }
@@ -4211,21 +4582,21 @@ bool Player::InputProjectile()
 
 
 
-    // ’¼i’eŠÛ”­Ë@cƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚ç
+    // ç›´é€²å¼¾ä¸¸ç™ºå°„ã€€cãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã‚‰
     if (gamePad.GetButtonDown() & GamePad::BTN_B)
     {
-        // ‘O•ûŒü sin‚ÌŒvZ Šp“x‚ÌŒvZ
+        // å‰æ–¹å‘ sinã®è¨ˆç®— è§’åº¦ã®è¨ˆç®—
         DirectX::XMFLOAT3 dir;
         dir = GetForwerd(angle);
         
-        // ”­ËˆÊ’uiƒvƒŒƒCƒ„[‚Ì˜“–‚½‚è)
+        // ç™ºå°„ä½ç½®ï¼ˆãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è…°å½“ãŸã‚Š)
         DirectX::XMFLOAT3 pos;
         pos.x = position.x;
-        pos.y = position.y + height*0.5f;// g’·€ˆÊ’u‚Ì‚™
+        pos.y = position.y + height*0.5f;// èº«é•·Ã·ä½ç½®ã®ï½™
         pos.z = position.z;
-        // ”­Ë@ƒXƒgƒŒ[ƒg’eŠÛ‚ğ—pˆÓ
+        // ç™ºå°„ã€€ã‚¹ãƒˆãƒ¬ãƒ¼ãƒˆå¼¾ä¸¸ã‚’ç”¨æ„
         {
-            // ’eŠÛ‰Šú‰»
+            // å¼¾ä¸¸åˆæœŸåŒ–
             const char* filename = "Data/Model/Sword/Sword.mdl";
 
             std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -4243,13 +4614,13 @@ bool Player::InputProjectile()
             //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
             //std::shared_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
-            // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
+            // ã“ã‚ŒãŒï¼’Dã‹ã®ç¢ºèª
             bool check2d = false;
             actor.lock()->SetCheck2d(check2d);
 
-            // ”ò‚ÔŠÔ
+            // é£›ã¶æ™‚é–“
             float   lifeTimer = 3.0f;
-            // ”­Ë
+            // ç™ºå°„
             actor.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         }
 
@@ -4258,58 +4629,58 @@ bool Player::InputProjectile()
     }
 
 
-    // ’Ç”ö’eŠÛ”­Ë
+    // è¿½å°¾å¼¾ä¸¸ç™ºå°„
     if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttackTime)
     {
-        // ‘O•ûŒü sin‚ÌŒvZ
+        // å‰æ–¹å‘ sinã®è¨ˆç®—
         DirectX::XMFLOAT3 dir;
-        //dir.x = sinf(angle.y);// OŠp‚ğÎ‚ß‚É‚µ‚ÄˆÊ’u‚ğ•Ï‚¦‚½
+        //dir.x = sinf(angle.y);// ä¸‰è§’ã‚’æ–œã‚ã«ã—ã¦ä½ç½®ã‚’å¤‰ãˆãŸ
         //dir.y = 0;
         //dir.z = cosf(angle.y);
 
         dir = GetForwerd(angle);
 
-        //sinf0“x‚O@cosf0‚Í‚P“x
-        //‚X‚Osin1,cos0•Ô‚Á‚Ä‚­‚é‰¡
-        //‚S‚Tsin0.5,cos0.5Î‚ß
-        // 360“x‚ğãè‚­•\Œ»o—ˆ‚éB2d‚Å‚às‚¯‚éB
+        //sinf0åº¦ï¼ã€€cosf0ã¯ï¼‘åº¦
+        //ï¼™ï¼sin1,cos0è¿”ã£ã¦ãã‚‹æ¨ª
+        //ï¼”ï¼•sin0.5,cos0.5æ–œã‚
+        // 360åº¦ã‚’ä¸Šæ‰‹ãè¡¨ç¾å‡ºæ¥ã‚‹ã€‚2dã§ã‚‚è¡Œã‘ã‚‹ã€‚
 
 
-        // ”­ËˆÊ’uiƒvƒŒƒCƒ„[‚Ì˜“–‚½‚è)
+        // ç™ºå°„ä½ç½®ï¼ˆãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è…°å½“ãŸã‚Š)
         DirectX::XMFLOAT3 pos;
         pos.x = position.x;
-        pos.y = position.y + height * 0.5f;// g’·€ˆÊ’u‚Ì‚™
+        pos.y = position.y + height * 0.5f;// èº«é•·Ã·ä½ç½®ã®ï½™
         pos.z = position.z;
-        //ƒ^[ƒQƒbƒgiƒfƒtƒHƒ‹ƒg‚Å‚ÍƒvƒŒƒCƒ„[‚Ì‘O•ûj
+        //ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‰æ–¹ï¼‰
         DirectX::XMFLOAT3 target;
-        // “G‚ª‚¢‚È‚©‚Á‚½‚Ì‚½‚ß‚É@1000æ‚Ü‚Å”ò‚ñ‚Å‚­‚ê
+        // æ•µãŒã„ãªã‹ã£ãŸæ™‚ã®ãŸã‚ã«ã€€1000å…ˆã¾ã§é£›ã‚“ã§ãã‚Œ
         target.x = pos.x+dir.x * 1000.0f;
         target.y = pos.y+dir.y * 1000.0f;
         target.z = pos.z+dir.z * 1000.0f;
 
-        // ˆê”Ô‹ß‚­‚Ì“G‚ğƒ^[ƒQƒbƒg‚É‚·‚é
-        float dist = FLT_MAX;// float ‚ÌÅ‘å’lfloat‘S‘Ì
+        // ä¸€ç•ªè¿‘ãã®æ•µã‚’ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«ã™ã‚‹
+        float dist = FLT_MAX;// float ã®æœ€å¤§å€¤floatå…¨ä½“
         EnemyManager& enemyManager = EnemyManager::Instance();
         int enemyCount = enemyManager.GetEnemyCount();
-        for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
+        for (int i = 0; i < enemyCount; ++i)//float æœ€å¤§å€¤ãªã„ã«ã„ã‚‹æ•µã«å‘ã‹ã†
         {
-            // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
+            // æ•µã¨ã®è·é›¢åˆ¤å®š  æ•µã®æ•°ã‚‚è¨ˆæ¸¬ å…¨ã¦ã®æ•µã‚’ã¦ã«å…¥ã‚Œã‚‹
             std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-            // “G‚ÌˆÊ’u
+            // æ•µã®ä½ç½®
             DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
-            // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
+            // è‡ªåˆ†ã‹ã‚‰æ•µã¾ã§ã®ä½ç½®ã‚’è¨ˆæ¸¬
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
-            // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
+            // ãƒ™ã‚¯ãƒˆãƒ«ã®ãªãŒã•ã‚’ï¼’ä¹—ã™ã‚‹ã€‚âˆšã¤ã‘ã¦ã„ãªã„å¥´
             DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
             float d;
             DirectX::XMStoreFloat(&d, D);
             if (d < dist)
             {
-                // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
+                // è·é›¢ãŒæ•µã®ã‚‚ã®ã‚’å…¥ã‚Œã‚‹å°‘ãªãã™ã‚‹ï¼“ï¼ãªã‚‰ï¼“ï¼ã€ï¼‘ï¼ï¼ãªã‚‰ï¼‘ï¼ï¼å…¥ã‚Œã‚‹
                 dist = d;
-                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
-                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ä½ç½®ã‚’å…¥ã‚Œã‚‹
+                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ä½ç½®ã«èº«é•·åˆ†
             }
             
             
@@ -4317,11 +4688,11 @@ bool Player::InputProjectile()
         }
 
 
-        // ”­Ë@ƒXƒgƒŒ[ƒg’eŠÛ‚ğ—pˆÓ
+        // ç™ºå°„ã€€ã‚¹ãƒˆãƒ¬ãƒ¼ãƒˆå¼¾ä¸¸ã‚’ç”¨æ„
         //ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
         //projectile->Lanch(dir, pos,target);
 
-        // ’eŠÛ‰Šú‰»
+        // å¼¾ä¸¸åˆæœŸåŒ–
         const char* filename = "Data/Model/Sword/Sword.mdl";
 
         std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -4335,7 +4706,7 @@ bool Player::InputProjectile()
         actor.lock()->AddComponent<BulletFiring>();
         actor.lock()->AddComponent<ProjectileHoming>();
 
-        // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
+        // ã“ã‚ŒãŒï¼’Dã‹ã®ç¢ºèª
         bool check2d = false;
         actor.lock()->SetCheck2d(check2d);
 
@@ -4344,25 +4715,25 @@ bool Player::InputProjectile()
         //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
         std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
-        // ”ò‚ÔŠÔ
+        // é£›ã¶æ™‚é–“
         float   lifeTimer = 3.0f;
-        // ”­Ë
+        // ç™ºå°„
         projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         projectile.lock()->GetComponent<ProjectileHoming>()->SetTarget(target);
 
-        //// “ÁêUŒ‚‚Ì”­¶ğŒ
+        //// ç‰¹æ®Šæ”»æ’ƒã®ç™ºç”Ÿæ¡ä»¶
         //specialAttackTime = false;
         return true;
 
     }
     return false;
 }
-// ‰ñ”ğ“ü—ÍorƒJƒEƒ“ƒ^[
+// å›é¿å…¥åŠ›orã‚«ã‚¦ãƒ³ã‚¿ãƒ¼
 bool Player::InputAvoidance()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
 
-    // ’¼i’eŠÛ”­Ë@rƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚ç
+    // ç›´é€²å¼¾ä¸¸ç™ºå°„ã€€rãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã‚‰
     //if (gamePad.GetButtonDown() & GamePad::BTN_B)
     if (gamePad.GetButtonDown() & GamePad::BTN_X)
     {
@@ -4373,14 +4744,14 @@ bool Player::InputAvoidance()
 
     return false;
 }
-// UŒ‚“ü—Í
+// æ”»æ’ƒå…¥åŠ›
 bool Player::InputAttack()
 {
-    // UŒ‚“ü—Íˆ—
+    // æ”»æ’ƒå…¥åŠ›å‡¦ç†
 
     GamePad& gamePad = Input::Instance().GetGamePad();
 
-    // ’¼i’eŠÛ”­Ë@‚ƒƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚ç
+    // ç›´é€²å¼¾ä¸¸ç™ºå°„ã€€ï½ƒãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã‚‰
     //if (gamePad.GetButtonDown() & GamePad::BTN_B)
     if (gamePad.GetButtonDown() & GamePad::BTN_B)
     {
@@ -4397,40 +4768,64 @@ bool Player::InputMagick()
     GamePad& gamePad = Input::Instance().GetGamePad();
 
 
-    // –‚–@
-    if (gamePad.GetButtonDown() & GamePad::BTN_B)
+    if (!InputShortCutkeyMagic() && 
+        gamePad.GetButtonDown() & GamePad::BTN_B) return true;
+
+    switch (selectMagicCheck)
+    {
+    case (int)CommandMagic::Fire:
+    {
+        // é­”æ³•
+        if (gamePad.GetButtonDown() & GamePad::BTN_B)
+        {
+
+            return true;
+        }
+        break;
+    }
+    case (int)CommandMagic::Thander:
+    {
+        // é­”æ³•
+        if (gamePad.GetButtonDown() & GamePad::BTN_X)
+        {
+
+            return true;
+        }
+        break;
+    }
+    case (int)CommandMagic::Ice:
     {
 
-        return true;
+        // é­”æ³•
+        if (gamePad.GetButtonDown() & GamePad::BTN_A)
+        {
+
+            return true;
+        }
+        break;
+    }
+    case (int)CommandMagic::Heale:
+    {
+
+        // é­”æ³•
+        if (gamePad.GetButtonDown() & GamePad::BTN_Y)
+        {
+
+            return true;
+        }
+        break;
     }
 
 
-    // –‚–@
-    if (gamePad.GetButtonDown() & GamePad::BTN_A)
-    {
-
-        return true;
-    }
-
-    // –‚–@
-    if (gamePad.GetButtonDown() & GamePad::BTN_Y)
-    {
-
-        return true;
-    }
-
-    // –‚–@
-    if (gamePad.GetButtonDown() & GamePad::BTN_X)
-    {
-
-        return true;
+    default:
+        break;
     }
 
 
     return false;
 }
 
-// ƒƒjƒ…[ŠJ‚­ƒ{ƒ^ƒ“
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é–‹ããƒœã‚¿ãƒ³
 bool Player::InputMenue()
 {
 
@@ -4443,7 +4838,7 @@ bool Player::InputMenue()
     return false;
 }
 
-// ‘Ò‹@ƒXƒe[ƒg‚Ö‘JˆÚ
+// å¾…æ©Ÿã‚¹ãƒ†ãƒ¼ãƒˆã¸é·ç§»
 void Player::TransitionIdleState()
 {
     state = State::Idle;
@@ -4452,23 +4847,23 @@ void Player::TransitionIdleState()
 
     updateanim = UpAnim::Normal;
 
-    // ‘Ò‹@ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    // å¾…æ©Ÿã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     //model->PlayAnimation(Anim_Idle, true);
 
     
 }
 
-// ‘Ò‹@ƒXƒe[ƒgXVˆ—
+// å¾…æ©Ÿã‚¹ãƒ†ãƒ¼ãƒˆæ›´æ–°å‡¦ç†
 void Player::UpdateIdleState(float elapsedTime)
 {
-    // ˆÚ“®“ü—Íˆ—
+    // ç§»å‹•å…¥åŠ›å‡¦ç†
     if (InputMove(elapsedTime))
     {
        
         TransitionMoveState();
     }
 
-    // ƒWƒƒƒ“ƒv“ü—Íˆ—
+    // ã‚¸ãƒ£ãƒ³ãƒ—å…¥åŠ›å‡¦ç†
     if (InputJump())
     {
         
@@ -4488,7 +4883,7 @@ void Player::UpdateIdleState(float elapsedTime)
 
 
 
-    // ’eŠÛ“ü—Íˆ—
+    // å¼¾ä¸¸å…¥åŠ›å‡¦ç†
     else if (InputMagicframe() && selectCheck == (int)CommandAttack::Magic && selectMagicCheck == (int)CommandMagic::Fire)
     {
         InputMagicframe();
@@ -4496,19 +4891,19 @@ void Player::UpdateIdleState(float elapsedTime)
         //TransitionAttackState();
     }
 
-    // “ÁêUŒ‚
+    // ç‰¹æ®Šæ”»æ’ƒ
     if (InputSpecialAttackCharge())
     {
         TransitionAttackState();
     }
-    // “Áê–‚–@
+    // ç‰¹æ®Šé­”æ³•
     if (InputSpecialShotCharge())
     {
         InputProjectile();
     }
     //currentANimationSeconds = model->GetCurrentANimationSeconds();
 
-    // ˆÚ“®“ü—Íˆ—
+    // ç§»å‹•å…¥åŠ›å‡¦ç†
     //InputMove(elapsedTime);
 
 
@@ -4521,13 +4916,13 @@ void Player::TransitionMoveState()
 
     updateanim = UpAnim::Doble;
 
-    //// ã”¼g
+    //// ä¸ŠåŠèº«
     //bornUpStartPoint = "mixamorig:Spine";
-    //// ‰º”¼g
+    //// ä¸‹åŠèº«
     //bornDownerEndPoint = "mixamorig:Spine";
 
 
-    // ‘–‚èƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    // èµ°ã‚Šã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     //model->PlayAnimation(Anim_Running, true);
 
     //model->PlayUpeerBodyAnimation(Anim_Running, true);
@@ -4537,11 +4932,11 @@ void Player::TransitionMoveState()
 
 void Player::UpdateMoveState(float elapsedTime)
 {
-    // ˆÊ’uî•ñ‚ğ“ü‚ê‚éB
+    // ä½ç½®æƒ…å ±ã‚’å…¥ã‚Œã‚‹ã€‚
     //position = GetActor()->GetPosition();
 
 
-    // ˆÚ“®“ü—Íˆ—
+    // ç§»å‹•å…¥åŠ›å‡¦ç†
     if (!InputMove(elapsedTime))
     {
         
@@ -4550,7 +4945,7 @@ void Player::UpdateMoveState(float elapsedTime)
 
  
 
-    // ƒWƒƒƒ“ƒv“ü—Íˆ—
+    // ã‚¸ãƒ£ãƒ³ãƒ—å…¥åŠ›å‡¦ç†
     if (InputJump())
     {
         
@@ -4567,26 +4962,26 @@ void Player::UpdateMoveState(float elapsedTime)
 
 
 
-    // ’eŠÛ“ü—Íˆ—
+    // å¼¾ä¸¸å…¥åŠ›å‡¦ç†
     else if (selectCheck == (int)CommandAttack::Magic)
     {
         InputProjectile();
     }
 
-    // “ÁêUŒ‚
+    // ç‰¹æ®Šæ”»æ’ƒ
     if (InputSpecialAttackCharge())
     {
         TransitionAttackState();
     }
-    // “Áê–‚–@
+    // ç‰¹æ®Šé­”æ³•
     if (InputSpecialShotCharge())
     {
         InputProjectile();
     }
-    // —‰º’…’n
+    // è½ä¸‹ç€åœ°
     Ground();
 
-    // c‘œp¨—p
+    // æ®‹åƒå§¿å‹¢ç”¨
     //currentANimationSeconds = model->GetCurrentANimationSeconds();
 
 
@@ -4601,11 +4996,11 @@ void Player::TransitionJumpState()
 
     state = State::Jump;
 
-    // ã”¼g
+    // ä¸ŠåŠèº«
     //bornUpStartPoint = "mixamorig:Spine";
 
     //model->PlayUpeerBodyAnimation(Anim_Jump, false);
-    //// ƒWƒƒƒ“ƒvƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    //// ã‚¸ãƒ£ãƒ³ãƒ—ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     //model->PlayAnimation(Anim_Jump,false);
 
 }
@@ -4616,20 +5011,20 @@ void Player::UpdateJumpState(float elapsedTime)
     //InputMove(elapsedTime);
 
 
-    // ƒWƒƒƒ“ƒv“ü—Íˆ—
+    // ã‚¸ãƒ£ãƒ³ãƒ—å…¥åŠ›å‡¦ç†
     if (InputJump()&&movement.lock()->GetJumpCount() >= 1)
     {
         TransitionJumpFlipState();
     }
 
-    // ’eŠÛ“ü—Íˆ—
+    // å¼¾ä¸¸å…¥åŠ›å‡¦ç†
     if (InputProjectile())
     {
         TransitionAttackState();
     }
 
 
-    // —‰º’…’n
+    // è½ä¸‹ç€åœ°
     Ground();
 
     //if (movement->GetStepOffSet())
@@ -4650,7 +5045,7 @@ void Player::TransitionLandState()
     state = State::Land;
 
     updateanim = UpAnim::Normal;
-    // ’…’nƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    // ç€åœ°ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     //model->PlayAnimation(Anim_Landing, false);
 
     movement.lock()->SetOnLadius(false);
@@ -4663,7 +5058,7 @@ void Player::UpdateLandState(float elapsedTime)
 {
    
 
-    // ‚à‚µI‚í‚Á‚½‚ç‘Ò‹@‚É•ÏX
+    // ã‚‚ã—çµ‚ã‚ã£ãŸã‚‰å¾…æ©Ÿã«å¤‰æ›´
     if (!model->IsPlayAnimation())
     {
         movement.lock()->SetOnLadius(false);
@@ -4684,7 +5079,7 @@ void Player::TransitionJumpFlipState()
 
     state = State::JumpFlip;
 
-    // ‘–‚èƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    // èµ°ã‚Šã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     //model->PlayAnimation(Anim_Jump_Flip, false);
     //model->PlayUpeerBodyAnimation(Anim_Jump_Flip, false);
 }
@@ -4695,7 +5090,7 @@ void Player::UpdatejumpFlipState(float elapsedTime)
 
     if (InputMove(elapsedTime))
         bool afterimagemove = true;
-    // ƒWƒƒƒ“ƒv“ü—Íˆ—
+    // ã‚¸ãƒ£ãƒ³ãƒ—å…¥åŠ›å‡¦ç†
     if (!model->IsPlayAnimation())
     {
         TransitionJumpState();
@@ -4710,11 +5105,11 @@ void Player::TransitionAttackState()
     //{
     //    state = State::Attack;
     //    //updateanim = UpAnim::Doble;
-    //    //ã”¼g
+    //    //ä¸ŠåŠèº«
     //    bornUpStartPoint = "mixamorig:Spine2";
 
     //   /* bornUpEndPoint = "mixamorig:Neck";*/
-    //    // ‰º”¼g
+    //    // ä¸‹åŠèº«
     //    bornDownerEndPoint = "mixamorig:Spine";
 
     //    model->PlayUpeerBodyAnimation(Anim_Attack, false);
@@ -4724,21 +5119,21 @@ void Player::TransitionAttackState()
     //    state = State::Attack;
 
     //    updateanim = UpAnim::Normal;
-    //    // ‘–‚èƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    //    // èµ°ã‚Šã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     //    model->PlayAnimation(Anim_Attack, false);
     //}
 
     //state = State::Attack;
 
     updateanim = UpAnim::Normal;
-    // ‘–‚èƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    // èµ°ã‚Šã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     //model->PlayAnimation(Anim_Attack, false);
 }
 
 void Player::UpdateAttackState(float elapsedTime)
 {
 
-    // ‚à‚µI‚í‚Á‚½‚ç‘Ò‹@‚É•ÏX
+    // ã‚‚ã—çµ‚ã‚ã£ãŸã‚‰å¾…æ©Ÿã«å¤‰æ›´
     if (updateanim == UpAnim::Doble && !model->IsPlayUpeerBodyAnimation())
     {
         attackCollisionFlag = false;
@@ -4754,27 +5149,27 @@ void Player::UpdateAttackState(float elapsedTime)
     if (updateanim == UpAnim::Doble && !InputMove(elapsedTime))
     {
         updateanim = UpAnim::Doble;
-        //ã”¼g
+        //ä¸ŠåŠèº«
         //bornUpStartPoint = "mixamorig:Spine";
-        //// ‰º”¼g
+        //// ä¸‹åŠèº«
         //bornDownerEndPoint = "mixamorig:Spine";
        // model->PlayAnimation(Anim_Attack, false);
     }
 
-        // ”CˆÓ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“Ä¶‹æŠÔ‚Å‚Ì‚İÕ“Ë”»’èˆ—‚ğ‚·‚é
+        // ä»»æ„ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”ŸåŒºé–“ã§ã®ã¿è¡çªåˆ¤å®šå‡¦ç†ã‚’ã™ã‚‹
         float animationTime = model->GetCurrentANimationSeconds();
-        // ãè‚­s‚¯‚Î“G‚ª‰ñ”ğs“®‚ğæ‚Á‚Ä‚­‚ê‚és“®‚ğ—pˆÓo—ˆ‚éB
+        // ä¸Šæ‰‹ãè¡Œã‘ã°æ•µãŒå›é¿è¡Œå‹•ã‚’å–ã£ã¦ãã‚Œã‚‹è¡Œå‹•ã‚’ç”¨æ„å‡ºæ¥ã‚‹ã€‚
         attackCollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
         if (updateanim == UpAnim::Doble)
         {
-            // ”CˆÓ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“Ä¶‹æŠÔ‚Å‚Ì‚İÕ“Ë”»’èˆ—‚ğ‚·‚é
+            // ä»»æ„ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”ŸåŒºé–“ã§ã®ã¿è¡çªåˆ¤å®šå‡¦ç†ã‚’ã™ã‚‹
             float animationTime = model->GetCurrentAnimationSecondsUpeer();
-            // ãè‚­s‚¯‚Î“G‚ª‰ñ”ğs“®‚ğæ‚Á‚Ä‚­‚ê‚és“®‚ğ—pˆÓo—ˆ‚éB
+            // ä¸Šæ‰‹ãè¡Œã‘ã°æ•µãŒå›é¿è¡Œå‹•ã‚’å–ã£ã¦ãã‚Œã‚‹è¡Œå‹•ã‚’ç”¨æ„å‡ºæ¥ã‚‹ã€‚
             attackCollisionFlag = animationTime >= 0.3f && animationTime <= 0.4f;
         }
     if (attackCollisionFlag)
     {
-        // ¶èƒm[ƒh‚ÆƒGƒlƒ~[‚ÌÕ“Ëˆ—
+        // å·¦æ‰‹ãƒãƒ¼ãƒ‰ã¨ã‚¨ãƒãƒŸãƒ¼ã®è¡çªå‡¦ç†
         //CollisionNodeVsEnemies("mixamorig:LeftHand", leftHandRadius);
     }
 
@@ -4787,38 +5182,38 @@ void Player::UpdateProjectile(float elapsedTime)
     DirectX::XMFLOAT3 target;
     projectileManager = ProjectileManager::Instance();
 
-    // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // å…¨ã¦ã®æ•µã¨ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     int projectileCount = projectileManager.GetProjectileCount();
 
     for (int i = 0; i < projectileCount; ++i)
     {
   
         std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
-        float dist = FLT_MAX;// float ‚ÌÅ‘å’lfloat‘S‘Ì
+        float dist = FLT_MAX;// float ã®æœ€å¤§å€¤floatå…¨ä½“
         EnemyManager& enemyManager = EnemyManager::Instance();
         int enemyCount = enemyManager.GetEnemyCount();
-        for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
+        for (int i = 0; i < enemyCount; ++i)//float æœ€å¤§å€¤ãªã„ã«ã„ã‚‹æ•µã«å‘ã‹ã†
         {
-            // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
+            // æ•µã¨ã®è·é›¢åˆ¤å®š  æ•µã®æ•°ã‚‚è¨ˆæ¸¬ å…¨ã¦ã®æ•µã‚’ã¦ã«å…¥ã‚Œã‚‹
             std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
 
 
 
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-            // “G‚ÌˆÊ’u
+            // æ•µã®ä½ç½®
             DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
-            // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
+            // è‡ªåˆ†ã‹ã‚‰æ•µã¾ã§ã®ä½ç½®ã‚’è¨ˆæ¸¬
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
-            // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
+            // ãƒ™ã‚¯ãƒˆãƒ«ã®ãªãŒã•ã‚’ï¼’ä¹—ã™ã‚‹ã€‚âˆšã¤ã‘ã¦ã„ãªã„å¥´
             DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
             float d;
             DirectX::XMStoreFloat(&d, D);
             if (d < dist)
             {
-                // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
+                // è·é›¢ãŒæ•µã®ã‚‚ã®ã‚’å…¥ã‚Œã‚‹å°‘ãªãã™ã‚‹ï¼“ï¼ãªã‚‰ï¼“ï¼ã€ï¼‘ï¼ï¼ãªã‚‰ï¼‘ï¼ï¼å…¥ã‚Œã‚‹
                 dist = d;
-                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
-                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ä½ç½®ã‚’å…¥ã‚Œã‚‹
+                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ä½ç½®ã«èº«é•·åˆ†
                 //if (projectile->GetModel())
                 //    projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
             }
@@ -4833,13 +5228,13 @@ void Player::TransitionDamageState()
 {
     state = State::Damage;
 
-    // ƒ_ƒ[ƒWƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     //model->PlayAnimation(Anim_GetHit1, false);
 }
 
 void Player::UpdateDamageState(float elapsedTime)
 {
-    // ƒ_ƒ[ƒWƒAƒjƒ[ƒVƒ‡ƒ“I‚í‚Á‚½‚ç‘Ò‹@ƒXƒe[ƒg‚Ö
+    // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³çµ‚ã‚ã£ãŸã‚‰å¾…æ©Ÿã‚¹ãƒ†ãƒ¼ãƒˆã¸
     if (!model->IsPlayAnimation())
     {
 
@@ -4852,7 +5247,7 @@ void Player::TransitionDeathState()
 {
     state = State::Death;
 
-    // ƒ_ƒ[ƒWƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     //model->PlayAnimation(Anim_Death, false);
 }
 
@@ -4862,7 +5257,7 @@ void Player::UpdateDeathState(float elapsedTime)
     if (!model->IsPlayAnimation())
     {
 
-       // ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚ç•œŠˆƒXƒe[ƒg‚Ö‘JˆÚ
+       // ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã‚‰å¾©æ´»ã‚¹ãƒ†ãƒ¼ãƒˆã¸é·ç§»
         GamePad& gamePad = Input::Instance().GetGamePad();
         if (gamePad.GetButtonDown() & GamePad::BTN_A)
         {
@@ -4873,16 +5268,16 @@ void Player::UpdateDeathState(float elapsedTime)
     }
 
 }
-// •œŠˆƒXƒe[ƒg‘JˆÚ
+// å¾©æ´»ã‚¹ãƒ†ãƒ¼ãƒˆé·ç§»
 void Player::TransitionReviveState()
 {
     state = State::Revive;
 
-    // ‘Ì—Í‰ñ•œ
+    // ä½“åŠ›å›å¾©
     health = maxHealth;
 
 
-    // ƒ_ƒ[ƒWƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     //model->PlayAnimation(Anim_Revive, false);
 }
 
@@ -4901,62 +5296,62 @@ bool Player::InputMagicframe()
     //if (gamePad.GetButtonDown() & GamePad::BTN_B&& magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
     //if ( !mp->GetMpEmpth())
     //{
-        // mpÁ”ï
+        // mpæ¶ˆè²»
         mp.lock()->ApplyConsumption(magicConsumption);
 
-        // ‘O•ûŒü sin‚ÌŒvZ
+        // å‰æ–¹å‘ sinã®è¨ˆç®—
         DirectX::XMFLOAT3 dir;
 
         dir = GetForwerd(angle);
 
-        //sinf0“x‚O@cosf0‚Í‚P“x
-        //‚X‚Osin1,cos0•Ô‚Á‚Ä‚­‚é‰¡
-        //‚S‚Tsin0.5,cos0.5Î‚ß
-        // 360“x‚ğãè‚­•\Œ»o—ˆ‚éB2d‚Å‚às‚¯‚éB
+        //sinf0åº¦ï¼ã€€cosf0ã¯ï¼‘åº¦
+        //ï¼™ï¼sin1,cos0è¿”ã£ã¦ãã‚‹æ¨ª
+        //ï¼”ï¼•sin0.5,cos0.5æ–œã‚
+        // 360åº¦ã‚’ä¸Šæ‰‹ãè¡¨ç¾å‡ºæ¥ã‚‹ã€‚2dã§ã‚‚è¡Œã‘ã‚‹ã€‚
 
 
-        // ”­ËˆÊ’uiƒvƒŒƒCƒ„[‚Ì˜“–‚½‚è)
+        // ç™ºå°„ä½ç½®ï¼ˆãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è…°å½“ãŸã‚Š)
         DirectX::XMFLOAT3 pos;
         pos.x = position.x;
-        pos.y = position.y + height * 0.5f;// g’·€ˆÊ’u‚Ì‚™
+        pos.y = position.y + height * 0.5f;// èº«é•·Ã·ä½ç½®ã®ï½™
         pos.z = position.z;
-        //ƒ^[ƒQƒbƒgiƒfƒtƒHƒ‹ƒg‚Å‚ÍƒvƒŒƒCƒ„[‚Ì‘O•ûj
+        //ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‰æ–¹ï¼‰
         DirectX::XMFLOAT3 target;
-        // “G‚ª‚¢‚È‚©‚Á‚½‚Ì‚½‚ß‚É@1000æ‚Ü‚Å”ò‚ñ‚Å‚­‚ê
+        // æ•µãŒã„ãªã‹ã£ãŸæ™‚ã®ãŸã‚ã«ã€€1000å…ˆã¾ã§é£›ã‚“ã§ãã‚Œ
         target.x = pos.x + dir.x * 1000.0f;
         target.y = pos.y + dir.y * 1000.0f;
         target.z = pos.z + dir.z * 1000.0f;
 
-        // ˆê”Ô‹ß‚­‚Ì“G‚ğƒ^[ƒQƒbƒg‚É‚·‚é
-        float dist = FLT_MAX;// float ‚ÌÅ‘å’lfloat‘S‘Ì
+        // ä¸€ç•ªè¿‘ãã®æ•µã‚’ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«ã™ã‚‹
+        float dist = FLT_MAX;// float ã®æœ€å¤§å€¤floatå…¨ä½“
         EnemyManager& enemyManager = EnemyManager::Instance();
         int enemyCount = enemyManager.GetEnemyCount();
-        for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
+        for (int i = 0; i < enemyCount; ++i)//float æœ€å¤§å€¤ãªã„ã«ã„ã‚‹æ•µã«å‘ã‹ã†
         {
-            // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
+            // æ•µã¨ã®è·é›¢åˆ¤å®š  æ•µã®æ•°ã‚‚è¨ˆæ¸¬ å…¨ã¦ã®æ•µã‚’ã¦ã«å…¥ã‚Œã‚‹
             std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-            // “G‚ÌˆÊ’u
+            // æ•µã®ä½ç½®
             DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
-            // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
+            // è‡ªåˆ†ã‹ã‚‰æ•µã¾ã§ã®ä½ç½®ã‚’è¨ˆæ¸¬
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
-            // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
+            // ãƒ™ã‚¯ãƒˆãƒ«ã®ãªãŒã•ã‚’ï¼’ä¹—ã™ã‚‹ã€‚âˆšã¤ã‘ã¦ã„ãªã„å¥´
             DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
             float d;
             DirectX::XMStoreFloat(&d, D);
             if (d < dist)
             {
-                // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
+                // è·é›¢ãŒæ•µã®ã‚‚ã®ã‚’å…¥ã‚Œã‚‹å°‘ãªãã™ã‚‹ï¼“ï¼ãªã‚‰ï¼“ï¼ã€ï¼‘ï¼ï¼ãªã‚‰ï¼‘ï¼ï¼å…¥ã‚Œã‚‹
                 dist = d;
-                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
-                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ä½ç½®ã‚’å…¥ã‚Œã‚‹
+                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ä½ç½®ã«èº«é•·åˆ†
             }
 
 
 
         }
 
-        // ’eŠÛ‰Šú‰»
+        // å¼¾ä¸¸åˆæœŸåŒ–
         const char* filename = "Data/Model/Sword/Sword.mdl";
 
         std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -4974,7 +5369,7 @@ bool Player::InputMagicframe()
         int magicNumber = (int)ProjectileHoming::MagicNumber::Fire;
         actor.lock()->GetComponent<ProjectileHoming>()->SetMagicNumber(magicNumber);
         //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
-        // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
+        // ã“ã‚ŒãŒï¼’Dã‹ã®ç¢ºèª
         bool check2d = false;
         actor.lock()->SetCheck2d(check2d);
 
@@ -4983,13 +5378,13 @@ bool Player::InputMagicframe()
         //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
         std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
 
-        // ”ò‚ÔŠÔ
+        // é£›ã¶æ™‚é–“
         float   lifeTimer = 3.0f;
-        // ”­Ë
+        // ç™ºå°„
         projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         projectile.lock()->GetComponent<ProjectileHoming>()->SetTarget(target);
 
-        // UŒ‚‰ğœ
+        // æ”»æ’ƒè§£é™¤
         //magicAction = false;
         //selectMagicCheck = (int)CommandMagic::Normal;
      
@@ -5008,61 +5403,61 @@ bool Player::InputMagicIce()
     //if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
         //if ( !mp->GetMpEmpth())
         //{
-        // mpÁ”ï
+        // mpæ¶ˆè²»
         mp.lock()->ApplyConsumption(magicConsumption);
-        // ‘O•ûŒü sin‚ÌŒvZ
+        // å‰æ–¹å‘ sinã®è¨ˆç®—
         DirectX::XMFLOAT3 dir;
 
         dir = GetForwerd(angle);
 
-        //sinf0“x‚O@cosf0‚Í‚P“x
-        //‚X‚Osin1,cos0•Ô‚Á‚Ä‚­‚é‰¡
-        //‚S‚Tsin0.5,cos0.5Î‚ß
-        // 360“x‚ğãè‚­•\Œ»o—ˆ‚éB2d‚Å‚às‚¯‚éB
+        //sinf0åº¦ï¼ã€€cosf0ã¯ï¼‘åº¦
+        //ï¼™ï¼sin1,cos0è¿”ã£ã¦ãã‚‹æ¨ª
+        //ï¼”ï¼•sin0.5,cos0.5æ–œã‚
+        // 360åº¦ã‚’ä¸Šæ‰‹ãè¡¨ç¾å‡ºæ¥ã‚‹ã€‚2dã§ã‚‚è¡Œã‘ã‚‹ã€‚
 
 
-        // ”­ËˆÊ’uiƒvƒŒƒCƒ„[‚Ì˜“–‚½‚è)
+        // ç™ºå°„ä½ç½®ï¼ˆãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è…°å½“ãŸã‚Š)
         DirectX::XMFLOAT3 pos;
         pos.x = position.x;
-        pos.y = position.y + height * 0.5f;// g’·€ˆÊ’u‚Ì‚™
+        pos.y = position.y + height * 0.5f;// èº«é•·Ã·ä½ç½®ã®ï½™
         pos.z = position.z;
-        //ƒ^[ƒQƒbƒgiƒfƒtƒHƒ‹ƒg‚Å‚ÍƒvƒŒƒCƒ„[‚Ì‘O•ûj
+        //ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‰æ–¹ï¼‰
         DirectX::XMFLOAT3 target;
-        // “G‚ª‚¢‚È‚©‚Á‚½‚Ì‚½‚ß‚É@1000æ‚Ü‚Å”ò‚ñ‚Å‚­‚ê
+        // æ•µãŒã„ãªã‹ã£ãŸæ™‚ã®ãŸã‚ã«ã€€1000å…ˆã¾ã§é£›ã‚“ã§ãã‚Œ
         target.x = pos.x + dir.x * 1000.0f;
         target.y = pos.y + dir.y * 1000.0f;
         target.z = pos.z + dir.z * 1000.0f;
 
-        // ˆê”Ô‹ß‚­‚Ì“G‚ğƒ^[ƒQƒbƒg‚É‚·‚é
-        float dist = FLT_MAX;// float ‚ÌÅ‘å’lfloat‘S‘Ì
+        // ä¸€ç•ªè¿‘ãã®æ•µã‚’ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«ã™ã‚‹
+        float dist = FLT_MAX;// float ã®æœ€å¤§å€¤floatå…¨ä½“
         EnemyManager& enemyManager = EnemyManager::Instance();
         int enemyCount = enemyManager.GetEnemyCount();
-        for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
+        for (int i = 0; i < enemyCount; ++i)//float æœ€å¤§å€¤ãªã„ã«ã„ã‚‹æ•µã«å‘ã‹ã†
         {
-            // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
+            // æ•µã¨ã®è·é›¢åˆ¤å®š  æ•µã®æ•°ã‚‚è¨ˆæ¸¬ å…¨ã¦ã®æ•µã‚’ã¦ã«å…¥ã‚Œã‚‹
             std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-            // “G‚ÌˆÊ’u
+            // æ•µã®ä½ç½®
             DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
-            // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
+            // è‡ªåˆ†ã‹ã‚‰æ•µã¾ã§ã®ä½ç½®ã‚’è¨ˆæ¸¬
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
-            // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
+            // ãƒ™ã‚¯ãƒˆãƒ«ã®ãªãŒã•ã‚’ï¼’ä¹—ã™ã‚‹ã€‚âˆšã¤ã‘ã¦ã„ãªã„å¥´
             DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
             float d;
             DirectX::XMStoreFloat(&d, D);
             if (d < dist)
             {
-                // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
+                // è·é›¢ãŒæ•µã®ã‚‚ã®ã‚’å…¥ã‚Œã‚‹å°‘ãªãã™ã‚‹ï¼“ï¼ãªã‚‰ï¼“ï¼ã€ï¼‘ï¼ï¼ãªã‚‰ï¼‘ï¼ï¼å…¥ã‚Œã‚‹
                 dist = d;
-                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
-                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ä½ç½®ã‚’å…¥ã‚Œã‚‹
+                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ä½ç½®ã«èº«é•·åˆ†
             }
 
 
 
         }
 
-        // ’eŠÛ‰Šú‰»
+        // å¼¾ä¸¸åˆæœŸåŒ–
         const char* filename = "Data/Model/Sword/Sword.mdl";
 
         std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -5082,7 +5477,7 @@ bool Player::InputMagicIce()
         int magicNumber = (int)ProjectileHoming::MagicNumber::Ice;
         actor.lock()->GetComponent<ProjectileHoming>()->SetMagicNumber(magicNumber);
 
-        // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
+        // ã“ã‚ŒãŒï¼’Dã‹ã®ç¢ºèª
         bool check2d = false;
         actor.lock()->SetCheck2d(check2d);
 
@@ -5091,13 +5486,13 @@ bool Player::InputMagicIce()
         //ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
         std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
         
-        // ”ò‚ÔŠÔ
+        // é£›ã¶æ™‚é–“
         float   lifeTimer = 4.0f;
-        // ”­Ë
+        // ç™ºå°„
         projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         projectile.lock()->GetComponent<ProjectileHoming>()->SetTarget(target);
 
-        // UŒ‚‰ğœ
+        // æ”»æ’ƒè§£é™¤
         //magicAction = false;
         //selectMagicCheck = (int)CommandMagic::Normal;
 
@@ -5116,61 +5511,61 @@ bool Player::InputMagicLightning()
    // if (gamePad.GetButtonDown() & GamePad::BTN_B && magicAction && !gamePad.GetButtonDownCountinue() && !mp->GetMpEmpth())
     //if (!mp->GetMpEmpth())
     //{
-        // mpÁ”ï
+        // mpæ¶ˆè²»
         mp.lock()->ApplyConsumption(magicConsumption);
-        // ‘O•ûŒü sin‚ÌŒvZ
+        // å‰æ–¹å‘ sinã®è¨ˆç®—
         DirectX::XMFLOAT3 dir;
 
         dir = GetForwerd(angle);
 
-        //sinf0“x‚O@cosf0‚Í‚P“x
-        //‚X‚Osin1,cos0•Ô‚Á‚Ä‚­‚é‰¡
-        //‚S‚Tsin0.5,cos0.5Î‚ß
-        // 360“x‚ğãè‚­•\Œ»o—ˆ‚éB2d‚Å‚às‚¯‚éB
+        //sinf0åº¦ï¼ã€€cosf0ã¯ï¼‘åº¦
+        //ï¼™ï¼sin1,cos0è¿”ã£ã¦ãã‚‹æ¨ª
+        //ï¼”ï¼•sin0.5,cos0.5æ–œã‚
+        // 360åº¦ã‚’ä¸Šæ‰‹ãè¡¨ç¾å‡ºæ¥ã‚‹ã€‚2dã§ã‚‚è¡Œã‘ã‚‹ã€‚
 
 
-        // ”­ËˆÊ’uiƒvƒŒƒCƒ„[‚Ì˜“–‚½‚è)
+        // ç™ºå°„ä½ç½®ï¼ˆãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è…°å½“ãŸã‚Š)
         DirectX::XMFLOAT3 pos;
         pos.x = position.x;
-        pos.y = position.y + height * 0.5f;// g’·€ˆÊ’u‚Ì‚™
+        pos.y = position.y + height * 0.5f;// èº«é•·Ã·ä½ç½®ã®ï½™
         pos.z = position.z;
-        //ƒ^[ƒQƒbƒgiƒfƒtƒHƒ‹ƒg‚Å‚ÍƒvƒŒƒCƒ„[‚Ì‘O•ûj
+        //ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‰æ–¹ï¼‰
         DirectX::XMFLOAT3 target;
-        // “G‚ª‚¢‚È‚©‚Á‚½‚Ì‚½‚ß‚É@1000æ‚Ü‚Å”ò‚ñ‚Å‚­‚ê
+        // æ•µãŒã„ãªã‹ã£ãŸæ™‚ã®ãŸã‚ã«ã€€1000å…ˆã¾ã§é£›ã‚“ã§ãã‚Œ
         target.x = pos.x + dir.x * 1000.0f;
         target.y = pos.y + dir.y * 1000.0f;
         target.z = pos.z + dir.z * 1000.0f;
 
-        // ˆê”Ô‹ß‚­‚Ì“G‚ğƒ^[ƒQƒbƒg‚É‚·‚é
-        float dist = FLT_MAX;// float ‚ÌÅ‘å’lfloat‘S‘Ì
+        // ä¸€ç•ªè¿‘ãã®æ•µã‚’ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«ã™ã‚‹
+        float dist = FLT_MAX;// float ã®æœ€å¤§å€¤floatå…¨ä½“
         EnemyManager& enemyManager = EnemyManager::Instance();
         int enemyCount = enemyManager.GetEnemyCount();
-        for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
+        for (int i = 0; i < enemyCount; ++i)//float æœ€å¤§å€¤ãªã„ã«ã„ã‚‹æ•µã«å‘ã‹ã†
         {
-            // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
+            // æ•µã¨ã®è·é›¢åˆ¤å®š  æ•µã®æ•°ã‚‚è¨ˆæ¸¬ å…¨ã¦ã®æ•µã‚’ã¦ã«å…¥ã‚Œã‚‹
             std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
             DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-            // “G‚ÌˆÊ’u
+            // æ•µã®ä½ç½®
             DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
-            // ©•ª‚©‚ç“G‚Ü‚Å‚ÌˆÊ’u‚ğŒv‘ª
+            // è‡ªåˆ†ã‹ã‚‰æ•µã¾ã§ã®ä½ç½®ã‚’è¨ˆæ¸¬
             DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
-            // ƒxƒNƒgƒ‹‚Ì‚È‚ª‚³‚ğ‚Qæ‚·‚éBã‚Â‚¯‚Ä‚¢‚È‚¢“z
+            // ãƒ™ã‚¯ãƒˆãƒ«ã®ãªãŒã•ã‚’ï¼’ä¹—ã™ã‚‹ã€‚âˆšã¤ã‘ã¦ã„ãªã„å¥´
             DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
             float d;
             DirectX::XMStoreFloat(&d, D);
             if (d < dist)
             {
-                // ‹——£‚ª“G‚Ì‚à‚Ì‚ğ“ü‚ê‚é­‚È‚­‚·‚é‚R‚O‚È‚ç‚R‚OA‚P‚O‚O‚È‚ç‚P‚O‚O“ü‚ê‚é
+                // è·é›¢ãŒæ•µã®ã‚‚ã®ã‚’å…¥ã‚Œã‚‹å°‘ãªãã™ã‚‹ï¼“ï¼ãªã‚‰ï¼“ï¼ã€ï¼‘ï¼ï¼ãªã‚‰ï¼‘ï¼ï¼å…¥ã‚Œã‚‹
                 dist = d;
-                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
-                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ˆÊ’u‚Ég’·•ª
+                target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ä½ç½®ã‚’å…¥ã‚Œã‚‹
+                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// ä½ç½®ã«èº«é•·åˆ†
             }
 
 
 
         }
 
-        // ’eŠÛ‰Šú‰»
+        // å¼¾ä¸¸åˆæœŸåŒ–
         const char* filename = "Data/Model/Sword/Sword.mdl";
 
         std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -5188,7 +5583,7 @@ bool Player::InputMagicLightning()
         //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
 
 
-        // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
+        // ã“ã‚ŒãŒï¼’Dã‹ã®ç¢ºèª
         bool check2d = false;
         actor.lock()->SetCheck2d(check2d);
 
@@ -5199,11 +5594,11 @@ bool Player::InputMagicLightning()
 
         float   lifeTimer = 0.5f;
 
-        // ”­Ë
+        // ç™ºå°„
         projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         projectile.lock()->GetComponent<ProjectileSunder>()->SetTarget(target);
 
-        // UŒ‚‰ğœ
+        // æ”»æ’ƒè§£é™¤
         //magicAction = false;
         //selectMagicCheck = (int)CommandMagic::Normal;
 
@@ -5215,11 +5610,11 @@ bool Player::InputMagicLightning()
     //}
     //return false;
 }
-// ‰ñ•œ–‚–@ŠJn
+// å›å¾©é­”æ³•é–‹å§‹
 bool Player::InputMagicHealing()
 {
 
-    // mpÁ”ï
+    // mpæ¶ˆè²»
     mp.lock()->ApplyConsumption(mp.lock()->GetMaxMagic());
     
     hp.lock()->AddHealth(healing);
@@ -5230,9 +5625,9 @@ bool Player::InputMagicHealing()
 
 void Player::InputSpecialMagicframe()
 {
-    // mpÁ”ï
+    // mpæ¶ˆè²»
     //mp->ApplyConsumption(magicConsumption);
-    // ‘O•ûŒü sin‚ÌŒvZ
+    // å‰æ–¹å‘ sinã®è¨ˆç®—
     DirectX::XMFLOAT3 dir;
 
     dir = GetForwerd(angle);
@@ -5240,22 +5635,22 @@ void Player::InputSpecialMagicframe()
 
     DirectX::XMFLOAT3 target;
 
-    // ˆê”Ô‹ß‚­‚Ì“G‚ğƒ^[ƒQƒbƒg‚É‚·‚é
-    float dist = FLT_MAX;// float ‚ÌÅ‘å’lfloat‘S‘Ì
+    // ä¸€ç•ªè¿‘ãã®æ•µã‚’ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«ã™ã‚‹
+    float dist = FLT_MAX;// float ã®æœ€å¤§å€¤floatå…¨ä½“
     EnemyManager& enemyManager = EnemyManager::Instance();
     int enemyCount = enemyManager.GetEnemyCount();
-    for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
+    for (int i = 0; i < enemyCount; ++i)//float æœ€å¤§å€¤ãªã„ã«ã„ã‚‹æ•µã«å‘ã‹ã†
     {
-        // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
+        // æ•µã¨ã®è·é›¢åˆ¤å®š  æ•µã®æ•°ã‚‚è¨ˆæ¸¬ å…¨ã¦ã®æ•µã‚’ã¦ã«å…¥ã‚Œã‚‹
         std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
 
 
-        target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ˆÊ’u‚ğ“ü‚ê‚é
+        target = enemy.lock()->GetComponent<Transform>()->GetPosition();// ä½ç½®ã‚’å…¥ã‚Œã‚‹
 
 
     }
 
-    // ’eŠÛ‰Šú‰»
+    // å¼¾ä¸¸åˆæœŸåŒ–
     const char* filename = "Data/Model/Sword/Sword.mdl";
 
     std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -5273,7 +5668,7 @@ void Player::InputSpecialMagicframe()
     //actor->GetComponent<ProjectileHoming>()->EffectProgressPlay();
 
 
-    // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
+    // ã“ã‚ŒãŒï¼’Dã‹ã®ç¢ºèª
     bool check2d = false;
     actor.lock()->SetCheck2d(check2d);
 
@@ -5284,22 +5679,22 @@ void Player::InputSpecialMagicframe()
 
     float   lifeTimer = 0.5f;
 
-    // ”­Ë
+    // ç™ºå°„
     projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, target, lifeTimer);
     projectile.lock()->GetComponent<ProjectileTornade>()->SetTarget(target);
 
-    //// UŒ‚‰ğœ
+    //// æ”»æ’ƒè§£é™¤
     //magicAction = false;
     //selectMagicCheck = (int)CommandMagic::Normal;
 }
 
 void Player::AttackCheckUI()
 {
-    // UIƒJ[ƒ\ƒ‹
+    // UIã‚«ãƒ¼ã‚½ãƒ«
     //std::shared_ptr<Ui> uiSight = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight)->GetComponent<Ui>();
     
     int uiCount = UiManager::Instance().GetUiesCount();
-    // ui–³‚©‚Á‚½‚ç
+    // uiç„¡ã‹ã£ãŸã‚‰
     if (uiCount <= uiCountMax || !rockCheck || specialRockOff) return;
 
     EnemyManager& enemyManager = EnemyManager::Instance();
@@ -5312,7 +5707,7 @@ void Player::AttackCheckUI()
         for (int i = 0; i < enemyCount; ++i)
         {
             std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
-            ////// Õ“Ëˆ—
+            ////// è¡çªå‡¦ç†
             //DirectX::XMFLOAT3 outPositon;
 
             //DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
@@ -5323,10 +5718,10 @@ void Player::AttackCheckUI()
             float enemyRudius = enemy.lock()->GetComponent<Transform>()->GetRadius() + 1;
             float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
 
-            //// Õ“Ëˆ—
+            //// è¡çªå‡¦ç†
             DirectX::XMFLOAT3 outPositon;
 
-            // ‰~’Œ‚Æ‰~
+            // å††æŸ±ã¨å††
             if (Collision::IntersectSphereVsCylinder(
                 position,
                 radius,
@@ -5459,10 +5854,10 @@ void Player::AttackCheckUI()
 
 //void Player::UpdateTransform()
 //{
-//    // ˆÊ’uî•ñ
+//    // ä½ç½®æƒ…å ±
 //    position = GetActor()->GetPosition();
 //
-//    // Œü‚«î•ñ
+//    // å‘ãæƒ…å ±
 //    inFloat3({
 //        GetActor()->GetRotation().x,
 //        GetActor()->GetRotation().y,
@@ -5486,21 +5881,21 @@ void Player::inFloat3(DirectX::XMFLOAT3 value, DirectX::XMFLOAT3 &inValue)
 DirectX::XMFLOAT3 Player::GetForwerd(DirectX::XMFLOAT3 angle)
 {
     DirectX::XMFLOAT3 dir;
-    dir.x = sinf(angle.y);// OŠp‚ğÎ‚ß‚É‚µ‚ÄˆÊ’u‚ğ•Ï‚¦‚½
+    dir.x = sinf(angle.y);// ä¸‰è§’ã‚’æ–œã‚ã«ã—ã¦ä½ç½®ã‚’å¤‰ãˆãŸ
     dir.y = 0;
     dir.z = cosf(angle.y);
 
     return dir;
 }
 
-// ©•ª‚Ì“–‚½‚è”»’è—L–³
+// è‡ªåˆ†ã®å½“ãŸã‚Šåˆ¤å®šæœ‰ç„¡
 void Player::DmageInvalidJudment(bool invalidJudgment)
 {
     EnemyManager& enemyManager = EnemyManager::Instance();
     int enemyCount = enemyManager.GetEnemyCount();
-    for (int i = 0; i < enemyCount; ++i)//float Å‘å’l‚È‚¢‚É‚¢‚é“G‚ÉŒü‚©‚¤
+    for (int i = 0; i < enemyCount; ++i)//float æœ€å¤§å€¤ãªã„ã«ã„ã‚‹æ•µã«å‘ã‹ã†
     {
-        // “G‚Æ‚Ì‹——£”»’è  “G‚Ì”‚àŒv‘ª ‘S‚Ä‚Ì“G‚ğ‚Ä‚É“ü‚ê‚é
+        // æ•µã¨ã®è·é›¢åˆ¤å®š  æ•µã®æ•°ã‚‚è¨ˆæ¸¬ å…¨ã¦ã®æ•µã‚’ã¦ã«å…¥ã‚Œã‚‹
         std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
 
         enemy.lock()->GetComponent<EnemyBoss>()->SetInvalidJudgment(invalidJudgment);
@@ -5510,11 +5905,11 @@ void Player::DmageInvalidJudment(bool invalidJudgment)
 void Player::UiControlle(float elapsedTime)
 {
     int uiCount = UiManager::Instance().GetUiesCount();
-    // ui–³‚©‚Á‚½‚ç
+    // uiç„¡ã‹ã£ãŸã‚‰
     if (uiCount <= uiCountMax) return;
 
     float gaugeWidth = hp.lock()->GetMaxHealth() * hp.lock()->GetHealth() * 0.1f;
-    // hpƒQ[ƒW
+    // hpã‚²ãƒ¼ã‚¸
     std::weak_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
     std::weak_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp.lock()->GetScale().y };
@@ -5523,13 +5918,13 @@ void Player::UiControlle(float elapsedTime)
     uiHp.lock()->SetScale(scale);
 
     gaugeWidth = mp.lock()->GetMaxMagic() * mp.lock()->GetMagic() * 0.1f;
-    // mpƒQ[ƒW
+    // mpã‚²ãƒ¼ã‚¸
     std::weak_ptr<TransForm2D> uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();
     std::weak_ptr<Ui> uiColor = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<Ui>();
     scale = { gaugeWidth, uiMp.lock()->GetScale().y };
 
     uiMp.lock()->SetScale(scale);
-    // mpF
+    // mpè‰²
    mpUiColor = { 1,1,1,1 };
     if (mp.lock()->GetMpEmpth())
     {
@@ -5539,7 +5934,7 @@ void Player::UiControlle(float elapsedTime)
 
 
 
-    // —h‚ê
+    // æºã‚Œ
     if (shakeMode)
     {
         
@@ -5550,7 +5945,7 @@ void Player::UiControlle(float elapsedTime)
         
 
     }
-    //@‰Šú‰»
+    //ã€€åˆæœŸåŒ–
     if (uiHp.lock()->GetShakeEnd())
     {
         float positionStandardBar = 593;
@@ -5575,7 +5970,7 @@ void Player::SpecialApplyDamageInRadius()
     EnemyManager& enemyManager = EnemyManager::Instance();
     
     int enemyCount = enemyManager.GetEnemyCount();
-    // w’è‚Ìƒm[ƒh‚Æ‘S‚Ä‚Ì“G‚ğ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // æŒ‡å®šã®ãƒãƒ¼ãƒ‰ã¨å…¨ã¦ã®æ•µã‚’ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     for (int i = 0; i < enemyCount; ++i)
     {
         std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
@@ -5591,17 +5986,17 @@ void Player::SpecialApplyDamageInRadius()
             
             if (!projectile.lock()->GetComponent<ProjectileTornade>()) return;
             
-            // –‚–@ˆÊ’u
+            // é­”æ³•ä½ç½®
             DirectX::XMFLOAT3 magicPosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
 
             float magicRadius = projectile.lock()->GetComponent<Transform>()->GetRadius();
 
             float magicHeight = projectile.lock()->GetComponent<Transform>()->GetHeight();
 
-            //// Õ“Ëˆ—
+            //// è¡çªå‡¦ç†
             DirectX::XMFLOAT3 outPositon;
-            // ‰º”¼g
-            // ‰~’Œ‚Æ‰~
+            // ä¸‹åŠèº«
+            // å††æŸ±ã¨å††
             if (Collision::IntersectCylinderVsCylinder(
                 magicPosition,
                 magicRadius,
@@ -5613,14 +6008,14 @@ void Player::SpecialApplyDamageInRadius()
 
             {
 
-                // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+                // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
                 //enemy->ApplyDamage(1);
-            // ƒ_ƒ[ƒW‚ª’Ê‚Á‚½‚çÁ‚¦‚éBTRUE‚É‚È‚é‚©‚ç
+            // ãƒ€ãƒ¡ãƒ¼ã‚¸ãŒé€šã£ãŸã‚‰æ¶ˆãˆã‚‹ã€‚TRUEã«ãªã‚‹ã‹ã‚‰
                 if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageSpecial, 0.5f))
                 {
 
 
-                    // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+                    // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
                     {
 
 
@@ -5630,7 +6025,7 @@ void Player::SpecialApplyDamageInRadius()
 
 
                     }
-                    // “–‚½‚Á‚½‚Ì•›Ÿ“IŒø‰Ê
+                    // å½“ãŸã£ãŸæ™‚ã®å‰¯æ¬¡çš„åŠ¹æœ
                     {
                         //specialAttackCharge += 0.1f;
                     }
@@ -5656,6 +6051,116 @@ bool Player::Ground()
     
 }
 
+void Player::AreAttackDecreaseAmount()
+{
+    // ç©ºä¸­è¡Œå‹•åˆ¶é™
+    --areAttackState;
+}
+
+// çµŒéæ™‚é–“
+bool Player::UpdateElapsedTime(float timeMax, float elapsedTime)
+{
+    if (timeElapsed >= timeMax)
+    {
+        timeElapsed = 0.0f;
+        return true;
+    }
+    timeElapsed += elapsedTime;
+    return false;
+}
+//
+//void Player::PintchMode()
+//{
+//
+//    // ãƒ”ãƒ³ãƒã®æ™‚ã«ãƒ’ãƒ³ãƒˆ
+//    if (InputShortCutkeyMagic() &&
+//        isPintch)
+//    {
+//
+//       
+//
+//        std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+//          (int)UiManager::UiCount::PlayerCommandShortCutKeule)->GetComponent<TransForm2D>();
+//
+//        uiIdAttackCheckPos.lock()->Shake();
+//
+//        //Graphics& graphics = Graphics::Instance();
+//        //Camera& camera = Camera::Instance();
+//
+//        //// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆ ç”»é¢ã®ã‚µã‚¤ã‚ºç­‰
+//        //// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã¨ã¯2Dã®ç”»é¢ã«æç”»ç¯„å›²ã®æŒ‡å®š(ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°æŒ‡å®šã‚‚å‡ºæ¥ã‚‹)ä½ç½®ã‚’æŒ‡å®š
+//        //D3D11_VIEWPORT viewport;
+//        //UINT numViewports = 1;
+//        //// ãƒ©ã‚¹ã‚¿ãƒ©ã‚¤ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆã«ãƒã‚¤ãƒ³ãƒ‰ã•ã‚Œã¦ã„ã‚‹ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆé…åˆ—ã‚’å–å¾—
+//        //dc->RSGetViewports(&numViewports, &viewport);
+//
+//
+//
+//
+//        //// å¤‰æ›è¡Œåˆ—
+//        //DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&view);
+//        //DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
+//        //// ãƒ­ãƒ¼ã‚«ãƒ«ã‹ã‚‰ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¡Œãã¨ãã«ã„ã‚‹å¥´ç›¸æ‰‹ã®ãƒã‚¸ã‚·ãƒ§ãƒ³ã‚’æ¸¡ã™ã€‚
+//        //DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
+//
+//        //std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+//        //    (int)UiManager::UiCount::Push)->GetComponent<TransForm2D>();
+//
+//        //// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ä½ç½®
+//        //DirectX::XMVECTOR screenPositionV = DirectX::XMLoadFloat2(&uiIdAttackCheckPos.lock()->GetPosition());
+//
+//
+//        //// ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
+//        //DirectX::XMVECTOR WorldPositionV = DirectX::XMVector3Unproject(
+//        //    screenPositionV,
+//        //    viewport.TopLeftX,
+//        //    viewport.TopLeftY,
+//        //    viewport.Width,
+//        //    viewport.Height,
+//        //    viewport.MinDepth,
+//        //    viewport.MaxDepth,
+//        //    View,
+//        //    Projection,
+//        //    World);
+//
+//
+//
+//        //DirectX::XMFLOAT3 pos;
+//
+//        //DirectX::XMStoreFloat3(&pos, WorldPositionV);
+//
+//        //effectFocus2D->Play(pos);
+//    }
+//    if (magicAction &&
+//        isPintch)
+//    {
+//        std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+//            (int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<TransForm2D>();
+//
+//        uiIdAttackCheckPos.lock()->Shake();
+//    }
+//
+//
+//    if (mp.lock()->GetMpEmpth())
+//    {
+//        DirectX::XMFLOAT2 pos = { 179, 640 };
+//
+//        std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
+//            (int)UiManager::UiCount::PlayerCommandShortCutKeule)->GetComponent<TransForm2D>();
+//
+//        uiIdAttackCheckPos.lock()->SetPosition(pos);
+//
+//        uiIdAttackCheckPos = UiManager::Instance().GetUies(
+//            (int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<TransForm2D>();
+//
+//        pos = { 200, 525 };
+//
+//        uiIdAttackCheckPos.lock()->SetPosition(pos);
+//
+//
+//    }
+//
+//}
 
 
 
@@ -5663,14 +6168,15 @@ bool Player::Ground()
 
 
 
-//XVˆ—
+
+//æ›´æ–°å‡¦ç†
 void PlayerManager::DeleteUpdate()
 {
 
-    //”jŠüˆ—
+    //ç ´æ£„å‡¦ç†
     for (std::shared_ptr<Actor> player : removes)
     {
-        //std::vector—v‘f‚ğíœ‚·‚éê‡‚ÍƒCƒeƒŒ[ƒ^‚Åíœ‚·‚é
+        //std::vectorè¦ç´ ã‚’å‰Šé™¤ã™ã‚‹å ´åˆã¯ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã§å‰Šé™¤ã™ã‚‹
         std::vector<std::shared_ptr<Actor>>::iterator it = std::find(players.begin(), players.end(), player);
 
         if (it != players.end())
@@ -5678,11 +6184,11 @@ void PlayerManager::DeleteUpdate()
             players.erase(it);
         }
 
-        //íœ
+        //å‰Šé™¤
         //delete player;
         
     }
-    //”jŠüƒŠƒXƒg‚ğƒNƒŠƒA
+    //ç ´æ£„ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
     removes.clear();
 }
 
@@ -5695,7 +6201,7 @@ void PlayerManager::Register(std::shared_ptr<Actor> actor)
 
 void PlayerManager::Remove(std::shared_ptr<Actor> player)
 {
-    // íœ“o˜^
+    // å‰Šé™¤ç™»éŒ²
     removes.insert(player);
 }
 
@@ -5703,7 +6209,7 @@ void PlayerManager::Clear()
 {
     for (std::shared_ptr<Actor>& actor : players)// 
     {
-        // À‘Ì‚ğÁ‚µ‚½ŠÇ—‚µ‚Ä‚¢‚é”‚Í‚»‚Ì‚Ü‚Ü
+        // å®Ÿä½“ã‚’æ¶ˆã—ãŸç®¡ç†ã—ã¦ã„ã‚‹æ•°ã¯ãã®ã¾ã¾
        // delete projectile;
         //Remove(actor);
         actor.reset();

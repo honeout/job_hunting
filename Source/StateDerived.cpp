@@ -1036,6 +1036,7 @@ void AttackState::Execute(float elapsedTime)
 			animationTime - FLT_EPSILON <= 1.6f + FLT_EPSILON && !chargeInitilize)
 	{
 		enemyid.lock()->InputJampSe();
+		enemyid.lock()->InputChargeSe();
 		charge->Play(bossEyePosition);
 
 		chargeCompleate->Play(bossEyePosition);
@@ -2385,6 +2386,9 @@ void PlayerQuickJabState::Enter()
 	
 	if (!moveid.lock()->GetOnLadius())
 	{
+		// 空中攻撃で行動階数減少
+		playerid.lock()->AreAttackDecreaseAmount();
+
 		// アニメーションルール
 		Model::ModelAnim modelAnim;
 		Model::ModelAnim modelAnimUpperBody;
@@ -2491,6 +2495,9 @@ void PlayerQuickJabState::Enter()
 	deleteCheck = true;
 
 	InitializationCheck = true;
+
+
+
 
 }
 
@@ -5056,11 +5063,11 @@ void PlayerDeathState::Enter()
 
 	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 
+	//colorGradingData.saturation = 0.0f;
+
+	//postprocessingRenderer.SetColorGradingMaxData(colorGradingData);
+
 	colorGradingData.saturation = 0.0f;
-
-	postprocessingRenderer.SetColorGradingMaxData(colorGradingData);
-
-	colorGradingData.saturation = -0.8f;
 
 	postprocessingRenderer.SetColorGradingMinData(colorGradingData);
 
@@ -5373,6 +5380,8 @@ void PlayerTitleIdleState::Enter()
 	// アニメーションルール
 	playerid.lock()->SetUpdateAnim(Player::UpAnim::Normal);
 
+
+
 }
 
 void PlayerTitleIdleState::Execute(float elapsedTime)
@@ -5380,7 +5389,8 @@ void PlayerTitleIdleState::Execute(float elapsedTime)
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 
 	//// ロックオン処理
-	playerid.lock()->UpdateCameraState(elapsedTime);
+    playerid.lock()->UpdateCameraState(elapsedTime);
+
 
 	// ヒット
 	if (playerid.lock()->InputAttack())
@@ -5473,6 +5483,10 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+
+	//// ロックオン処理
+	playerid.lock()->UpdateCameraState(elapsedTime);
+
 	std::weak_ptr<HP> enemyHpId;
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 		float animationTime = moveid.lock()->GetOnLadius() ?

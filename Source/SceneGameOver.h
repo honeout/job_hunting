@@ -46,6 +46,9 @@ public:
 	void SelectScene();
 
 	void StartBgm();
+
+	// カメラの方向を変える
+	void RotateCameraToDirection();
 private:
 	enum class Select
 	{
@@ -150,7 +153,21 @@ private:
 
 	int selectPush = 0;
 
+	DirectX::XMFLOAT2 reStartPos = { 543, 477 };
+	DirectX::XMFLOAT2 titlePos = { 543, 577 };
 
+	DirectX::XMFLOAT2 buttonPos = { 0,0 };
 
+	// ボタン用位置の大きさ分
+	float buttonPosYAdd = 20.0f;
+
+	// ボタンを押すと描画する
+	bool isDrawButton = true;
+
+	// 選択位置
+	DirectX::XMFLOAT2 PushPos = { 0.0f,0.0f };
+
+	// ボタン確認
+	bool isPush = false;
 
 };

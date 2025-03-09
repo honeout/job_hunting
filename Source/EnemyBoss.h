@@ -67,6 +67,9 @@ public:
     // SEダメージ音
     void InputDamageSe();
 
+    // SEチャージオン
+    void InputChargeSe();
+
     // 当たり判定衝撃波
     void CollisionImpactVsPlayer();
 
@@ -312,6 +315,9 @@ public:
     // 覚醒有無
     bool GetIsEnemyAwakened() { return isEnemyAwakened; }
 
+    // シェイク時間 パワー
+    void StartDamageShake();
+
 private:
     // モデル情報を確保
     Model* model = nullptr;
@@ -474,6 +480,14 @@ private:
     int applyDamageStamp = 6;
     int applyDamageImpact = 5;
     int applyDamageDush = 7;
+
+
+    // シェイクダメージ演出
+    float shakePower = 0.6f;
+    float shakeTimer = 0.2f;
+
+    // シェイク用
+    RadialBlurData damageDistortion;
 };
 
 // エネミーマネージャー

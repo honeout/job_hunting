@@ -474,6 +474,21 @@ void EnemyBoss::InputDamageSe()
     Se.Play(audioParam);
 }
 
+void EnemyBoss::InputChargeSe()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/É`ÉÉÅ[ÉWâπìG.wav";
+
+    audioParam.loop = false;
+
+    audioParam.volume = 3.0f;
+
+    Se.Play(audioParam);
+}
+
 // ë´ì•Ç›(è’åÇîg)ÇÃìñÇΩÇËîªíË
 void EnemyBoss::CollisionImpactVsPlayer()
 {
@@ -572,6 +587,10 @@ void EnemyBoss::CollisionImpactVsPlayer()
                         // íeä€îjä¸
                         //projectile->GetComponent<ProjectileImpact>()->Destoroy();
                         
+
+                        // êUìÆ
+                        StartDamageShake();
+
                     }
 
                 }
@@ -920,6 +939,9 @@ bool EnemyBoss::CollisionPlayerWithRushEnemy()
                 if (player.lock()->GetComponent<HP>()->ApplyDamage(3, 1.0f))
                 {
 
+                    // êUìÆ
+                    StartDamageShake();
+
                     DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
                     DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
                     DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
@@ -1212,6 +1234,9 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
                     //hitEffect->Play(e);
 
                     //moveAttackEffect->Play(playerPosition);
+
+                    // êUìÆ
+                    StartDamageShake();
 
                 }
 
@@ -1905,6 +1930,23 @@ void EnemyBoss::UpdateDeathState(float elapsedTime)
 void EnemyBoss::Destroy()
 {
     EnemyManager::Instance().Remove(GetActor());
+
+}
+
+void EnemyBoss::StartDamageShake()
+{
+    // ÉVÉFÉCÉNéûä‘ ÉpÉèÅ[
+    MessageData::CAMERASHAKEDATA p;
+    p.shakePower = shakePower;
+    p.shakeTimer = shakeTimer;
+
+    Messenger::Instance().SendData(MessageData::CAMERASHAKE, &p);
+
+    PostprocessingRenderer postprocessingRenderer;
+    damageDistortion.radius = 300.0f;
+    damageDistortion.mask_radius = 200.0f;
+    postprocessingRenderer.SetRadialBlurMaxData(damageDistortion);
+
 
 }
 

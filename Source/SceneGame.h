@@ -189,4 +189,13 @@ private:
 
 	bool isAudioDebug = true;
 
+	// デバッグ
+	DirectX::XMFLOAT2 debugPush2Pos = { 480,0.0f };
+	DirectX::XMFLOAT2 debugShortCutPos = { 480,0.0f };
+	DirectX::XMFLOAT2 debugShortPushPos = { 480,120.0f };
+	DirectX::XMFLOAT2 debugPush2Scale = { 300,204 };
+	DirectX::XMFLOAT2 debugShortCutScale = { 300,204 };
+	DirectX::XMFLOAT2 debugShortPushScale = { 82.0f,49.0f };
+
+
 };
