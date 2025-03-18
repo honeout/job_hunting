@@ -683,8 +683,6 @@ private:
 
 	float				stateTimer = 0.0f;
 
-	// アニメーションルール
-	Model::ModelAnim modelAnim;
 
 	//// 再生ループ
 	//bool  loop = false;
@@ -998,6 +996,7 @@ private:
 	//std::unique_ptr<AudioSource> slashSe;
 	bool loopSe = false;
 	
+	std::unique_ptr<Effect> tellePort;
 
 	//DirectX::XMFLOAT3 angle; 
 
@@ -1033,7 +1032,7 @@ private:
 
 
 	// 攻撃サポート範囲
-	float attackCheckRange = 4.5f;
+	float attackCheckRange = 6.0f;
 
 	float attackCheckRangeMin = 2.6f;
 
@@ -1060,6 +1059,10 @@ private:
 	DirectX::XMFLOAT2 angleRange = { 0.1f,0.1f };
 
 	bool              oneAttackCheck = false;
+	// 描画
+	int				  isPlayerDrawCheck = 0;
+	// ホーミング一回だけ
+	bool			  isHomingStartCheck = false;
 };
 
 

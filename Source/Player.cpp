@@ -342,7 +342,8 @@ void Player::Update(float elapsedTime)
         
     }
 
-    if (areAttackTime <= areAttackTimeEnd && isAreAttack)
+    //if (areAttackTime <= areAttackTimeEnd && isAreAttack)
+    if (areAttackState <= areAttackStateEnd && isAreAttack)
     {
         // 攻撃許可
         isAreAttack = false;
@@ -574,7 +575,6 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
     RockOnUI(rc.deviceContext,rc.view,rc.projection);
 
 
-
     rc.colorGradingData = colorGradingData;
 
     // スペキュラー無効化
@@ -585,6 +585,8 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
 
     // modelオンオフ
     rc.StencilRef = 1;
+
+    if (isPlayerDrawCheck == 0) return;
 
     Graphics& graphics = Graphics::Instance();
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
@@ -623,7 +625,7 @@ void Player::InputWalkSE()
 
     audioParam.loop = true;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -650,7 +652,7 @@ void Player::InputJampSE()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -677,7 +679,7 @@ void Player::InputAreWalkSE()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -694,7 +696,7 @@ void Player::InputDashSE()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -712,7 +714,7 @@ void Player::InputAttackSlashSE()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -729,7 +731,7 @@ void Player::InputAttackFlameSE()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -746,7 +748,7 @@ void Player::InputAttackThanderSE()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -773,7 +775,7 @@ void Player::InputAttackIceSE()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -790,7 +792,7 @@ void Player::InputAttackHealeSE()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -807,7 +809,7 @@ void Player::InputAttackSlashSpecileLightningStrikeSE()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -824,7 +826,7 @@ void Player::InputAttackFlameSpecileSE()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -942,7 +944,9 @@ void Player::UpdateCameraState(float elapsedTime)
                     GetStateIndex();
 
                 if (stateEnemyIndex == (int)EnemyBoss::State::Jump ||
-                    stateEnemyIndex == (int)EnemyBoss::State::Attack)
+                    stateEnemyIndex == (int)EnemyBoss::State::Attack ||
+                    stateEnemyIndex == (int)EnemyBoss::State::Wander
+                    )
                 {
                     lockonState = CameraState::AttackLock;
                 }
@@ -1128,6 +1132,7 @@ void Player::OnGUI()
 
     ImGui::InputFloat("Move Speed", &moveSpeed);
     ImGui::InputInt("selectCheck", &selectCheck);
+    ImGui::InputInt("isPlayerDrawCheck", &isPlayerDrawCheck);
     ImGui::InputInt("selectMagicCheck", &selectMagicCheck);
     //ImGui::InputInt("specialAttack.top", &specialAttack.top());
     ImGui::SliderFloat("specialAttackCharge", &specialAttackCharge,0,1.5f);
@@ -1145,6 +1150,7 @@ void Player::OnGUI()
 
     ImGui::SliderFloat("ShakeTimer", &shakeTimer,0,10);
     ImGui::SliderFloat("shakePower", &shakePower, 0, 10);
+
 
 
     if (ImGui::Button("CameraShake"))
@@ -2162,7 +2168,7 @@ bool Player::InputSpecialAttackCharge()
     }
     //if (gamePad.GetButtonDown() & GamePad::BTN_Y && specialAttack.top() == (int)SpecialAttack::Attack && !specialAttackTime)
     // 技を放つ
-    if (gamePad.GetButtonDown() & GamePad::BTN_Y &&  !specialAttackTime && specialAttack.size() > 0)
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y &&  !specialAttackTime && specialAttack.size() > 0&& !magicAction)
     {
 
 
@@ -2836,7 +2842,7 @@ void Player::PlayPintchSe()
     audioParam.loop = false;
 
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -2864,7 +2870,22 @@ void Player::PlaySpecialChargeCompleteSe()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
+
+    Se.Play(audioParam);
+}
+
+void Player::PlayTellePortSe()
+{
+    Audio& Se = Audio::Instance();
+
+    AudioParam audioParam;
+
+    audioParam.filename = "Data/Audio/SE/telleport.wav";
+
+    audioParam.loop = false;
+
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -4358,8 +4379,7 @@ void Player::PinchMode(float elapsedTime)
     if (hp.lock()->HealthPinch() && !hp.lock()->GetDead())
     {
 
-        if (UpdateElapsedTime(timeElapsedHintMax, elapsedTime) && 
-            !InputShortCutkeyMagic())
+        if (UpdateElapsedTime(timeElapsedHintMax, elapsedTime))
         {
             // Se再生
             PlayPintchSe();

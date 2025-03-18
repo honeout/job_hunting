@@ -213,6 +213,11 @@ struct RenderContext
 
 
 
+	//DirectX::XMFLOAT3 dummy = {0,0,0};
+
+
+
+
 	//// ƒuƒ‹[ƒ€‚Ì—L–³
 	//int is_bl = 1;
 

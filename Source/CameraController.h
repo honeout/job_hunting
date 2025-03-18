@@ -92,11 +92,15 @@ private:
 	float				rangeRock = 5.0f;
 	float				maxAngleX = DirectX::XMConvertToRadians(+45);
 	float				minAngleX = DirectX::XMConvertToRadians(-71);
+
+	float				maxLockTopHeightAngleX = DirectX::XMConvertToRadians(+45);
+	float				minLockTopHeightAngleX = DirectX::XMConvertToRadians(-71);
 	// ロックオン処理
 	DirectX::XMFLOAT3	newPosition = { 0, 0, 0 };
 	DirectX::XMFLOAT3	newTarget = { 0, 0, 0 };
 	DirectX::XMFLOAT3	targetWork[2] = { { 0, 0, 0 }, { 0, 0, 0 } };	// 0 : 座標, 1 : 注視点
-	float				lengthLimit[2] = { 5, 7 };
+	float				lengthLimit[2] = { 6, 8 };
+	//float				lengthLimit[2] = { 5, 7 };
 	float				sideValue = 1;
 	// モーションカメラ
 	float				motionTimer = 0;
@@ -107,18 +111,28 @@ private:
 
 	// ターゲットの最低距離
 	float               lengthMin = 8.5f;
+	// 一定以下でカメラ機能無視
+	float				cameraDisableRange = 4.0f;
+	float cameraRandeDebug = 0.0f;
+	// 注視点ずらす値
+	float				lookAtOffset = 0.5f;
+	//float				lookAtOffset = 0.5f;
+
 	//float               lengthMin = 5.5f;
 
 
 
 	// 敵との
 	float				lengthMinRock = 10.0f;
+	float				lengthRock = 8.0f;
 	//float				lengthMinRock = 16.5f;
 	float				heightMaxRock = 0.0f;
 	//float				heightMaxRock = 3.0f;
 
 	// ターゲットの一定以上高い
-	float               topHeight = 3.0f;
+	float               topHeight = 2.0f;
+	// ターゲットの高さ
+	float				topTargetY = -1.0f;
 
 
 	// メッセージキー

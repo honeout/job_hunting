@@ -1795,20 +1795,21 @@ void ClearState::Enter()
 
 	transformid.lock()->SetAngle(angle);
 
+	// アニメーションルール
+	Model::ModelAnim modelAnim;
 	modelAnim.index = EnemyBoss::Animation::Anim_Die;
 
 	modelAnim.loop = false;
 
 	modelAnim.blendSeconds = 0.7f;
 
-	modelAnim.currentanimationseconds = 1.5f;
+	//modelAnim.currentanimationseconds = 1.5f;
 
 	Model* model;
 
 	//owner.lock()->GetComponent<ModelControll>() = owner.lock()->GetComponent<ModelControll>();
 	model = owner.lock()->GetComponent<ModelControll>()->GetModel();
-	model->
-		PlayAnimation(modelAnim);
+	model->PlayAnimation(modelAnim);
 	// アニメーションルール
 	enemyid.lock()->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 
@@ -2375,6 +2376,8 @@ void PlayerQuickJabState::Enter()
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 
+	tellePort = std::make_unique<Effect>("Data/Effect/telleport.efk");
+
 	//model = owner.lock()->GetComponent<ModelControll>()->GetModel();
 	//moveid = owner.lock()->GetComponent<Movement>();
 	//transformid = owner.lock()->GetComponent<Transform>();
@@ -2393,13 +2396,13 @@ void PlayerQuickJabState::Enter()
 		Model::ModelAnim modelAnim;
 		Model::ModelAnim modelAnimUpperBody;
 
-		modelAnim.index = Player::Anim_Slash;
-		modelAnimUpperBody.index = Player::Anim_Jump;
+		modelAnim.index = Player::Anim_Jump;
+		modelAnimUpperBody.index = Player::Anim_Slash;
 
 		// 再生開始時間 
 		//float currentAnimationStartSeconds = 0.6f;
 		//float currentAnimationUpperStartSeconds = 0.0f;
-		modelAnim.currentanimationseconds = 0.6f;
+		//modelAnim.currentanimationseconds = 0.6f;
 
 		// ループ
 		//bool loop = true;
@@ -2410,10 +2413,10 @@ void PlayerQuickJabState::Enter()
 		//float currentAnimationAddSeconds = 0.03f;
 		//float currentAnimationUpperAddSeconds = 0.03f;
 		modelAnim.currentAnimationAddSeconds = 0.03f;
-		modelAnimUpperBody.currentAnimationAddSeconds = 0.03f;
+		//modelAnimUpperBody.currentAnimationAddSeconds = 0.03f;
 
 		//float keyFrameEnd = 40.0f;
-		modelAnimUpperBody.keyFrameEnd = 40.0f;
+		//modelAnimUpperBody.keyFrameEnd = 40.0f;
 
 		// アニメーション再生
 		model->PlayAnimation(modelAnim);
@@ -2497,7 +2500,12 @@ void PlayerQuickJabState::Enter()
 	InitializationCheck = true;
 
 
+	// 描画
+	isPlayerDrawCheck = 0;
 
+
+	// ホーミングするか
+	isHomingStartCheck = true;
 
 }
 
@@ -2607,13 +2615,18 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 			// 距離
 			if (length < attackCheckRange && length > attackCheckRangeMin
 				&& moveid.lock()->TurnCheck(
-					vector, angleRange, elapsedTime)&&
-				moveid.lock()->GetOnLadius())
+					vector, angleRange, elapsedTime))
 			{
 				//bool stop = false;
 				//moveid->SetStopMove(stop);
 				bool stop = false;
 				moveid.lock()->SetStopMove(stop);
+
+				// 消す
+				isPlayerDrawCheck = 0;
+
+				playerid.lock()->SetPlayeDrawCheck(isPlayerDrawCheck);
+
 				// 正面
 				if (moveid.lock()->Turn(vector, turnSpeed, elapsedTime))
 				{
@@ -2621,23 +2634,47 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 					moveid.lock()->Move(vector, speed, elapsedTime);
 					
 				}
+
+	
+
+
+
 				//stop = true;
 				//moveid->SetStopMove(stop);
 			}
 			else
 			{
+				// 描画
+				isPlayerDrawCheck = 1;
 
+				playerid.lock()->SetPlayeDrawCheck(isPlayerDrawCheck);
 
 				bool stop = true;
 				moveid.lock()->SetStopMove(stop);
 
 				rotateCheck = true;
+
+				// ホーミング終了
+				isHomingStartCheck = false;
 			}
 
 
 		
 
 	}
+	// ホーミング一回のみ再生
+	if (isHomingStartCheck)
+	{
+		// Se再生
+		playerid.lock()->PlayTellePortSe();
+
+		// エフェクト
+		tellePort->Play(transformid.lock()->GetPosition());
+
+		// ホーミング一回のみのため
+		isHomingStartCheck = false;
+	}
+
 	if (attackMemory > attackMemoryMax)
 	{
 		// 入力確認でステート変更
@@ -2706,6 +2743,12 @@ void PlayerQuickJabState::Exit()
 		// 攻撃最大値調整
 		attackMemory = 0;
 	}
+
+
+	// 描画
+	isPlayerDrawCheck = 1;
+
+	playerid.lock()->SetPlayeDrawCheck(isPlayerDrawCheck);
 
 	//slashSe->Stop();
 

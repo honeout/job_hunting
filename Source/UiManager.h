@@ -102,6 +102,15 @@ public:
         Select,
     };
 
+    enum class UiCountGameCler
+    {
+        GameClerSprite = 0,
+        Start,
+        Title,
+        Push,
+        Select,
+    };
+
 private:
     // uiŽæ“¾
     std::vector<std::shared_ptr<Actor>>   uies;

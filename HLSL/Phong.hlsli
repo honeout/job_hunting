@@ -49,7 +49,6 @@ cbuffer CbScene : register(b0)
     // •`‰æ‚©‚Ç‚¤‚©
     int StencilRef;
 
-    //float3 dummy;
     //float4 dummy2;
 
 };

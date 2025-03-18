@@ -64,7 +64,7 @@ void SceneGame::Initialize()
 	// コンポネント登録
 	InitializeComponent();
 
-	UpdateBgm();
+	//UpdateBgm();
 
 
 	// カメラ初期設定 見える位置追いかけるものなど
@@ -2757,7 +2757,7 @@ void SceneGame::UpdateBgm()
 
 	audioParam.loop = true;
 
-	audioParam.volume = 3.0f;
+	audioParam.volume = bgmVolume;
 
 	bgm.Play(audioParam);
 }

@@ -363,7 +363,7 @@ void EnemyBoss::InputSlashSe()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -388,7 +388,7 @@ void EnemyBoss::InputJampSe()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -413,7 +413,7 @@ void EnemyBoss::InputDashSe()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -439,7 +439,7 @@ void EnemyBoss::InputAwakeSe()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -454,7 +454,7 @@ void EnemyBoss::InputImpactSe()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -469,7 +469,7 @@ void EnemyBoss::InputDamageSe()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }
@@ -484,7 +484,7 @@ void EnemyBoss::InputChargeSe()
 
     audioParam.loop = false;
 
-    audioParam.volume = 3.0f;
+    audioParam.volume = seVolume;
 
     Se.Play(audioParam);
 }

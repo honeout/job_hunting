@@ -16,6 +16,10 @@ SamplerState shadowMapSamplerState : register(s1); // 法線マップ
 
 float4 main(VS_OUT pin) : SV_TARGET
 {
+
+     //if (drawCheck == 0)
+     //return float4(1,1,1,1);
+
    pin.color.gb = colorGB;
     float4 diffuseColor = diffuseMap.Sample(diffuseMapSamplerState, pin.texcoord) * pin.color;
 
@@ -24,7 +28,7 @@ float4 main(VS_OUT pin) : SV_TARGET
     //    //return float4(1, 0, 0, 1);
     //    clip(-1);
     //}
-   
+
 
     // UNIT06
     // サンプルしている。
@@ -37,7 +41,7 @@ float4 main(VS_OUT pin) : SV_TARGET
 
     float3 N = normalize(mul(normal * 2.0f - 1.0f, CM));
     //float3 N = normalize(mul(normal , CM));
-    
+
     //float3 N = normalize(pin.normal);
     float3 L = normalize(directionalLightData.direction.xyz);
     float3 E = normalize(viewPosition.xyz - pin.world_position.xyz);
@@ -76,136 +80,138 @@ float4 main(VS_OUT pin) : SV_TARGET
 
         directionalDiffuse *= shadow;
         directionalSpecular *= shadow;
-    
-    //float4 color = float4(ambient,diffuseColor.a);
-    //color.rgb += diffuseColor.rgb*directionalDiffuse;
-    //color.rgb += directionalSpecular;
 
-    // UNIT04
-    // 点光源の処理
+        //float4 color = float4(ambient,diffuseColor.a);
+        //color.rgb += diffuseColor.rgb*directionalDiffuse;
+        //color.rgb += directionalSpecular;
+
+        // UNIT04
+        // 点光源の処理
+        // 拡散光
+        // 結果
+        float3 pointDiffuse = (float3)0;
+        // 円光
+        // 結果
+        float3 pointSpecular = (float3)0;
+            int i;
+        for (i = 0; i < pointLightCount; ++i)
+        {
+            // ライトベクトルを算出
+            float3 lightVector = pin.world_position - pointLightData[i].position;
+
+            // ライトベクトルの長さを算出 サイズ型
+            float lightLenght = length(lightVector);
+
+            // ライトの影響範囲外なら後の計算をしない。
+            if (lightLenght > pointLightData[i].range)
+                continue;
+
+            // 中でマイナスをする理由
+            // 距離減衰を算出 逆数して光の範囲を出す クランプないで１１が出た場合それを引くとマイナスになるだからそれ以上は消す
+            //float attenuate = clamp(1.0f - lightLenght / pointLightData[i].range,0.0f,1.0f);
+            float attenuate = clamp(1.0f - lightLenght / pointLightData[i].range,0.0f,1.0f);
+            // 単位化ベクトル
+            lightVector = lightVector / lightLenght;
+            pointDiffuse += CalcLambertDiffuse(N, lightVector,
+                pointLightData[i].color.rgb, kd.rgb) * attenuate;
+
+            pointSpecular += CalcPhongSpecular(N, lightVector,
+                pointLightData[i].color.rgb, E, shiness, ks.rgb) * attenuate;
+        }
+
+
+
+
+        // UNIT04
+    // スポットライトの処理
     // 拡散光
     // 結果
-    float3 pointDiffuse = (float3)0;
-    // 円光
-    // 結果
-    float3 pointSpecular = (float3)0;
-        int i;
-    for (i = 0; i < pointLightCount; ++i)
-    {
-        // ライトベクトルを算出
-        float3 lightVector =    pin.world_position - pointLightData[i].position;
+        float3 spotDiffuse = (float3)0;
+        // 円光
+        // 結果
+        float3 spotSpecular = (float3)0;
 
-        // ライトベクトルの長さを算出 サイズ型
-        float lightLenght = length(lightVector);
+        for (i = 0; i < spotLightCount; ++i)
+        {
+            // ライトベクトルを算出
+            float3 lightVector = pin.world_position - spotLightData[i].position;
 
-        // ライトの影響範囲外なら後の計算をしない。
-        if (lightLenght > pointLightData[i].range)
-            continue;
+            // ライトベクトルの長さを算出 サイズ型
+            float lightLenght = length(lightVector);
 
-        // 中でマイナスをする理由
-        // 距離減衰を算出 逆数して光の範囲を出す クランプないで１１が出た場合それを引くとマイナスになるだからそれ以上は消す
-        //float attenuate = clamp(1.0f - lightLenght / pointLightData[i].range,0.0f,1.0f);
-        float attenuate = clamp(1.0f - lightLenght / pointLightData[i].range,0.0f,1.0f);
-        // 単位化ベクトル
-        lightVector = lightVector / lightLenght;
-        pointDiffuse += CalcLambertDiffuse(N, lightVector,
-            pointLightData[i].color.rgb, kd.rgb) * attenuate;
+            // ライトの影響範囲外なら後の計算をしない。
+            if (lightLenght > spotLightData[i].range)
+                continue;
 
-        pointSpecular += CalcPhongSpecular(N, lightVector,
-            pointLightData[i].color.rgb, E, shiness, ks.rgb) * attenuate;
-    }
+            // 中でマイナスをする理由
+            // 距離減衰を算出 逆数して光の範囲を出す クランプないで１１が出た場合それを引くとマイナスになるだからそれ以上は消す
+            //float attenuate = clamp(1.0f - lightLenght / pointLightData[i].range,0.0f,1.0f);
+            float attenuate = clamp(1.0f - lightLenght / spotLightData[i].range, 0.0f, 1.0f);
 
+            //lightVector = normalize(lightVector);
+            lightVector = normalize(lightVector);
 
+            // 角度減衰を算出してattenuateに乗算する
+            float3 spotDirection = normalize(spotLightData[i].direction.xyz);
+            float  angle = dot(spotDirection,lightVector);
+            float area = spotLightData[i].innerCorn - spotLightData[i].outerCorn;
+            attenuate *= clamp(1.0f - (spotLightData[i].innerCorn - angle) / area, 0.0f, 1.0f);
 
+            // 単位化ベクトル
+            //lightVector = lightVector / lightLenght;
+          spotDiffuse += CalcLambertDiffuse(N, lightVector,
+                spotLightData[i].color.rgb, kd.rgb) * attenuate;
 
-    // UNIT04
-// スポットライトの処理
-// 拡散光
-// 結果
-    float3 spotDiffuse = (float3)0;
-    // 円光
-    // 結果
-    float3 spotSpecular = (float3)0;
- 
-    for (i = 0; i < spotLightCount; ++i)
-    {
-        // ライトベクトルを算出
-        float3 lightVector =  pin.world_position - spotLightData[i].position;
+            spotSpecular += CalcPhongSpecular(N, lightVector,
+                spotLightData[i].color.rgb, E, shiness, ks.rgb) * attenuate;
 
-        // ライトベクトルの長さを算出 サイズ型
-        float lightLenght = length(lightVector);
-
-        // ライトの影響範囲外なら後の計算をしない。
-        if (lightLenght > spotLightData[i].range)
-            continue;
-
-        // 中でマイナスをする理由
-        // 距離減衰を算出 逆数して光の範囲を出す クランプないで１１が出た場合それを引くとマイナスになるだからそれ以上は消す
-        //float attenuate = clamp(1.0f - lightLenght / pointLightData[i].range,0.0f,1.0f);
-        float attenuate = clamp(1.0f - lightLenght / spotLightData[i].range, 0.0f, 1.0f);
-
-        //lightVector = normalize(lightVector);
-        lightVector = normalize(lightVector);
-
-        // 角度減衰を算出してattenuateに乗算する
-        float3 spotDirection = normalize(spotLightData[i].direction.xyz);
-        float  angle = dot(spotDirection,lightVector );
-        float area = spotLightData[i].innerCorn - spotLightData[i].outerCorn;
-        attenuate *= clamp(1.0f - (spotLightData[i].innerCorn - angle) / area, 0.0f, 1.0f);
-
-        // 単位化ベクトル
-        //lightVector = lightVector / lightLenght;
-      spotDiffuse += CalcLambertDiffuse(N, lightVector,
-            spotLightData[i].color.rgb, kd.rgb) * attenuate;
-
-        spotSpecular += CalcPhongSpecular(N, lightVector,
-            spotLightData[i].color.rgb, E, shiness, ks.rgb) * attenuate;
-
-    }
+        }
 
 
-    // 改造発色の良い処理
-    //float4 color = diffuseColor;
-    //color.rgb *= ambient + directionalDiffuse;
-    //color.rgb += directionalSpecular;
+        // 改造発色の良い処理
+        //float4 color = diffuseColor;
+        //color.rgb *= ambient + directionalDiffuse;
+        //color.rgb += directionalSpecular;
 
 
 
-    float4 color = float4(ambient, diffuseColor.a);
-    // 影
-    color.rgb += diffuseColor.rgb * (directionalDiffuse + pointDiffuse + spotDiffuse);
-    // スペキュラー用
-    if (isSpecular == 1)
-    {
-        color.rgb += directionalSpecular + pointSpecular + spotSpecular;
-    }
-    if (isRimLighting)
-    {
-        // リムライティング
-        color.rgb += CalcRimLight(N, E, L, directionalLightData.color.rgb);
-    }
+        float4 color = float4(ambient, diffuseColor.a);
+        // 影
+        color.rgb += diffuseColor.rgb * (directionalDiffuse + pointDiffuse + spotDiffuse);
+        // スペキュラー用
+        if (isSpecular == 1)
+        {
+            color.rgb += directionalSpecular + pointSpecular + spotSpecular;
+        }
+        if (isRimLighting)
+        {
+            // リムライティング
+            color.rgb += CalcRimLight(N, E, L, directionalLightData.color.rgb);
+        }
 
-    //// Red
-    ////--------------------------------------------
-    //color.rgb = RedChange(color.rgb, colorValue);
-
-
-
-    //	フォグ
-    //--------------------------------------------
-    float3 fogColor = float3(0.1f,0.1f,0.1f);
-
-    float3 f = Fog(
-        //        diffuseColor.xyz,
-        color.rgb, //最終的に計算されたカラーに置き換える
-        viewPosition.xyz,
-        pin.world_position.xyz,
-        fogColor,
-        1.0f,
-        150.0f
-    );
+        //// Red
+        ////--------------------------------------------
+        //color.rgb = RedChange(color.rgb, colorValue);
 
 
-    //return color;
-    return float4(f, color.a);
+
+        //	フォグ
+        //--------------------------------------------
+        float3 fogColor = float3(0.1f,0.1f,0.1f);
+
+        float3 f = Fog(
+            //        diffuseColor.xyz,
+            color.rgb, //最終的に計算されたカラーに置き換える
+            viewPosition.xyz,
+            pin.world_position.xyz,
+            fogColor,
+            1.0f,
+            150.0f
+        );
+
+
+        //return color;
+
+            return float4(f, color.a);
+
 }

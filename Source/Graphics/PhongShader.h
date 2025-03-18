@@ -46,6 +46,7 @@ private:
         //int dummy;
         int          StencilRef;
 
+
         //DirectX::XMFLOAT2 dummy;
         //float dummy;
         //DirectX::XMFLOAT2 dummy;

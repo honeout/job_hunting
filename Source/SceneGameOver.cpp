@@ -894,8 +894,8 @@ void SceneGameOver::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-
-		transform2D->SetScale(titleUiScaleSelected);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -932,8 +932,8 @@ void SceneGameOver::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-
-		transform2D->SetScale(gameUiScaleSelected);
+		DirectX::XMFLOAT2 scale = { 181,104 };
+		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -1062,13 +1062,23 @@ void SceneGameOver::SelectScene()
 	{
 	case (int)Select::Title:
 	{
+		// 位置
+		{
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
+				GetComponent<TransForm2D>()->SetPosition(titlePos);
+
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
+				GetComponent<TransForm2D>()->SetPositionY((titlePos.y + buttonPosYAdd));
+		}
+
 		/*UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
 			GetComponent<TransForm2D>()->SetPosition(titlePos);*/
 
 		
 
-		UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
-			GetComponent<TransForm2D>()->SetPositionY((titlePos.y + buttonPosYAdd));
+		//UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
+		//	GetComponent<TransForm2D>()->SetPositionY((titlePos.y + buttonPosYAdd));
 
 		//// ゲーム
 		//UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
@@ -1091,12 +1101,22 @@ void SceneGameOver::SelectScene()
 	}
 	case (int)Select::Game:
 	{
+		// 位置
+		{
+			// UI ボタンを押す
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Select)->
+				GetComponent<TransForm2D>()->SetPosition(startPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Push)->
+				GetComponent<TransForm2D>()->SetPositionY((startPos.y + buttonPosYAdd));
+		}
+
 		//// UI ボタンを押す
 		//UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
 		//	GetComponent<TransForm2D>()->SetPosition(reStartPos);
 
-		UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
-			GetComponent<TransForm2D>()->SetPositionY((reStartPos.y + buttonPosYAdd));
+		//UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
+		//	GetComponent<TransForm2D>()->SetPositionY((reStartPos.y + buttonPosYAdd));
 
 
 		//// UI ボタンを押す
@@ -1166,7 +1186,7 @@ void SceneGameOver::StartBgm()
 
 	audioParam.loop = false;
 
-	audioParam.volume = 3.0f;
+	audioParam.volume = bgmVolume;
 
 	Se.Play(audioParam);
 }

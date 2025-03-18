@@ -354,6 +354,9 @@ private:
     //std::unique_ptr<AudioSource> impactSe;
     //std::unique_ptr<AudioSource> moveAttackSe;
 
+    // seの音の大きさ
+    float seVolume = 0.5f;
+
     // どのステートで動くか
     State state = State::Wander;
     // ターゲットの位置
@@ -414,7 +417,7 @@ private:
     int maxHealth = 50;
 
     // 半径
-    float radius = 1.0f;
+    float radius = 1.5f;
 
     // 高さ
     float height = 9.0f;
@@ -471,7 +474,7 @@ private:
     bool blurCheck = false;
 
     // uiCount最大値
-    int uiCountMax = 3;
+    int uiCountMax = 5;
 
 
     // ダメージ

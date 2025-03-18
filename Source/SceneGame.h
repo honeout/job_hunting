@@ -104,6 +104,9 @@ private:
 	// デバッグ用ライトポジション
 	float lightPositionScale = -250.0f;
 
+	// BGMの音の大きさ
+	float bgmVolume = 1.0f;
+
 
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;

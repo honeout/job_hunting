@@ -83,6 +83,9 @@ private:
 	// 画面歪み最大
 	float radialBlurDataRadislBlurRadiusMax = 500.0f;
 
+	// seの大きさ
+	float bgmVolume = 1.0f;
+
 
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源
@@ -154,6 +157,14 @@ private:
 
 	// どれを選択しているかUI
 	int selectPush = 0;
+
+
+	// ボタン用位置の大きさ分
+	float buttonPosYAdd = 20.0f;
+
+
+	DirectX::XMFLOAT2 startPos = { 543, 477 };
+	DirectX::XMFLOAT2 exitPos = { 543, 577 };
 
 
 	//CameraController* cameraControlle = nullptr;

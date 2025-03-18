@@ -179,6 +179,9 @@ public:
     // 必殺技ため終了
     void PlaySpecialChargeCompleteSe();
 
+    // テレポート音
+    void PlayTellePortSe();
+
 
 
     // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
@@ -629,7 +632,8 @@ public:
     // 経過時間
     bool UpdateElapsedTime(float timeMax, float elapsedTime);
 
-
+    // 描画するかどうか
+    void SetPlayeDrawCheck(int isPlayerDrawCheck) { this->isPlayerDrawCheck = isPlayerDrawCheck; }
 
 private:
     //std::shared_ptr<Movement>	movement;
@@ -650,7 +654,7 @@ private:
     // 空中行動許可間隔
     int areAttackState = 0;
     int areAttackStateEnd = 0;
-    int areAttackStateMax = 2;
+    int areAttackStateMax = 1;
 
     // 空中行動間隔時間
     float areAttackTime = 0.0f;
@@ -925,6 +929,9 @@ private:
     // 特殊攻撃をためる奴
     std::stack<int> chargedSpecialMoves;
 
+    // seの音の大きさ
+    float seVolume = 0.5f;
+
 
     // ステートマシン用
     //StateMachine* stateMachine = nullptr;
@@ -1072,6 +1079,9 @@ private:
 
     // ピンチかどうか
     bool isPintch = false;
+
+    // 描画するかどうか
+    int isPlayerDrawCheck = 1;
 
 };
 

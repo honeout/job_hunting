@@ -96,6 +96,9 @@ private:
 	// 画面歪み最大
 	float radialBlurDataRadislBlurRadiusMax = 500.0f;
 
+	// seの大きさ
+	float bgmVolume = 1.0f;
+
 
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源

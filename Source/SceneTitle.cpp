@@ -508,7 +508,7 @@ void SceneTitle::StartMusic()
 
 	audioParam.loop = true;
 
-	audioParam.volume = 3.0f;
+	audioParam.volume = bgmVolume;
 
 	bgm.Play(audioParam);
 }
