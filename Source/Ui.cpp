@@ -5,8 +5,6 @@ Ui::~Ui()
 {
     if (transForm2D)
         transForm2D.reset();
-
-
 }
 
 void Ui::Start()
@@ -28,8 +26,6 @@ void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
     // •ÏŠ·s—ñ
     DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
     DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
-
-
     // 2D
     if (drawCheck)
     {
@@ -50,7 +46,6 @@ void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
 #ifdef _DEBUG
 void Ui::OnGUI()
 {
-
     ImGui::SliderFloat4("Color", &color.x, 0, 1);
 }
 #endif // _DEBUG
@@ -59,7 +54,6 @@ void Ui::UiTimeUpdate()
     if (timeMax > 0)
     --countDown;
 }
-
 
 void Ui::IncrementToAlpha(float increment)
 {

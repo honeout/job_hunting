@@ -28,15 +28,6 @@ CameraController::~CameraController()
 	Messenger::Instance().RemoveReceiver(CAMERASHAKEKEY);
 }
 
-//void CameraController::Start()
-//{
-//	position = Camera::Instance().GetEye();
-//	newPosition = Camera::Instance().GetEye();
-//	CAMERACHANGEFREEMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEFREEMODE, [&](void* data) { OnFreeMode(data); });
-//	CAMERACHANGELOCKONMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGELOCKONMODE, [&](void* data) { OnLockonMode(data); });
-//	CAMERACHANGEMOTIONMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEMOTIONMODE, [&](void* data) { OnMotionMode(data); });
-//	CAMERASHAKEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERASHAKE, [&](void* data) { OnShake(data); });
-//}
 
 // 更新処理
 void CameraController::Update(float elapsedTime)
@@ -62,16 +53,6 @@ void CameraController::Update(float elapsedTime)
 
 
 
-	// Todo　壁の最終範囲決めるまで使わないので一旦コメント
-	// 地形との当たり判定を行う
-	//HitResult	hitResult;
-	//if (Collision::RayCast(newTarget, newPosition, hitResult))
-	//{
-	//	DirectX::XMVECTOR	p = DirectX::XMLoadFloat3(&hitResult.position);
-	//	DirectX::XMVECTOR	cuv = DirectX::XMVectorSet(0, 1, 0, 0);
-	//	p = DirectX::XMVectorMultiplyAdd(DirectX::XMVectorReplicate(4), cuv, p);
-	//	DirectX::XMStoreFloat3(&newPosition, p);
-	//}
 
 		// X軸のカメラ回転を制限
 	if (angle.x < minAngleX)
@@ -123,9 +104,7 @@ void CameraController::OnGUI()
 		ImGui::SliderFloat("height", &heightMaxRock, -20.0f, 20.0f);
 		ImGui::SliderFloat("maxLockTopHeightAngleX", &maxAngleX, -60.0f, 60.0f);
 		ImGui::SliderFloat("minLockTopHeightAngleX", &minAngleX, -60.0f, 60.0f);
-		
-		//ImGui::SliderFloat("maxLockTopHeightAngleX", &maxLockTopHeightAngleX, -60.0f, 60.0f);
-		//ImGui::SliderFloat("minLockTopHeightAngleX", &minLockTopHeightAngleX, -60.0f, 60.0f);
+
 
 		ImGui::TreePop();
 	}
@@ -135,7 +114,6 @@ void CameraController::OnGUI()
 
 bool CameraController::GetCameraMortionDataTime()
 {
-
 	// その瞬間だけ欲しい
 	if (isEffect)
 	{
@@ -149,16 +127,6 @@ bool CameraController::GetCameraMortionDataTime()
 
 void CameraController::FreeSelectCamera(float elapsedTime)
 {
-	//GamePad& gamePad = Input::Instance().GetGamePad();
-	//float ax = gamePad.GetAxisRX();
-	//float ay = gamePad.GetAxisRY();
-	//// カメラの回転速度
-	//float speed = rollSpeed * elapsedTime;
-
-	//// スティックの入力値に合わせてX軸とY軸を回転
-	//angle.x += ay * speed;
-	//angle.y += ax * speed;
-
 	// X軸のカメラ回転を制限
 	if (angle.x < minAngleX)
 	{
@@ -246,57 +214,22 @@ void CameraController::LockonCamera(float elapsedTime)
 	DirectX::XMVECTOR	cuv = DirectX::XMVectorSet(0, 1, 0, 0);
 	DirectX::XMVECTOR   spacingValue = DirectX::XMVectorSet(0, 1, 1, 0);
 	DirectX::XMVECTOR	v = DirectX::XMVectorSubtract(t1, t0);
-
-	//DirectX::XMVECTOR   d = DirectX::XMVector3Normalize(v);
 	DirectX::XMVECTOR	l = DirectX::XMVector3Length(v);
 	float len;
 	DirectX::XMStoreFloat(&len,l);
-
 	cameraRandeDebug = len;
-
-	//if (len < rangeRock)
-	//{
-	//	v = DirectX::XMVectorScale(d, range);
-	//}
-
 	t0 = DirectX::XMLoadFloat3(&targetWork[0]);
 	t1 = DirectX::XMLoadFloat3(&targetWork[1]);
 
 	//	新しい注視点を算出
 	DirectX::XMStoreFloat3(&newTarget, DirectX::XMVectorMultiplyAdd(v, DirectX::XMVectorReplicate(lookAtOffset), t0));
-
-
 	// ターゲットの高さ
 	newTarget.y = topTargetY;
-
-	// Todo導入途中　敵との距離一定で離れる。
-	//if (len < lengthMin)
-	//{
-	//	DirectX::XMVECTOR	vv = DirectX::XMVectorSubtract(t0, t1);
-	//	t0 = DirectX::XMVectorMultiply(t0, vv);
-	//}
 	//	新しい座標を算出
 	l = DirectX::XMVectorClamp(l
 		, DirectX::XMVectorReplicate(lengthLimit[0])
 		, DirectX::XMVectorReplicate(lengthLimit[1]));
 	t0 = DirectX::XMVectorMultiplyAdd(l, DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), t0);
-	// 少し右
-	//t0 = DirectX::XMVectorMultiplyAdd(crv, DirectX::XMVectorReplicate(sideValue * 3.0f), t0);
-
-	//// 高さ
-	//if (targetWork[1].y >= topHeight)
-	//{
-	//	// 少し上
-	//	t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
-	//	// 少し離れる
-	//	t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(20.0f), t0);
-
-	//	DirectX::XMStoreFloat3(&newPosition, t0);
-
-	//	newPosition.y = targetWork[1].y - 1.0f;
-
-	//	return;
-	//}
 
 	// 距離が一定以上
 	if (lengthMin <= len)
@@ -312,14 +245,10 @@ void CameraController::LockonCamera(float elapsedTime)
 	}
 	else
 	{
-		// 少し上
-		//t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(heightMaxRock), t0);
 		// 少し離れる
 		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(lengthMinRock), t0);
 
 		DirectX::XMStoreFloat3(&newPosition, t0);
-
-		//newPosition.y = -2.5f;
 		newPosition.y = heightMaxRock;
 	}
 
@@ -339,32 +268,18 @@ void CameraController::LockonTopHeightCamera(float elapsedTime)
 	DirectX::XMVECTOR	l = DirectX::XMVector3Length(v);
 	float len;
 	DirectX::XMStoreFloat(&len, l);
-
 	cameraRandeDebug = len;
-
-	//if (len <= cameraDisableRange)
-	//	return;
-
 	t0 = DirectX::XMLoadFloat3(&targetWork[0]);
 	t1 = DirectX::XMLoadFloat3(&targetWork[1]);
-
 	//	新しい注視点を算出
 	DirectX::XMStoreFloat3(&newTarget, DirectX::XMVectorMultiplyAdd(v, DirectX::XMVectorReplicate(lookAtOffset), t0));
-
 	// ターゲットの高さ
 	newTarget.y = topTargetY;
-
 	//	新しい座標を算出
 	l = DirectX::XMVectorClamp(l
 		, DirectX::XMVectorReplicate(lengthLimit[0])
 		, DirectX::XMVectorReplicate(lengthLimit[1]));
 	t0 = DirectX::XMVectorMultiplyAdd(l, DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), t0);
-
-	//// 高さ
-	//if (targetWork[1].y >= topHeight)
-	//{
-		// 少し上
-		//t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(topHeight), t0);
 
 	if (len > cameraDisableRange)
 	// 少し離れる 16.0f
@@ -374,41 +289,11 @@ void CameraController::LockonTopHeightCamera(float elapsedTime)
 	{
 		// 少し離れる 16.0f
 		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(lengthRock), t0);
-
 	}
 
 	DirectX::XMStoreFloat3(&newPosition, t0);
-
-	//newPosition.y = targetWork[1].y - 1.0f;
+	// 高さ指定
 	newPosition.y = topHeight;
-
-
-
-
-
-	//
-
-	//// 距離が一定以上
-	//if (lengthMin <= len)
-	//{
-	//	// 少し上
-	//	t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
-
-	//	DirectX::XMStoreFloat3(&newPosition, t0);
-
-
-	//}
-	//else
-	//{
-	//	// 少し上
-	//	t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(3.0f), t0);
-	//	// 少し離れる
-	//	t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(20.0f), t0);
-
-	//	DirectX::XMStoreFloat3(&newPosition, t0);
-
-	//	newPosition.y = -2.0f;
-	//}
 }
 
 void CameraController::MotionCamera(float elapsedTime)
@@ -451,9 +336,6 @@ void CameraController::MotionCamera(float elapsedTime)
 				newTarget.z += (motionData[i + 1].target.z - motionData[i].target.z) * value;
 				position = newPosition;
 				target = newTarget;
-				//// 時間経過
-				//isEffect =  motionData[i].isEffect ? motionData[i].isEffect : isEffect;
-				//motionData[i].isEffect = false;
 				break;
 			}
 			// 一部モーションを飛ばす
@@ -463,7 +345,6 @@ void CameraController::MotionCamera(float elapsedTime)
 				newTarget = motionData[i].target;
 				position = newPosition;
 				target = newTarget;
-
 				break;
 			}
 

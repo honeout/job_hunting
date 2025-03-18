@@ -8,7 +8,6 @@
 #include "Graphics\Model.h"
 #include "Graphics\RenderContext.h"
 #include "Graphics\Shader.h"
-
 // 前方宣言
 class Component;
 
@@ -36,15 +35,10 @@ public:
 	virtual void Render(RenderContext rc, ModelShader* shader);
 	virtual void Render(RenderContext rc, SpriteShader* shader);
 	virtual void Render2D(RenderContext rc, SpriteShader* shader);
-
-
-
-
 #ifdef _DEBUG
 	// GUI表示
 	virtual void OnGUI();
 #endif // _DEBUG
-
 	// 名前の設定
 	void SetName(const char* name) { this->name = name; }
 
@@ -77,18 +71,12 @@ public:
 		}
 		return nullptr;
 	}
-
-
 private:
 	std::vector<std::shared_ptr<Component>>	components;
 	std::string			name;
-	
 	// ２D判定
 	bool                    check2d = false;
-
-
 	GameMode  gamemode;
-
 };
 
 // アクターマネージャー
@@ -97,7 +85,6 @@ class ActorManager
 private:
 	ActorManager() {}
 	~ActorManager() {};
-
 public:
 	// インスタンス取得
 	static ActorManager& Instance()
@@ -115,8 +102,6 @@ public:
 	// 更新
 	void Update(float elapsedTime);
 
-
-
 	// 3D描画
 	void Render(RenderContext rc, ModelShader* shader);
 	void Render(RenderContext rc, SpriteShader* shader);
@@ -127,8 +112,6 @@ public:
 	void Render2D(RenderContext rc, SpriteShader* shader);
 	// 全削除
 	void Clear();
-
-
 private:
 #ifdef _DEBUG
 	void DrawLister();
@@ -139,9 +122,6 @@ private:
 	std::vector<std::shared_ptr<Actor>>		updateActors;
 	std::set<std::shared_ptr<Actor>>		selectionActors;
 	std::set<std::shared_ptr<Actor>>		removeActors;
-
-
-
 	bool					hiddenLister = false;
 	bool					hiddenDetail = false;
 };

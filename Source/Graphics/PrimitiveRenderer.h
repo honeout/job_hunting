@@ -55,6 +55,4 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		vertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		constantBuffer;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerState;
-
-	//Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
 };

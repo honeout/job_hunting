@@ -7,10 +7,7 @@
 void SceneLoading::Initialize()
 {
     // スプライト初期化
-    //sprite = new Sprite("Data/Sprite/LoadingIcon.png");
-   // sprite = std::make_unique<Sprite>("Data/Sprite/タイトル.png");
     spriteLoading = std::make_unique<Sprite>("Data/Sprite/LoadingIcon.png");
-
     // スレッド開始      (関数名、引数の中身 自分自信)スレッド立ち上げる
     // 引数を何個でも入れられる。関数の引数の長さによる
     this->thread = new std::thread(LoadingThread,this);
@@ -25,16 +22,8 @@ void SceneLoading::Finalize()
         // 処理している最中にデリートするとまずいだからまつ
         thread->join();
         delete thread;
-        //delete thread;
         thread = nullptr;
     }
-    
-    //// スプライト終了化
-    //if (this->sprite)
-    //{
-    //    delete sprite;
-    //    sprite = nullptr;
-    //}
 }
 // 更新処理
 void SceneLoading::Update(float elapsedTime)
@@ -42,15 +31,12 @@ void SceneLoading::Update(float elapsedTime)
     // 回転する
     constexpr float speed = 180;
     angle += speed * elapsedTime;
-
         // 次のシーンの準備が完了したらシーンを切り替える
     if (nextScene->IsReady())
     {
         SceneManager::Instance().ChangeScene(nextScene);
         nextScene = nullptr;
     }
-
-
 }
 // 描画処理
 void SceneLoading::Render()
@@ -95,9 +81,7 @@ void SceneLoading::LoadingThread(SceneLoading* scene)
     HRESULT hr = CoInitialize(nullptr);
 
     // 次のシーンの初期化を行う
-    //scene->Initialize();
     scene->nextScene->Initialize();
-
 
     // スレッドが終わる前にCOM関連の終了化
     // 必要ないなら終了化

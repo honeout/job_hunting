@@ -23,20 +23,14 @@ void StateMachine::SetState(int newState)
 // ステート変更
 void StateMachine::ChangeState(int newState)
 {
-	// TODO 02_02 ステートの切り替え。
 	// 現在のステートのExit関数を実行、新しいステートをセット、新しいステートのEnter関数を呼び出す。
 	// 後処理をして新しい処理を
-	//if (!currentState)
 	currentState->Exit();
 	SetState(newState);
-
-	
 }
 // ステート登録
 void StateMachine::RegisterState(State* state)
 {
-	
-
 	// 親ステート登録
 	statePool.emplace_back(state);
 }

@@ -1,8 +1,6 @@
 #pragma once
-
 #include <vector>
 #include "Light.h"
-
 #include "Graphics/RenderContext.h"
 
 // ライト管理クラス
@@ -48,5 +46,4 @@ public:
 private:
     std::vector<Light*> lights;
     DirectX::XMFLOAT4 ambientColor = { 0.2f,0.2f,0.2f,1.0f };
-
 };

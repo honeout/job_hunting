@@ -13,7 +13,6 @@ public:
 	// 名前取得
 	const char* GetName() const override { return "HP"; }
 
-
 #ifdef _DEBUG
 	// GUI描画
 	void OnGUI() override;
@@ -22,14 +21,8 @@ public:
 	// 無敵
 	void UpdateInbincibleTimer(float elapsedTime);
 
-
 	// ダメージを与える ダメージを受けたら他に渡す。
 	bool ApplyDamage(int damage, float invincibleTime);
-
-
-	bool DamageDrawCheck();
-
-
 
 	// HP状態を取得
 	int GetHealth() const { return health; }
@@ -37,7 +30,6 @@ public:
 	// HPを突っ込む
 	void SetHealth(int health) {
 		this->health = health;
-
 	}
 
 	// HPを突っ込む
@@ -51,6 +43,7 @@ public:
 
 	// ダメージを受けた時に呼ばれる
 	bool OnDamaged();
+
 	// 死亡した時に呼ばれる
 	bool OnDead();
 
@@ -83,15 +76,11 @@ public:
 	bool GetIsOverDamageRule() { return isOverDamageRule; }
 	void SetIsOverDamageRule(bool isOverDamageRule) { this->isOverDamageRule = isOverDamageRule; }
 
-	// 追加HPなってるかどうか
-	//void SetIsBonusHpActive(bool isBonusHpActive) { this->isBonusHpActive = isBonusHpActive; }
-
 	// 耐久追加
 	void SetIsBonusHpActive(bool isBonusHpActive);
 
 	// 耐久力追加されてるかどうか
 	bool GetIsBonusHpActive() { return isBonusHpActive; }
-
 private:
 	// 最大値HP
 	int          maxHealth = 5;
@@ -101,12 +90,17 @@ private:
 
 	// 無敵時間
 	float   invincibleTimer = 0.0f;
-
+	float   invincibleTimerMin = 0.0f;
 	// 判定
 	bool dead = false;
 
+	// ダメージ無し
+	int damageEmpty = 0;
+	int healthEmpty = 0;
+
 	// 残機
 	int life = 0;
+	int lifeEmpth = -1;
 
 	// 追加の耐久力
 	int bonusHp = 0;
@@ -123,6 +117,7 @@ private:
 	// 反転用
 	int blinkingTimeMax = 60;
 	int blinkingTime = blinkingTimeMax;
+	int blinkingTimeMin = 0;
 
 	// ダメージ連続一定以上で 判定
 	float escapeOnFixedDamageStart = 0.0f;
@@ -135,5 +130,4 @@ private:
 
 	// ダメージが設定された限界を超えたこと
 	bool isOverDamageRule = false;
-
 };

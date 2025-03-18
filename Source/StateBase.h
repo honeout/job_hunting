@@ -1,10 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
-//class EnemyBoss;
-//class Player;
 class Actor;
-
 
 class State
 {
@@ -19,8 +16,6 @@ public:
 	virtual void Execute(float elapsedTime) = 0;
 	// ステートから出ていくときのメソッド
 	virtual void Exit() = 0;
-
-
 protected:
 	std::weak_ptr<Actor> owner;
 };

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include "Actor.h"
 #include <set>
@@ -21,10 +20,6 @@ public:
         return instance;
     }
 
-
-    // デバッグプリミティブ描画
-    //void DrawDebugPrimitive();
-
     // ui登録
     void Register(std::shared_ptr<Actor> ui);
 
@@ -33,7 +28,6 @@ public:
 
     // ui数取得
     int GetUiesCount() const { return static_cast<int> (uies.size()); }
-
 
     // ui取得
     std::shared_ptr<Actor> GetUies(int index) { return uies.at(index); }

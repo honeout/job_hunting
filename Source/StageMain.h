@@ -1,8 +1,5 @@
 #pragma once
-
-
 #include "Graphics/Model.h"
-
 #include "Collision.h"
 #include "Component.h"
 #include "ModelControll.h"
@@ -12,7 +9,6 @@
 class StageMain : public Component
 {
 public:
-
     StageMain();
     ~StageMain() override;
 
@@ -31,8 +27,6 @@ public:
     // シャドウマップ処理
     void RenderShadowmap(RenderContext& rc) override;
 
-    //void Render(const RenderContext& rc, ModelShader* shader) override;
-
     // レイキャスト
     bool RayCast(
         const DirectX::XMFLOAT3& start,
@@ -46,19 +40,12 @@ public:
     void SetIsRimRightning(int isRimRightning) { this->isRimRightning = isRimRightning; }
 
 private:
-    //Model* model;
-    //std::shared_ptr<ModelControll> model;
     Model* model = nullptr;
-    //std::unique_ptr<Model>	model;
-
     std::shared_ptr<Transform> transformid;
-
     // スペキュラー無効化
     int isSpecular = 0;
-
     // 解消度を上げる。
     int texcoordMult = 0;
-
     // リムライト
     int isRimRightning = 1;
 };
@@ -78,16 +65,11 @@ public:
         return instance;
     }
 
-    // 描画
-    void Render(RenderContext& rc, ModelShader& shader);
-
     // 登録
     void Register(std::shared_ptr <Actor> actor);
 
-
     // 削除
     void Remove(std::shared_ptr<Actor> stage);
-
 
     void Clear();
 

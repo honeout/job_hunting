@@ -68,7 +68,6 @@ DebugRenderer::DebugRenderer(ID3D11Device* device)
 		desc.MiscFlags = 0;
 		desc.ByteWidth = sizeof(CbMesh);
 		desc.StructureByteStride = 0;
-
 		HRESULT hr = device->CreateBuffer(&desc, 0, constantBuffer.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
@@ -87,7 +86,6 @@ DebugRenderer::DebugRenderer(ID3D11Device* device)
 		desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 		desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
 		HRESULT hr = device->CreateBlendState(&desc, blendState.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
@@ -99,7 +97,6 @@ DebugRenderer::DebugRenderer(ID3D11Device* device)
 		desc.DepthEnable = true;
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-
 		HRESULT hr = device->CreateDepthStencilState(&desc, depthStencilState.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
@@ -118,7 +115,6 @@ DebugRenderer::DebugRenderer(ID3D11Device* device)
 		desc.FillMode = D3D11_FILL_SOLID;
 		desc.CullMode = D3D11_CULL_NONE;
 		desc.AntialiasedLineEnable = false;
-
 		HRESULT hr = device->CreateRasterizerState(&desc, rasterizerState.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
@@ -278,7 +274,6 @@ void DebugRenderer::CreateSphereMesh(ID3D11Device* device, float radius, int sli
 	{
 		D3D11_BUFFER_DESC desc = {};
 		D3D11_SUBRESOURCE_DATA subresourceData = {};
-
 		desc.ByteWidth = static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * sphereVertexCount);
 		desc.Usage = D3D11_USAGE_IMMUTABLE;	// D3D11_USAGE_DEFAULT;
 		desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -288,7 +283,6 @@ void DebugRenderer::CreateSphereMesh(ID3D11Device* device, float radius, int sli
 		subresourceData.pSysMem = vertices.get();
 		subresourceData.SysMemPitch = 0;
 		subresourceData.SysMemSlicePitch = 0;
-
 		HRESULT hr = device->CreateBuffer(&desc, &subresourceData, sphereVertexBuffer.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
@@ -299,15 +293,11 @@ void DebugRenderer::CreateCylinderMesh(ID3D11Device* device, float radius1, floa
 {
 	cylinderVertexCount = 2 * slices * (stacks + 1) + 2 * slices;
 	std::unique_ptr<DirectX::XMFLOAT3[]> vertices = std::make_unique<DirectX::XMFLOAT3[]>(cylinderVertexCount);
-
 	DirectX::XMFLOAT3* p = vertices.get();
-
 	float stackHeight = height / stacks;
 	float radiusStep = (radius2 - radius1) / stacks;
-
 	// vertices of ring
 	float dTheta = DirectX::XM_2PI / slices;
-
 	for (int i = 0; i < slices; ++i)
 	{
 		int n = (i + 1) % slices;

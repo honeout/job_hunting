@@ -2,9 +2,6 @@
 #include "Graphics/Sprite.h"
 #include "CameraController.h"
 #include "Scene.h"
-
-
-
 #include "Graphics/RenderTarget.h"
 #include "Graphics/DepthStencil.h"
 #include "Light.h"
@@ -30,7 +27,6 @@ public:
     // 描画処理
     void Render() override;
 
-
     // 3D空間の描画
     void Render3DScene();
 
@@ -46,27 +42,17 @@ public:
 	void SelectScene();
 
 	void StartBgm();
-
-	// カメラの方向を変える
-	void RotateCameraToDirection();
 private:
 	enum class Select
 	{
 		Title,
 		Game
 	};
-
-	
-
 private:
-    //Sprite* sprite = nullptr;
-
-
     CameraController* cameraControlle = nullptr;
 
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;
-
 
 	// 画面の色
 	ColorGradingData       colorGradingData;
@@ -96,22 +82,16 @@ private:
 	DirectX::XMFLOAT3 shadowColor = { 0.2f,0.2f,0.2f };// 影の色
 	float shadowBias = 0.001f;// 深度比較用のオフセット値
 
-	// ポストプロセス
-	//std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
-
 	// ブルーム用
 	BloomData bloomData;
 
 	VignetteData vignetteData;
 
-
 	std::unique_ptr<Sprite> sprite;
 	std::unique_ptr<Sprite> spritePush;
 
-
 	DirectX::XMFLOAT2 position = { 500.0f,300.0f };
 	DirectX::XMFLOAT2 scale = { 0.0f,0.0f };
-
 
 	// 行動範囲
 	DirectX::XMFLOAT3 minPos = { 0.0f,0.0f,0.0f };
@@ -119,7 +99,6 @@ private:
 
 	// 光半径
 	float lightRange = 130;
-
 
 	// シェーダーをエフェクトして再生
 	float shaderPlayStateTimer = 0;
@@ -129,8 +108,6 @@ private:
 	float shaderBlurStateTimer = 0;
 	float shaderBlurStartStateTimer = 0;
 	float shaderBlurStateTimerMax = 0.9f;
-
-
 
 	// スロー時間
 	float dlayStateTimer = 0.0f;
@@ -142,7 +119,6 @@ private:
 	DirectX::XMFLOAT2 titleUiScaleSelected = { 181,104 };
 	DirectX::XMFLOAT2 titleUiScaleUnselected = { 151,64 };
 
-
 	// UI位置
 	float gameUiPositionSelected = 477;
 	float titleUiPositionSelected = 515;
@@ -150,8 +126,6 @@ private:
 	// UI大きさ
 	DirectX::XMFLOAT2 gameUiScaleSelected = { 181,104 };
 	DirectX::XMFLOAT2 gameUiScaleUnselected = { 151,64 };
-
-
 
 	int selectPush = 0;
 
@@ -174,6 +148,4 @@ private:
 
 	// UI位置
 	DirectX::XMFLOAT2 startPos = { 543, 477 };
-	//DirectX::XMFLOAT2 titlePos = { 543, 577 };
-
 };

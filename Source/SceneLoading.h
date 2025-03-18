@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Graphics/Sprite.h"
 #include "Scene.h"
 // クラス
@@ -12,7 +11,6 @@ public:
     // 次のシーンをここのシーンに入れる
     SceneLoading(Scene* nextScene): nextScene(nextScene) {}
     ~SceneLoading() override {}
-
     // 初期化
     void Initialize() override;
 
@@ -29,10 +27,7 @@ private:
     // ローディングスレッド
     // スタティックだからクラスの中身をいじれない
     static void LoadingThread(SceneLoading* scene);
-
 private:
-    //Sprite* sprite = nullptr;
-    //std::unique_ptr<Sprite> sprite;
     std::unique_ptr<Sprite> spriteLoading;
 
     float angle = 0.0f;

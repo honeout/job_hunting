@@ -1,5 +1,4 @@
 #pragma once
-
 #include <DirectXMath.h>
 #include "Component.h"
 
@@ -21,12 +20,10 @@ public:
 	// 無敵
 	bool UpdateInbincibleTimer(float elapsedTime);
 
-
 	// ダメージを与える ダメージを受けたら他に渡す。
 	bool ApplyConsumption(int damage);
 
 	bool MpCharge(float elapsedTime);
-
 
 	// HP状態を取得
 	int GetMagic() const { return magic; }
@@ -42,19 +39,12 @@ public:
 	// 最大HPを突っ込む
 	void SetMaxMagic(int maxMagic) { this->maxMagic = maxMagic; }
 
-	// ダメージを受けた時に呼ばれる
-	//bool Consumption();
 	// 死亡した時に呼ばれる
 	bool OnDead();
 
 	bool GetMpEmpth() const { return mpEmpth; }
 
 	void SetMpEmpth(bool mpEmpth) { this->mpEmpth = mpEmpth; }
-
-	//// 残機
-	//void SetLife(int life) { this->life = life; }
-	//// 残機
-	//int GetLife() const { return life; }
 
 private:
 	// 最大値HP
@@ -65,15 +55,16 @@ private:
 
 	// 無敵時間
 	float   invincibleTimer = 0.3f;
+	float   invincibleTimerMin = 0.0f;
 
 	float   imvincibleTimerMax = 0.3f;
 
+	int     mpValueMin = 0;
+	int     mpMin = 0;
+
+	int     mpValue = 1;
+
 	// 判定
 	bool mpEmpth = false;
-
-	// 残機
-	//int life = 0;
-
-
 };
 

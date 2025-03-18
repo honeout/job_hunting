@@ -148,21 +148,15 @@ ColorGradingShader::ColorGradingShader(ID3D11Device* device)
 
         HRESULT hr = device->CreateSamplerState(&desc, samplerState.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
     }
-
-
-
 }
 
 // 描画開始
 void ColorGradingShader::Begin(const RenderContext& rc)
 {
-
     rc.deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0);
     rc.deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0);
     rc.deviceContext->IASetInputLayout(inputLayout.Get());
-
     rc.deviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
     rc.deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
@@ -172,7 +166,6 @@ void ColorGradingShader::Begin(const RenderContext& rc)
     };
     rc.deviceContext->VSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
     rc.deviceContext->PSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
-
     const float blend_factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
     rc.deviceContext->OMSetBlendState(blendState.Get(), blend_factor, 0xFFFFFFFF);
     rc.deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
@@ -182,15 +175,12 @@ void ColorGradingShader::Begin(const RenderContext& rc)
 // 描画
 void ColorGradingShader::Draw(const RenderContext& rc, const Sprite* sprite)
 {
-
     // 定数バッファの中身を更新
     CBColorGrading cbColorGrading;
     cbColorGrading.hueShift = rc.colorGradingData.hueShift;
     cbColorGrading.saturation = rc.colorGradingData.saturation;
     cbColorGrading.brigthness = rc.colorGradingData.brigthness;
     rc.deviceContext->UpdateSubresource(colorGradingConstantBuffer.Get(), 0, 0, &cbColorGrading, 0, 0);
-
-    
     UINT stride = sizeof(Sprite::Vertex);
     UINT offset = 0;
     rc.deviceContext->IASetVertexBuffers(0, 1, sprite->GetVertexBuffer().GetAddressOf(), &stride, &offset);

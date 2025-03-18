@@ -13,8 +13,6 @@ public:
 
 
 public:
-	// インスタンス取得
-	//static Audio& Instance() { return *instance; }
 
 	static Audio& Instance()
 	{
@@ -47,19 +45,11 @@ public:
 
 	void DebugDrawGUI();
 #endif // DEBUG
-	//// オーディオソース読み込み
-	//std::unique_ptr<AudioSource> LoadAudioSource(const char* filename);
-	//std::unique_ptr<AudioSeSource> LoadAudioSource();
 
-	//std::shared_ptr<AudioResource> LoadAudioSourceSe(const char* filename);
-
-	//std::unique_ptr<AudioSeSource> LoadAudioSource(const char* filename,
-	//	const std::string& name);
 private:
 	std::vector<AudioSource*> audio_source_pool;
 
 private:
-	//static Audio*			instance;
 
 	IXAudio2*				xaudio = nullptr;
 	IXAudio2MasteringVoice* masteringVoice = nullptr;

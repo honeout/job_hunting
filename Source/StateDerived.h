@@ -6,8 +6,6 @@
 #include "Actor.h"
 #include "Effect.h"
 #include "ProjectileTornade.h"
-//#include "Audio/AudioSource.h"
-
 
 enum AttackChange
 {
@@ -31,68 +29,25 @@ public:
 	// ステートから出ていくときのメソッド
 	void Exit()override;
 private:
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-	////std::shared_ptr<ModelControll> modelid;
-	//std::shared_ptr<Movement> moveid = nullptr;
-	////std::shared_ptr<Actor> playerid;
-
-	//Model* model = nullptr;
-	
-	//float				stateTimerEnd = 0.0f;
-	//float				stateTimer = stateTimerEnd;
-	//float				stateTimerMax = 4.0f;
-
 	// 覚醒時に攻撃回数を変える。
 	int                 attackCountMax = 2;
 	int                 attackCountMin = 0;
 	int                 attackCount = attackCountMin;
-
 	int                 applyDamage = 8;
-
 	// エフェクトスケール
 	float               scaleEffect = 0.3f;
-
 	// エフェクト
 	std::unique_ptr<Effect> smorker;
-
-	// 歩行SE
-	//std::unique_ptr<AudioSeSource> walkSe;
 	bool loopSe = true;
-
 	// 着地瞬間
 	bool                upOnLading = false;
-
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 3.3f;
-
-	//// 再生終了時間
-	//float currentAnimationEndSeconds = 300.0f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-	////float currentAnimationAddSeconds = 0.06f;
-
-	//// キーフレームの終了
-	//float keyFrameEnd = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.7f;
-
 	// 歩き速度
 	float moveSpeed = 3;
-
 	// 回転速度
 	float turnSpeed = DirectX::XMConvertToRadians(320);
-
 	// ターゲット位置
 	DirectX::XMFLOAT3 targetPosition = {.0f,.0f,.0f};
-
 	RadialBlurData radialBlurData;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 };
@@ -113,29 +68,12 @@ public:
 	void Exit()override;
 
 private:
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-	//std::shared_ptr<ModelControll> model;
-	//Model*  model = nullptr;
-	//std::shared_ptr<Movement> move = nullptr;
-	//std::shared_ptr<HP> hp = nullptr;
-	
 	float               stateTimerEnd = 0.0f;
 	float				stateTimer = 0.0f;
 	float				stateTimerMax = 2.5f;
 	float				stateTimerMin = 1.0f;
-
-	//// 再生ループ
-	//bool  loop = true;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.7f;
-
 	// 行動種類
 	int  randRoot = 0;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 };
@@ -156,38 +94,18 @@ public:
 	void Exit()override;
 
 private:
-	//std::shared_ptr<Actor> playerid;
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-	//std::shared_ptr<HP> hpid = nullptr;
-	
-
 	float				stateTimer = 0.0f;
 	float				stateTimerMin = 0.0f;
 	float				attackRange = 0.0f;
-
 	int                 attackRound = 0;
 	int                 attackCountMax = 0;
-
 	int                 attackType = 0;
-
-	//// 再生ループ
-	//bool  loop = true;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.7f;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-
 	// 行動制限最大数
 	int mortionLimitMax = 5;
 	// 数回行動したら疲れるモーションを入れる。
 	int mortionLimit = mortionLimitMax;
-
 	// 行動をランダムで
 	int randamAttack = 0;
 };
@@ -209,28 +127,6 @@ public:
 	void Exit()override;
 
 private:
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-	////std::shared_ptr<ModelControll> modelid;
-	//std::shared_ptr<Movement> moveid = nullptr;
-	//std::shared_ptr<HP> hpid = nullptr;
-	////std::shared_ptr<Actor> playerid;
-
-	////float				stateTimer = 0.0f;
-
-	//Model* model = nullptr;
-
-	//// ジャンプ
-	//std::unique_ptr<AudioSeSource> janpSe;
-
-	//// 着地
-	//std::unique_ptr<AudioSeSource> landSe;
-
-
-	//// 覚醒時の攻撃回数
-	//int                 attackCountMax = 2;
-	//int                 attackCountMin = 0;
-	//int                 attackCount = attackCountMin;
-
 	// 与ダメ
 	int                 applyDamageJumpStart = 5;
 	int                 applyDamageJumpStamp = 8;
@@ -246,22 +142,6 @@ private:
 
 	// 着地瞬間
 	bool                upOnLading = false;
-
-
-	//// 再生ループ
-	//bool  loop = true;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 2.0f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.025f;
-
-	//// キーフレームの終了
-	//float keyFrameEnd = 0.8f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.7f;
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
@@ -301,11 +181,6 @@ public:
 	void Exit()override;
 
 private:
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-
-	//std::shared_ptr<HP> hpid = nullptr;
-	
-
 	DirectX::XMFLOAT3 angle;
 
 	// チャージ時間
@@ -333,21 +208,6 @@ private:
 	std::unique_ptr<Effect> charge;
 	std::unique_ptr<Effect> chargeCompleate;
 	
-	//// 再生ループ
-	//bool  loop = false;
-	//// チャージ中
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 2.3f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.7f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.015f;
-
-	//// キーフレームの終了
-	//float keyFrameEnd = 120.8f;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 
@@ -368,85 +228,7 @@ private:
 
 	DirectX::XMFLOAT3 direction;
 
-
 	DirectX::XMFLOAT3 directionP;
-
-};
-
-// 射撃ステートオブジェクト
-class AttackShotState : public State
-{
-public:
-	// コンストラクタ
-	AttackShotState(std::weak_ptr<Actor> enemy) :State(enemy) {};
-	// デストラクタ
-	~AttackShotState() {}
-	// ステートに入った時のメソッド
-	void Enter()override;
-	// ステートで実行するメソッド
-	void Execute(float elapsedTime)override;
-	// ステートから出ていくときのメソッド
-	void Exit()override;
-
-private:
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-
-	//std::shared_ptr<HP> hpid = nullptr;
-	//std::shared_ptr<ProjectileRuby> projectileRubyid;
-
-	float				stateTimer = 0.0f;
-
-	int                 attackCount = 0;
-	int                 attackCountMax = 0;
-
-
-
-	// 再生ループ
-	bool  loop = false;
-
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
-
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
-};
-// 射撃弧ステートオブジェクト
-class AttackShotThrowingState : public State
-{
-public:
-	// コンストラクタ
-	AttackShotThrowingState(std::weak_ptr<Actor> enemy) :State(enemy) {};
-	// デストラクタ
-	~AttackShotThrowingState() {}
-	// ステートに入った時のメソッド
-	void Enter()override;
-	// ステートで実行するメソッド
-	void Execute(float elapsedTime)override;
-	// ステートから出ていくときのメソッド
-	void Exit()override;
-
-private:
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-
-	//std::shared_ptr<Transform> transformid = nullptr;
-
-
-	float				stateTimer = 0.0f;
-
-	int                 attackCount = 0;
-	int                 attackCountMax = 0;
-	bool				turnPermission = false;
-
-	float               turnSpeed = DirectX::XMConvertToRadians(320);
-
-	// 再生ループ
-	bool  loop = false;
-
-	// 再生開始時間 
-	float currentAnimationStartSecondsf = 0.0f;
-
-	// アニメーションブレンド
-	float blendSeconds = 0.7f;
 };
 
 // ダメージステートオブジェクト
@@ -463,47 +245,13 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-
-	//std::shared_ptr<Transform> transformid;
-
-	// 被ダメージ
-	//std::unique_ptr<AudioSource> damageSe;
 	bool loopSe = false;
-
 	float				stateTimer = 0.0f;
 	float				stateTimerMax = 5.0f;
 	float				stateTimerEnd = 0.0f;
-
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.7f;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-	//// 再生ループ
-	//bool  loop = true;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 2.5f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.025f;
-
-	//// キーフレームの終了
-	//float keyFrameEnd = 3.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.7f;
 };
 
 // 混乱ステートオブジェクト
@@ -520,44 +268,17 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-
-	// 混乱
-	//std::unique_ptr<AudioSource> confusionSe;
 	bool loopSe = false;
-
 	float				stateTimer = 0.0f;
 	float				stateTimerMax = 2.8f;
-
 	float				stateTimerEnd = 0.0f;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.426f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-
-	//// キーフレームの終了
-	//float keyFrameEnd = 70.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.35f;
-
 	// 攻撃種類
-		// 行動をランダムで
+	// 行動をランダムで
 	int randamAttack = 0;
 };
-
-
 
 // 死亡ステートオブジェクト
 class DeathState : public State
@@ -573,36 +294,14 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-
-	//std::shared_ptr<Transform> transformid = nullptr;
-
-	// 死亡音声
-	//std::unique_ptr<AudioSource> deathSe;
-	//std::unique_ptr<AudioSeSource> deathSe;
 	bool loopSe = false;
-
 	float				stateTimer = 0.0f;
-
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.7f;
-
 	// クリア確認
 	bool clearCheck = true;
 };
-
 
 // 覚醒ステートオブジェクト
 class AwakeStartState : public State
@@ -618,42 +317,19 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 5.829f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-
-	//// キーフレームの終了
-	//float keyFrameEnd = 491.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.35f;
-
-
 	// クリア確認
 	bool clearCheck = true;
-
 	// カメラ距離
 	float distance = 3.0f;
-
 	// カメラの揺れの深さ
 	float cameraShakePower = 0.1f;
 	// カメラの揺れ時間
 	float cameraShakeTime = 1.0f;
-
 	// アニメーションの時間
 	float animationPose = 6.70f;
-
 	RadialBlurData radialBlurData;
 };
 // クリアステートオブジェクト
@@ -670,36 +346,14 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-	//std::shared_ptr<EnemyBoss> enemyid = nullptr;
-
-	//std::shared_ptr<Transform> transformid = nullptr;
-
-	// 死亡音声
-	//std::unique_ptr<AudioSource> deathSe;
-	//std::unique_ptr<AudioSeSource> deathSe;
 	bool loopSe = false;
-
 	float				stateTimer = 0.0f;
-
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 1.5f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.7f;
-
 	// クリア確認
 	bool clearCheck = true;
-
 	// カメラ距離
 	float distance = 3.0f;
 };
-
 
 // クリアステートオブジェクト
 class ClearReviveState : public State
@@ -715,37 +369,19 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-
 	bool loopSe = false;
-
 	float				stateTimer = 0.0f;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 1.5f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.7f;
-
 	// クリア確認
 	bool clearCheck = true;
-
 	// カメラ距離
 	float distance = 3.0f;
 };
-
 //////////////////////////////
 // プレイヤー
 //////////////////////////////
-
-
 // 待機ステートオブジェクト
 class PlayerIdleState : public State
 {
@@ -760,26 +396,10 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-	//std::shared_ptr<Actor> playerid;
-	//std::shared_ptr<Movement> moveid;
-
-
-
 	float				stateTimer = 0.0f;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-	//// 再生ループ
-	//bool  loop = true;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
 };
 
 // 移動ステートオブジェクト
@@ -796,31 +416,12 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-
-	// 歩行
-	//std::unique_ptr<AudioSource> walkSe;
 	bool loopSe = true;
 
-	//std::shared_ptr<Movement> moveid;
-
-		// アニメーションルール
+	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-	//// 再生ループ
-	//bool  loop = true;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.05f;
 };
-
 
 // ジャンプステートオブジェクト
 class PlayerJumpState : public State
@@ -836,33 +437,13 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-	//std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-
-	// ジャンプ
-	//std::unique_ptr<AudioSource> janpSe;
 	bool loopSe = false;
-
 	float				stateTimer = 0.0f;
 	float				attackRange = 1.5f;
-
 	bool                jumpCheck = false;
-	//bool				loop = false;
-
-		// アニメーションルール
+	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
 };
 
 // 着地ステートオブジェクト
@@ -879,37 +460,13 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-	//std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-
-	// 着地
-	//std::unique_ptr<AudioSource> landSe;
-
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.35f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-
-	//// キーフレームの終了
-	//float keyFrameEnd = 40.0f;
-
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
 };
 
 // ジャンプ中ステートオブジェクト
@@ -926,15 +483,7 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-	//std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-
-
-	// ジャンプ
-	//std::unique_ptr<AudioSource> janpSe;
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
@@ -942,22 +491,8 @@ private:
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.3f;
-
-	//float currentAnimationAddSeconds = 0.03f;
-	//float keyFrameEnd = 25.0f;
-
 	// 回転スピード
 	float turnSpeed = DirectX::XMConvertToRadians(720);
-
-
 };
 
 
@@ -975,7 +510,6 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
 	enum  AttackMemory
 	{
@@ -984,22 +518,8 @@ private:
 		ThreePushu,
 	};
 private:
-	//std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-	//std::shared_ptr<Transform> transformid;
-
-	// 足もとに竜巻
-	//std::unique_ptr<Effect> areWork;
-
-	// 斬撃
-	//std::unique_ptr<AudioSource> slashSe;
 	bool loopSe = false;
-	
 	std::unique_ptr<Effect> tellePort;
-
-	//DirectX::XMFLOAT3 angle; 
-
 	float				stateTimer = 0.0f;
 	bool				button = false;
 	bool				buttonSeconde = false;
@@ -1008,7 +528,6 @@ private:
 
 	float               speed = 10;
 
-
 	float               attackSpeed = 3.0f;
 
 	// 最初の一回だけ呼びたいから
@@ -1016,8 +535,6 @@ private:
 
 	// 再生ループ
 	bool  loop = false;
-
-
 
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
@@ -1029,7 +546,6 @@ private:
 	float length = 0;
 
 	DirectX::XMFLOAT3 vector = {0,0,0};
-
 
 	// 攻撃サポート範囲
 	float attackCheckRange = 6.0f;
@@ -1065,8 +581,6 @@ private:
 	bool			  isHomingStartCheck = false;
 };
 
-
-
 // 攻撃ステートオブジェクト
 class PlayerSideCutState : public State
 {
@@ -1081,7 +595,6 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
 	enum  AttackMemory
 	{
@@ -1090,16 +603,7 @@ private:
 		ThreePushu,
 	};
 private:
-	//std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-	//std::shared_ptr<Transform> transformid;
-
-	// 斬撃
-	//std::unique_ptr<AudioSource> slashSe;
 	bool loopSe = false;
-
-	//DirectX::XMFLOAT3 angle;
 
 	float				stateTimer = 0.0f;
 	bool				button = false;
@@ -1114,14 +618,6 @@ private:
 	// 最初の一回だけ呼びたいから
 	bool                InitializationCheck = false;
 
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.03f;
-
 	// アニメーションブレンド
 	float blendSeconds = 0.5f;
 
@@ -1132,7 +628,6 @@ private:
 	float length = 0;
 
 	DirectX::XMFLOAT3 vector = { 0,0,0 };
-
 
 	// 攻撃サポート範囲
 	float attackCheckRange = 9;
@@ -1164,8 +659,6 @@ private:
 	bool              oneAttackCheck = false;
 };
 
-
-
 // 攻撃ステートオブジェクト
 class PlayerCycloneStrikeState : public State
 {
@@ -1180,7 +673,6 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
 	enum  AttackMemory
 	{
@@ -1189,16 +681,7 @@ private:
 		ThreePushu,
 	};
 private:
-	//std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-	//std::shared_ptr<Transform> transformid;
-
-	// 斬撃
-	//std::unique_ptr<AudioSource> slashSe;
 	bool loopSe = false;
-
-	//DirectX::XMFLOAT3 angle;
 
 	float				stateTimer = 0.0f;
 	bool				button = false;
@@ -1207,7 +690,6 @@ private:
 	float				turnSpeed = DirectX::XMConvertToRadians(720);
 
 	float               speed = 10;
-
 
 	float               attackSpeed = 3.0f;
 
@@ -1278,7 +760,6 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
 	enum  AttackMemory
 	{
@@ -1287,22 +768,6 @@ private:
 		ThreePushu,
 	};
 private:
-	//std::shared_ptr<Transform> transformid;
-	////std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-
-	//// エネミー入れ物
-	//std::shared_ptr<Transform> enemyTransform;
-	//std::shared_ptr<HP> enemyHpId;
-
-	//// 斬撃
-	//std::unique_ptr<AudioSource> slashSe;
-
-	//// 必殺技雷
-	//std::unique_ptr<AudioSource> lighteningStrikeSpecialSe;
-	//// 必殺技雷ため
-	//std::unique_ptr<AudioSource> lighteningStrikeSpecialSaveSe;
 	bool loopSe = false;
 
 	DirectX::XMFLOAT3 position = {0.0f,0.0f,0.0f};
@@ -1314,23 +779,10 @@ private:
 	std::unique_ptr<Effect> lightningAttack;
 	std::unique_ptr<Effect> lightningHit;
 
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
-
 	bool button = false;
 
 	// ロックオンモード
 	bool rockCheck = true;
-
 
 	float				turnSpeed = DirectX::XMConvertToRadians(720);
 
@@ -1352,7 +804,6 @@ private:
 
 	// 最大の回転
 	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
-
 };
 
 // 魔法ステートオブジェクト
@@ -1369,46 +820,12 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
-
 private:
-	//std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-
-
-	//// 炎発射
-	//std::unique_ptr<AudioSource> flameStarteSe;
-	//// 炎持続
-	////std::unique_ptr<AudioSource> flameDurationSe;
-	//// 炎着弾時
-	//std::unique_ptr<AudioSource> flameimpactSe;
-
-
-	//// 氷発射
-	//std::unique_ptr<AudioSource> iceStarteSe;
-	//// 氷持続
-	//std::unique_ptr<AudioSource> iceDurationSe;
-	//// 氷着弾時
-	//std::unique_ptr<AudioSource> iceimpactSe;
-
-	//// 雷ヒット時
-	//std::unique_ptr<AudioSource> lightningSe;
-
 	// 回復魔法
 	std::unique_ptr<Effect> heale;
 
 	// se
 	bool loopSe = false;
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
@@ -1435,10 +852,7 @@ private:
 
 	// 移動許可
 	bool isMove = false;
-
-
 };
-
 
 // 近接必殺技ステートオブジェクト
 class PlayerSpecialMagicState : public State
@@ -1454,7 +868,6 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
 	enum  AttackMemory
 	{
@@ -1463,24 +876,7 @@ private:
 		ThreePushu,
 	};
 private:
-	//std::shared_ptr<Transform> transformid;
-	////std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-
-	// エネミー入れ物
-	//std::shared_ptr<Transform> enemyTransform;
-	//std::shared_ptr<HP> enemyHpId;
-
-	// 炎持続
-	//std::unique_ptr<AudioSource> flameDurationSe;
-
-	// 必殺技炎
-	//std::unique_ptr<AudioSource> flameSpecialStarteSe;
-	// 必殺技炎ため
-	//std::unique_ptr<AudioSource> flameSpecialSaveSe;
 	bool loopSe = false;
-
 
 	DirectX::XMFLOAT3 position = { 0.0f,0.0f,0.0f };
 	DirectX::XMFLOAT3 angle = { 0.0f,0.0f,0.0f };
@@ -1493,26 +889,12 @@ private:
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
-
 	bool button = false;
 
 	// ロックオンモード
 	bool rockCheck = true;
 
-
 	float				turnSpeed = DirectX::XMConvertToRadians(720);
-
 
 	// スタート値
 	float specialMoveWaitStartTime = 0.0f;
@@ -1524,7 +906,6 @@ private:
 	// 最初だけ魔法を発動するため
 	bool startMagic = false;
 	bool isMagic = false;
-
 
 	// 回転確認
 	bool isRotate = false;
@@ -1541,163 +922,6 @@ private:
 
 	// 最大の回転
 	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
-
-};
-
-
-// 必殺技氷魔法
-class PlayerSpecialMagicIceState : public State
-{
-public:
-	// コンストラクタ
-	PlayerSpecialMagicIceState(std::weak_ptr<Actor> player) :State(player) {};
-	// デストラクタ
-	~PlayerSpecialMagicIceState() {}
-	// ステートに入った時のメソッド
-	void Enter()override;
-	// ステートで実行するメソッド
-	void Execute(float elapsedTime)override;
-	// ステートから出ていくときのメソッド
-	void Exit()override;
-
-private:
-	enum  AttackMemory
-	{
-		OnePushu = 1,
-		TwoPushu,
-		ThreePushu,
-	};
-private:
-	//std::shared_ptr<Transform> transformid;
-	//std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-
-	// エネミー入れ物
-	//std::shared_ptr<Transform> enemyTransform;
-	//std::shared_ptr<HP> enemyHpId;
-
-	DirectX::XMFLOAT3 position = { 0.0f,0.0f,0.0f };
-	DirectX::XMFLOAT3 angle = { 0.0f,0.0f,0.0f };
-
-	float				stateTimer = 0.0f;
-
-	std::unique_ptr<Effect> ice;
-	//std::unique_ptr<Effect> fireAttack;
-
-	// アニメーションルール
-	Model::ModelAnim modelAnim;
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
-	//// キーフレーム終了
-	//float keyFrameEnd = 64.00f;
-
-
-	bool button = false;
-
-	// ロックオンモード
-	bool rockCheck = true;
-
-
-	float				turnSpeed = DirectX::XMConvertToRadians(720);
-
-
-	// スタート値
-	float specialMoveWaitStartTime = 0.0f;
-
-	// 魔法打った後の待機時間
-	float specialMoveWaitTime = specialMoveWaitStartTime;
-	float specialMoveWaitTimeMax = 3.0f;
-
-	// 最初だけ魔法を発動するため
-	bool startMagic = false;
-	bool isMagic = false;
-
-};
-
-
-// 必殺技雷魔法
-class PlayerSpecialThanderMagicState : public State
-{
-public:
-	// コンストラクタ
-	PlayerSpecialThanderMagicState(std::weak_ptr<Actor> player) :State(player) {};
-	// デストラクタ
-	~PlayerSpecialThanderMagicState() {}
-	// ステートに入った時のメソッド
-	void Enter()override;
-	// ステートで実行するメソッド
-	void Execute(float elapsedTime)override;
-	// ステートから出ていくときのメソッド
-	void Exit()override;
-
-private:
-	enum  AttackMemory
-	{
-		OnePushu = 1,
-		TwoPushu,
-		ThreePushu,
-	};
-private:
-	//std::shared_ptr<Transform> transformid;
-	////std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<Movement> moveid;
-
-	//// エネミー入れ物
-	//std::shared_ptr<Transform> enemyTransform;
-	//std::shared_ptr<HP> enemyHpId;
-
-	DirectX::XMFLOAT3 position = { 0.0f,0.0f,0.0f };
-	DirectX::XMFLOAT3 angle = { 0.0f,0.0f,0.0f };
-
-	float				stateTimer = 0.0f;
-
-	std::unique_ptr<Effect> fire;
-	std::unique_ptr<Effect> fireAttack;
-
-	// 再生ループ
-	bool  loop = false;
-
-	// 再生開始時間 
-	float currentAnimationStartSeconds = 0.0f;
-	// 再生時間加算分の値
-	float currentAnimationAddSeconds = 0.00f;
-
-	// アニメーションブレンド
-	float blendSeconds = 0.5f;
-
-
-	bool button = false;
-
-	// ロックオンモード
-	bool rockCheck = true;
-
-
-	float				turnSpeed = DirectX::XMConvertToRadians(720);
-
-
-	// スタート値
-	float specialMoveWaitStartTime = 0.0f;
-
-	// 魔法打った後の待機時間
-	float specialMoveWaitTime = specialMoveWaitStartTime;
-	float specialMoveWaitTimeMax = 3.0f;
-
-	// 最初だけ魔法を発動するため
-	bool startMagic = false;
-	bool isMagic = false;
-
 };
 
 // よろけステートオブジェクト
@@ -1716,27 +940,10 @@ public:
 	void Exit()override;
 
 private:
-	//std::shared_ptr<ModelControll> model;
-	//std::shared_ptr<Movement> moveid;
-	//Model* model;
-
-	// 被ダメージ
-	//std::unique_ptr<AudioSource> damageSe;
 	bool loopSe = false;
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-	//float				stateTimer = 0.0f;
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
 };
 
 // 回避ステートオブジェクト
@@ -1755,17 +962,10 @@ public:
 	void Exit()override;
 
 private:
-	//std::shared_ptr<Transform> transformid;
-	//std::shared_ptr<Movement> moveid;
-	//std::shared_ptr<HP> hpid;
-
-	// ダッシュ
-	//std::unique_ptr<AudioSource> dushSe;
 	bool loopSe = false;
 
 	// エフェクト
 	std::unique_ptr<Effect> wind;
-
 
 	float				stateTimer = 0.0f;
 
@@ -1776,18 +976,6 @@ private:
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 	Model::ModelAnim modelAnimUpper;
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.3f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.025f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
 	// 可速度
 	float addHeight = 1.0f;
 };
@@ -1806,26 +994,13 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-	
-
-	// 反射
-	//std::unique_ptr<AudioSource> reflectionStop;
 	bool loopSe = false;
 
 	float				stateTimer = 0.0f;
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
 };
 
 // 死亡ステートオブジェクト
@@ -1842,32 +1017,12 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
-	//std::shared_ptr<ModelControll> model;
-	//Model* model;
-	//std::shared_ptr<HP> hpid;
-	//std::shared_ptr<Transform> transformid;
-	//float				stateTimer = 0.0f;
-
-	// 死亡音声敵
-	//std::unique_ptr<AudioSource> deathSe;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
 	// 経過時間最大
 	float stateTimer = 0.0f;
 	float stateTimerMax = 40;
-	//float stateTimerMax = 240;
 
 	ColorGradingData colorGradingData;
 };
@@ -1886,7 +1041,6 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
 	float				stateTimer = 0.0f;
 
@@ -1915,7 +1069,6 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
 	float				stateTimer = 0.0f;
 
@@ -1924,17 +1077,7 @@ private:
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-	//// 再生ループ
-	//bool  loop = true;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
 };
-
-
 
 // プレイヤータイトル用決定ステートオブジェクト
 class PlayerTitlePushState : public State
@@ -1950,19 +1093,8 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
 	float				stateTimer = 0.0f;
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 
@@ -1976,8 +1108,6 @@ private:
 
 	RadialBlurData radialBlurData;
 };
-
-
 
 // プレイヤークリア用待機ステートオブジェクト
 class PlayerClearIdleState : public State
@@ -1999,21 +1129,6 @@ private:
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-
-	//// キーフレーム終了
-	//float keyFrameEnd = 68.00f;
 };
 
 
@@ -2032,28 +1147,11 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
 	float				stateTimer = 0.0f;
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-
-	//// キーフレーム終了
-	//float keyFrameEnd = 68.00f;
 };
-
-
 
 // プレイヤークリア用待機ステートオブジェクト
 class PlayerOverIdleState : public State
@@ -2069,28 +1167,9 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
 private:
 	float				stateTimer = 0.0f;
-
-
-
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 1.7f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-
-	//// キーフレーム終了
-	//float keyFrameEnd = 105.00f;
 };
-
 
 // プレイヤークリア用待機ステートオブジェクト
 class PlayerOverReviveState : public State
@@ -2109,23 +1188,10 @@ public:
 
 private:
 	float				stateTimer = 0.0f;
+
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
-	//// 再生ループ
-	//bool  loop = false;
-
-	//// 再生開始時間 
-	//float currentAnimationStartSeconds = 0.0f;
-
-	//// アニメーションブレンド
-	//float blendSeconds = 0.5f;
-
-	//// 再生時間加算分の値
-	//float currentAnimationAddSeconds = 0.00f;
-
-	//// キーフレーム終了
-	//float keyFrameEnd = 0.0f;
-
+	
 	// ポーズ切り替え
 	bool isPoseStarte = false;
 

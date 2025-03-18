@@ -15,8 +15,6 @@ void Messenger::SendData(const std::string& identifier, void* data)
 	}
 }
 
-
-
 uint64_t Messenger::AddReceiver(const std::string& identifier, Receiver receiver)
 {
 	receivers.insert(std::make_pair(identifier, Data( incrementKey, receiver ) ));

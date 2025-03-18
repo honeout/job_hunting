@@ -1,12 +1,8 @@
 #pragma once
-
 #include <DirectXMath.h>
-
 #include "CameraController.h"
 #include "Graphics/Sprite.h"
 #include "Scene.h"
-
-
 #include "Graphics/RenderTarget.h"
 #include "Graphics/DepthStencil.h"
 #include "Light.h"
@@ -16,6 +12,7 @@
 #include "TransForm2D.h"
 #include "Ui.h"
 #include "UiManager.h"
+
 class SceneGameClear : public Scene
 {
 public:
@@ -24,14 +21,12 @@ public:
 
     // 初期化
     void Initialize() override;
-
     // 終了化
     void Finalize() override;
     // 更新処理
     void Update(float elapsedTime)override;
     // 描画処理
     void Render() override;
-
 
     // 3D空間の描画
     void Render3DScene();
@@ -44,14 +39,6 @@ public:
 
 	// BGM再生
 	void StartBgm();
-
-    // カメラの時間制御初期化
-    void CameraInitialize();
-    // カメラの時間制御
-    void CameraUpdate(float elapsedTime);
-
-	// 画面エフェクト
-    void PlayEffectsShaders(float elapsedTime);
 
 	// どのシーンに行くか
 	void SelectScene();
@@ -69,7 +56,6 @@ private:
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;
 
-
 	// 画面の色
 	ColorGradingData       colorGradingData;
 
@@ -86,7 +72,6 @@ private:
 	// seの大きさ
 	float bgmVolume = 1.0f;
 
-
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源
 	std::unique_ptr<DepthStencil> shadowmapDepthStencil; // シャドウマップ用深度ステンシルバッファ
@@ -99,22 +84,16 @@ private:
 	DirectX::XMFLOAT3 shadowColor = { 0.2f,0.2f,0.2f };// 影の色
 	float shadowBias = 0.001f;// 深度比較用のオフセット値
 
-	// ポストプロセス
-	//std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
-
 	// ブルーム用
 	BloomData bloomData;
 
 	VignetteData vignetteData;
 
-
 	std::unique_ptr<Sprite> sprite;
 	std::unique_ptr<Sprite> spritePush;
 
-
 	DirectX::XMFLOAT2 position = { 500.0f,300.0f };
 	DirectX::XMFLOAT2 scale = { 0.0f,0.0f };
-
 
 	// 行動範囲
 	DirectX::XMFLOAT3 minPos = { 0.0f,0.0f,0.0f };
@@ -122,7 +101,6 @@ private:
 
 	// 光半径
 	float lightRange = 130;
-
 
 	// シェーダーをエフェクトして再生
 	float shaderPlayStateTimer = 0;
@@ -132,8 +110,6 @@ private:
 	float shaderBlurStateTimer = 0;
 	float shaderBlurStartStateTimer = 0;
 	float shaderBlurStateTimerMax = 0.9f;
-
-
 
 	// スロー時間
 	float dlayStateTimer = 0.0f;
@@ -145,7 +121,6 @@ private:
 	DirectX::XMFLOAT2 titleUiScaleSelected = { 181,104 };
 	DirectX::XMFLOAT2 titleUiScaleUnselected = { 151,64 };
 
-
 	// UI位置
 	float gameUiPositionSelected = 477;
 	float titleUiPositionSelected = 515;
@@ -154,19 +129,12 @@ private:
 	DirectX::XMFLOAT2 gameUiScaleSelected = { 181,104 };
 	DirectX::XMFLOAT2 gameUiScaleUnselected = { 151,64 };
 
-
 	// どれを選択しているかUI
 	int selectPush = 0;
-
 
 	// ボタン用位置の大きさ分
 	float buttonPosYAdd = 20.0f;
 
-
 	DirectX::XMFLOAT2 startPos = { 543, 477 };
 	DirectX::XMFLOAT2 exitPos = { 543, 577 };
-
-
-	//CameraController* cameraControlle = nullptr;
-
 };

@@ -3,7 +3,6 @@
 #include <Xinput.h>
 #include "Input/GamePad.h"
 
-
 // 更新
 void GamePad::Update()
 {
@@ -164,9 +163,6 @@ void GamePad::Update()
 		if (newButtonState & BTN_LEFT)  lx = -1.0f;
 #endif
 
-
-
-
 		if (lx >= 1.0f || lx <= -1.0f || ly >= 1.0f || ly <= -1.0)
 		{
 			float power = ::sqrtf(lx * lx + ly * ly);
@@ -189,17 +185,8 @@ void GamePad::Update()
 		// スイッチ履歴
 		SetInputKey(newButtonState);
 
-		//buttonState[1] = buttonState[0];	// スイッチ履歴
-		//buttonState[0] = newButtonState;
-
-		//buttonDown = ~buttonState[1] & newButtonState;	// 押した瞬間
-		//buttonUp = ~newButtonState & buttonState[1];	// 離した瞬間
-
 		buttonDown = ~inputKeys[1] & newButtonState;	// 押した瞬間
 		buttonUp = ~newButtonState & inputKeys[1];	// 離した瞬間
-		
-		
-
 	}
 }
 
@@ -213,16 +200,13 @@ void GamePad::SetInputKey(GamePadButton newButtonState)
 		inputKeys[i] = inputKeys[i - 1];
 	}
 	inputKeys[0] = newButtonState;
-	
-	
 }
 
 // コマンド確認
 bool GamePad::ConfirmCommand(const std::vector<GamePadButton>& command, int frame)
 {
-
 	//　コマンド確認用
-	int number = command.size() - 1;
+	int number = ((int)command.size()) - 1;
 	// P以外ははじく 2進数　で００００１とか１の位置を見る
 
 		for (int i = 0; i < frame; i++)

@@ -1,6 +1,4 @@
 #pragma once
-
-
 #include "Component.h"
 #include "SpriteControll.h"
 #include "TransForm2D.h"
@@ -61,8 +59,6 @@ private:
     // 位置や動き
     std::shared_ptr<TransForm2D> transForm2D;
 
-
-
     // 描画の切り替えよう
     bool       drawCheck = false;
 
@@ -82,5 +78,4 @@ private:
 
     // 終了タイミング
     bool       timeUp = false;
-
 };

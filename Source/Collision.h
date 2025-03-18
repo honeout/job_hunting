@@ -1,9 +1,6 @@
 #pragma once
-
 #include <DirectXMath.h>
-
 #include "Graphics/Model.h"
-
 #include "Component.h"
 
 // ヒット結果
@@ -16,19 +13,16 @@ struct HitResult
     DirectX::XMFLOAT3 rotation = { 0,0,0 }; // 回転量
 };
 
-
 // コリジョン
 class Collision : public Component
 {
 public:
-
     // 名前取得
     const char* GetName() const override { return "Collision"; }
 #ifdef _DEBUG
     // GUI描画
     void OnGUI() override;
 #endif // _DEBUG
-
     // 球と球の交差判定
     static bool IntersectSpherVsSphere(
         // 動かない
@@ -39,7 +33,6 @@ public:
         // 出された結果
         DirectX::XMFLOAT3& outPositionB// 結果
     );
-
 
     // 円柱と円柱の交差判定　うその
     static bool IntersectCylinderVsCylinder(

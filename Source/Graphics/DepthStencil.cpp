@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include "Graphics/Graphics.h"
 #include "Graphics/DepthStencil.h"
-
 #include "Misc.h"
 #include "Logger.h"
 

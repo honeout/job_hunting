@@ -13,7 +13,6 @@ public:
     void Begin(const RenderContext& rc)override;
     void Draw(const RenderContext& rc, const Model* model)override;
     void End(const RenderContext& rc)override;
-
 private:
     static const int MaxBones = 128;
 
@@ -24,12 +23,9 @@ private:
         DirectX::XMFLOAT4 ambientLightColor;
         DirectionalLightData directionalLightData;
 
-        // UNIT04
-        //DirectionalLightData directionalLightData;
         PointLightData pointLightData[PointLightMax]; // 点光源
         SpotLightData spotLightData[SpotLightMax]; // スポットライト
         int            pointLightCount;               // 点光源数
-        //DirectX::XMFLOAT3 dummy;
 
         int            spotLightCount;                // スポットライト数
 
@@ -43,19 +39,12 @@ private:
         // リムライト
         int           isRimRightning;
 
-        //int dummy;
         int          StencilRef;
-
-
-        //DirectX::XMFLOAT2 dummy;
-        //float dummy;
-        //DirectX::XMFLOAT2 dummy;
     };
 
     struct CbMesh
     {
         DirectX::XMFLOAT4X4 boneTransforms[MaxBones];
-        
     };
 
     struct CbSubset
@@ -76,18 +65,13 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> meshConstantBuffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer> subsetConstantBuffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer> shadowMapConstantBuffer;
-
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
     Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
     Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
-
-
     Microsoft::WRL::ComPtr<ID3D11BlendState> blendState;
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerState;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilMask;
-
     Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
     Microsoft::WRL::ComPtr<ID3D11SamplerState> shadowMapSamplerState;
-
 };

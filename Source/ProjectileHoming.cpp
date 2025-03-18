@@ -8,8 +8,6 @@ ProjectileHoming::ProjectileHoming()
 // デストラクタ
 ProjectileHoming::~ProjectileHoming()
 {
-    //delete model;
-
     // エフェクト更新削除
     if (effectProgress)
     {
@@ -61,23 +59,15 @@ void ProjectileHoming::Update(float elapsedTime)
 
     if (effectHit)
         effectHit->SetPosition(effectHit->GetEfeHandle(), transform->GetPosition());
-
-
-    
 }
 
 // 描画処理
 void ProjectileHoming::Render(RenderContext& rc, ModelShader& shader)
 {
     Graphics& graphics = Graphics::Instance();
-    //Shader* shader = graphics.GetShader();
-    //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
     shader = *graphics.GetShader(ModelShaderId::Lanbert);
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
-
-
     shader.Draw(rc, model);
-
     shader.End(rc);
 }
 
@@ -111,27 +101,3 @@ void ProjectileHoming::EffectHitUpdate(float elapsedTime)
     effectHit->SetPosition(effectHit->GetEfeHandle(),
         transform->GetPosition());
 }
-
-//void ProjectileHoming::SetEffectProgress(const char * storageLocation)
-//{
-//    
-//}
-
-//// 描画処理
-//void ProjectileHoming::Render(const RenderContext& rc, ModelShader* shader)
-//{
-//    shader->Draw(rc, model);
-//}
-//
-//
-//
-//void ProjectileHoming::Lanch(const DirectX::XMFLOAT3& direction,
-//    const DirectX::XMFLOAT3& position,
-//    const DirectX::XMFLOAT3& target)
-//{
-//    this->direction = direction;
-//    this->position = position;
-//    this->target = target;
-//
-//    UpdateTransform();
-//}

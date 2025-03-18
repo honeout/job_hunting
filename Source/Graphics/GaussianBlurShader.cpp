@@ -29,7 +29,7 @@ GaussianBlurShader::GaussianBlurShader(ID3D11Device* device)
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "COLOR",   0, DXGI_FORMAT_R32G32B32A32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-};
+		};
 		hr = device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), csoData.get(), csoSize, inputLayout.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
@@ -155,12 +155,10 @@ void GaussianBlurShader::Begin(const RenderContext& rc)
 	rc.deviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 	rc.deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-
 	ID3D11Buffer* constantBuffers[] =
 	{
 		filterConstantBuffer.Get(),
 	};
-	//rc.deviceContext->VSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
 	rc.deviceContext->PSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
 
 	const float blend_factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -178,13 +176,11 @@ void GaussianBlurShader::Draw(const RenderContext& rc, const Sprite* sprite)
 	CalcGaussianFilter(cbFilter, rc.gaussianFilterData);
 	rc.deviceContext->UpdateSubresource(filterConstantBuffer.Get(), 0, 0, &cbFilter, 0, 0);
 
-
 		UINT stride = sizeof(Sprite::Vertex);
 		UINT offset = 0;
 		rc.deviceContext->IASetVertexBuffers(0, 1,sprite->GetVertexBuffer().GetAddressOf(), &stride, &offset);
 		rc.deviceContext->PSSetShaderResources(0, 1, sprite->GetShaderResourceView().GetAddressOf());
 		rc.deviceContext->Draw(4, 0);
-
 }
 
 // •`‰æI—¹

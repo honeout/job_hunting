@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Scene.h"
 
 // シーンマネージャー
@@ -28,7 +27,6 @@ public:
 
     // シーン切り替え
     void ChangeScene(Scene* scene);
-
 private:
     Scene* currentScene = nullptr;
     Scene* nextScene = nullptr;

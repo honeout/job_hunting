@@ -12,8 +12,6 @@ public:
     // âÒì]
     bool Turn(float speed,const DirectX::XMFLOAT3& target, float elapedTime);
 
-    void TurnFull(float speed, const DirectX::XMFLOAT3& target, float elapedTime);
-
     // â°ÇæÇØ
     bool Turn2D(float speed, DirectX::XMFLOAT3& direction, float elapedTime);
 
@@ -27,7 +25,6 @@ public:
     void PushDown(float speed, float turnSpeed, float elapsedTime);
 
     void Sunder(DirectX::XMFLOAT3 target,float elapsedTime);
-    
     
     void Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 target, bool turnPermission, float elapsedTime);
 
@@ -44,17 +41,13 @@ public:
     void OnGUI() override;
 #endif // _DEBUG
 private:
-    //std::shared_ptr<Transform> transformid;
     // à íu
     DirectX::XMFLOAT3 position = { 0,0,0 };
     // å¸Ç´
     DirectX::XMFLOAT3 direction = { 0,0,0 };
     // íeä€ê∂ñΩéûä‘
     float   lifeTimer = 3.0f;
-
     Model* model;
-
     float rangeMin = 0.01f;
-
     float rangeMax = 30;
 };

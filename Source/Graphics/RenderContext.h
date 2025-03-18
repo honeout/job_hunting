@@ -60,9 +60,6 @@ struct RadialBlurData
 	DirectX::XMFLOAT2 center = {0.5f,0.5f}; // ブラー中心点
 
 	float mask_radius = 0;
-	//DirectX::XMFLOAT3	blur_dummy;
-
-
 };
 
 #if	defined( UNIT_VN_01 )
@@ -101,7 +98,6 @@ struct LuminanceExtractionData
 	float intensity = 1.0f; // ブルームの強度
 	DirectX::XMFLOAT2 dummy2;
 };
-
 
 // ブルーム情報
 struct BloomData
@@ -210,17 +206,4 @@ struct RenderContext
 
 	// 描画するかどうか
 	int StencilRef = 0;
-
-
-
-	//DirectX::XMFLOAT3 dummy = {0,0,0};
-
-
-
-
-	//// ブルームの有無
-	//int is_bl = 1;
-
-	//Microsoft::WRL::ComPtr<ID3D11Buffer> vignette_constant_buffer;
-	//Microsoft::WRL::ComPtr<ID3D11PixelShader> vignette_pixel_shader;
 };

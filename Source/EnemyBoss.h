@@ -11,10 +11,6 @@
 #include "StateMachine.h"
 #include "StageMain.h"
 #include "Effect.h"
-// ステート
-
-
-
 
 // 宝石ボス
 class EnemyBoss : public Component
@@ -42,7 +38,6 @@ public:
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
 
-
     // SE再生 切り裂き
     void InputSlashSe();
     void InputStopSlashSe();
@@ -51,12 +46,10 @@ public:
     void InputJampSe();
     void InputStopJampSe();
 
-
     // SE再生 ダッシュ
     void InputDashSe();
     // SE再生 ダッシュ
     void InputStopDashSe();
-
 
     // SE叫び声
     void InputAwakeSe();
@@ -72,15 +65,6 @@ public:
 
     // 当たり判定衝撃波
     void CollisionImpactVsPlayer();
-
-    // 当たり判定ルビー
-    void CollisionRubyVsPlayer();
-
-    // 当たり判定ルビー横
-    void CollisionRubyWidthVsPlayer();
-
-    // 当たり判定宝石と地面
-    void CollisionRubyWidthVsOnGraound();
 
     // 当たり判定ボスとプレイヤー
     bool CollisionPlayerWithRushEnemy();
@@ -99,12 +83,6 @@ public:
 
     void InputImpact(DirectX::XMFLOAT3 pos);
 
-    // 宝石飛び出し
-    void InputProjectile();
-
-    // 宝石弧のじで飛ぶ
-    void InputThrowingRuby(DirectX::XMFLOAT3 target);
-    
     // 縄張り設定
     void SetTerritory(const DirectX::XMFLOAT3& origin, float range);
 
@@ -114,16 +92,10 @@ public:
     // ターゲットポジション取得
     DirectX::XMFLOAT3 GetTargetPosition() { return targetPosition; }
 
-
-    // ステートマシーン取得
-    //StateMachine* GetStateMachine() { return stateMachine; }
     StateMachine*GetStateMachine() { return stateMachine.get(); }
-
 
     // 外部で初期化するための処置
     void StateMachineCreate() { stateMachine = std::make_unique<StateMachine>(); }
-
-
 
 public:
     enum class ClearState
@@ -138,15 +110,11 @@ public:
         Pursuit,
         Jump,
         Attack,
-        Shot,
-        ShotThrowing,
         IdleBattle,
         Damage,
         Death,
         AwakeStart,
     };
-
-
 
     // アニメーション
     enum Animation
@@ -221,53 +189,8 @@ public:
     // ジャンプ設定
     void InputJump();
 
-    // 徘徊ステートへ遷移
-    void TransitionWanderState();
-
-    // 徘徊ステート更新処理
-    void UpdateWanderState(float elapsedTime);
-
-    // ノードとプレイヤーの衝突処理
-    void CollisitionNodeVsPlayer(const char* nodeName, float nodeRadius);
-
     // プレイヤー索敵
     bool SearchPlayer();
-
-    // 待機ステートへ遷移
-    void TransitionIdleState();
-
-    // 待機ステート更新処理
-    void UpdateIdleState(float elapsedTime);
-
-    // 追跡ステートへ遷移
-    void TransitionPursuitState();
-
-    // 追跡ステート更新処理
-    void UpdatePursuitState(float elapsedTime);
-
-    // 攻撃ステートへ遷移
-    void TransitionAttackState();
-
-    // 攻撃ステート更新処理
-    void UpdateAttackState(float elapsedTime);
-
-    // 戦闘待機ステートへ遷移
-    void TransitionIdleBattleState();
-
-    // 戦闘待機ステート更新処理
-    void UpdateIdleBattleState(float elapsedTime);
-
-    // ダメージステートへ遷移
-    void TransitionDamageState();
-
-    // ダメージステートへ更新処理
-    void UpdateDamageState(float elapsedTime);
-
-    // 死亡ステートへ遷移
-    void TransitionDeathState();
-
-    // 死亡ステート更新処理
-    void UpdateDeathState(float elapsedTime);
 
     // 破棄
     void Destroy();
@@ -289,7 +212,6 @@ public:
     // 再生方法ゲット
     UpAnim  GetUpdateAnim() const { return this->updateanim; }
 
-    // Todo現在おかしいので使っていないが投げてプレイヤーが跳ね返せる攻撃の一時的地面判定消去
     // 地面判定復活
     void SetPushuThrow(bool pushuThrow) { this->pushuThrow = pushuThrow; }
     // 地面判定復活
@@ -322,7 +244,6 @@ private:
     // モデル情報を確保
     Model* model = nullptr;
     
-    
     DirectX::XMFLOAT3 position = {};
     DirectX::XMFLOAT3 angle = {};
     DirectX::XMFLOAT3 scale = {};
@@ -331,17 +252,12 @@ private:
     std::weak_ptr<HP>	hp;
     std::weak_ptr<Transform>	transform;
 
-
-
-
-
     // 覚醒有無
     bool isEnemyAwakened = false;
     // 覚醒時間
     float enemyAwakeningDuration = 0.0f;
     float enemyAwakeningDurationMax = 30;
     float enemyAwakeningDurationEnd = 0.0f;
-    
 
     // プレイヤーに与ダメエフェ
     std::unique_ptr<Effect> moveAttackEffect;
@@ -349,10 +265,6 @@ private:
     std::unique_ptr<Effect> inpactEffect;
 
     std::unique_ptr<Effect> awakeEffect;
-
-    //// 衝撃波SE
-    //std::unique_ptr<AudioSource> impactSe;
-    //std::unique_ptr<AudioSource> moveAttackSe;
 
     // seの音の大きさ
     float seVolume = 0.5f;
@@ -366,13 +278,6 @@ private:
 
     // アップデート再生上半身下半身別
     UpAnim  updateanim = UpAnim::Normal;
-    
-    //// 上半身更新開始位置
-    //char* bornUpStartPoint;
-
-    //// 下半身更新終了位置
-    //char* bornDownerEndPoint = "";
-
 
     // 上半身スタート再生開始場所
     char* bornUpStartPoint = "";
@@ -386,9 +291,9 @@ private:
     // 下半身エンド再生停止場所
     char* bornDownerEndPoint = "";
 
-
     // 縄張り半径
     float territoryRange = 10.0f;
+    float territoryRangeMin = 0.0f;
     // 動く速度
     float moveSpeed = 3.0f;
     // 回転速度
@@ -400,15 +305,16 @@ private:
     // ジャンプのプラス分
     float jumpSpeedMin = 20.0f;
 
+    // ジャンプの最大値
+    int jumpLimit = 1;
+
     // 追跡時間
     float stateTimer = 0.0f;
 
-    
     // 探す半径
     float searchRange = 5.0f;
     // 攻撃半径
     float attackRange = 5.5f;
-
 
     // Hp
     int health = 50;
@@ -424,9 +330,16 @@ private:
 
     float territoryarea = 10.0f;
 
+    // スペキュラー無効
+    int isSpecular = 0;
+    // 影オンオフ
+    int isRimRightning = 0;
+    // modelオンオフ
+    int StencilRef = 0;
+
+
     // ステートマシン用
     std::unique_ptr <StateMachine> stateMachine;
-    //StateMachine* stateMachine;
 
     // 当たり判定無効判定
     bool invalidJudgment = true;
@@ -454,8 +367,6 @@ private:
     // model描画チェック
     bool modelDrawCheck = true;
 
-
-
     // ダメージ経過時間
     int damageStateTime = 0;
     int damageStateTimeMax = 15;
@@ -466,16 +377,18 @@ private:
 
     DirectX::XMFLOAT2 colorGB = { 1,1 };
 
-
     // 動作チェック
     bool moveCheck = true;
 
     // ブラーかける
     bool blurCheck = false;
 
+
+    // Se関係の値
+    bool isLoopDisabled = false;
+
     // uiCount最大値
     int uiCountMax = 5;
-
 
     // ダメージ
     int applyDamageSlash = 5;
@@ -483,11 +396,16 @@ private:
     int applyDamageStamp = 6;
     int applyDamageImpact = 5;
     int applyDamageDush = 7;
-
+    float nuckleInvincibleTime = 1.0f;
+    float jampInvincibleTime = 1.0f;
+    float impactInvincibleTime = 0.5f;
 
     // シェイクダメージ演出
     float shakePower = 0.6f;
     float shakeTimer = 0.2f;
+
+    // シェイクスタート
+    bool shakeStart = true;
 
     // シェイク用
     RadialBlurData damageDistortion;
@@ -523,14 +441,9 @@ public:
     std::shared_ptr<Actor> GetEnemy(int index) { return enemies.at(index); }
 
     void Remove(std::shared_ptr<Actor> projectile);
-
-
-
 private:
     std::vector<std::shared_ptr<Actor>> enemies;
 
     // 削除予約
     std::set<std::shared_ptr<Actor>>       removes;
-
-
 };

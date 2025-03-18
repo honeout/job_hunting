@@ -154,7 +154,6 @@ void LuminanceExtractionShader::Begin(const RenderContext & rc)
 	rc.deviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 	rc.deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-
 	ID3D11Buffer* constantBuffers[] =
 	{
 		luminanceExtractionConstantBuffer.Get(),
@@ -178,7 +177,6 @@ void LuminanceExtractionShader::Draw(const RenderContext & rc, const Sprite * sp
 	cbLuminanceExtraction.intensity = rc.luminanceExtractionData.intensity;
 	rc.deviceContext->UpdateSubresource(luminanceExtractionConstantBuffer.Get(), 0, 0,
 		&cbLuminanceExtraction, 0,0);
-
 
 	UINT stride = sizeof(Sprite::Vertex);
 	UINT offset = 0;

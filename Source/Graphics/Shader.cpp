@@ -1,6 +1,5 @@
 #include "Shader.h"
 #include "misc.h"
-
 #include <memory>
 using namespace std;
 

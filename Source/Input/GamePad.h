@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 
 using GamePadButton = unsigned int;
@@ -37,8 +36,6 @@ public:
 
 	// ボタン入力状態の取得
 	GamePadButton GetButton() const { return inputKeys[0]; }
-
-	//GamePadButton GetButton() const { return buttonState[0]; }
 
 	// ボタン押下状態の取得
 	GamePadButton GetButtonDown() const { return buttonDown; }
@@ -96,5 +93,4 @@ private:
 
 	// 押し込み続ける確認
 	bool									buttonDownCountinue = false;
-	
 };

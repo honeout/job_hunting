@@ -32,15 +32,11 @@ public:
 	// ƒf[ƒ^‘—M
 	void SendData(const std::string& identifier, void* data);
 
-
 	// ŠÖ”“o˜^(“¯ˆêŠÖ”‚ğ•¡”“o˜^‚Å‚«‚é‚Ì‚Å’ˆÓ)
 	uint64_t AddReceiver(const std::string& identifier, Receiver receiver);
 
 	// ŠÖ”“o˜^‰ğœ(“o˜^‚ÌƒL[‚ª•K—v)
 	void RemoveReceiver(uint64_t key);
-
-
-
 private:
 	struct Data
 	{

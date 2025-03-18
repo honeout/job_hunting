@@ -1,5 +1,4 @@
 #pragma once
-
 #include <DirectXMath.h>
 #include "Component.h"
 #include "Collision.h"
@@ -29,10 +28,8 @@ public:
 
 	// 移動
 	void Move(const DirectX::XMFLOAT3& direction,  float speed,  float elapsedTime);
-	void MoveLocal(const DirectX::XMFLOAT3& direction, float elapsedTime);
 
 	// 旋回
-	//void Turn(float elapsedTime, float vx, float vz, float speed);
 	bool Turn(const DirectX::XMFLOAT3& direction,float speed, float elapsedTime);
 	
 	// 角度を調整して一定角度ならOk
@@ -51,7 +48,6 @@ public:
 	void UpdateHorizontalVelocity( float elapsedFrame);
 	// 水平移動更新処理
 	void UpdateHorizontalMove( float elapsedTime);
-
 
 	// 垂直速力更新処理
 	void UpdateVerticalVelocity(float elapsedFrame);
@@ -72,7 +68,6 @@ public:
 
 	void SetMoveVecX(float moveVecX) { this->moveVecX = moveVecX; }
 	void SetMoveVecZ(float moveVecZ) { this->moveVecZ = moveVecZ; }
-
 
 	bool GetOnLadius() { return onLadius; }
 
@@ -108,7 +103,6 @@ public:
 		area.min.x = min.x;
 		area.min.y = min.y;
 		area.min.z = min.z;
-
 		// 行動範囲最高
 		area.max.x = max.x;
 		area.max.y = max.y;
@@ -119,11 +113,9 @@ private:
 	float		moveSpeed = 5.0f;
 	float		turnSpeed = 6.28f;
 	float       jumpSpeed = 0;
-
-	//std::shared_ptr<Collision>	collision;
-	//std::shared_ptr<Transform> transformid;
 	// 最大ジャンプ数
 	int jumpCount = 0;
+	int jumpCountMin = 0;
 
 	// 加速
 	float acceleration = 1.0f;
@@ -146,10 +138,15 @@ private:
 
 	// 移動Yの最大値
 	float posYMax = -3.620f;
+	// 時間
+	float flame = 60.0f;
+	// 一時停止
+	float stopVelocity = 0.0f;
+	// 入力有無
+	float isImputEmpty = 0.0f;
 
 	// 重力
 	float gravity = -1.0f;
-
 
 	// 地面確認
 	bool         isGround = false;
@@ -179,5 +176,4 @@ private:
 
 	// 行動範囲
 	Area area;
-
 };

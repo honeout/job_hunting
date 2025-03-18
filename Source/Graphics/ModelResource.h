@@ -13,7 +13,6 @@ public:
 	virtual ~ModelResource() {}
 
 	using NodeId = UINT64;
-
 	struct Node
 	{
 		NodeId				id;
@@ -33,15 +32,10 @@ public:
 		std::string			name;
 		std::string			textureFilename;
 		DirectX::XMFLOAT4	color = { 0.8f, 0.8f, 0.8f, 1.0f };
-
-		//Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceView;
-
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> diffuse_map;
 		// UNIT06
 		// このメンバ変数に納入されます。ない場合はダミーの法線マップが入ります。
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normal_map;
-
-
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};
@@ -51,9 +45,7 @@ public:
 		UINT		startIndex = 0;
 		UINT		indexCount = 0;
 		int			materialIndex = 0;
-
 		Material* material = nullptr;
-
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};
@@ -67,7 +59,6 @@ public:
 		DirectX::XMFLOAT4	color = { 1, 1, 1, 1 };
 		DirectX::XMFLOAT4	boneWeight = { 1, 0, 0, 0 };
 		DirectX::XMUINT4	boneIndex = { 0, 0, 0, 0 };
-
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};
@@ -77,17 +68,13 @@ public:
 		std::vector<Vertex>						vertices;
 		std::vector<UINT>						indices;
 		std::vector<Subset>						subsets;
-
 		int										nodeIndex;
 		std::vector<int>						nodeIndices;
 		std::vector<DirectX::XMFLOAT4X4>		offsetTransforms;
-
 		DirectX::XMFLOAT3						boundsMin;
 		DirectX::XMFLOAT3						boundsMax;
-
 		Microsoft::WRL::ComPtr<ID3D11Buffer>	vertexBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>	indexBuffer;
-
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};
@@ -97,7 +84,6 @@ public:
 		DirectX::XMFLOAT3	scale;
 		DirectX::XMFLOAT4	rotate;
 		DirectX::XMFLOAT3	translate;
-
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};
@@ -106,7 +92,6 @@ public:
 	{
 		float						seconds;
 		std::vector<NodeKeyData>	nodeKeys;
-
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};
@@ -114,7 +99,6 @@ public:
 	struct SecondsLength
 	{
 		float						secondsLength;
-
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};
@@ -123,7 +107,6 @@ public:
 		std::string					name;
 		float						secondsLength;
 		std::vector<Keyframe>		keyframes;
-
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};
@@ -152,11 +135,9 @@ protected:
 
 	// ノードインデックスを取得する
 	int FindNodeIndex(NodeId nodeId) const;
-
 protected:
 	std::vector<Node>		nodes;
 	std::vector<Material>	materials;
-	//std::vector<std::unique_ptr<Material>>	materials;
 	std::vector<Mesh>		meshes;
 	std::vector<Animation>	animations;
 };

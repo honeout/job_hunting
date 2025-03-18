@@ -56,8 +56,6 @@ public:
 
 	// ƒJƒƒ‰‚ÌŠÔ§Œä‰Šú‰»
 	void CameraInitialize();
-	// ƒJƒƒ‰‚ÌŠÔ§Œä
-	void CameraUpdate(float elapsedTime);
 
 	void PlayEffectsShaders(float elapsedTime);
 

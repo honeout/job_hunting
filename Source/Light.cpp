@@ -193,7 +193,6 @@ void Light::DrawDebugPrimitive()
         }
         break;
     }
-
     }
 }
 

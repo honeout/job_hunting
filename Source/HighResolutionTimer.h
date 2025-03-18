@@ -5,15 +5,6 @@
 class HighResolutionTimer
 {
 public:
-
-
-
-	// インスタンス
-	//HighResolutionTimer& Instance()
-	//{
-	//	return *instance;
-	//}
-
 	HighResolutionTimer() : delta_time(-1.0), paused_time(0), stopped(false)
 	{
 		LONGLONG counts_per_sec;
@@ -26,7 +17,6 @@ public:
 		// インスタンス化
 		//instance = this;
 	}
-
 
 	// Returns the total time elapsed since Reset() was called, NOT counting any
 	// time when the clock is stopped.
@@ -134,8 +124,6 @@ public:
 	void SetStopped(bool stopped) { this->stopped = stopped; }
 
 private:
-	// インスタンス
-	//static HighResolutionTimer* instance;
 
 	double seconds_per_count;
 	double delta_time;

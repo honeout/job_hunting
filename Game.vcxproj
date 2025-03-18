@@ -127,7 +127,6 @@
     <ClInclude Include="Source\CameraController.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Component.h" />
-    <ClInclude Include="Source\ComponentlF.h" />
     <ClInclude Include="Source\Effect.h" />
     <ClInclude Include="Source\EffectManager.h" />
     <ClInclude Include="Source\EnemyBoss.h" />
@@ -168,14 +167,11 @@
     <ClInclude Include="Source\Mp.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PostprocessingRenderer.h" />
-    <ClInclude Include="Source\Projectile.h" />
     <ClInclude Include="Source\ProjectileHoming.h" />
     <ClInclude Include="Source\ProjectileImpact.h" />
     <ClInclude Include="Source\ProjectileManager.h" />
-    <ClInclude Include="Source\ProjectileRuby.h" />
     <ClInclude Include="Source\ProjectileStraight.h" />
     <ClInclude Include="Source\ProjectileSunder.h" />
-    <ClInclude Include="Source\ProjectileThrowing.h" />
     <ClInclude Include="Source\ProjectileTornade.h" />
     <ClInclude Include="Source\ResourceManager.h" />
     <ClInclude Include="Source\Scene.h" />
@@ -248,14 +244,11 @@
     <ClCompile Include="Source\Mp.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\PostprocessingRenderer.cpp" />
-    <ClCompile Include="Source\Projectile.cpp" />
     <ClCompile Include="Source\ProjectileHoming.cpp" />
     <ClCompile Include="Source\ProjectileImpact.cpp" />
     <ClCompile Include="Source\ProjectileManager.cpp" />
-    <ClCompile Include="Source\ProjectileRuby.cpp" />
     <ClCompile Include="Source\ProjectileStraight.cpp" />
     <ClCompile Include="Source\ProjectileSunder.cpp" />
-    <ClCompile Include="Source\ProjectileThrowing.cpp" />
     <ClCompile Include="Source\ProjectileTornade.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />

@@ -4,7 +4,6 @@
 // コンストラクタ
 ProjectileImpact::ProjectileImpact()
 {
-   
 }
 // デストラクタ
 ProjectileImpact::~ProjectileImpact()
@@ -53,39 +52,24 @@ void ProjectileImpact::Start()
    
     if (effectProgress)
         effectProgress->Play(transform->GetPosition(), scale);
-
-    //lifeTimer = 3.0f;
-
 }
 
 // 更新処理
 void ProjectileImpact::Update(float elapsedTime)
 {
-
-
     if (lifeTimer <= 0)
     {
         Destoroy();
-    }
-
-       
+    }   
     ImpactUpdate();
-    
     transform->UpdateTransformProjectile();
-
     model->UpdateTransform(transform->GetTransform());
-
     if (effectProgress)
         effectProgress->SetPosition(effectProgress->GetEfeHandle(), transform->GetPosition());
 
     if (effectHit)
         effectHit->SetPosition(effectHit->GetEfeHandle(), transform->GetPosition());
-
-
     --lifeTimer;
-
-
-
 }
 
 // 描画処理
@@ -96,10 +80,7 @@ void ProjectileImpact::Render(RenderContext& rc, ModelShader& shader)
     //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
     shader = *graphics.GetShader(ModelShaderId::Lanbert);
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
-
-
     shader.Draw(rc, model);
-
     shader.End(rc);
 }
 
@@ -127,15 +108,11 @@ void ProjectileImpact::Destoroy()
 
 void ProjectileImpact::ImpactUpdate()
 {
-
-
     // 当たり判定増大
     radiusInSide += 0.3f;
     
     // 当たり判定増大
     radiusOutSide += 0.3f;
-
-
 }
 
 void ProjectileImpact::EffectProgressPlay()

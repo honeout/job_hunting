@@ -11,7 +11,6 @@
 // カメラコントローラー
 class CameraController
 {
-
 	// モード
 	enum class Mode
 	{
@@ -27,61 +26,36 @@ public:
 	~CameraController();
 
 	// 更新処理
-	void Update(float elapsedTime) ;
-
-//	~CameraController() override;
-//
-//	// 名前取得
-//	const char* GetName() const override { return "Camera"; }
-//
-//	void Start() override;
-//
-//	// 更新処理
-//	void Update(float elapsedTime) override;
+	void Update(float elapsedTime);
 #ifdef _DEBUG
 	void OnGUI();
 #endif // _DEBUG
-
 	bool GetCameraMortionDataTime();
-
 private:
 	// フリーセレクトカメラ更新処理
 	void FreeSelectCamera(float elapsedTime);
-
-
 	// フリーカメラ更新処理
 	void FreeCamera(float elapsedTime);
-
 	// ロックオンカメラ更新処理
 	void LockonCamera(float elapsedTime);
-
 	// ロックオン高さカメラ更新処理
 	void LockonTopHeightCamera(float elapsedTime);
-
 	// モーションカメラ更新処理
 	void MotionCamera(float elapsedTime);
-
 private:
 	// フリセレクトーカメラ
 	void OnFreeSelectMode(void* data);
-
 	// フリーカメラ
 	void OnFreeMode(void* data);
-
 	// ロックオンカメラ
 	void OnLockonMode(void* data);
-
 	void OnLockonTopHeightMode(void* data);
-
 	// モーションカメラ
 	void OnMotionMode(void* data);
-
 	// カメラ揺れ
 	void OnShake(void* data);
-
 	// 横軸のズレ方向算出
 	float CalcSide(DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2);
-
 private:
 	Mode				mode = Mode::FreeCamera;
 	DirectX::XMFLOAT3	position = { 0, 0, 0 };
@@ -92,7 +66,6 @@ private:
 	float				rangeRock = 5.0f;
 	float				maxAngleX = DirectX::XMConvertToRadians(+45);
 	float				minAngleX = DirectX::XMConvertToRadians(-71);
-
 	float				maxLockTopHeightAngleX = DirectX::XMConvertToRadians(+45);
 	float				minLockTopHeightAngleX = DirectX::XMConvertToRadians(-71);
 	// ロックオン処理
@@ -108,7 +81,6 @@ private:
 	// カメラ揺れ
 	float				shakeTimer = 0;
 	float				shakePower = 1;
-
 	// ターゲットの最低距離
 	float               lengthMin = 8.5f;
 	// 一定以下でカメラ機能無視
@@ -116,25 +88,14 @@ private:
 	float cameraRandeDebug = 0.0f;
 	// 注視点ずらす値
 	float				lookAtOffset = 0.5f;
-	//float				lookAtOffset = 0.5f;
-
-	//float               lengthMin = 5.5f;
-
-
-
 	// 敵との
 	float				lengthMinRock = 10.0f;
 	float				lengthRock = 8.0f;
-	//float				lengthMinRock = 16.5f;
 	float				heightMaxRock = 0.0f;
-	//float				heightMaxRock = 3.0f;
-
 	// ターゲットの一定以上高い
 	float               topHeight = 2.0f;
 	// ターゲットの高さ
 	float				topTargetY = -1.0f;
-
-
 	// メッセージキー
 	uint64_t			CAMERACHANGEFREESELECTMODEKEY;
 	uint64_t			CAMERACHANGEFREEMODEKEY;
@@ -142,10 +103,7 @@ private:
 	uint64_t			CAMERACHANGELOCKONTOPHEIGHTMODEKEY;
 	uint64_t			CAMERACHANGEMOTIONMODEKEY;
 	uint64_t			CAMERASHAKEKEY;
-
 	float               minPositionY = -3.525f;
-
 	bool				isEffect = false;
-	
 };
 

@@ -202,124 +202,9 @@ void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
 		// ディフューズマップテクスチャ読み込み
 		HRESULT hr = LoadTexture(device, filename, nullptr, true, material.diffuse_map.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-		//HRESULT hr = LoadTexture(device, filename, nullptr, true, material.shaderResourceView.GetAddressOf());
-		//_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-		
 
-		//hr = LoadTexture(device, filename, nullptr, true, material.normal_map.GetAddressOf());
-		//_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
-		//hr = LoadTexture(device, filename, nullptr, true, material.diffuse_map.GetAddressOf());
-		//_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
-		// ディフューズテクスチャの名前N拡張子のファイルが有れば読み込まれます
-        // ない場合は(0,0,1)になるようなダミーのテクスチャを作成しています。
         // ノーマルマップテクスチャ読み込み
 		LoadTexture(device, filename, "_N", true, material.normal_map.GetAddressOf(), 0xFFFF7F7F);
-
-		
-
-
-		//// マルチバイト文字からワイド文字へ変換
-		//wchar_t wfilename[256];
-		//::MultiByteToWideChar(CP_ACP, 0, filename, -1, wfilename, 256);
-
-		//// テクスチャ読み込み
-		//Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-		//HRESULT hr = DirectX::CreateWICTextureFromFile(device, wfilename, resource.GetAddressOf(), material.shaderResourceView.GetAddressOf());
-		//if (FAILED(hr))
-		//{
-		//	// WICでサポートされていないフォーマットの場合（TGAなど）は
-		//	// STBで画像読み込みをしてテクスチャを生成する
-		//	int width, height, bpp;
-		//	unsigned char* pixels = stbi_load(filename, &width, &height, &bpp, STBI_rgb_alpha);
-		//	if (pixels != nullptr)
-		//	{
-		//		D3D11_TEXTURE2D_DESC desc = { 0 };
-		//		desc.Width = width;
-		//		desc.Height = height;
-		//		desc.MipLevels = 1;
-		//		desc.ArraySize = 1;
-		//		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		//		desc.SampleDesc.Count = 1;
-		//		desc.SampleDesc.Quality = 0;
-		//		desc.Usage = D3D11_USAGE_DEFAULT;
-		//		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		//		desc.CPUAccessFlags = 0;
-		//		desc.MiscFlags = 0;
-		//		D3D11_SUBRESOURCE_DATA data;
-		//		::memset(&data, 0, sizeof(data));
-		//		data.pSysMem = pixels;
-		//		data.SysMemPitch = width * 4;
-
-		//		Microsoft::WRL::ComPtr<ID3D11Texture2D>	texture;
-		//		HRESULT hr = device->CreateTexture2D(&desc, &data, texture.GetAddressOf());
-		//		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
-		//		hr = device->CreateShaderResourceView(texture.Get(), nullptr, material.shaderResourceView.GetAddressOf());
-		//		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
-		//		// 後始末
-		//		stbi_image_free(pixels);
-		//	}
-		//	else
-		//	{
-		//		// 読み込み失敗したらダミーテクスチャを作る
-		//		LOG("load failed : %s\n", filename);
-
-		//		const int width = 8;
-		//		const int height = 8;
-		//		UINT pixels[width * height];
-		//		::memset(pixels, 0xFF, sizeof(pixels));
-
-		//		D3D11_TEXTURE2D_DESC desc = { 0 };
-		//		desc.Width = width;
-		//		desc.Height = height;
-		//		desc.MipLevels = 1;
-		//		desc.ArraySize = 1;
-		//		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		//		desc.SampleDesc.Count = 1;
-		//		desc.SampleDesc.Quality = 0;
-		//		desc.Usage = D3D11_USAGE_DEFAULT;
-		//		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		//		desc.CPUAccessFlags = 0;
-		//		desc.MiscFlags = 0;
-		//		D3D11_SUBRESOURCE_DATA data;
-		//		::memset(&data, 0, sizeof(data));
-		//		data.pSysMem = pixels;
-		//		data.SysMemPitch = width;
-
-		//		Microsoft::WRL::ComPtr<ID3D11Texture2D>	texture;
-		//		HRESULT hr = device->CreateTexture2D(&desc, &data, texture.GetAddressOf());
-		//		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
-		//		hr = device->CreateShaderResourceView(texture.Get(), nullptr, material.shaderResourceView.GetAddressOf());
-		//		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-		//	}
-
-
-			//// Lambda function to load texture
-			//auto LoadTexture = [&](const std::string& textureFileName,
-			//	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& texture, DWORD value)
-			//{
-			//	if (textureFileName.empty())
-			//	{
-			//		// 法線ダミーテクスチャ作成
-			//		D3D11_TEXTURE2D_DESC textureDesc = {};
-			//		//HRESULT hr = MakeDummyTexture(device,
-			//		//	texture.GetAddressOf(), value, 1);
-			//		//_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-			//	}
-			//	else
-			//	{
-			//		// 法線テクスチャ読み込み
-			//		D3D11_TEXTURE2D_DESC textureDesc = {};
-			//		
-			//		
-			//		
-			//	}
-			//}
-		//}
 	}
 
 	for (Mesh& mesh : meshes)
@@ -336,7 +221,6 @@ void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
 			D3D11_SUBRESOURCE_DATA subresourceData = {};
 
 			bufferDesc.ByteWidth = static_cast<UINT>(sizeof(Vertex) * mesh.vertices.size());
-			//bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 			bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 			bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 			bufferDesc.CPUAccessFlags = 0;
@@ -345,7 +229,6 @@ void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
 			subresourceData.pSysMem = mesh.vertices.data();
 			subresourceData.SysMemPitch = 0;
 			subresourceData.SysMemSlicePitch = 0;
-
 			HRESULT hr = device->CreateBuffer(&bufferDesc, &subresourceData, mesh.vertexBuffer.GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 		}
@@ -354,9 +237,7 @@ void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
 		{
 			D3D11_BUFFER_DESC bufferDesc = {};
 			D3D11_SUBRESOURCE_DATA subresourceData = {};
-
 			bufferDesc.ByteWidth = static_cast<UINT>(sizeof(u_int) * mesh.indices.size());
-			//bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 			bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 			bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 			bufferDesc.CPUAccessFlags = 0;
@@ -431,7 +312,7 @@ HRESULT ModelResource::LoadTexture(ID3D11Device* device, const char* filename, c
 		else if (dummy)
 		{
 			// 読み込み失敗したらダミーテクスチャを作る
-			LOG("load failed : %s\n", filepath);
+			//LOG("load failed : %s\n", filepath);
 
 			const int width = 8;
 			const int height = 8;
@@ -470,106 +351,6 @@ HRESULT ModelResource::LoadTexture(ID3D11Device* device, const char* filename, c
 		}
 	}
 	return hr;
-	//// パスを分解
-	//char drive[256], dirname[256], fname[256], ext[256];
-	//::_splitpath_s(filename, drive, sizeof(drive), dirname, sizeof(dirname), fname, sizeof(fname), ext, sizeof(ext));
-
-	//// 末尾文字を追加
-	//if (suffix != nullptr)
-	//{
-	//	::strcat_s(fname, sizeof(fname), suffix);
-	//}
-
-	//// 相対パスの解決
-	//char filepath[256];
-	//::_makepath_s(filepath, 256, drive, dirname, fname, ext);
-	//
-	//// マルチバイト文字からワイド文字へ変換
-	//wchar_t wfilename[256];
-	//::MultiByteToWideChar(CP_ACP, 0, filepath, -1, wfilename, 256);
-
-	//// テクスチャ読み込み
-	//Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-	//HRESULT hr = DirectX::CreateWICTextureFromFile(device, wfilename, resource.GetAddressOf(), srv);
-	//if (FAILED(hr))
-	//{
-	//	// WICでサポートされていないフォーマットの場合（TGAなど）は
-	//	// STBで画像読み込みをしてテクスチャを生成する
-	//	int width, height, bpp;
-	//	unsigned char* pixels = stbi_load(filepath, &width, &height, &bpp, STBI_rgb_alpha);
-	//	if (pixels != nullptr)
-	//	{
-	//		D3D11_TEXTURE2D_DESC desc = { 0 };
-	//		desc.Width = width;
-	//		desc.Height = height;
-	//		desc.MipLevels = 1;
-	//		desc.ArraySize = 1;
-	//		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	//		desc.SampleDesc.Count = 1;
-	//		desc.SampleDesc.Quality = 0;
-	//		desc.Usage = D3D11_USAGE_DEFAULT;
-	//		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	//		desc.CPUAccessFlags = 0;
-	//		desc.MiscFlags = 0;
-	//		D3D11_SUBRESOURCE_DATA data;
-	//		::memset(&data, 0, sizeof(data));
-	//		data.pSysMem = pixels;
-	//		data.SysMemPitch = width * 4;
-
-	//		Microsoft::WRL::ComPtr<ID3D11Texture2D>	texture;
-	//		HRESULT hr = device->CreateTexture2D(&desc, &data, texture.GetAddressOf());
-	//		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
-	//		hr = device->CreateShaderResourceView(texture.Get(), nullptr, srv);
-	//		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
-	//		// 後始末
-	//		stbi_image_free(pixels);
-	//	}
-	//	else if (dummy)
-	//	{
-	//		// 読み込み失敗したらダミーテクスチャを作る
-	//		LOG("load failed : %s\n", filepath);
-
-	//		const int width = 8;
-	//		const int height = 8;
-	//		UINT pixels[width * height];
-	//		//::memset(pixels, 0xFF, sizeof(pixels));
-	//		for (int yy = 0; yy < height; ++yy)
-	//		{
-	//			for (int xx = 0; xx < width; ++xx)
-	//			{
-	//				pixels[yy * width + xx] = dummy_color;
-	//			}
-	//		}
-
-
-	//		D3D11_TEXTURE2D_DESC desc = { 0 };
-	//		desc.Width = width;
-	//		desc.Height = height;
-	//		desc.MipLevels = 1;
-	//		desc.ArraySize = 1;
-	//		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	//		desc.SampleDesc.Count = 1;
-	//		desc.SampleDesc.Quality = 0;
-	//		desc.Usage = D3D11_USAGE_DEFAULT;
-	//		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	//		desc.CPUAccessFlags = 0;
-	//		desc.MiscFlags = 0;
-	//		D3D11_SUBRESOURCE_DATA data;
-	//		::memset(&data, 0, sizeof(data));
-	//		data.pSysMem = pixels;
-	//		data.SysMemPitch = width;
-
-	//		Microsoft::WRL::ComPtr<ID3D11Texture2D>	texture;
-	//		HRESULT hr = device->CreateTexture2D(&desc, &data, texture.GetAddressOf());
-	//		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
-	//		hr = device->CreateShaderResourceView(texture.Get(), nullptr, srv);
-	//		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-	//	}
-	//}
-	//return hr;
 }
 
 // シリアライズ
@@ -579,7 +360,6 @@ void ModelResource::Serialize(const char* filename)
 	if (ostream.is_open())
 	{
 		cereal::BinaryOutputArchive archive(ostream);
-
 		try
 		{
 			archive(
@@ -604,7 +384,6 @@ void ModelResource::Deserialize(const char* filename)
 	if (istream.is_open())
 	{
 		cereal::BinaryInputArchive archive(istream);
-
 		try
 		{
 			archive(

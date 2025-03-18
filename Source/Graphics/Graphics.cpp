@@ -142,56 +142,19 @@ Graphics::Graphics(HWND hWnd)
 
 	// モデルシェーダー
 	{
-		//modelShaders[static_cast<int>(ModelShaderId::Default)] =
-		//	std::make_unique<DefaultModelShader>(device.Get());
-
-
-		//modelShaders[static_cast<int>(ModelShaderId::Phong)] =
-		//	std::make_unique<PhonShader>(device.Get());
-
-		//// UNIT05
-		////modelShaders[static_cast<int>(ModelShaderId::Phong)] =
-		////	std::make_unique<PhonShader>(device.Get());
-		//modelShaders[static_cast<int>(ModelShaderId::Toon)] =
-		//	std::make_unique<ToonShader>(device.Get());
-
-		//// UNIT11
-		//modelShaders[static_cast<int>(ModelShaderId::ShadowmapCaster)] =
-		//	std::make_unique<ShadowmapCasterShader>(device.Get());
-
-
-		//modelShaders[static_cast<int>(ModelShaderId::AfterImage)] =
-		//	std::make_unique<AfterImageShader>(device.Get());
-
-
 		modelShaders[static_cast<int>(ModelShaderId::Phong)] =
 			std::make_unique<PhonShader>(device.Get());
-
-	
 
 		modelShaders[static_cast<int>(ModelShaderId::Lanbert)] =
 			std::make_unique<LambertShader>(device.Get());
 
 		modelShaders[static_cast<int>(ModelShaderId::ShadowmapCaster)] =
 			std::make_unique<ShadowmapCasterShader>(device.Get());
-
-
-
-
 	}
 
 
 	// スプライトシェーダー
 	{
-		//spriteShaders[static_cast<int>(SpriteShaderId::Default)] =
-		//	std::make_unique<DefaultSpriteShader>(device.Get());
-		//spriteShaders[static_cast<int>(SpriteShaderId::UVScroll)] =
-		//	std::make_unique<UVScrollShader>(device.Get());
-		//// UNIT02 呼び出す準備
-		//spriteShaders[static_cast<int>(SpriteShaderId::Mask)] =
-		//	std::make_unique<MaskShader>(device.Get());
-
-		//// UNIT07
 		spriteShaders[static_cast<int>(SpriteShaderId::ColorGrading)] =
 			std::make_unique<ColorGradingShader>(device.Get());
 
@@ -208,19 +171,6 @@ Graphics::Graphics(HWND hWnd)
 
 		spriteShaders[static_cast<int>(SpriteShaderId::SwordeTraile)] =
 			std::make_unique<PrimitiveRenderer>(device.Get());
-
-		//// UNIT12
-		//spriteShaders[static_cast<int>(SpriteShaderId::Skybox)] =
-		//	std::make_unique<SkyboxShader>(device.Get());
-
-
-
-	}
-
-	// シェーダー
-	{
-	    //shader = std::make_unique<LambertShader>(device.Get());
-		//shaderAfterimage = std::make_unique<AfterImageShader>(device.Get());
 	}
 
 	// レンダラ

@@ -6,21 +6,17 @@
 #include "SceneManager.h"
 #include "Input/Input.h"
 #include "SceneLoading.h"
-
 #include "Actor.h"
 #include "Camera.h"
-
 #include "LightManager.h"
 #include "StateDerived.h"
-
 #include "Player.h"
 #include "EnemyBoss.h"
 #include "EffectManager.h"
 
 void SceneGameClear::Initialize()
 {
-    // スプライト初期化
-
+    // アクター初期化
     InitializeComponent();
 
 	// カメラ初期化
@@ -44,14 +40,10 @@ void SceneGameClear::Initialize()
 		1000.0f
 	);
 
-
-
 	// 平行光源を追加
 	{
 		mainDirectionalLight = new Light(LightType::Directional);
-		//mainDirectionalLight = std::make_unique<Light>(LightType::Directional);
 		mainDirectionalLight->SetDirection({ 1,-3,-1 });
-		//ambientLightColor = { 0.2f,0.2f,0.2f,0.2f };
 		LightManager::Instanes().Register(mainDirectionalLight);
 	}
 
@@ -82,17 +74,10 @@ void SceneGameClear::Initialize()
 		lightTherd->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
 		lightTherd->SetRange(lightRange);
 		LightManager::Instanes().Register(lightTherd);
-
-
-
-
 	}
-
 
 	// 新しい描画ターゲットの生成
 	{
-		//Graphics& graphics = Graphics::Instance();
-		//renderTarget = new RenderTarget(static_cast<UINT>(graphics.GetScreenWidth())
 		renderTarget = std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth())
 			, static_cast<UINT>(graphics.GetScreenHeight())
 			, DXGI_FORMAT_R8G8B8A8_UNORM);
@@ -106,17 +91,13 @@ void SceneGameClear::Initialize()
 
 	// ポストプロセス描画クラス生成
 	{
-		//postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
 		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 		// シーンテクスチャを設定しておく
 		ShaderResourceViewData srvData;
 		srvData.srv = renderTarget->GetShaderResourceView();
 		srvData.width = renderTarget->GetWidth();
 		srvData.height = renderTarget->GetHeight();
-		//srvData.width = 100;
-		//srvData.height = 100;
 		postprocessingRenderer.SetSceneData(srvData);
-
 
 		bloomData.luminanceExtractionData.threshold = 0.41f;
 		bloomData.luminanceExtractionData.intensity = 1.6f;
@@ -132,51 +113,30 @@ void SceneGameClear::Initialize()
 		postprocessingRenderer.SetVignetteData(vignetteData);
 		postprocessingRenderer.SetVignetteMinData(vignetteData);
 
-
 		// カラーグラディエンス
 		float colorGradingBrigthness = 1.0f;
 		float colorGradingHueShift = 3.5f;
 		colorGradingData.brigthness = colorGradingBrigthness;
 		colorGradingData.hueShift = colorGradingHueShift;
 
-
 		postprocessingRenderer.SetColorGradingData(colorGradingData);
 		postprocessingRenderer.SetColorGradingMinData(colorGradingData);
 	}
 	
 	selectPush = (int)Select::Game;
-
-	// カメラ初期化
-	//CameraInitialize();
-
 }
 
 
 
 void SceneGameClear::Finalize()
 {
-    //// スプライト終了化
-    //if (this->sprite)
-    //{
-    //    delete sprite;
-    //    sprite = nullptr;
-    //}
-
 	StageManager::Instance().Clear();
-
 	LightManager::Instanes().Clear();
-
 	PlayerManager::Instance().Clear();
-
 	EnemyManager::Instance().Clear();
-
 	UiManager::Instance().Clear();
-
 	ActorManager::Instance().Clear();
-
-
 	Audio::Instance().AllStop();
-
 	Audio::Instance().AllClear();
 
 	if (cameraControlle != nullptr)
@@ -184,30 +144,11 @@ void SceneGameClear::Finalize()
 		delete cameraControlle;
 		cameraControlle = nullptr;
 	}
-
 }
 
 void SceneGameClear::Update(float elapsedTime)
 {
-
-
-    //GamePad& gamePad = Input::Instance().GetGamePad();
-
-    //// 何かボタンを押したらローディングをはさんでゲームシーンへ切り替え
-    //const GamePadButton anyButton =
-    //    GamePad::BTN_A |
-    //    GamePad::BTN_B |
-    //    GamePad::BTN_X |
-    //    GamePad::BTN_Y;
-
-    //if (gamePad.GetButtonUp() & anyButton)// ロードの次ゲームという書き方
-    //    SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
-
-
 	GamePad& gamePad = Input::Instance().GetGamePad();
-
-	// カメラコントローラー更新処理
-	//cameraControlle->Update(elapsedTime);
 
 	ActorManager::Instance().Update(elapsedTime);
 
@@ -217,51 +158,10 @@ void SceneGameClear::Update(float elapsedTime)
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
 
-	if(cameraControlle->GetCameraMortionDataTime())
-	PlayEffectsShaders(elapsedTime);
 
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
 
 	SelectScene();
-
-	//for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
-	//{
-	//	std::weak_ptr<Actor> enemyid = EnemyManager::Instance().GetEnemy(i);
-
-	//	//if (enemyid.lock()->GetComponent<EnemyBoss>()->GetFlashOn())
-	//	//{
-	//	//	shaderPlayStateTimer = shaderPlayStateTimerMax;
-	//	//	shaderBlurStateTimer = shaderBlurStateTimerMax;
-	//	//}
-
-	//	//if (enemyid.lock()->GetComponent<EnemyBoss>()->GetClearCheck())
-	//	//{
-	//	//	//　シーン変更
-	//	//	SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
-	//	//}
-
-
-	//	// 何かボタンを押したらローディングをはさんでゲームシーンへ切り替え
-	//	const GamePadButton anyButton =
-	//		GamePad::BTN_B;
-
-	//	if (!enemyid.lock()->GetComponent<EnemyBoss>()->GetClearCheck()) return;
-
-	//	if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
-	//	{
-	//		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(false);
-	//		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(true);
-	//		//　シーン変更
-	//		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
-	//	}
-	//	else
-	//	{
-	//		UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(true);
-	//		UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(false);
-	//	}
-
-	//}
-
 }
 
 void SceneGameClear::Render()
@@ -269,15 +169,6 @@ void SceneGameClear::Render()
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-	//ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
-	//ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
-
-	//// 画面クリア＆レンダーターゲット設定
-	//FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };   // RGBA(0.0~1.0)
-	//dc->ClearRenderTargetView(rtv, color);
-	//dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	//dc->OMSetRenderTargets(1, &rtv, dsv);
-
 	//// シャドウマップの描画
 	RenderShadowmap();
 	// model描画
@@ -291,13 +182,11 @@ void SceneGameClear::Render()
 		ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 		ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
 
-
 		// 画面クリア＆レンダーターゲット設定
 		FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f }; // RGBA(0.0~1.0)
 		dc->ClearRenderTargetView(rtv, color);
 		dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		dc->OMSetRenderTargets(1, &rtv, dsv);
-
 
 		// UINT11
 		// ビューポートの設定
@@ -309,15 +198,10 @@ void SceneGameClear::Render()
 		dc->RSSetViewports(1, &vp);
 
 		RenderContext rc;
-
 		rc.deviceContext = dc;
-
 		rc.radialBlurData = radialBlurData;
-
 		rc.colorGradingData = colorGradingData;
-
 		rc.bloomData = bloomData;
-
 
 		// 周辺減光
 		rc.vignetteData.color = vignetteData.color;
@@ -326,15 +210,8 @@ void SceneGameClear::Render()
 		rc.vignetteData.smoothness = vignetteData.smoothness;
 		rc.vignetteData.rounded = vignetteData.rounded;
 		rc.vignetteData.roundness = vignetteData.roundness;
-
-
-
-		//postprocessingRenderer->SetBloomData();
-
 		// ポストプロセスを処理を行う
 		postprocessingRenderer.Render(rc);
-
-
 	}
 
 	// 2Dスプライト描画
@@ -356,38 +233,10 @@ void SceneGameClear::Render()
 
 		ActorManager::Instance().Render(rc, shaderUi);
 	}
-
-    //Graphics& graphics = Graphics::Instance();
-    //ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-    //ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
-    //ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
-
-    //// 画面クリア＆レンダーターゲット設定
-    //FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };   // RGBA(0.0~1.0)
-    //dc->ClearRenderTargetView(rtv, color);
-    //dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-    //dc->OMSetRenderTargets(1, &rtv, dsv);
-
-    //// 2Dスプライト描画
-    //{
-    //    float screenWidth = static_cast<float>(graphics.GetScreenWidth());
-    //    float screenHeight = static_cast<float>(graphics.GetScreenHeight());
-    //    float textureWidth = static_cast<float>(sprite->GetTextureWidth());
-    //    float textureHeight = static_cast<float>(sprite->GetTextureHeight());
-    //    // 描画
-    //    sprite->Render(dc,
-    //        0, 0, screenWidth, screenHeight,
-    //        0, 0, textureWidth, textureHeight,
-    //        0,
-    //        1, 1, 1, 1);
-    //    // {位置}{サイズ}{画像どこから}{画像何処まで}
-    //    // dc , ｛範囲｝｛｝
-    //}
 }
 
 void SceneGameClear::Render3DScene()
 {
-
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView().Get();
@@ -412,7 +261,6 @@ void SceneGameClear::Render3DScene()
 	RenderContext rc;
 	rc.deviceContext = dc;
 
-
 	// ライトの情報を詰め込む
 	LightManager::Instanes().PushRenderContext(rc);
 
@@ -423,8 +271,6 @@ void SceneGameClear::Render3DScene()
 	rc.shadowMapData.shadowColor = shadowColor;
 	rc.shadowMapData.shadowBias = shadowBias;
 
-
-
 	// カメラパラメータ設定
 	Camera& camera = Camera::Instance();
 	rc.viewPosition.x = camera.GetEye().x;
@@ -434,15 +280,10 @@ void SceneGameClear::Render3DScene()
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
-
-
 	// 3Dモデル描画
 	{
-
 		ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
-
 		ActorManager::Instance().Render(rc, shader);
-
 	}
 
 	// 3Dエフェクト描画
@@ -508,7 +349,6 @@ void SceneGameClear::InitializeComponent()
 {
 	// 行動範囲
 	{
-
 		minPos.x = -30;
 		minPos.y = -3.525f;
 		minPos.z = -30;
@@ -518,7 +358,6 @@ void SceneGameClear::InitializeComponent()
 		maxPos.z = 30;
 	}
 
-
 	// ステージ初期化
 	{
 		const char* filename = "Data/Model/ExampleStage/stageNotRuby.mdl";
@@ -527,43 +366,26 @@ void SceneGameClear::InitializeComponent()
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("StageMain");
 		actor->AddComponent<Transform>();
-
 		actor->GetComponent<Transform>()->
 			SetPosition(DirectX::XMFLOAT3(0, -25, 0));
-
 		actor->GetComponent<Transform>()->
 			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
-
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
-
-
-
 		actor->AddComponent<StageMain>();
-
 		// 影シェーダー
 		actor->GetComponent<StageMain>()->SetIsRimRightning(0);
-
 		// 解像度
 		actor->GetComponent<StageMain>()->SetTexcoordMult(20);
-
 		// スペキュラー
 		actor->GetComponent<StageMain>()->SetIsSpecular(0);
-
 
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
-
 		StageManager::Instance().Register(actor);
-
-
-
-
 	}
-
-
 
 	// ステージルビー初期化
 	{
@@ -573,18 +395,12 @@ void SceneGameClear::InitializeComponent()
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("StageRuby");
 		actor->AddComponent<Transform>();
-
 		actor->GetComponent<Transform>()->
 			SetPosition(DirectX::XMFLOAT3(0, -17.85f, 0));
-
 		actor->GetComponent<Transform>()->
 			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
-
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
-
-
-
 
 		actor->AddComponent<StageMain>();
 
@@ -597,54 +413,37 @@ void SceneGameClear::InitializeComponent()
 		// スペキュラー
 		actor->GetComponent<StageMain>()->SetIsSpecular(1);
 
-
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
-
 		StageManager::Instance().Register(actor);
-
-
-
 	}
-
-
 
 	////player = new Player;
 	{
 		// プレイヤー初期化
-		//const char* filename = "Data/Model/Jammo/Jammo.mdl";
 		const char* filename = "Data/Model/Player/Maria.mdl";
-
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("Player");
 		actor->AddComponent<Transform>();
-
 		actor->GetComponent<Transform>()->
 			SetPosition(DirectX::XMFLOAT3(0, -3.6f, -10));
-
 		actor->GetComponent<Transform>()->
 			SetAngle(DirectX::XMFLOAT3(0, 3, 0));
-
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
 		actor->AddComponent<Movement>();
-
-
 		actor->GetComponent<Movement>()->SetArea(minPos, maxPos);
-
 		actor->AddComponent<HP>();
 		std::shared_ptr<HP> hp = actor->GetComponent<HP>();
 		int life = 0;
 		hp->SetLife(life);
-
 		actor->AddComponent<Mp>();
 		std::shared_ptr<Mp> mp = actor->GetComponent<Mp>();
 		int mpMax = 50;
 		mp->SetMaxMagic(mpMax);
-
 
 		actor->AddComponent<Player>();
 
@@ -666,19 +465,12 @@ void SceneGameClear::InitializeComponent()
 		actor->SetCheck2d(check2d);
 
 		PlayerManager::Instance().Register(actor);
-
-
-
-
-
 	}
 
 
 	// 敵
 	{
-
 		const char* filename = "Data/Model/Boss/BossAnim8.mdl";
-		//const char* filename = "Data/Model/Slime/Slime.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
@@ -694,7 +486,6 @@ void SceneGameClear::InitializeComponent()
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(0.06f, 0.06f, 0.06f));
 		actor->AddComponent<Movement>();
-
 
 		// 行動範囲設定
 		actor->GetComponent<Movement>()->SetArea(minPos, maxPos);
@@ -715,15 +506,11 @@ void SceneGameClear::InitializeComponent()
 		// ステートセット
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::ClearState::Death));
 
-
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
 
 		EnemyManager::Instance().Register(actor);
-
-		//
-
 	}
 
 	// UI タイトル名前
@@ -745,12 +532,10 @@ void SceneGameClear::InitializeComponent()
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 376,329 };
-		//DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
-
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
@@ -763,8 +548,6 @@ void SceneGameClear::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-
-
 	// UI タイトル名前
 	{
 		const char* filename = "Data/Sprite/タイトル戻る.png";
@@ -775,7 +558,6 @@ void SceneGameClear::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 543, 515 };
 		DirectX::XMFLOAT2 pos = { 543, 577 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -802,7 +584,6 @@ void SceneGameClear::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-
 	// UI タイトル名前
 	{
 		const char* filename = "Data/Sprite/スタートボタン.png";
@@ -819,7 +600,6 @@ void SceneGameClear::InitializeComponent()
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
-
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 181,104 };
@@ -827,19 +607,15 @@ void SceneGameClear::InitializeComponent()
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
-
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
-
 		// これが２Dかの確認
 		bool check2d = true;
 		actor->SetCheck2d(check2d);
-
 		UiManager::Instance().Register(actor);
 	}
-
 
 	// UI ボタン
 	{
@@ -856,7 +632,6 @@ void SceneGameClear::InitializeComponent()
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
-
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 60,64 };
@@ -864,16 +639,13 @@ void SceneGameClear::InitializeComponent()
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
-
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
-
 		// これが２Dかの確認
 		bool check2d = true;
 		actor->SetCheck2d(check2d);
-
 		UiManager::Instance().Register(actor);
 	}
 
@@ -892,7 +664,6 @@ void SceneGameClear::InitializeComponent()
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
-
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 181,104 };
@@ -900,125 +671,29 @@ void SceneGameClear::InitializeComponent()
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
-
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(false);
-
 		// これが２Dかの確認
 		bool check2d = true;
 		actor->SetCheck2d(check2d);
-
 		UiManager::Instance().Register(actor);
 	}
 
-
 	// 音BGM
 	StartBgm();
-
-	//// UI タイトル名前
-	//{
-	//	const char* filename = "Data/Sprite/コマンドPUSH.png";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->SetName("UIPush");
-	//	actor->AddComponent<SpriteControll>();
-	//	actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-	//	actor->AddComponent<TransForm2D>();
-	//	// 位置　角度　スケール情報
-	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-	//	DirectX::XMFLOAT2 pos = { 543, 515 };
-	//	transform2D->SetPosition(pos);
-	//	// 元の位置
-	//	DirectX::XMFLOAT2 texPos = { 0, 0 };
-	//	transform2D->SetTexPosition(texPos);
-
-	//	float angle = 0;
-	//	transform2D->SetAngle(angle);
-	//	DirectX::XMFLOAT2 scale = { 181,104 };
-	//	transform2D->SetScale(scale);
-	//	// 元の大きさ
-	//	DirectX::XMFLOAT2 texScale = { 0,0 };
-	//	transform2D->SetTexScale(texScale);
-
-	//	actor->AddComponent<Ui>();
-	//	// 描画チェック
-	//	std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-	//	ui->SetDrawCheck(false);
-
-	//	// これが２Dかの確認
-	//	bool check2d = true;
-	//	actor->SetCheck2d(check2d);
-
-	//	UiManager::Instance().Register(actor);
-	//}
-
-
-	//// UI タイトル名前
-	//{
-	//	const char* filename = "Data/Sprite/コマンドPUSH押し込み.png";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->SetName("UIPushOn");
-	//	actor->AddComponent<SpriteControll>();
-	//	actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-	//	actor->AddComponent<TransForm2D>();
-	//	// 位置　角度　スケール情報
-	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-	//	DirectX::XMFLOAT2 pos = { 543, 515 };
-	//	transform2D->SetPosition(pos);
-	//	// 元の位置
-	//	DirectX::XMFLOAT2 texPos = { 0, 0 };
-	//	transform2D->SetTexPosition(texPos);
-
-	//	float angle = 0;
-	//	transform2D->SetAngle(angle);
-	//	DirectX::XMFLOAT2 scale = { 181,104 };
-	//	transform2D->SetScale(scale);
-	//	// 元の大きさ
-	//	DirectX::XMFLOAT2 texScale = { 0,0 };
-	//	transform2D->SetTexScale(texScale);
-
-	//	actor->AddComponent<Ui>();
-	//	// 描画チェック
-	//	std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-	//	ui->SetDrawCheck(false);
-
-	//	// これが２Dかの確認
-	//	bool check2d = true;
-	//	actor->SetCheck2d(check2d);
-
-	//	UiManager::Instance().Register(actor);
-	//}
-
 }
 
 void SceneGameClear::StartBgm()
 {
 	Audio& Se = Audio::Instance();
-
 	AudioParam audioParam;
-
 	audioParam.filename = "Data/Audio/BGM/maou_bgm_healing14b.wav";
-
 	audioParam.keyName = "BGM";
-
 	audioParam.loop = false;
-
 	audioParam.volume = bgmVolume;
-
 	Se.Play(audioParam);
-}
-
-void SceneGameClear::CameraInitialize()
-{
-}
-
-void SceneGameClear::CameraUpdate(float elapsedTime)
-{
-}
-
-void SceneGameClear::PlayEffectsShaders(float elapsedTime)
-{
 }
 
 void SceneGameClear::SelectScene()
@@ -1053,19 +728,6 @@ void SceneGameClear::SelectScene()
 				GetComponent<TransForm2D>()->SetPositionY((exitPos.y + buttonPosYAdd));
 		}
 
-		//// ゲーム
-		//UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-		//	SetPositionY(gameUiPositionSelected);
-		//// タイトル
-		//UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
-		//	SetPositionY(titleUiPositionSelected);
-
-		//UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
-		//	SetScale(titleUiScaleSelected);
-		//UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-		//	SetScale(gameUiScaleUnselected);
-
-
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
 		{
 			//　シーン変更
@@ -1086,29 +748,10 @@ void SceneGameClear::SelectScene()
 				GetComponent<TransForm2D>()->SetPositionY((startPos.y + buttonPosYAdd));
 		}
 
-		//// タイトル
-		//UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
-		//	SetPositionY(titleUiPositionUnselected);
-
-
-		//UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
-		//	SetScale(titleUiScaleUnselected);
-		//UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-		//	SetScale(gameUiScaleSelected);
-
 		int playerCount = PlayerManager::Instance().GetPlayerCount();
 		for (int i = 0; i < playerCount; ++i)
 		{
 			std::weak_ptr<Player> playerId = PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>();
-			//if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
-			//{
-			//	// ステート変換
-			//	playerId.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::StateOver::Revive));
-
-			//	////　シーン変更
-			//	//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
-			//}
-
 
 			if (playerId.lock()->GetEndState())
 			{

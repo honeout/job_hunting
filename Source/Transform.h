@@ -1,15 +1,11 @@
 #pragma once
-
-
 #include "Component.h"
-
 
 class Transform : public Component
 {
 public:
     Transform();
     ~Transform() override;
-
     // 名前取得
     const char* GetName() const override { return "Transform"; }
     // 行列の更新
@@ -56,11 +52,7 @@ public:
     // 高さ
     float GetHeight() { return height; }
     void  SetHeight(float height) { this->height = height; }
-
-
-
 private:
-
     // 行列中身
     DirectX::XMFLOAT3 position;
     DirectX::XMFLOAT3 angle;
@@ -77,7 +69,5 @@ private:
 
     // 高さ
     float height = 1;
-
-
 };
 

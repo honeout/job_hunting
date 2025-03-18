@@ -1,5 +1,4 @@
 #pragma once
-
 #include <memory>
 #include <wrl.h>
 #include "Graphics/Shader.h"

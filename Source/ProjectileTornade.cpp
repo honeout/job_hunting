@@ -1,7 +1,6 @@
 #include "ProjectileTornade.h"
 #include "Graphics/Graphics.h"
 
-
 // コンストラクタ
 ProjectileTornade::ProjectileTornade()
 {
@@ -42,17 +41,13 @@ void ProjectileTornade::Start()
     // トランスフォーム取得
     transform = GetActor()->GetComponent<Transform>();
 
-
     if (effectProgress)
-        effectProgress->Play(transform->GetPosition(), 1);
-
-    
+        effectProgress->Play(transform->GetPosition(), 1); 
 }
 
 // 更新処理
 void ProjectileTornade::Update(float elapsedTime)
 {
-
     transform->UpdateTransformProjectile();
 
     model->UpdateTransform(transform->GetTransform());
@@ -64,32 +59,23 @@ void ProjectileTornade::Update(float elapsedTime)
 
     if (effectHit)
         effectHit->SetPosition(effectHit->GetEfeHandle(), transform->GetPosition());
-
-    
 }
 
 // 描画処理
 void ProjectileTornade::Render(RenderContext& rc, ModelShader& shader)
 {
     Graphics& graphics = Graphics::Instance();
-    //Shader* shader = graphics.GetShader();
-    //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
     shader = *graphics.GetShader(ModelShaderId::Lanbert);
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
-
-
     shader.Draw(rc, model);
-
     shader.End(rc);
 }
 
 void ProjectileTornade::DrawDebugPrimitive()
 {
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
-
     // 今は何も表示しない
         //// 衝突判定用のデバッグ球を描画
-
     debugRenderer->DrawCylinder(transform->GetPosition(), radius, transform->GetHeight(), DirectX::XMFLOAT4(0, 0, 1, 1));
 }
 

@@ -3,11 +3,9 @@
 // 更新処理
 void SceneManager::Update(float elapsedTime)
 {
-
     if (currentScene )
     {
         // 毎フレーム更新nextの中身の奴
-        
         currentScene->Update(elapsedTime);
     }
 }
@@ -38,7 +36,6 @@ void SceneManager::ChangeScene(Scene* scene)
 
     // 古いシーン終了処理
     Clear();
-
 
     // 新しいシーンを設定
     currentScene = nextScene;

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Actor.h"
 
 // コンポーネント
@@ -34,8 +33,6 @@ public:
 
 	// アクター取得
 	std::shared_ptr<Actor> GetActor() { return actor.lock(); }
-
 private:
 	std::weak_ptr<Actor>	actor;
-	
 };

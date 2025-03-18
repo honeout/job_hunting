@@ -1,6 +1,5 @@
 #include "Misc.h"
 #include "Graphics/ShadowmapCasterShader.h"
-
 ShadowmapCasterShader::ShadowmapCasterShader(ID3D11Device* device)
 {  
 	// 頂点シェーダー
@@ -38,7 +37,6 @@ ShadowmapCasterShader::ShadowmapCasterShader(ID3D11Device* device)
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
 
-
 	// 定数バッファ
 	{
 		// シーン用バッファ
@@ -58,8 +56,6 @@ ShadowmapCasterShader::ShadowmapCasterShader(ID3D11Device* device)
 		desc.ByteWidth = sizeof(CbMesh);
 		hr = device->CreateBuffer(&desc, 0, meshConstantBuffer.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
-
 	}
 
 	// ブレンドステート
@@ -111,8 +107,6 @@ ShadowmapCasterShader::ShadowmapCasterShader(ID3D11Device* device)
 		HRESULT hr = device->CreateRasterizerState(&desc, rasterizerState.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
-
-
 }
 
 // 描画開始
@@ -164,9 +158,6 @@ void ShadowmapCasterShader::Draw(const RenderContext& rc, const Model* model)
 				DirectX::XMMATRIX offsetTransform = DirectX::XMLoadFloat4x4(&mesh.offsetTransforms.at(i));
 				DirectX::XMMATRIX boneTransform = offsetTransform * worldTransform;
 				DirectX::XMStoreFloat4x4(&cbMesh.boneTransforms[i], boneTransform);
-
-
-				
 			}
 		}
 		else

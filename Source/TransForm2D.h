@@ -13,7 +13,6 @@ public:
     // GUI•`‰æ
     void OnGUI() override;
 #endif // _DEBUG
-
     // —h‚ê
     void Shake();
 
@@ -69,7 +68,6 @@ public:
     bool GetShakeEnd() { return shakeTimeUi >= shakeTimeUiMax ? true : false; }
 
 private:
-
     // ‰æ‘œ‚ÌˆÊ’u
     DirectX::XMFLOAT2 position = {0,0};
 
@@ -92,11 +90,9 @@ private:
 
     // UI‚ğ—h‚ç‚·‚½‚ß‚ÌŠÔ
     int shakeTimeUi = 0;
+    int shakeTimeUiMin = 0;
     // UI‚ğ—h‚ç‚·ŠÔÅ‘å
     int shakeTimeUiMax = 0;
-
-    // UIüŠú
-    //float timeInterval = 0.0f;
 
     // UIûk
     float shrinkValue = 0.5f;

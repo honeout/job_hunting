@@ -26,7 +26,6 @@ void EffectManager::Intialize()
 
     // Effekseer‚ð¶‚ÄÀ•WŒn‚ÅŒvŽZ‚·‚é
     effekseerManager->SetCoordinateSystem(Effekseer::CoordinateSystem::LH);
-
 }
 // I—¹‰»
 void EffectManager::Finalize()
@@ -57,5 +56,4 @@ void EffectManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLO
 
     // Effekseer•`‰æI—¹
     effekseerRenderer->EndRendering();
-
 }

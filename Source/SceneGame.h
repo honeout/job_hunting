@@ -1,11 +1,8 @@
 #pragma once
-
-
 #include "Player.h"
 #include "CameraController.h"
 #include "Scene.h"
 #include "Graphics/Sprite.h"
-
 #include "Graphics/RenderTarget.h"
 #include "Graphics/DepthStencil.h"
 #include "Light.h"
@@ -44,16 +41,6 @@ private:
 	// シャドウマップの描画
 	void RenderShadowmap();
 
-
-	// エネミーHPゲージ描画
-	void RenderEnemyGauge(
-	ID3D11DeviceContext* dc,
-		const DirectX::XMFLOAT4X4& view,
-		const DirectX::XMFLOAT4X4& projection
-	);
-
-	void AfterimageTime(float elapsedTime);
-
 	void PostProcessingRendererInitialize();
 	void PostProcessingRendererFinalize();
 
@@ -72,9 +59,7 @@ private:
 
 private:
 	// BGM
-	/*AudioSource* Bgm;*/
 	std::unique_ptr<Audio> Bgm;
-	//std::unique_ptr<AudioSource>Bgm;
 
 	// シェーダーをエフェクトして再生
 	float shaderPlayStateTimer = 0;
@@ -107,7 +92,6 @@ private:
 	// BGMの音の大きさ
 	float bgmVolume = 1.0f;
 
-
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;
 	std::unique_ptr<Sprite>	sprite;
@@ -132,7 +116,6 @@ private:
 	// 画面歪み最大
 	float radialBlurDataRadislBlurRadiusMax = 500.0f;
 
-
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源
 	//std::unique_ptr <Light> mainDirectionalLight; // シャドウマップを生成する平行光源
@@ -146,12 +129,7 @@ private:
 	DirectX::XMFLOAT3 shadowColor = { 0.2f,0.2f,0.2f };// 影の色
 	float shadowBias = 0.001f;// 深度比較用のオフセット値
 
-	// ポストプロセス
-	//std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
-
-
 	CameraController* cameraControlle = nullptr;
-
 
 	// 周辺減光周り
 		// 周辺減光
@@ -167,13 +145,11 @@ private:
 
 	bool dlayTimeCheck = false;
 
-
 	// スロー時間
 	float dlayStateTimer = 0.0f;
 	float dlayStateTimerMax = 0.5f;
 
 	float lightRange = 130;
-	//float lightRange = 186.400;
 
 	// ブルーム用
 	BloomData bloomData;
@@ -187,9 +163,6 @@ private:
 	bool isMenueOn = true;
 	bool isMenueOf = false;
 
-	// テクスチャ
-	//std::unique_ptr<Sprite> texture;
-
 	bool isAudioDebug = true;
 
 	// デバッグ
@@ -199,6 +172,4 @@ private:
 	DirectX::XMFLOAT2 debugPush2Scale = { 300,204 };
 	DirectX::XMFLOAT2 debugShortCutScale = { 300,204 };
 	DirectX::XMFLOAT2 debugShortPushScale = { 82.0f,49.0f };
-
-
 };

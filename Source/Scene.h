@@ -1,6 +1,5 @@
 #pragma once
 
-
 // ƒV[ƒ“
 class Scene
 {
@@ -26,9 +25,6 @@ public:
     // €”õŠ®—¹İ’è
     void SetReady() { ready = true; }
 
-
-
 private:
     bool  ready = false;
-
 };

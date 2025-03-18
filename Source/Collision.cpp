@@ -21,7 +21,6 @@ void Collision::OnGUI()
     DirectX::XMVECTOR LengthSq = DirectX::XMVector3LengthSq(Vec);// √外すため 2乗のまま
     float lengthSq;
     DirectX::XMStoreFloat(&lengthSq, LengthSq);
-    
     // 距離判定
     float range = radiusA+radiusB;
     if (lengthSq > range*range)// 距離の比較　2乗同士なら行ける
@@ -29,22 +28,16 @@ void Collision::OnGUI()
         // 離れているから 飛ばす
         return false;
     }
-
     // AがBを押し出す
     Vec = DirectX::XMVector3Normalize(Vec);
-
     // 次にlengthSq分だけ×
     Vec = DirectX::XMVectorScale(Vec, range);
-
     // aのポジションから線を足すとそこから伸びる結果をｂに入れる
     PositionB = DirectX::XMVectorAdd(PositionA, Vec);
-
     // それをoutPositionBに入れる
     DirectX::XMStoreFloat3(&outPositionB, PositionB);
- 
     return true;
 }
-
 
 bool Collision::IntersectCylinderVsCylinder(
     const DirectX::XMFLOAT3& positionA, 
@@ -65,9 +58,7 @@ bool Collision::IntersectCylinderVsCylinder(
     {
         return false;
     }
-
     // XZ平面での範囲チェック
-
     float vx = positionB.x - positionA.x;//B-Aであa->B
     float vz = positionB.z - positionA.z;// ÷単位ベクトル
     float range = radiusA + radiusB;// どれだけ押し出す
@@ -76,53 +67,13 @@ bool Collision::IntersectCylinderVsCylinder(
     {
         return false;
     }
-    // 改造
-    ////////////////////////
-    //
-    //float vy = positionB.y;//B-Aであa->B
-    //// ベクトルプレイヤーに向かう
-    //DirectX::XMFLOAT3 vv = { vx,vy,vz };
-    //// プレイヤー
-    //DirectX::XMVECTOR End = DirectX::XMLoadFloat3(&positionA);
-    //DirectX::XMVECTOR vV = DirectX::XMLoadFloat3(&vv);
-    //// 疑似的上方向
-    //DirectX::XMFLOAT3 normalRange = {0, 1, 0};
-
-    //// 疑似的上方向
-    //DirectX::XMVECTOR Normal = DirectX::XMLoadFloat3(&normalRange);
-
-    //// 入射ベクトルを法線に射影長 a ここを変えると向きを変更したらとぶ
-    //DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(DirectX::XMVectorNegate(vV), Normal);
-    //Dot = DirectX::XMVectorScale(Dot, 1.1f); // 壁にめり込まないように少しだけ補正
-
-    //// 補正位置の計算
-    //DirectX::XMVECTOR CollectPosition = DirectX::XMVectorMultiplyAdd(Normal, Dot, End);
-    //DirectX::XMFLOAT3 collectPosition;
-    //DirectX::XMStoreFloat3(&collectPosition, CollectPosition);
-
-
-    //DirectX::XMFLOAT3 endDirection;
-    //endDirection.x = collectPosition.x - positionB.x;
-    //endDirection.z = collectPosition.z - positionB.z;
-    //float distcollectPositionXZ = sqrtf(endDirection.x * endDirection.x + endDirection.z * endDirection.z); // 
-    //// ノルマライズ
-    //endDirection.x /= distcollectPositionXZ;
-    //endDirection.z /= distcollectPositionXZ;
-    ////////////////////////
-
-    // 疑似的当たり判定
-
-
     float rangeAdd = 0.001f;
-
     //AがBを押し出す
     vx /= distXZ;
     vz /= distXZ;
     outPositionB.x = positionA.x + (vx * (range + rangeAdd));
     outPositionB.y = positionB.y;
     outPositionB.z = positionA.z + (vz * (range + rangeAdd));
-
-
     return true;
 }
 
@@ -138,9 +89,7 @@ bool Collision::IntersectCylinderWidthVsCylinderWidth(const DirectX::XMFLOAT3& p
     {
         return false;
     }
-
     // XZ平面での範囲チェック
-
     float vx = positionB.x - positionA.x;//B-Aであa->B
     float vz = positionB.z + widthB - positionA.z + widthA;// ÷単位ベクトル
     float range = radiusA + radiusB;// どれだけ押し出す
@@ -149,7 +98,6 @@ bool Collision::IntersectCylinderWidthVsCylinderWidth(const DirectX::XMFLOAT3& p
     {
         return false;
     }
-
     // ｂの端っこがaより小さかったらアウト
     vz = positionB.z - widthB > positionA.z - widthA;
     distXZ = sqrtf(vx * vx + vz * vz);
@@ -157,23 +105,14 @@ bool Collision::IntersectCylinderWidthVsCylinderWidth(const DirectX::XMFLOAT3& p
     {
         return false;
     }
-
-    
-
     //AがBを押し出す
     vx /= distXZ;
     vz /= distXZ;
     outPositionB.x = positionA.x + (vx * range);
     outPositionB.y = positionB.y;
     outPositionB.z = positionA.z + (vz * range);
-
-
-
     return true;
 }
-
-
-
 
  // 球と円柱の交差判定
 bool Collision::IntersectSphereVsCylinder(
@@ -188,28 +127,22 @@ bool Collision::IntersectSphereVsCylinder(
      // 高さチェック
      if (spherePosition.y + sphereRadius < cylinderPosition.y)return false;
      if (spherePosition.y - sphereRadius > cylinderPosition.y + cylinderHeight)return false;
-
      // XZ平面での範囲チェック
      float vx = cylinderPosition.x - spherePosition.x;
      float vz = cylinderPosition.z - spherePosition.z;
      float range = sphereRadius + cylinderRadius;
      float distXZ = sqrtf(vx * vx + vz * vz);
      if (distXZ > range)return false;
-
      // 弾が円柱を押し出す
      vx /= distXZ;
      vz /= distXZ;
      outCylinderPosition.x = spherePosition.x + (vx * range);
      outCylinderPosition.x = cylinderPosition.y;
      outCylinderPosition.x = spherePosition.z + (vz * range);
-
-
      // 円柱の底面を含む平面と球の交差にとって出来ル。
      // 円の半径の２乗が得られます。
      float Radius;
-
      Radius = sqrtf(sphereRadius * sphereRadius);
-
      if (sphereRadius < Radius &&
          cylinderRadius < Radius)
      {
@@ -234,10 +167,8 @@ bool Collision::IntersectRayVsModel(
     DirectX::XMVECTOR WorldRayVec = DirectX::XMVectorSubtract(WorldEnd, WorldStart);
     // レイ長さ
     DirectX::XMVECTOR WorldRayLength = DirectX::XMVector3Length(WorldRayVec);
-
     // ワールド空間のレイの長さ
     DirectX::XMStoreFloat(&result.distance, WorldRayLength);
-
     bool hit = false;
     // メッシュの情報
     const ModelResource* resource = model->GetResource();
@@ -245,9 +176,6 @@ bool Collision::IntersectRayVsModel(
     {
         // メッシュノード取得
         const Model::Node& node = model->GetNodes().at(mesh.nodeIndex);
-
-
-
         // レイをワールド空間からローカル空間へ変換
         DirectX::XMMATRIX WorldTransform = DirectX::XMLoadFloat4x4(&node.worldTransform);
         DirectX::XMMATRIX InverseWorldTransform = DirectX::XMMatrixInverse(nullptr, WorldTransform);
@@ -257,15 +185,12 @@ bool Collision::IntersectRayVsModel(
         DirectX::XMVECTOR SE = DirectX::XMVectorSubtract(E, S);
         DirectX::XMVECTOR Dir = DirectX::XMVector3Normalize(SE);
         DirectX::XMVECTOR Length = DirectX::XMVector3Length(SE);
-
         // レイの長さ
         float neart;
         DirectX::XMStoreFloat(&neart, Length);
-
         // 三角形(面)との交差判定
         const std::vector<ModelResource::Vertex>& vertices = mesh.vertices;
         const std::vector<UINT> indices = mesh.indices;
-
         int materialIndex = -1;
         DirectX::XMVECTOR HitPosition;
         DirectX::XMVECTOR HitNormal;
@@ -275,47 +200,32 @@ bool Collision::IntersectRayVsModel(
             {
                 UINT index = subset.startIndex + i;
                 // 複数メッシュの中にある複数サブセットの中に複数の頂点があるから取り出す。
-
                 // 三角形の頂点を抽出
                 const ModelResource::Vertex& a = vertices.at(indices.at(index));
                 const ModelResource::Vertex& b = vertices.at(indices.at((index + 1) % UINT_MAX));
                 const ModelResource::Vertex& c = vertices.at(indices.at((index + 2) % UINT_MAX));
-
                 DirectX::XMVECTOR A = DirectX::XMLoadFloat3(&a.position);
                 DirectX::XMVECTOR B = DirectX::XMLoadFloat3(&b.position);
                 DirectX::XMVECTOR C = DirectX::XMLoadFloat3(&c.position);
-
                 // 三角形の三辺ベクトルを算出　時計回り
                 DirectX::XMVECTOR AB = DirectX::XMVectorSubtract(B, A);
                 DirectX::XMVECTOR BC = DirectX::XMVectorSubtract(C, B);
                 DirectX::XMVECTOR CA = DirectX::XMVectorSubtract(A, C);
-
                 // 三角形の法線ベクトルを算出 垂直なベクトル
                 DirectX::XMVECTOR N = DirectX::XMVector3Cross(AB, BC);
-
-                // 正規化しないとバグる
-                //N = DirectX::XMVector3Normalize(N);
-
-                // 無限平面との交点を取るここから
-
                 // 内積の結果がプラスならば表向き
                 DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Dir, N);
                 float dot;
                 DirectX::XMStoreFloat(&dot, Dot);
                 if (dot >= 0)continue;
-
                 // レイと平面の交点を算出
                 DirectX::XMVECTOR SA = DirectX::XMVectorSubtract(A, S);
                 DirectX::XMVECTOR T = DirectX::XMVectorDivide(DirectX::XMVector3Dot(N, SA), Dot);
                 float t;
                 DirectX::XMStoreFloat(&t, T);
-
                 // neartとは複数頂点があるとき最も近いもの以外首切る。
                 if (t < .0f || t > neart) continue; // 交点までの距離が今までに計算した最近距離より
-
-
                 DirectX::XMVECTOR P = DirectX::XMVectorAdd(DirectX::XMVectorMultiply(Dir, T), S);
-
                 // 交点が三角形の内側にあるか判定
                 // 1つめ
                 DirectX::XMVECTOR PA = DirectX::XMVectorSubtract(A, P);
@@ -324,7 +234,6 @@ bool Collision::IntersectRayVsModel(
                 float dot1;
                 DirectX::XMStoreFloat(&dot1, Dot1);
                 if (dot1 < 0.0f)continue;
-
                 // 2つめ
                 DirectX::XMVECTOR PB = DirectX::XMVectorSubtract(B, P);
                 DirectX::XMVECTOR Cross2 = DirectX::XMVector3Cross(PB, BC);
@@ -339,18 +248,13 @@ bool Collision::IntersectRayVsModel(
                 float dot3;
                 DirectX::XMStoreFloat(&dot3, Dot3);
                 if (dot3 < 0.0f)continue;
-
                 // 最近距離を更新
                 neart = t;
-
-                // 最も近い物を保存
-
                 // 交点と法線を更新
                 HitPosition = P;
                 HitNormal = N;
                 // マテリアルインデックスは最初ー１になっているメッシュ単位で一個代表を見つけた
                 materialIndex = subset.materialIndex;
-
             }
         }
         if (materialIndex >= 0)
@@ -364,7 +268,6 @@ bool Collision::IntersectRayVsModel(
             DirectX::XMVECTOR WorldCrossLength = DirectX::XMVector3Length(WorldCrossVec);
             float distance;
             DirectX::XMStoreFloat(&distance, WorldCrossLength);
-
             // 暫定チャンピオンと今の距離をやると近い物を入れる。
             // ヒット情報保存
             if (result.distance > distance)
@@ -379,10 +282,6 @@ bool Collision::IntersectRayVsModel(
                 hit = true;
             }
         }
-
     }
-
-   
     return hit;
-
 }

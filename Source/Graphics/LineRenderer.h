@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include <wrl.h>
 #include <d3d11.h>
@@ -17,7 +16,6 @@ public:
 
 	// ’¸“_’Ç‰Á
 	void AddVertex(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color);
-
 private:
 	struct ConstantBuffer
 	{

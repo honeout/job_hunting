@@ -1,7 +1,5 @@
 #pragma once
-
 #include "Graphics//Model.h"
-#include "Projectile.h"
 #include "Component.h"
 #include "BulletFiring.h"
 #include "ModelControll.h"
@@ -96,7 +94,4 @@ private:
     bool movementCheck = true;
 
     int magicNumber = (int)MagicNumber::Thander;
-
-    
-
 };

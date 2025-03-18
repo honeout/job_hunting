@@ -92,13 +92,11 @@ PhonShader::PhonShader(ID3D11Device* device)
         // サブセット用バッファ
         desc.ByteWidth = sizeof(CbMesh);
 
-
         hr = device->CreateBuffer(&desc, 0, meshConstantBuffer.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
         // サブセット用バッファ
         desc.ByteWidth = sizeof(CbSubset);
-
 
         hr = device->CreateBuffer(&desc, 0, subsetConstantBuffer.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
@@ -106,7 +104,6 @@ PhonShader::PhonShader(ID3D11Device* device)
         //UNIT11
         // シャドウマップ用バッファ
         desc.ByteWidth = sizeof(CbShadowMap);
-
 
         hr = device->CreateBuffer(&desc, 0, shadowMapConstantBuffer.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
@@ -136,28 +133,21 @@ PhonShader::PhonShader(ID3D11Device* device)
         D3D11_DEPTH_STENCIL_DESC desc = {};
         ::memset(&desc, 0, sizeof(desc));
         desc.DepthEnable = true;
-        //desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-        //desc.DepthFunc = D3D11_COMPARISON_LESS;
         desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
         desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
         // ステンシルステート有効
         desc.StencilEnable = true;
         desc.StencilWriteMask = 0xFF;
         desc.StencilReadMask = 0xFF;
-
         desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
         desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
         desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
         desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
         desc.BackFace = desc.FrontFace;
-
         HRESULT hr = device->CreateDepthStencilState(&desc, depthStencilState.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
         desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-        //desc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
-        //desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
 
         hr = device->CreateDepthStencilState(&desc, depthStencilMask.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
@@ -222,7 +212,6 @@ PhonShader::PhonShader(ID3D11Device* device)
 // 描画開始
 void PhonShader::Begin(const RenderContext& rc)
 {
-    
     rc.deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0);
     rc.deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0);
     rc.deviceContext->IASetInputLayout(inputLayout.Get());
@@ -248,10 +237,8 @@ void PhonShader::Begin(const RenderContext& rc)
     {
         rc.deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
     }
-    
     rc.deviceContext->RSSetState(rasterizerState.Get());
-    //rc.deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
-
+ 
     ID3D11SamplerState* samplerStates[] =
     {
         samplerState.Get(),
@@ -259,8 +246,6 @@ void PhonShader::Begin(const RenderContext& rc)
     };
     // UNIT11
     rc.deviceContext->PSSetSamplers(0, ARRAYSIZE(samplerStates), samplerStates);
-
-
 
     // シーン用定数バッファ更新
     CbScene cbScene;
@@ -297,8 +282,6 @@ void PhonShader::Begin(const RenderContext& rc)
 
     rc.deviceContext->UpdateSubresource(sceneConstantBuffer.Get(), 0, 0, &cbScene, 0, 0);
 
-
-
     // UNIT11
     // シャドウマップ用定数バッファ更新
     CbShadowMap cbShadowMap;
@@ -306,14 +289,12 @@ void PhonShader::Begin(const RenderContext& rc)
     cbShadowMap.shadowBias = rc.shadowMapData.shadowBias;
     cbShadowMap.lightViewProjection = rc.shadowMapData.lightViewProjection;
 
-
     // UINT11
     rc.deviceContext->UpdateSubresource(shadowMapConstantBuffer.Get(), 0, 0, &cbShadowMap, 0, 0);
 
     // UINT11
     // シャドウマップ設定
     rc.deviceContext->PSSetShaderResources(2, 1, &rc.shadowMapData.shadowMap);
-   
 }
 
 // 描画
@@ -321,10 +302,8 @@ void PhonShader::Draw(const RenderContext& rc, const Model* model)
 {
     const ModelResource* resource = model->GetResource();
     const std::vector<Model::Node>& nodes = model->GetNodes();
-
     for (const ModelResource::Mesh& mesh : resource->GetMeshes())
     {
-
         // メッシュ用定数バッファ更新
         CbMesh cbMesh;
         ::memset(&cbMesh, 0, sizeof(cbMesh));
@@ -344,27 +323,22 @@ void PhonShader::Draw(const RenderContext& rc, const Model* model)
             cbMesh.boneTransforms[0] = nodes.at(mesh.nodeIndex).worldTransform;
         }
         rc.deviceContext->UpdateSubresource(meshConstantBuffer.Get(), 0, 0, &cbMesh, 0, 0);
-
         UINT stride = sizeof(ModelResource::Vertex);
         UINT offset = 0;
         rc.deviceContext->IASetVertexBuffers(0, 1, mesh.vertexBuffer.GetAddressOf(), &stride, &offset);
         rc.deviceContext->IASetIndexBuffer(mesh.indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
         rc.deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
         for (const ModelResource::Subset& subset : mesh.subsets)
         {
             CbSubset cbSubset;
             cbSubset.materialColor = subset.material->color;
             rc.deviceContext->UpdateSubresource(subsetConstantBuffer.Get(), 0, 0, &cbSubset, 0, 0);
-            //rc.deviceContext->PSSetShaderResources(0, 1, subset.material->diffuse_map.GetAddressOf());
             ID3D11ShaderResourceView* srvs[] =
             {
-                //subset.material->shaderResourceView.Get(),
                 subset.material->diffuse_map.Get(),
                 subset.material->normal_map.Get(),
             };
             rc.deviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
-
             rc.deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
             rc.deviceContext->DrawIndexed(subset.indexCount, subset.startIndex, 0);
         }
@@ -378,9 +352,6 @@ void PhonShader::End(const RenderContext& rc)
     rc.deviceContext->VSSetShader(nullptr, nullptr, 0);
     rc.deviceContext->PSSetShader(nullptr, nullptr, 0);
     rc.deviceContext->IASetInputLayout(nullptr);
-
-    // UNIT11
-    //ID3D11ShaderResourceView* srvs[] = { nullptr };
     ID3D11ShaderResourceView* srvs[] = { nullptr,nullptr,nullptr };
     rc.deviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
 

@@ -21,14 +21,12 @@ public:
 
 	// WIN32メッセージハンドラー
 	LRESULT HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 private:
 	// マウスカーソル更新
 	bool UpdateMouseCursor();
 
 	// マウス座標更新
 	void UpdateMousePos();
-
 private:
 	struct ConstantBuffer
 	{

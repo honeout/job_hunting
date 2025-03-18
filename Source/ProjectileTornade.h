@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Graphics//Model.h"
-#include "Projectile.h"
 #include "Component.h"
 #include "BulletFiring.h"
 #include "ModelControll.h"
@@ -78,7 +77,6 @@ private:
 
     std::shared_ptr<BulletFiring> bulletFiring;
     std::shared_ptr<Transform> transform;
-    //std::shared_ptr<Movement> move;
 
     float radius = 1.0f;
 
@@ -88,7 +86,4 @@ private:
 
     // çÇÇ≥
     float height = 0.0f;
-
-
-
 };

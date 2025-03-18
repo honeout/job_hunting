@@ -1,20 +1,9 @@
 #include "Misc.h"
-//#include "GpuResourceUtils.h"
 #include "PrimitiveRenderer.h"
 
 // コンストラクタ
 PrimitiveRenderer::PrimitiveRenderer(ID3D11Device* device)
 {
-
-	//// 頂点シェーダー
-	//GpuResourceUtils::LoadVertexShader(
-	//	device,
-	//	"Data/Shader/PrimitiveRendererVS.cso",
-	//	inputElementDesc,
-	//	_countof(inputElementDesc),
-	//	inputLayout.GetAddressOf(),
-	//	vertexShader.GetAddressOf());
-
 	// 頂点シェーダー
 	{
 		// ファイルを開く
@@ -40,21 +29,10 @@ PrimitiveRenderer::PrimitiveRenderer(ID3D11Device* device)
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			//			{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
-			//D3D11_INPUT_PER_VERTEX_DATA,0},
 		};
 		hr = device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), csoData.get(), csoSize, inputLayout.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
-
-
-
-	//// ピクセルシェーダー
-	//GpuResourceUtils::LoadPixelShader(
-	//	device,
-	//	"Data/Shader/PrimitiveRendererPS.cso",
-	//	pixelShader.GetAddressOf());
-
 	// ピクセルシェーダー
 	{
 		// ファイルを開く
@@ -78,16 +56,6 @@ PrimitiveRenderer::PrimitiveRenderer(ID3D11Device* device)
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
 
-
-
-	//// 定数バッファ
-	//GpuResourceUtils::CreateConstantBuffer(
-	//	device,
-	//	sizeof(CbScene),
-	//	constantBuffer.GetAddressOf());
-
-
-
 	//定数バッファ
 	{
 		// シーン用バッファ
@@ -103,8 +71,6 @@ PrimitiveRenderer::PrimitiveRenderer(ID3D11Device* device)
 		HRESULT hr = device->CreateBuffer(&desc, 0, constantBuffer.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
-
-
 
 	// 頂点バッファ
 	D3D11_BUFFER_DESC desc;
@@ -135,27 +101,6 @@ PrimitiveRenderer::PrimitiveRenderer(ID3D11Device* device)
 		HRESULT hr = device->CreateRasterizerState(&desc, rasterizerState.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
-
-	//// サンプラステート
-	//{
-	//	D3D11_SAMPLER_DESC desc;
-	//	::memset(&desc, 0, sizeof(desc));
-	//	desc.MipLODBias = 0.0f;
-	//	desc.MaxAnisotropy = 1;
-	//	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	//	desc.MinLOD = -FLT_MAX;
-	//	desc.MaxLOD = FLT_MAX;
-	//	desc.BorderColor[0] = 1.0f;
-	//	desc.BorderColor[1] = 1.0f;
-	//	desc.BorderColor[2] = 1.0f;
-	//	desc.BorderColor[3] = 1.0f;
-	//	desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	//	desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	//	desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	//	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	//	HRESULT hr = device->CreateSamplerState(&desc, samplerState.GetAddressOf());
-	//	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace);
-	//}
 }
 
 void PrimitiveRenderer::Begin(const RenderContext& rc)
@@ -174,16 +119,12 @@ void PrimitiveRenderer::Begin(const RenderContext& rc)
 
 void PrimitiveRenderer::Draw(const RenderContext& rc, const Sprite* sprite)
 {
-
-
 	// ビュープロジェクション行列作成
 	DirectX::XMMATRIX V = DirectX::XMLoadFloat4x4(&rc.view);
 	DirectX::XMMATRIX P = DirectX::XMLoadFloat4x4(&rc.projection);
 	DirectX::XMMATRIX VP = V * P;
-
 	// 定数バッファ更新
 	CbScene cbScene;
-	//cbScene.color = rc.colorGradingData;
 	cbScene.color = rc.swordTraileData.color;
 	DirectX::XMStoreFloat4x4(&cbScene.viewProjection, VP);
 	rc.deviceContext->UpdateSubresource(constantBuffer.Get(), 0, 0, &cbScene, 0, 0);
@@ -204,13 +145,9 @@ void PrimitiveRenderer::Draw(const RenderContext& rc, const Sprite* sprite)
 		D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 		HRESULT hr = rc.deviceContext->Map(vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
-
 		memcpy(mappedSubresource.pData, &vertices[start], sizeof(Vertex) * count);
-
 		rc.deviceContext->Unmap(vertexBuffer.Get(), 0);
-
 		rc.deviceContext->Draw(count, 0);
-
 		start += count;
 		if ((start + count) > totalVertexCount)
 		{
@@ -222,21 +159,15 @@ void PrimitiveRenderer::Draw(const RenderContext& rc, const Sprite* sprite)
 void PrimitiveRenderer::End(const RenderContext& rc)
 {
 	vertices.clear();
-
 	rc.deviceContext->VSSetShader(nullptr, nullptr, 0);
 	rc.deviceContext->PSSetShader(nullptr, nullptr, 0);
 	rc.deviceContext->IASetInputLayout(nullptr);
-
 	rc.deviceContext->RSSetState(nullptr);
-
 }
 
 // 頂点追加
 void PrimitiveRenderer::AddVertex(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT4& color)
 {
-	//Vertex& v = vertices.emplace_back();
-	//v.position = position;
-	//v.color = color;
 }
 
 // 軸描画
@@ -261,13 +192,10 @@ void PrimitiveRenderer::DrawGrid(int subdivisions, float scale)
 {
 	int numLines = (subdivisions + 1) * 2;
 	int vertexCount = numLines * 2;
-
 	float corner = 0.5f;
 	float step = 1.0f / static_cast<float>(subdivisions);
-
 	int index = 0;
 	float s = -corner;
-
 	const DirectX::XMFLOAT4 white = DirectX::XMFLOAT4(1, 1, 1, 1);
 
 	// Create vertical lines
@@ -289,7 +217,6 @@ void PrimitiveRenderer::DrawGrid(int subdivisions, float scale)
 
 		s += step;
 	}
-
 	// Create horizontal lines
 	s = -corner;
 	for (int i = 0; i <= subdivisions; i++)
@@ -303,7 +230,6 @@ void PrimitiveRenderer::DrawGrid(int subdivisions, float scale)
 		P = DirectX::XMVector3TransformCoord(V, M);
 		DirectX::XMStoreFloat3(&position, P);
 		AddVertex(position, white);
-
 		s += step;
 	}
 
@@ -368,13 +294,6 @@ void PrimitiveRenderer::Render(
 	// ラスタライザーステート設定
 	dc->RSSetState(rasterizerState.Get());
 
-	// サンプラー
-	//dc->PSSetSamplers(0, 1, samplerState.GetAddressOf());
-
-	// テクスチャ
-	//dc->PSSetShaderResources(0, 1, sprite->GetShaderResourceView().GetAddressOf());
-
-
 	// ビュープロジェクション行列作成
 	DirectX::XMMATRIX V = DirectX::XMLoadFloat4x4(&view);
 	DirectX::XMMATRIX P = DirectX::XMLoadFloat4x4(&projection);
@@ -390,12 +309,6 @@ void PrimitiveRenderer::Render(
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	dc->IASetPrimitiveTopology(primitiveTopology);
-
-	//UINT stride = sizeof(Sprite::Vertex);
-	//UINT offset = 0;
-    //dc->IASetVertexBuffers(0, 1, sprite->GetVertexBuffer().GetAddressOf(), &stride, &offset);
-    //dc->PSSetShaderResources(0, 1, sprite->GetShaderResourceView().GetAddressOf());
-    //dc->Draw(4, 0);
 
 	dc->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 
@@ -422,8 +335,5 @@ void PrimitiveRenderer::Render(
 			count = totalVertexCount - start;
 		}
 	}
-
-
-
 	vertices.clear();
 }

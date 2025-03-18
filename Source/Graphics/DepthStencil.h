@@ -1,5 +1,4 @@
 #pragma once
-
 #include <wrl.h>
 #include <d3d11.h>
 
@@ -31,5 +30,4 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceView;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthStencilView;
     D3D11_TEXTURE2D_DESC texture2dDesc;
-
 };

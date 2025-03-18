@@ -1,18 +1,11 @@
 ﻿#include "Graphics/Graphics.h"
 #include "SceneGame.h"
 #include "Camera.h"
-//#include "EnemyManager.h"
 #include "EnemyBoss.h"
-
 #include "EffectManager.h"
-
 #include "Input/Input.h"
-
 #include <DirectXMath.h>
-
 #include "StageMain.h"
-
-
 #include "Actor.h"
 #include "Movement.h"
 #include "HP.h"
@@ -22,31 +15,23 @@
 #include "Ui.h"
 #include "TransForm2D.h"
 #include "UiManager.h"
-
 #include "LightManager.h"
 #include "StateDerived.h"
-
 #include "SceneLoading.h"
 #include "SceneManager.h"
 #include "SceneGameClear.h"
 #include "SceneGameOver.h"
-
 #include "Audio\Audio.h"
-
 #include "UiTime.h"
-
 #include "Mp.h"
 
 // シャドウマップのサイズ
 static const UINT SHADOWMAP_SIZE = 2048;
-
-
 // 初期化
 void SceneGame::Initialize()
 {
 	// 行動範囲
 	{
-		
 		minPos.x = -30;
 		minPos.y = -3.525f;
 		minPos.z = -30;
@@ -56,7 +41,6 @@ void SceneGame::Initialize()
 		maxPos.z = 30;
 	}
 
-
 		// カメラ初期化
 	cameraControlle = nullptr;
 	cameraControlle = new CameraController();
@@ -64,8 +48,7 @@ void SceneGame::Initialize()
 	// コンポネント登録
 	InitializeComponent();
 
-	//UpdateBgm();
-
+	UpdateBgm();
 
 	// カメラ初期設定 見える位置追いかけるものなど
 	Graphics& graphics = Graphics::Instance();
@@ -84,14 +67,10 @@ void SceneGame::Initialize()
 		1000.0f
 	);
 
-
-
 	// 平行光源を追加
 	{
 		mainDirectionalLight = new Light(LightType::Directional);
-		//mainDirectionalLight = std::make_unique<Light>(LightType::Directional);
 		mainDirectionalLight->SetDirection({ 1,-3,-1 });
-		//ambientLightColor = { 0.2f,0.2f,0.2f,0.2f };
 		LightManager::Instanes().Register(mainDirectionalLight);
 	}
 
@@ -122,10 +101,6 @@ void SceneGame::Initialize()
 		lightTherd->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
 		lightTherd->SetRange(lightRange);
 		LightManager::Instanes().Register(lightTherd);
-
-
-
-
 	}
 
 	// 新しい描画ターゲットの生成
@@ -137,7 +112,6 @@ void SceneGame::Initialize()
 			, DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
 
-
 	// シャドウマップ用に深度ステンシルの生成
 	{
 		shadowmapDepthStencil = std::make_unique<DepthStencil>(SHADOWMAP_SIZE, SHADOWMAP_SIZE);
@@ -145,42 +119,27 @@ void SceneGame::Initialize()
 
 	// ポストプロセス描画クラス生成
 	PostProcessingRendererInitialize();
-
 }
 
 
 // 終了化
 void SceneGame::Finalize()
 {
-
 	ActorManager::Instance().Clear();
-
 	LightManager::Instanes().Clear();
-
 	EnemyManager::Instance().Clear();
-
 	PlayerManager::Instance().Clear();
-
 	StageManager::Instance().Clear();
-
 	UiManager::Instance().Clear();
-
 	ProjectileManager::Instance().Clear();
-
 	Audio::Instance().AllStop();
-
 	Audio::Instance().AllClear();
-
-
-	/*Bgm->Stop();*/
 
 	if (cameraControlle != nullptr)
 	{
 		delete cameraControlle;
 		cameraControlle = nullptr;
 	}
-
-
 }
 
 // 更新処理
@@ -199,9 +158,6 @@ void SceneGame::Update(float elapsedTime)
 	ActorManager::Instance().Update(dlayTime);
 
 	Audio::Instance().Update();
-	
-	
-
 
 	// カメラ更新
 	cameraControlle->Update(elapsedTime);
@@ -209,78 +165,18 @@ void SceneGame::Update(float elapsedTime)
 	// エフェクト更新処理
 	EffectManager::Instance().Update(dlayTime);
 
-
-	// エフェクトしてシェーダーを使う
-	//PlayEffectsShaders(dlayTime);
-
-	//Audio::Instance().Update();
-	
-
-	//// position更新ソードトレイル
-	//{
-	//	PrimitiveRenderer* primitiveRenderer = Graphics::Instance().GetPrimitiveRenderer();
-	//	int count = PlayerManager::Instance().GetPlayerCount();
-	//	DirectX::XMFLOAT4 color = {0,0,1,1};
-
-	//	for (int i = 0; i < 32; ++i)
-	//	{
-	//		primitiveRenderer->AddVertex(
-	//			PlayerManager::Instance().GetPlayer(count - 1)->GetComponent<Transform>()->GetPosition(), color);
-
-	//		DirectX::XMFLOAT3 positionY = PlayerManager::Instance().GetPlayer(count - 1)->GetComponent<Transform>()->GetPosition();
-	//		positionY.y += 1.0f;
-
-	//		primitiveRenderer->AddVertex(
-	//			positionY, color);
-	//	}
-	//}
-
 	// シーン切り替え
 	{
 		
 		for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 		{
-			
-			//vignette_smoothness = 0.0f;
-			//vignette_intensity = 0.0f;
-
-			//if (PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetFlashOn())
-			//{
-			//	bool flashOn = false;
-			//	PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->SetFlashOn(flashOn);
-			//	// フラッシュ開始
-			//	shaderPlayStateTimer = shaderPlayStateTimerMax;
-			//}
-			//
-			//if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->HealthPinch() && !PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead())
-			//{
-			//	vignette_smoothness = 0.5f;
-			//	vignette_intensity = 0.4f;
-			//}
-
-			//// ブラーを×
-			//int enemyCount = EnemyManager::Instance().GetEnemyCount();
-			//if (enemyCount > 0)
-			//{
-			//	std::shared_ptr<EnemyBoss> enemyid = EnemyManager::Instance().GetEnemy(enemyCount - 1)->GetComponent<EnemyBoss>();
-			//	shaderBlurStateTimer = enemyid->GetBlurCheck() ? shaderBlurStateTimerMax : shaderBlurStartStateTimer;
-			//	bool blurCheck = false;
-			//	enemyid->SetBlurCheck(blurCheck);
-
-			//}
-			
 			// 死んだ瞬間
 			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
 			{
-				
 				PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Death));
-
 				vignette_smoothness = 0.0f;
-
 				vignette_intensity = 0.0f;
-
 				sceneChengeCheckDead = true;
-
 				colorGradingData.brigthness = 2.0f;
 			}
 			// 演出終了
@@ -295,26 +191,16 @@ void SceneGame::Update(float elapsedTime)
 			if (hp->GetDead())
 			{
 				vignette_smoothness = 0.0f;
-
 				vignette_intensity = 0.0f;
-
 				colorGradingData.brigthness = 3.0f;
 				hp->SetDead(false);
 				//ActorManager::Instance().Clear();
-
 				EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Death));
-
-
-				
-
 			}
 			if (hp->GetHealth() <= 0 && hp->GetLife() >= 0)
 			{
 				// hpを回復
 				hp->SetHealth(hp->GetMaxHealth());
-
-				// 残機を減らす
-				//hp->SetLife(hp->GetLife() - 1);
 			}
 			// クリア
 			if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetClearCheck())
@@ -333,44 +219,29 @@ void SceneGame::Update(float elapsedTime)
 				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGameOver));
 			}
 		}
-
 	}
-
 }
-
-
 
 // 描画処理
 void SceneGame::Render()
 {
-
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 	//// シャドウマップの描画
 	RenderShadowmap();
-
 	Render3DScene();
-
 	// GUI
 	ActorManager::Instance().RenderGui();
-
-
 	// 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
 	{
-		
-
 		ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 		ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
-
-
 		// 画面クリア＆レンダーターゲット設定
 		FLOAT color[] = { 0.0f,0.0f,0.0f,1.0f }; // RGBA(0.0~1.0)
 		dc->ClearRenderTargetView(rtv, color);
 		dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		dc->OMSetRenderTargets(1, &rtv, dsv);
-
-
 		// UINT11
         // ビューポートの設定
 		D3D11_VIEWPORT vp = {};
@@ -379,36 +250,10 @@ void SceneGame::Render()
 		vp.MinDepth = 0.0f;
 		vp.MaxDepth = 1.0f;
 		dc->RSSetViewports(1, &vp);
-
 		RenderContext rc;
 		
 		rc.deviceContext = dc;
-
-		//rc.radialBlurData = radialBlurData;
-
-		//rc.colorGradingData = colorGradingData;
-
-		//rc.bloomData = bloomData;
-
-
-		//// 周辺減光
-		//rc.vignetteData.color = vignette_color;
-		//rc.vignetteData.center = vignette_center;
-		//rc.vignetteData.intensity = vignette_intensity;
-		//rc.vignetteData.smoothness = vignette_smoothness;
-		//rc.vignetteData.rounded = vignette_rounded;
-		//rc.vignetteData.roundness = vignette_roundness;
-
-	
-		
-		//postprocessingRenderer->SetBloomData();
-
-		// ポストプロセスを処理を行う
-		//postprocessingRenderer->Render(rc);
 		postprocessingRenderer.Render(rc);
-
-
-
 	}
 
 
@@ -431,7 +276,6 @@ void SceneGame::Render()
 
 		ActorManager::Instance().Render(rc, shaderUi);
 	}
-
 
 #ifdef _DEBUG
 	
@@ -460,8 +304,6 @@ void SceneGame::Render()
 		}
 		ImGui::Separator();
 
-		//ImGui::Separator();
-		 //UNIT11
 		if (ImGui::TreeNode("shadowmap"))
 		{
 			ImGui::SliderFloat("DrawRect", &shadowDrawRect, 1.0f, 2048.0f);
@@ -474,7 +316,6 @@ void SceneGame::Render()
 			ImGui::TreePop();
 		}
 		ImGui::Separator();
-		 //UNIT09
 		if (ImGui::TreeNode("ColorGrading"))
 		{
 			ImGui::SliderFloat("hueShift", &colorGradingData.hueShift, 0.0f, +360.0f);
@@ -484,21 +325,15 @@ void SceneGame::Render()
 			ImGui::TreePop();
 		}
 		ImGui::Separator();
-
-
 		if (ImGui::TreeNode("RadialBlur"))
 		{
 			ImGui::SliderFloat("radius", &radialBlurData.radius, 0.0f, 200.0f);
 			ImGui::SliderInt("samplingCount", &radialBlurData.samplingCount, 0, 10);
 			ImGui::SliderFloat2("center", &radialBlurData.center.x, 0.0f, 1.0f);
-
-
 			ImGui::SliderFloat("mask radius", &radialBlurData.mask_radius, 0.0f, 600.0f);
-
 			ImGui::TreePop();
 		}
 		ImGui::Separator();
-
 		if (ImGui::TreeNode("BloomData"))
 		{
 			ImGui::SliderFloat("threshold", &bloomData.luminanceExtractionData.threshold, 0.0f, 1.0f);
@@ -506,17 +341,12 @@ void SceneGame::Render()
 			ImGui::SliderInt("kernelSize", &bloomData.gaussianFilterData.kernelSize, 1, MaxkernelSize - 1);
 			ImGui::SliderFloat("deviation", &bloomData.gaussianFilterData.deviation, 1.0f, 10.0f);
 			ImGui::TreePop();
-
 		}
 		ImGui::Separator();
 	}
 
 	if (ImGui::TreeNode("audio"))
 	{
-		//if (ImGui::Button("AudioStart"))
-		//{
-		//	UpdateBgm();
-		//}
 		if (ImGui::Button("AudioStop"))
 		{
 			StopBgm();
@@ -525,23 +355,14 @@ void SceneGame::Render()
 
 	LightManager::Instanes().DrawDebugGUI();
 
-		postprocessingRenderer.DrawDebugGUI();
+	postprocessingRenderer.DrawDebugGUI();
 
-		Audio::Instance().DebugDrawGUI();
-
-		//postprocessingRenderer->DrawDebugGUI();
-		//	ImGui::Separator();
-		//	LightManager::Instanes().DrawDebugGUI();
-		//}
+	Audio::Instance().DebugDrawGUI();
 #endif // _DEBUG
-
-	
 }
 
 void SceneGame::Render3DScene()
 {
-
-	
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView().Get();
@@ -566,7 +387,6 @@ void SceneGame::Render3DScene()
 	RenderContext rc;
 	rc.deviceContext = dc;
 
-
 	// ライトの情報を詰め込む
 	LightManager::Instanes().PushRenderContext(rc);
 
@@ -576,8 +396,6 @@ void SceneGame::Render3DScene()
 	rc.shadowMapData.lightViewProjection = lightViewProjeciton;
 	rc.shadowMapData.shadowColor = shadowColor;
 	rc.shadowMapData.shadowBias = shadowBias;
-
-	
 
 	// カメラパラメータ設定
 	Camera& camera = Camera::Instance();
@@ -599,18 +417,15 @@ void SceneGame::Render3DScene()
 
 	// 3Dモデル描画
 	{
-
 		ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
 
 		ActorManager::Instance().Render(rc, shader);
-
 	}
 
 	// 3Dエフェクト描画
 	{
 		EffectManager::Instance().Render(rc.view, rc.projection);
 	}
-
 #ifdef _DEBUG
 
 	// デバッグプリミティブの表示
@@ -633,7 +448,6 @@ void SceneGame::Render3DScene()
 		graphics.GetDebugRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
 	}
 #endif // _DEBUG
-
 }
 
 void SceneGame::RenderShadowmap()
@@ -668,7 +482,6 @@ void SceneGame::RenderShadowmap()
 		// 平行光源からカメラ位置を作成し、そこから原点の位置を見るように視線行列を生成
 		DirectX::XMVECTOR LightPosition = DirectX::XMLoadFloat3(&mainDirectionalLight->GetDirection());
 		LightPosition = DirectX::XMVectorScale(LightPosition, -3.0f);
-		//LightPosition = DirectX::XMVectorScale(LightPosition, lightPositionScale);
 		DirectX::XMMATRIX V = DirectX::XMMatrixLookAtLH(LightPosition,
 			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 			DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
@@ -686,27 +499,17 @@ void SceneGame::RenderShadowmap()
 		ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
 
 		ActorManager::Instance().Render(rc, shader);
-
-		//// ソードトレイル
-		//SpriteShader* shaderSprite = graphics.GetShader(SpriteShaderId::SwordeTraile);
-
-		//ActorManager::Instance().Render(rc, shaderSprite);
 	}
 }
 
 void SceneGame::PostProcessingRendererInitialize()
 {
-
 	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-	//postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
 	// シーンテクスチャを設定しておく
 	ShaderResourceViewData srvData;
 	srvData.srv = renderTarget->GetShaderResourceView();
 	srvData.width = renderTarget->GetWidth();
 	srvData.height = renderTarget->GetHeight();
-	//srvData.width = 100;
-	//srvData.height = 100;
-	//postprocessingRenderer->SetSceneData(srvData);
 	postprocessingRenderer.SetSceneData(srvData);
 
 	bloomData.luminanceExtractionData.threshold = 0.41f;
@@ -725,24 +528,13 @@ void SceneGame::PostProcessingRendererInitialize()
 	colorGradingDataMin.brigthness = colorGradingBrigthness;
 	colorGradingDataMin.hueShift = colorGradingHueShift;
 
-
 	postprocessingRenderer.SetColorGradingMinData(colorGradingDataMin);
-	//colorGradingData.brigthness = 5;
-	//colorGradingData.hueShift = 3;
-	//colorGradingData.saturation = 0;
-
-	//postprocessingRenderer.SetColorGradingData(colorGradingData);
 
 	// ブラー
 	// ブラー範囲
 	float radislBlurRadius = 0;
 	radialBlurData.radius = radislBlurRadius;
 
-
-	//float radislBlurSamplingCount = 10;
-	//radialBlurData.samplingCount = radislBlurSamplingCount;
-	//float radislBlurMaskRadius = 30;
-	//radialBlurData.mask_radius = radislBlurMaskRadius;
 	// ブラーのかからない範囲
 	float radislBlurMaskRadiusNormal = 600;
 	radialBlurData.mask_radius = radislBlurMaskRadiusNormal;
@@ -759,9 +551,6 @@ void SceneGame::PostProcessingRendererInitialize()
 
 	postprocessingRenderer.SetVignetteMinData(vignetteData);
 	postprocessingRenderer.SetVignetteData(vignetteData);
-
-
-
 }
 
 void SceneGame::PostProcessingRendererFinalize()
@@ -820,14 +609,11 @@ void SceneGame::PostProcessingRendererFinalize()
 
 	postprocessingRenderer.SetVignetteMinData(vignetteData);
 	postprocessingRenderer.SetVignetteData(vignetteData);
-
 }
 
 void SceneGame::PlayEffectsShaders(float elapsedTime)
 {
 	Graphics& graphics = Graphics::Instance();
-
-
 
 	// 画面スロー
 	bool hitCheck = PlayerManager::Instance().GetPlayer(0)->GetComponent<Player>()->GetHitCheck();
@@ -842,16 +628,12 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 		dlayStateTimer -= elapsedTime;
 
 		dlayTimeCheck = true;
-
-
 	}
 
 	else
 	{
 		dlayTimeCheck = false;
-
 	}
-
 
 	// ブラーエフェクト
 	if (shaderBlurStateTimer > 0 )
@@ -875,7 +657,6 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 	}
 	else if(shaderPlayStateTimer < 0)
 	{
-
 		// ブラー範囲
 		float radislBlurRadius = 0;
 		radialBlurData.radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radialBlurData.radius - (5 + elapsedTime) : radislBlurRadius - FLT_EPSILON;
@@ -884,27 +665,6 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 		float radislBlurMaskRadiusEffectOn = 300;
 		radialBlurData.mask_radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radislBlurMaskRadiusEffectOn : radislBlurMaskRadiusNormal;
 	}
-
-
-	//if (hitCheck)
-	//{
-	//	dlayStateTimer = dlayStateTimerMax;
-
-	//	dlayTimeCheck = true;
-
-	//	float saturationGageMin = 0.0f;
-
-	//	colorGradingData.saturation = saturationGageMin - FLT_EPSILON > colorGradingData.saturation + FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation - (0.01f + elapsedTime);
-	//}
-
-	//else
-	//{
-	//	dlayTimeCheck = false;
-
-	//	float saturationGageMax = 1;
-
-	//	colorGradingData.saturation = saturationGageMax + FLT_EPSILON < colorGradingData.saturation - FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation + (0.01f + elapsedTime);
-	//}
 }
 
 bool SceneGame::InputMenue()
@@ -920,7 +680,6 @@ bool SceneGame::InputMenue()
 
 void SceneGame::InitializeComponent()
 {
-
 	// ステージ初期化
 	{
 		const char* filename = "Data/Model/ExampleStage/stageNotRuby.mdl";
@@ -939,9 +698,6 @@ void SceneGame::InitializeComponent()
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
-
-
-
 		actor->AddComponent<StageMain>();
 
 		// 影シェーダー
@@ -953,19 +709,12 @@ void SceneGame::InitializeComponent()
 		// スペキュラー
 		actor->GetComponent<StageMain>()->SetIsSpecular(0);
 
-
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
 
 		StageManager::Instance().Register(actor);
-
-
-
-
 	}
-
-
 
 	// ステージルビー初期化
 	{
@@ -985,9 +734,6 @@ void SceneGame::InitializeComponent()
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
-
-
-
 		actor->AddComponent<StageMain>();
 
 		// 影シェーダー
@@ -999,23 +745,16 @@ void SceneGame::InitializeComponent()
 		// スペキュラー
 		actor->GetComponent<StageMain>()->SetIsSpecular(1);
 
-
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
 
 		StageManager::Instance().Register(actor);
-
-
-
 	}
-
-
 
 	////player = new Player;
 	{
 		// プレイヤー初期化
-		//const char* filename = "Data/Model/Jammo/Jammo.mdl";
 		const char* filename = "Data/Model/Player/Maria.mdl";
 
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -1047,7 +786,6 @@ void SceneGame::InitializeComponent()
 		int mpMax = 50;
 		mp->SetMaxMagic(mpMax);
 
-
 		actor->AddComponent<Player>();
 
 		// uiの有無で処理があるかを変える
@@ -1067,8 +805,6 @@ void SceneGame::InitializeComponent()
 		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerSpecialAttackState(actor));
 		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerMagicState(actor));
 		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerSpecialMagicState(actor));
-		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerSpecialMagicIceState(actor));
-		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerSpecialThanderMagicState(actor));
 		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerDamageState(actor));
 		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerDeathState(actor));
 		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerReviveState(actor));
@@ -1078,21 +814,12 @@ void SceneGame::InitializeComponent()
 		// ステートセット
 		actor->GetComponent<Player>()->GetStateMachine()->SetState(static_cast<int>(Player::State::Idle));
 
-
-		//actor->AddComponent<Collision>();
-
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
 
 		PlayerManager::Instance().Register(actor);
-
-
-
-
-
 	}
-
 
 	// 敵
 	{
@@ -1115,7 +842,6 @@ void SceneGame::InitializeComponent()
 			SetScale(DirectX::XMFLOAT3(0.06f, 0.06f, 0.06f));
 		actor->AddComponent<Movement>();
 
-
 		// 行動範囲設定
 		actor->GetComponent<Movement>()->SetArea(minPos, maxPos);
 		actor->AddComponent<HP>();
@@ -1134,25 +860,18 @@ void SceneGame::InitializeComponent()
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new PursuitState(actor));
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new JumpState(actor));
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new AttackState(actor));
-		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new AttackShotState(actor));
-		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new AttackShotThrowingState(actor));
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new ConfusionState(actor));
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new DamageState(actor));
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new DeathState(actor));
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new AwakeStartState(actor));
 
 		// ステートセット
-		//actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::State::Jump));
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->SetState(static_cast<int>(EnemyBoss::State::Idle));
 
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
-
 		EnemyManager::Instance().Register(actor);
-
-		//
-
 	}
 
 	// UI PlayerHP
@@ -1178,7 +897,6 @@ void SceneGame::InitializeComponent()
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
-
 
 		// UI揺らす範囲を指定揺らす場合
 		int max = (int)pos.y + 3;
@@ -1973,8 +1691,6 @@ void SceneGame::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-
-
 	// UI PlayerCommandSpeciulThander
 	{
 		const char* filename = "Data/Sprite/特殊技サンダラ.png";
@@ -2062,7 +1778,6 @@ void SceneGame::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-
 	// UI EnemyHP
 	{
 		const char* filename = "Data/Sprite/enemy_status.png";
@@ -2089,7 +1804,6 @@ void SceneGame::InitializeComponent()
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
 
-
 		// UI揺らす範囲を指定揺らす場合
 		int max = (int)pos.y + 3;
 		int min = (int)pos.y - 3;
@@ -2114,7 +1828,6 @@ void SceneGame::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
-
 
 	// UI EnemyHP 残機１
 	{
@@ -2166,7 +1879,6 @@ void SceneGame::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
-
 
 	// UI EnemyHP 残機2
 	{
@@ -2285,7 +1997,6 @@ void SceneGame::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-
 	// UI sight
 	{
 		const char* filename = "Data/Sprite/Loading.png";
@@ -2390,7 +2101,6 @@ void SceneGame::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-
 	// UI MP
 	{
 		const char* filename = "Data/Sprite/enemyHPberGreen.png";
@@ -2438,8 +2148,6 @@ void SceneGame::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-
-
 	// UI PlayerCommandShortCutFireCheck
 	{
 		const char* filename = "Data/Sprite/コマンド　非選択　ショートカットファイアー.png";
@@ -2476,7 +2184,6 @@ void SceneGame::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-
 	// UI PlayerCommandShortCutSunderCheck
 	{
 		const char* filename = "Data/Sprite/コマンド　非選択　ショートカットサンダラ.png";
@@ -2512,8 +2219,6 @@ void SceneGame::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
-
-
 
 	// UI PlayerCommandShortCutBrezerdCheck
 	{
@@ -2575,7 +2280,7 @@ void SceneGame::InitializeComponent()
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
 
-				// UI揺らす範囲を指定揺らす場合
+		// UI揺らす範囲を指定揺らす場合
 		int max = (int)pos.y + 3;
 		int min = (int)pos.y - 3;
 
@@ -2597,7 +2302,6 @@ void SceneGame::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
-
 
 	// UI Push
 	{
@@ -2742,36 +2446,23 @@ void SceneGame::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
-
-
 }
 
 void SceneGame::UpdateBgm()
 {
 	Audio& bgm = Audio::Instance();
-
-
 	AudioParam audioParam;
-
 	audioParam.filename = "Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav";
-
 	audioParam.loop = true;
-
 	audioParam.volume = bgmVolume;
-
 	bgm.Play(audioParam);
 }
 
 void SceneGame::StopBgm()
 {
 	Audio& bgm = Audio::Instance();
-
-
 	AudioParam audioParam;
-
 	audioParam.filename = "Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav";
-
-
 	bgm.Stop(audioParam);
 }
 

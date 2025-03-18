@@ -3,7 +3,6 @@
 #include "Graphics\Graphics.h"
 #include "Component.h"
 
-
 // 開始処理
 void Actor::Start()
 {
@@ -53,7 +52,6 @@ void Actor::Render2D(RenderContext rc, SpriteShader* shader)
 	}
 }
 
-
 #ifdef _DEBUG
 // GUI表示
 void Actor::OnGUI()
@@ -67,13 +65,6 @@ void Actor::OnGUI()
 			SetName(buffer);
 		}
 	}
-
-	//// トランスフォーム
-	//if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
-	//{
-	//	ImGui::InputFloat3("Position", &position.x);
-	//}
-
 	// コンポーネント
 	for (std::shared_ptr<Component>& component : components)
 	{
@@ -82,9 +73,7 @@ void Actor::OnGUI()
 
 		if (ImGui::CollapsingHeader(component->GetName(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			//ImGui::PushID(StringToHash(component->GetName()));
 			component->OnGUI();
-			//ImGui::PopID();
 		}
 	}
 }
@@ -122,7 +111,6 @@ void ActorManager::Update(float elapsedTime)
 
 	for (std::shared_ptr<Actor>& actor : updateActors)
 	{
-		
 		actor->Update(elapsedTime);
 	}
 
@@ -133,13 +121,11 @@ void ActorManager::Update(float elapsedTime)
 		{
 			startActors.erase(itStart);
 		}
-
 		std::vector<std::shared_ptr<Actor>>::iterator itUpdate = std::find(updateActors.begin(), updateActors.end(), actor);
 		if (itUpdate != updateActors.end())
 		{
 			updateActors.erase(itUpdate);
 		}
-
 		std::set<std::shared_ptr<Actor>>::iterator itSelection = selectionActors.find(actor);
 		if (itSelection != selectionActors.end())
 		{
@@ -154,42 +140,23 @@ void ActorManager::Update(float elapsedTime)
 void ActorManager::Render(RenderContext rc, ModelShader* shader)
 {
 	Graphics& graphics = Graphics::Instance();
-	
 	// 3D
 	for (std::shared_ptr<Actor>& actor : updateActors)
 	{
 		if (!actor->GetCheck2d())
 		// モデルがあれば描画
 		actor->Render(rc, shader);
-
-
 	}
-
-
-
-
-
-//#ifdef _DEBUG
-//	// リスター描画
-//	DrawLister();
-//
-//	// 詳細描画
-//	DrawDetail();
-//#endif // _DEBUG
-
 }
 
 void ActorManager::Render(RenderContext rc, SpriteShader* shader)
 {
 	Graphics& graphics = Graphics::Instance();
-
-
 	for (std::shared_ptr<Actor>& actor : updateActors)
 	{
 		if (actor->GetCheck2d())
 			// モデルがあれば描画
 		actor->Render2D(rc, shader);
-		//actor->Render(rc, shader);
 	}
 }
 
@@ -198,7 +165,6 @@ void ActorManager::RenderGui()
 	#ifdef _DEBUG
 	// リスター描画
 	DrawLister();
-
 	// 詳細描画
 	DrawDetail();
 #endif // _DEBUG
@@ -207,8 +173,6 @@ void ActorManager::RenderGui()
 void ActorManager::Render2D(RenderContext rc, SpriteShader* shader)
 {
 	Graphics& graphics = Graphics::Instance();
-
-
 	for (std::shared_ptr<Actor>& actor : updateActors)
 	{
 		if (actor->GetCheck2d())
@@ -217,21 +181,14 @@ void ActorManager::Render2D(RenderContext rc, SpriteShader* shader)
 	}
 }
 
-
 void ActorManager::Clear()
 {
-	
 	for (std::shared_ptr<Actor>& actor : updateActors)// 
 	{
 		// 実体を消した管理している数はそのまま
 		actor.reset();
-		
 	}
 	updateActors.clear();
-
-
-    
-	
 }
 #ifdef _DEBUG
 // リスター描画
@@ -239,21 +196,17 @@ void ActorManager::DrawLister()
 {
 	ImGui::SetNextWindowPos(ImVec2(30, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
-
 	hiddenLister = !ImGui::Begin("Actor Lister", nullptr, ImGuiWindowFlags_None);
 	if (!hiddenLister)
 	{
 		for (std::shared_ptr<Actor>& actor : updateActors)
 		{
 			ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_Leaf;
-
 			if (selectionActors.find(actor) != selectionActors.end())
 			{
 				nodeFlags |= ImGuiTreeNodeFlags_Selected;
 			}
-
 			ImGui::TreeNodeEx(actor.get(), nodeFlags, actor->GetName());
-
 			if (ImGui::IsItemClicked())
 			{
 				// 単一選択だけ対応しておく
@@ -261,7 +214,6 @@ void ActorManager::DrawLister()
 				selectionActors.clear();
 				selectionActors.insert(actor);
 			}
-
 			ImGui::TreePop();
 		}
 	}
@@ -269,14 +221,12 @@ void ActorManager::DrawLister()
 }
 #endif // _DEBUG
 
-
 #ifdef _DEBUG
 // 詳細描画
 void ActorManager::DrawDetail()
 {
 	ImGui::SetNextWindowPos(ImVec2(950, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
-
 	hiddenDetail = !ImGui::Begin("Actor Detail", nullptr, ImGuiWindowFlags_None);
 	if (!hiddenDetail)
 	{

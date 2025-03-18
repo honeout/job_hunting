@@ -2,7 +2,6 @@
 #include <memory>
 #include <assert.h>
 #include <tchar.h>
-
 #include "Framework.h"
 //#include <vld.h>
 const LONG SCREEN_WIDTH = 1280;
@@ -39,23 +38,11 @@ INT WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev_instance, LPWSTR cmd_line
 	wcex.hIconSm = 0;
 	RegisterClassEx(&wcex);
 
-
-
 	// 通常
 	RECT rc = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	HWND hWnd = CreateWindow(_T("Game"), _T(""), WS_OVERLAPPEDWINDOW ^ WS_MAXIMIZEBOX ^ WS_THICKFRAME | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, instance, NULL);
 	ShowWindow(hWnd, cmd_show);
-
-	//// 仮想ウィンドウ全画面
-	//DWORD windowStyle = WS_BORDER;
-	//RECT rc = { 0,0,GetSystemMetrics(SM_CXSCREEN),GetSystemMetrics(SM_CYSCREEN) };
-	//AdjustWindowRect(&rc, windowStyle, FALSE);
-	//HWND hWnd = CreateWindow(_T("Game"), _T(""), windowStyle, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, instance, NULL);
-	//SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP);
-	//SetWindowPos(hWnd, NULL, 0, 0, rc.right, rc.bottom, SWP_FRAMECHANGED);
-	//ShowWindow(hWnd, cmd_show);
-
 
 	Framework f(hWnd);
 	SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&f));

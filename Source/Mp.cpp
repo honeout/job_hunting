@@ -13,7 +13,6 @@ Mp::Mp()
 // デストラクタ
 Mp::~Mp()
 {
-
 }
 #ifdef _DEBUG
 // GUI描画
@@ -24,25 +23,22 @@ void Mp::OnGUI()
 #endif // _DEBUG
 bool Mp::UpdateInbincibleTimer(float elapsedTime)
 {
-    if (invincibleTimer > 0.0f)
+    if (invincibleTimer > invincibleTimerMin)
     {
         invincibleTimer -= elapsedTime;
         return false;
     }
-
     invincibleTimer = imvincibleTimerMax;
     return true;
 }
 
 bool Mp::ApplyConsumption(int mpConsumption)
 {
-    // ダメージが０の場合は健康状態を変更する必要がない
-    if (mpConsumption == 0) return false;
-
+    // mp消費が０の場合は変更する必要がない
+    if (mpConsumption == mpValueMin) return false;
     std::weak_ptr<Actor> actor = GetActor();
-
-      // 死亡している場合は健康状態を変更しない
-    if (magic <= 0) 
+      // ｍｐがない場合は変更しない
+    if (magic <= mpMin)
     {
         mpEmpth = true;
         return false;
@@ -50,7 +46,6 @@ bool Mp::ApplyConsumption(int mpConsumption)
     // 魔力消費しました
     else
     {
-        // ダメージ処理
         magic -= mpConsumption;
         return true;
     }
@@ -58,9 +53,7 @@ bool Mp::ApplyConsumption(int mpConsumption)
 // チャージ中
 bool Mp::MpCharge(float elapedTime)
 {
-
-
-    if (magic <= 0)
+    if (magic <= mpMin)
     {
         mpEmpth = true;
      
@@ -69,25 +62,13 @@ bool Mp::MpCharge(float elapedTime)
     {
         mpEmpth = false;
     }
-
     if (mpEmpth && UpdateInbincibleTimer(elapedTime))
     {
-        magic += 1;
+        magic += mpValue;
         return true;
     }
-
-
-    
     return false;
 }
-
-
-
-//bool Mp::Consumption()
-//{
-//    //--health;
-//    return true;
-//}
 
 bool Mp::OnDead()
 {

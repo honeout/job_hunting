@@ -1,5 +1,4 @@
 #pragma once
-
 #include <wrl.h>
 #include <d3d11.h>
 
@@ -25,7 +24,6 @@ public:
 
     // テクスチャ高さ取得
     inline int GetHeight() const { return texture2dDesc.Height; }
-
 
 private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceView;

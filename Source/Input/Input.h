@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Input/GamePad.h"
 #include "Input/Mouse.h"
 

@@ -1,8 +1,5 @@
 #include "ProjectileManager.h"
 
-
-
-
 // íœŠÖ”
 void ProjectileManager::DeleteUpdate(float elapsedTime)
 {

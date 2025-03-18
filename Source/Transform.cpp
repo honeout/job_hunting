@@ -11,17 +11,13 @@ Transform::~Transform()
 
 void Transform::UpdateTransform()
 {
-
 	// スケールだけ行列を作成
 	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
-
 	// 回転行列作成
 	DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(angle.x);
 	DirectX::XMMATRIX Y = DirectX::XMMatrixRotationY(angle.y);
 	DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(angle.z);
 	DirectX::XMMATRIX R = Y * X * Z;
-
-
 	// 位置行列だけを作成
 	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 	// 3つの行列を組み合わせ、ワールド行列を作成
@@ -32,7 +28,6 @@ void Transform::UpdateTransform()
 
 void Transform::UpdateTransformProjectile()
 {
-
 	// 何か
 	DirectX::XMVECTOR Front, Up, Right;
 	// 前ベクトルを算出　まず向きを手に入れる
@@ -42,22 +37,16 @@ void Transform::UpdateTransformProjectile()
 	// ここと同じ値だとバグるから
 	Up = DirectX::XMVectorSet(0.001f, 1, 0, 0);
 	Up = DirectX::XMVector3Normalize(Up);
-
 	// 右ベクトル算出　上二つを使い一つの新しい軸を作る
 	Right = DirectX::XMVector3Cross(Up, Front);// ２つで１つの奴を出す
-
 	Right = DirectX::XMVector3Normalize(Right);
 	// 上ベクトル算出 さらに作った二つでさらに新しいひとつを作る。
 	Up = DirectX::XMVector3Cross(Front, Right);// 斜め上の奴出来る
-
-
-
 	// 計算結果を取り出し
 	DirectX::XMFLOAT3 right, up, front;
 	DirectX::XMStoreFloat3(&right, Right);
 	DirectX::XMStoreFloat3(&up, Up);
 	DirectX::XMStoreFloat3(&front, Front);
-
 	// 算出した軸ベクトルから行列を作成 回転あり
 	transform._11 = right.x * scale.x; // 大きさだけやった奴０．１倍ならそうなる
 	transform._12 = right.y * scale.x;// 角度
@@ -75,7 +64,6 @@ void Transform::UpdateTransformProjectile()
 	transform._42 = position.y;
 	transform._43 = position.z;
 	transform._44 = 1.0f;
-
 	this->direction = front;// 向きをこっちに入れるこれでむきの計算
 }
 

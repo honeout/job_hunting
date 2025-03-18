@@ -1,18 +1,14 @@
 #include "StageMain.h"
-
 #include "Graphics/Graphics.h"
 #include "SceneTitle.h"
 #include "SceneGame.h"
 #include "SceneManager.h"
 #include "Input/Input.h"
 #include "SceneLoading.h"
-
 #include "Actor.h"
 #include "Camera.h"
-
 #include "LightManager.h"
 #include "StateDerived.h"
-
 #include "EffectManager.h"
 
 
@@ -20,11 +16,6 @@
 void SceneTitle::Initialize()
 {
     // スプライト初期化
-
-    //sprite = std::make_unique<Sprite>("Data/Sprite/Title.png");
-    //sprite = std::make_unique<Sprite>("Data/Sprite/タイトル.png");
-    //spritePush = std::make_unique<Sprite>("Data/Sprite/コマンドPUSH.png");
-
 	InitializeComponent();
 
 	StartMusic();
@@ -46,14 +37,10 @@ void SceneTitle::Initialize()
 		1000.0f
 	);
 
-
-
 	// 平行光源を追加
 	{
 		mainDirectionalLight = new Light(LightType::Directional);
-		//mainDirectionalLight = std::make_unique<Light>(LightType::Directional);
 		mainDirectionalLight->SetDirection({ 1,-3,-1 });
-		//ambientLightColor = { 0.2f,0.2f,0.2f,0.2f };
 		LightManager::Instanes().Register(mainDirectionalLight);
 	}
 
@@ -84,22 +71,14 @@ void SceneTitle::Initialize()
 		lightTherd->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
 		lightTherd->SetRange(lightRange);
 		LightManager::Instanes().Register(lightTherd);
-
-
-
-
 	}
-
 
 	// 新しい描画ターゲットの生成
 	{
-		//Graphics& graphics = Graphics::Instance();
-		//renderTarget = new RenderTarget(static_cast<UINT>(graphics.GetScreenWidth())
 		renderTarget = std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth())
 			, static_cast<UINT>(graphics.GetScreenHeight())
 			, DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
-
 
 	// シャドウマップ用に深度ステンシルの生成
 	{
@@ -108,7 +87,6 @@ void SceneTitle::Initialize()
 
 	// ポストプロセス描画クラス生成
 	{
-		//postprocessingRenderer = std::make_unique<PostprocessingRenderer>();
 		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 
 		// シーンテクスチャを設定しておく
@@ -116,10 +94,7 @@ void SceneTitle::Initialize()
 		srvData.srv = renderTarget->GetShaderResourceView();
 		srvData.width = renderTarget->GetWidth();
 		srvData.height = renderTarget->GetHeight();
-		//srvData.width = 100;
-		//srvData.height = 100;
 		postprocessingRenderer.SetSceneData(srvData);
-
 
 		bloomData.luminanceExtractionData.threshold = 0.41f;
 		bloomData.luminanceExtractionData.intensity = 1.6f;
@@ -147,47 +122,18 @@ void SceneTitle::Initialize()
 		postprocessingRenderer.SetVignetteMinData(vignetteData);
 	}
 
-
-	//bloomData.luminanceExtractionData.threshold = 0.41f;
-	//bloomData.luminanceExtractionData.intensity = 1.6f;
-
-	//bloomData.gaussianFilterData.kernelSize = 15;
-	//bloomData.gaussianFilterData.deviation = 8.3f;
-
 	// カメラ初期化
 	cameraControlle = nullptr;
 	cameraControlle = new CameraController();
-
-
-
-	// カメラ初期化
-	//CameraInitialize();
-
-
-	// カメラ初期化
-	//cameraControlle = new CameraController();
-
 }
 // 終了化
 void SceneTitle::Finalize()
 {
-	//if (cameraControlle != nullptr)
-	//{
-	//	delete cameraControlle;
-	//	cameraControlle = nullptr;
-	//}
-	
-
 	StageManager::Instance().Clear();
-
 	LightManager::Instanes().Clear();
-
 	PlayerManager::Instance().Clear();
-
 	UiManager::Instance().Clear();
-
 	ActorManager::Instance().Clear();
-
 
 	Audio::Instance().AllStop();
 
@@ -205,10 +151,6 @@ void SceneTitle::Update(float elapsedTime)
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
 
-	// カメラコントローラー更新処理
-	//cameraControlle->Update(elapsedTime);
-
-
 	ActorManager::Instance().Update(elapsedTime);
 	// 音更新
 	Audio::Instance().Update();
@@ -218,40 +160,18 @@ void SceneTitle::Update(float elapsedTime)
 
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
-
-	//PlayEffectsShaders(elapsedTime);
-
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
 	// 何かボタンを押したらローディングをはさんでゲームシーンへ切り替え
 	const GamePadButton anyButton =
 		GamePad::BTN_B;
 
-	//if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
-	//{
-	//	UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(false);
-	//	UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(true);
-	//}
-	//else
-	//{
-	//	UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<Ui>()->SetDrawCheck(true);
-	//	UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<Ui>()->SetDrawCheck(false);
-	//}
-
 	for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 	{
 		std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(i);
 
-		//if (playerid.lock()->GetComponent<Player>()->GetFlashOn())
-		//{
-		//	shaderPlayStateTimer = shaderPlayStateTimerMax;
-		//	shaderBlurStateTimer = shaderBlurStateTimerMax;
-		//}
-
 		if (playerid.lock()->GetComponent<Player>()->InputAttack())
 		{
 			StopMusic();
-
-
 
 			// 描画許可
 			isDrawButton = true;
@@ -265,20 +185,10 @@ void SceneTitle::Update(float elapsedTime)
 			//　シーン変更
 			playerid.lock()->GetComponent<Player>()->SetEndState(false);
 			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
-
 			return;
 		}
-
 	}
-
 	SelectScene();
-
-	// カメラ更新処理
-	//CameraUpdate(elapsedTime);
-
-
-
-
 }
 // 描画処理
 void SceneTitle::Render()
@@ -287,15 +197,6 @@ void SceneTitle::Render()
     ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	// ポストプロセスシェーダー
 	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-    //ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
-    //ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
-
-    //// 画面クリア＆レンダーターゲット設定
-    //FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };   // RGBA(0.0~1.0)
-    //dc->ClearRenderTargetView(rtv, color);
-    //dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-    //dc->OMSetRenderTargets(1, &rtv, dsv);
-
 	//// シャドウマップの描画
 	RenderShadowmap();
 	// model描画
@@ -306,17 +207,14 @@ void SceneTitle::Render()
 
 	// 書き込み先をバックバッファに変えてオフスクリーンレンダリングの結果を描画する
 	{
-		
 		ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 		ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
-
 
 		// 画面クリア＆レンダーターゲット設定
 		FLOAT color[] = { 0.0f,0.0f,0.0f,1.0f }; // RGBA(0.0~1.0)
 		dc->ClearRenderTargetView(rtv, color);
 		dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		dc->OMSetRenderTargets(1, &rtv, dsv);
-
 
 		// UINT11
 		// ビューポートの設定
@@ -328,16 +226,10 @@ void SceneTitle::Render()
 		dc->RSSetViewports(1, &vp);
 
 		RenderContext rc;
-
 		rc.deviceContext = dc;
-
 		rc.radialBlurData = radialBlurData;
-
 		rc.colorGradingData = colorGradingData;
-
 		rc.bloomData = bloomData;
-
-		
 		// 周辺減光
 		rc.vignetteData.color = vignetteData.color;
 		rc.vignetteData.center = vignetteData.center;
@@ -345,15 +237,8 @@ void SceneTitle::Render()
 		rc.vignetteData.smoothness = vignetteData.smoothness;
 		rc.vignetteData.rounded = vignetteData.rounded;
 		rc.vignetteData.roundness = vignetteData.roundness;
-
-
-
-		//postprocessingRenderer->SetBloomData();
-
 		// ポストプロセスを処理を行う
 		postprocessingRenderer.Render(rc);
-
-
 	}
 
 	// 2Dスプライト描画
@@ -370,9 +255,7 @@ void SceneTitle::Render()
 		rc.viewPosition.w = 1;
 		rc.view = camera.GetView();
 		rc.projection = camera.GetProjection();
-
 		SpriteShader* shaderUi = graphics.GetShader(SpriteShaderId::Default);
-
 		ActorManager::Instance().Render(rc, shaderUi);
 	}
 
@@ -397,17 +280,11 @@ void SceneTitle::Render()
 				ImGui::TreePop();
 			}
 			ImGui::Separator();
-
-
-
-			//ImGui::Separator();
-			 //UNIT11
 			if (ImGui::TreeNode("shadowmap"))
 			{
 				ImGui::SliderFloat("DrawRect", &shadowDrawRect, 1.0f, 2048.0f);
 				ImGui::ColorEdit3("Color", &shadowColor.x);
 				ImGui::SliderFloat("Bias", &shadowBias, 0.0f, 0.1f);
-				/*ImGui::SliderFloat("lightPosition", &lightPositionScale, -13.0f, 13.0f);*/
 				ImGui::Text("texture");
 				ImGui::Image(shadowmapDepthStencil->GetShaderResourceView().Get(), { 256,256 }, { 0,0 }, { 1,1 },
 					{ 1,1,1,1 });
@@ -420,25 +297,19 @@ void SceneTitle::Render()
 				ImGui::SliderFloat("hueShift", &colorGradingData.hueShift, 0.0f, +360.0f);
 				ImGui::SliderFloat("saturation", &colorGradingData.saturation, 0.0f, +2.0f);
 				ImGui::SliderFloat("brigtness", &colorGradingData.brigthness, 0.0f, +10.0f);
-
 				ImGui::TreePop();
 			}
 			ImGui::Separator();
-
 
 			if (ImGui::TreeNode("RadialBlur"))
 			{
 				ImGui::SliderFloat("radius", &radialBlurData.radius, 0.0f, 200.0f);
 				ImGui::SliderInt("samplingCount", &radialBlurData.samplingCount, 0, 10);
 				ImGui::SliderFloat2("center", &radialBlurData.center.x, 0.0f, 1.0f);
-
-
 				ImGui::SliderFloat("mask radius", &radialBlurData.mask_radius, 0.0f, 600.0f);
-
 				ImGui::TreePop();
 			}
 			ImGui::Separator();
-
 			if (ImGui::TreeNode("BloomData"))
 			{
 				ImGui::SliderFloat("threshold", &bloomData.luminanceExtractionData.threshold, 0.0f, 1.0f);
@@ -446,7 +317,6 @@ void SceneTitle::Render()
 				ImGui::SliderInt("kernelSize", &bloomData.gaussianFilterData.kernelSize, 1, MaxkernelSize - 1);
 				ImGui::SliderFloat("deviation", &bloomData.gaussianFilterData.deviation, 1.0f, 10.0f);
 				ImGui::TreePop();
-
 			}
 			ImGui::Separator();
 
@@ -457,76 +327,32 @@ void SceneTitle::Render()
 				ImGui::SliderFloat("intensity", &vignetteData.intensity, -10, 10);
 				ImGui::SliderFloat("roundness", &vignetteData.roundness, -10, 10);
 				ImGui::SliderFloat("smoothness", &vignetteData.smoothness, -10, 10);
-
 				ImGui::TreePop();
-
 			}
 			ImGui::Separator();
-
 		}
-
 		LightManager::Instanes().DrawDebugGUI();
-
 		postprocessingRenderer.DrawDebugGUI();
 	}
-
-    //// 2Dスプライト描画
-    //{
-    //    float screenWidth = static_cast<float>(graphics.GetScreenWidth());
-    //    float screenHeight = static_cast<float>(graphics.GetScreenHeight());
-    //    float textureWidth = static_cast<float>(sprite->GetTextureWidth());
-    //    float textureHeight = static_cast<float>(sprite->GetTextureHeight());
-
-    //    float texturePushWidth = static_cast<float>(spritePush->GetTextureWidth());
-    //    float texturePushHeight = static_cast<float>(spritePush->GetTextureHeight());
-    //    // 描画
-    //    sprite->Render(dc,
-    //        0, 0, screenWidth, screenHeight,
-    //        0, 0, textureWidth, textureHeight,
-    //        0,
-    //        1, 1, 1, 1);
-    //    // {位置}{サイズ}{画像どこから}{画像何処まで}
-    //    // dc , ｛範囲｝｛｝
-
-    //    // Push
-    //    spritePush->Render(dc,
-    //        position.x, position.y, texturePushWidth, texturePushHeight,
-    //        0, 0, texturePushWidth, texturePushHeight,
-    //        0,
-    //        1, 1, 1, 1);
-    //    // {位置}{サイズ}{画像どこ
-    //}
 }
 void SceneTitle::StartMusic()
 {
 	Audio& bgm = Audio::Instance();
-
-
 	AudioParam audioParam;
-
 	audioParam.filename = "Data/Audio/BGM/maou_bgm_healing17.wav";
-
 	audioParam.loop = true;
-
 	audioParam.volume = bgmVolume;
-
 	bgm.Play(audioParam);
 }
 void SceneTitle::StopMusic()
 {
 	Audio& bgm = Audio::Instance();
-
 	std::string filename = "Data/Audio/SE/maou_bgm_healing17.wav";
-
 	bgm.Stop(filename);
 }
-//void SceneTitle::DebugGui()
-//{
-//}
 // model描画
 void SceneTitle::Render3DScene()
 {
-
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* rtv = renderTarget->GetRenderTargetView().Get();
@@ -551,7 +377,6 @@ void SceneTitle::Render3DScene()
 	RenderContext rc;
 	rc.deviceContext = dc;
 
-
 	// ライトの情報を詰め込む
 	LightManager::Instanes().PushRenderContext(rc);
 
@@ -562,8 +387,6 @@ void SceneTitle::Render3DScene()
 	rc.shadowMapData.shadowColor = shadowColor;
 	rc.shadowMapData.shadowBias = shadowBias;
 
-
-
 	// カメラパラメータ設定
 	Camera& camera = Camera::Instance();
 	rc.viewPosition.x = camera.GetEye().x;
@@ -573,22 +396,16 @@ void SceneTitle::Render3DScene()
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
-
-
 	// 3Dモデル描画
 	{
-
 		ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
-
 		ActorManager::Instance().Render(rc, shader);
-
 	}
 
 	// 3Dエフェクト描画
 	{
 		EffectManager::Instance().Render(rc.view, rc.projection);
 	}
-
 }
 // 影描画
 void SceneTitle::RenderShadowmap()
@@ -623,7 +440,6 @@ void SceneTitle::RenderShadowmap()
 		// 平行光源からカメラ位置を作成し、そこから原点の位置を見るように視線行列を生成
 		DirectX::XMVECTOR LightPosition = DirectX::XMLoadFloat3(&mainDirectionalLight->GetDirection());
 		LightPosition = DirectX::XMVectorScale(LightPosition, -3.0f);
-		//LightPosition = DirectX::XMVectorScale(LightPosition, lightPositionScale);
 		DirectX::XMMATRIX V = DirectX::XMMatrixLookAtLH(LightPosition,
 			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 			DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
@@ -639,27 +455,22 @@ void SceneTitle::RenderShadowmap()
 	// シェーダー
 	{
 		ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
-
 		ActorManager::Instance().Render(rc, shader);
 	}
 }
 
 void SceneTitle::InitializeComponent()
 {
-
-
 	// 行動範囲
 	{
 
 		minPos.x = -30;
 		minPos.y = -3.525f;
 		minPos.z = -30;
-
 		maxPos.x = 30;
 		maxPos.y = 3.625f;
 		maxPos.z = 30;
 	}
-
 
 	// ステージ初期化
 	{
@@ -669,43 +480,27 @@ void SceneTitle::InitializeComponent()
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("StageMain");
 		actor->AddComponent<Transform>();
-
 		actor->GetComponent<Transform>()->
 			SetPosition(DirectX::XMFLOAT3(0, -25, 0));
-
 		actor->GetComponent<Transform>()->
 			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
-
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
-
-
-
 		actor->AddComponent<StageMain>();
-
 		// 影シェーダー
 		actor->GetComponent<StageMain>()->SetIsRimRightning(0);
-
 		// 解像度
 		actor->GetComponent<StageMain>()->SetTexcoordMult(20);
-
 		// スペキュラー
 		actor->GetComponent<StageMain>()->SetIsSpecular(0);
-
 
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
 
 		StageManager::Instance().Register(actor);
-
-
-
-
 	}
-
-
 
 	// ステージルビー初期化
 	{
@@ -715,18 +510,12 @@ void SceneTitle::InitializeComponent()
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("StageRuby");
 		actor->AddComponent<Transform>();
-
 		actor->GetComponent<Transform>()->
 			SetPosition(DirectX::XMFLOAT3(0, -17.85f, 0));
-
 		actor->GetComponent<Transform>()->
 			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
-
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
-
-
-
 
 		actor->AddComponent<StageMain>();
 
@@ -739,23 +528,16 @@ void SceneTitle::InitializeComponent()
 		// スペキュラー
 		actor->GetComponent<StageMain>()->SetIsSpecular(1);
 
-
 		// これが２Dかの確認
 		bool check2d = false;
 		actor->SetCheck2d(check2d);
 
 		StageManager::Instance().Register(actor);
-
-
-
 	}
 
-
-
-	////player = new Player;
+	////player
 	{
 		// プレイヤー初期化
-		//const char* filename = "Data/Model/Jammo/Jammo.mdl";
 		const char* filename = "Data/Model/Player/Maria.mdl";
 
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -774,7 +556,6 @@ void SceneTitle::InitializeComponent()
 			SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
 		actor->AddComponent<Movement>();
 
-
 		actor->GetComponent<Movement>()->SetArea(minPos, maxPos);
 
 		actor->AddComponent<HP>();
@@ -786,7 +567,6 @@ void SceneTitle::InitializeComponent()
 		std::shared_ptr<Mp> mp = actor->GetComponent<Mp>();
 		int mpMax = 50;
 		mp->SetMaxMagic(mpMax);
-
 
 		actor->AddComponent<Player>();
 
@@ -809,14 +589,7 @@ void SceneTitle::InitializeComponent()
 		actor->SetCheck2d(check2d);
 
 		PlayerManager::Instance().Register(actor);
-
-
-
-
-
 	}
-
-
 
 	// UI タイトル名前
 	{
@@ -854,8 +627,6 @@ void SceneTitle::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-
-
 	// UI タイトル名前
 	{
 		const char* filename = "Data/Sprite/スタートボタン.png";
@@ -892,7 +663,6 @@ void SceneTitle::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
-
 
 	// UI タイトル名前
 	{
@@ -1001,43 +771,6 @@ void SceneTitle::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
-
-	//// UI タイトル名前
-	//{
-	//	const char* filename = "Data/Sprite/コマンドPUSH押し込み.png";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->SetName("UIPushOn");
-	//	actor->AddComponent<SpriteControll>();
-	//	actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-	//	actor->AddComponent<TransForm2D>();
-	//	// 位置　角度　スケール情報
-	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-	//	DirectX::XMFLOAT2 pos = { 543, 515 };
-	//	transform2D->SetPosition(pos);
-	//	// 元の位置
-	//	DirectX::XMFLOAT2 texPos = { 0, 0 };
-	//	transform2D->SetTexPosition(texPos);
-
-	//	float angle = 0;
-	//	transform2D->SetAngle(angle);
-	//	DirectX::XMFLOAT2 scale = { 181,104 };
-	//	transform2D->SetScale(scale);
-	//	// 元の大きさ
-	//	DirectX::XMFLOAT2 texScale = { 0,0 };
-	//	transform2D->SetTexScale(texScale);
-
-	//	actor->AddComponent<Ui>();
-	//	// 描画チェック
-	//	std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-	//	ui->SetDrawCheck(false);
-
-	//	// これが２Dかの確認
-	//	bool check2d = true;
-	//	actor->SetCheck2d(check2d);
-
-	//	UiManager::Instance().Register(actor);
-	//}
-
 }
 
 void SceneTitle::CameraInitialize()
@@ -1072,17 +805,9 @@ void SceneTitle::CameraInitialize()
 	}
 }
 
-void SceneTitle::CameraUpdate(float elapsedTime)
-{
-	
-
-}
-
-
 void SceneTitle::PlayEffectsShaders(float elapsedTime)
 {
 	Graphics& graphics = Graphics::Instance();
-
 	shaderPlayStateTimer -= elapsedTime;
 	// エフェクト
 	if (shaderPlayStateTimer > 0)
@@ -1098,8 +823,6 @@ void SceneTitle::PlayEffectsShaders(float elapsedTime)
 		radialBlurData.radius =
 			radialBlurData.radius + FLT_EPSILON > radialBlurDataRadislBlurRadiusMax - FLT_EPSILON ?
 			radialBlurData.radius : radialBlurData.radius + (5 + elapsedTime);
-		//radialBlurData.radius + FLT_EPSILON > radislBlurRadius - FLT_EPSILON ?
-		//radialBlurData.radius + (5 + elapsedTime) : radialBlurData.radius;
 	// 歪み具合
 		int radislBlurSamplingCount = 10;
 		radialBlurData.samplingCount = radislBlurSamplingCount;
@@ -1131,17 +854,9 @@ void SceneTitle::PlayEffectsShaders(float elapsedTime)
 		// 画面白ボケ
 		float colorGradingBrigthness = 0.8f;
 		colorGradingData.brigthness = colorGradingBrigthness + FLT_EPSILON > colorGradingData.brigthness - FLT_EPSILON ? colorGradingBrigthness : colorGradingData.brigthness - (0.01f + elapsedTime);
-
-		//shaderPlayStateTimer = shaderPlayStateTimerMax;
-
 		// ブラー範囲
 		float radislBlurRadius = 0;
 		radialBlurData.radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radialBlurData.radius - (5 + elapsedTime) : radislBlurRadius - FLT_EPSILON;
-
-		//float radislBlurSamplingCount = 10;
-		//radialBlurData.samplingCount = radislBlurSamplingCount;
-		//float radislBlurMaskRadius = 30;
-		//radialBlurData.mask_radius = radislBlurMaskRadius;
 		// ブラーのかからない範囲
 		float radislBlurMaskRadiusNormal = 600;
 		float radislBlurMaskRadiusEffectOn = 300;
@@ -1150,7 +865,6 @@ void SceneTitle::PlayEffectsShaders(float elapsedTime)
 
 	// 画面スロー
 	bool hitCheck = PlayerManager::Instance().GetPlayer(0)->GetComponent<Player>()->GetHitCheck();
-
 	if (hitCheck)
 	{
 		dlayStateTimer = dlayStateTimerMax;
@@ -1159,29 +873,21 @@ void SceneTitle::PlayEffectsShaders(float elapsedTime)
 	if (dlayStateTimer - FLT_EPSILON > 0.0f + FLT_EPSILON)
 	{
 		dlayStateTimer -= 0.1f;
-
 		dlayTimeCheck = true;
-
 		float saturationGageMin = 0.0f;
-
 		colorGradingData.saturation = saturationGageMin - FLT_EPSILON > colorGradingData.saturation + FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation - (0.01f + elapsedTime);
 	}
-
 	else
 	{
 		dlayTimeCheck = false;
-
 		float saturationGageMax = 1;
-
 		colorGradingData.saturation = saturationGageMax + FLT_EPSILON < colorGradingData.saturation - FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation + (0.01f + elapsedTime);
 	}
-
 
 	// ブラーエフェクト
 	if (shaderBlurStateTimer > 0)
 	{
 		shaderBlurStateTimer -= elapsedTime;
-
 		// 画面真ん中
 		radialBlurData.center = { 0.5f ,0.5f };
 		// 画面ブラー
@@ -1195,11 +901,9 @@ void SceneTitle::PlayEffectsShaders(float elapsedTime)
 		// 自分が見える範囲
 		float radislBlurMaskRadius = 300;
 		radialBlurData.mask_radius = radislBlurMaskRadius;
-
 	}
 	else if (shaderPlayStateTimer < 0)
 	{
-
 		// ブラー範囲
 		float radislBlurRadius = 0;
 		radialBlurData.radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radialBlurData.radius - (5 + elapsedTime) : radislBlurRadius - FLT_EPSILON;
@@ -1208,48 +912,20 @@ void SceneTitle::PlayEffectsShaders(float elapsedTime)
 		float radislBlurMaskRadiusEffectOn = 300;
 		radialBlurData.mask_radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radislBlurMaskRadiusEffectOn : radislBlurMaskRadiusNormal;
 	}
-
-
-	//if (hitCheck)
-	//{
-	//	dlayStateTimer = dlayStateTimerMax;
-
-	//	dlayTimeCheck = true;
-
-	//	float saturationGageMin = 0.0f;
-
-	//	colorGradingData.saturation = saturationGageMin - FLT_EPSILON > colorGradingData.saturation + FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation - (0.01f + elapsedTime);
-	//}
-
-	//else
-	//{
-	//	dlayTimeCheck = false;
-
-	//	float saturationGageMax = 1;
-
-	//	colorGradingData.saturation = saturationGageMax + FLT_EPSILON < colorGradingData.saturation - FLT_EPSILON ? colorGradingData.saturation : colorGradingData.saturation + (0.01f + elapsedTime);
-	//}
 }
 
 void SceneTitle::SelectScene()
 {
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
-
 	const GamePadButton anyButton =
 		GamePad::BTN_B;
-
 	GamePad& gamePad = Input::Instance().GetGamePad();
-
 	switch (selectPush)
 	{
-
 	case (int)Select::Game:
 	{
-
 		// 位置選択
 		{
-			/*UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
-				GetComponent<TransForm2D>()->SetPosition();*/
 
 				// UI ボタンを押す
 			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
@@ -1259,39 +935,6 @@ void SceneTitle::SelectScene()
 				GetComponent<TransForm2D>()->SetPositionY((startPos.y + buttonPosYAdd));
 
 		}
-
-		//// 大きさ変わる選択
-		//{
-		//	UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-		//		SetPositionY(exitUiPositionUnselected);
-
-
-		//	UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-		//		SetScale(exitUiScaleUnselected);
-		//	UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
-		//		SetScale(gameUiScaleSelected);
-		//}
-		//int playerCount = PlayerManager::Instance().GetPlayerCount();
-		//for (int i = 0; i < playerCount; ++i)
-		//{
-		//	std::weak_ptr<Player> playerId = PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>();
-		//	//if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
-		//	//{
-		//	//	// ステート変換
-		//	//	playerId.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::StateOver::Revive));
-
-		//	//	////　シーン変更
-		//	//	//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
-		//	//}
-
-
-		//	//if (playerId.lock()->GetEndState())
-		//	//{
-		//	//	//　シーン変更
-		//	//	SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
-		//	//}
-		//}
-
 		break;
 	}
 	case (int)Select::Exit:
@@ -1304,31 +947,17 @@ void SceneTitle::SelectScene()
 
 			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
 				GetComponent<TransForm2D>()->SetPositionY((exitPos.y + buttonPosYAdd));
-
-			//// ゲーム
-			//UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
-			//	SetPositionY(gameUiPositionSelected);
-			//// タイトル
-			//UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-			//	SetPositionY(exitUiPositionSelected);
-
-			//UiManager::Instance().GetUies(uiManagerMax - 1)->GetComponent<TransForm2D>()->
-			//	SetScale(exitUiScaleSelected);
-			//UiManager::Instance().GetUies(uiManagerMax - 2)->GetComponent<TransForm2D>()->
-			//	SetScale(gameUiScaleUnselected);
 		}
 
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
 		{
 			//　シーン変更
-			//SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
 			PostQuitMessage(0);
 		}
 
 		break;
 	}
 	}
-
 	if (isPush) return;
 	if (gamePad.GetButtonDown() & GamePad::BTN_UP)
 	{
@@ -1338,7 +967,5 @@ void SceneTitle::SelectScene()
 	{
 		selectPush = selectPush >= (int)Select::Exit ? (int)Select::Game : (int)Select::Exit;
 	}
-
-
 }
 

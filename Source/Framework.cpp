@@ -29,11 +29,7 @@ Framework::Framework(HWND hWnd)
 	hDC = GetDC(hWnd);
 
 	// シーン初期化
-	//sceneGame.Initialize();
 	SceneManager::Instance().ChangeScene(new SceneTitle);
-	//SceneManager::Instance().ChangeScene(new SceneGame);
-	//SceneManager::Instance().ChangeScene(new SceneGameClear);
-	//SceneManager::Instance().ChangeScene(new SceneGameOver);
 }
 
 // デストラクタ
@@ -81,7 +77,6 @@ void Framework::Render(float elapsedTime/*Elapsed seconds from last frame*/)
 		// IMGUI描画
 	graphics.GetImGuiRenderer()->Render(dc);
 #endif // _DEBUG
-
 
 	// バックバッファに描画した画を画面に表示する。
 	graphics.GetSwapChain()->Present(syncInterval, 0);

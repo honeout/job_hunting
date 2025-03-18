@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include "Actor.h"
 #include <set>
@@ -21,17 +20,8 @@ public:
         return instance;
     }
 
-
-
-
     // 更新処理
     void DeleteUpdate(float elapsedTime) ;
-
-    // 描画処理
-    //void Render(const RenderContext& rc, ModelShader* shader);
-
-    // デバッグプリミティブ描画
-    void DrawDebugPrimitive();
 
     // 弾丸登録
     void Register(std::shared_ptr<Actor> projectile);

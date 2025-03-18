@@ -3,7 +3,6 @@
 // コンストラクタ
 ProjectileSunder::ProjectileSunder()
 {
-   
 }
 // デストラクタ
 ProjectileSunder::~ProjectileSunder()
@@ -58,7 +57,6 @@ void ProjectileSunder::Update(float elapsedTime)
 
     if (effectHit)
         effectHit->SetPosition(effectHit->GetEfeHandle(), transform->GetPosition());
-
 }
 
 // 描画処理
@@ -69,10 +67,7 @@ void ProjectileSunder::Render(RenderContext& rc, ModelShader& shader)
     //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
     shader = *graphics.GetShader(ModelShaderId::Lanbert);
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
-
-
     shader.Draw(rc, model);
-
     shader.End(rc);
 }
 

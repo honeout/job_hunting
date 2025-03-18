@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Component.h"
 #include "SpriteControll.h"
 #include "TransForm2D.h"
@@ -72,6 +71,5 @@ private:
 
     DirectX::XMFLOAT4 color = { 1,1,1,1 };
 
-    // 
     float alphaMax = 1.0f;
 };

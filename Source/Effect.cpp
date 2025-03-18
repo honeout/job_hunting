@@ -18,8 +18,6 @@ Effect::Effect(const char* filename)
     // Effekseer::Managerを取得
     Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();
 
-    
-
     // Effekseerエフェクトを読込
     effekseerEffect = Effekseer::Effect::Create(effekseerManager, (EFK_CHAR*)utf16Filename);
 }
@@ -27,7 +25,6 @@ Effect::Effect(const char* filename)
 Effekseer::Handle Effect::Play(const DirectX::XMFLOAT3& position, float scale)
 {
     Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();
-
     Effekseer::Handle handle = effekseerManager->Play(effekseerEffect, position.x, position.y,
         position.z);
 
@@ -40,34 +37,29 @@ Effekseer::Handle Effect::Play(const DirectX::XMFLOAT3& position, float scale)
 void Effect::Stop(Effekseer::Handle handle)
 {
     Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();
-
     effekseerManager->StopEffect(handle);
 }
 // 座標設定
 void Effect::SetPosition(Effekseer::Handle handle, const DirectX::XMFLOAT3& position)
 {
     Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();
-
     effekseerManager->SetLocation(handle, position.x, position.y, position.z);
 }
 
 void Effect::SetScale(Effekseer::Handle handle, const DirectX::XMFLOAT3& scale)
 {
     Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();
-
     effekseerManager->SetScale(handle, scale.x, scale.y, scale.z);
 }
 
 void Effect::SetScale(Effekseer::Handle handle, const float scale)
 {
     Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();
-
     effekseerManager->SetScale(handle, scale, scale, scale);
 }
 
 void Effect::SetAngle(Effekseer::Handle handle, const DirectX::XMFLOAT3& angle)
 {
     Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();
-
     effekseerManager->SetRotation(handle,angle.x, angle.y, angle.z);
 }

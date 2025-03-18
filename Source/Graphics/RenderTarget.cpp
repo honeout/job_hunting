@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include "Graphics/Graphics.h"
 #include "Graphics/RenderTarget.h"
-
 #include"Misc.h"
 #include "Logger.h"
 

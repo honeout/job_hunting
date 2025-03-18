@@ -238,7 +238,6 @@ void LambertShader::Draw(const RenderContext& rc, const Model* model)
 			rc.deviceContext->DrawIndexed(subset.indexCount, subset.startIndex, 0);
 		}
 	}
-
 }
 
 // •`‰æI—¹

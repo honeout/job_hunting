@@ -65,5 +65,4 @@ private:
     float range = 35.0f; // 範囲
     float innerCorn = 0.99f; // インナー
     float outerCorn = 0.9f; // アウター
-
 };

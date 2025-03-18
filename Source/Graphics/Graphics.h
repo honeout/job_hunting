@@ -37,7 +37,6 @@ enum class SpriteShaderId
 	Finalpass,
 	Skybox,
 	SwordeTraile,
-
 	Max
 };
 
@@ -66,20 +65,14 @@ public:
 	// デプスステンシルビュー取得
 	ID3D11DepthStencilView* GetDepthStencilView() const { return depthStencilView.Get(); }
 
-
 	// モデルシェーダー取得
 	ModelShader* GetShader(ModelShaderId id) const { return modelShaders[static_cast<int>(id)].get(); }
 
 	// スプライトシェーダー取得
 	SpriteShader* GetShader(SpriteShaderId id) const { return spriteShaders[static_cast<int>(id)].get(); }
 
-
 	// シェーダー取得
 	Shader* GetShader() const { return shader.get(); }
-	//Shader* GetShaderAfterimage() const { return shaderAfterimage.get(); }
-
-	//// モデルシェーダー取得
-	//ModelShader* GetShaderm(ModelShaderId id) const { return modelShaders[static_cast<int>(id)].get(); }
 
 	// プリミティブレンダラ取得
 	PrimitiveRenderer* GetPrimitiveRenderer() const { return primitiveRenderer.get(); }
@@ -112,7 +105,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depthStencilView;
 
 	std::unique_ptr<Shader>							shader;
-	//std::unique_ptr<Shader>							shaderAfterimage;
 	std::unique_ptr<ModelShader>					modelShaders[static_cast<int>(ModelShaderId::Max)];
 	std::unique_ptr<SpriteShader>					spriteShaders[static_cast<int>(SpriteShaderId::Max)];
 

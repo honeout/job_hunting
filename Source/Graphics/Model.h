@@ -1,12 +1,8 @@
 #pragma once
-
 #include <memory>
 #include <vector>
 #include <DirectXMath.h>
 #include "Graphics/ModelResource.h"
-
-
-
 
 // モデル
 class Model
@@ -39,7 +35,6 @@ public:
 		DirectX::XMFLOAT3	scale = { 1, 1, 1 };
 	};
 
-
 	struct ModelAnim
 	{
 		int index = 0;
@@ -49,36 +44,6 @@ public:
 		float currentAnimationAddSeconds = 0;
 		float keyFrameEnd = 0.0f;
 	};
-
-
-	//struct VectorKeyframe
-	//{
-	//	float					seconds;
-	//	DirectX::XMFLOAT3		value;
-
-	//	template<class Archive>
-	//	void serialize(Archive& archive);
-	//};
-
-	//struct QuaternionKeyframe
-	//{
-	//	float					seconds;
-	//	DirectX::XMFLOAT4		value;
-
-	//	template<class Archive>
-	//	void serialize(Archive& archive);
-	//};
-
-
-	//struct NodeAnim
-	//{
-	//	std::vector<VectorKeyframe>		positionKeyframes;
-	//	std::vector<QuaternionKeyframe>	rotationKeyframes;
-	//	std::vector<VectorKeyframe>		scaleKeyframes;
-
-	//	template<class Archive>
-	//	void serialize(Archive& archive);
-	//};
 
 	// 行列計算
 	void UpdateTransform(const DirectX::XMFLOAT4X4& transform);
@@ -95,18 +60,12 @@ public:
 
 	// ノードリスト取得
 	const std::vector<Node>& GetNodes() const { return nodes; }
-	//std::vector<Node>& GetNodes() { return nodes; }
-
-
 
 	// リソース取得
 	const ModelResource* GetResource() const { return resource.get(); }
 
 	// アニメーション更新処理
 	void UpdateAnimation(float elapsedTime, bool blend = false);
-
-	// ルートモーション
-	//void UpdateRootAnimation(float elapsedTime,char * bornName, bool blend = false);
 
 	// 逆再生
 	void ReverseplaybackAnimation(float elapsedTime, bool blend = false);
@@ -116,7 +75,6 @@ public:
 
 	// 二つのアニメーションブレンド
 	void Update_blend_animations(float elapsedTime, bool blend = false);
-
 
 	//上半身アニメーション更新処理
 	void UpdateUpeerBodyAnimation(float elapsedTime, const char* start, const char* end, bool blend = false);
@@ -135,7 +93,6 @@ public:
 	//アニメーション再生
 	void PlayLowerBodyAnimation(int index, bool loop, float blendSeconds = 0.2f);
 
-
 	// アニメーション再生
 	void PlayAnimation(ModelAnim animeRule);
 
@@ -144,7 +101,6 @@ public:
 
 	// 二つのアニメーションブレンド
 	void PlayAnimationBlend(int index,int index2, bool loop, float currentanimationseconds = 0.0f, float blendSeconds = 0.2f);
-	
 
 	// アニメーション再生中か
 	bool IsPlayAnimation() const;
@@ -175,13 +131,10 @@ public:
 	void SetNodePoses(const std::vector<NodePose>& nodePoses);
 
 	void SetAnimationEndFlag(bool end) { this->animationEndFlag = end; }
-
 private:
 	std::shared_ptr<ModelResource>	resource;
 	std::vector<Node>				nodes;
-
 	std::vector<Model::NodePose>		nodePoses;
-
 	// 個々がーだとないという事
 	int currentAnimationIndex = -1;           //アニメーション番号
 	int currentAnimationIndexSeconds = -1;           //アニメーション番号 ブレンド用
@@ -195,19 +148,15 @@ private:
 	float currentAnimationUpperAddSeconds = 0.0f;    //上半身アニメーションの再生用加算用
 	float currentAnimationUpperAddSecondsMin = 0.0f;    //上半身アニメーションの再生用加算用
 
-	//パンチをした即ー１つまりアニメーション終了つまりTポーズに戻る。
-
 	// ループ終了か
 	bool animationLoopFlag = false;
 	// ワンショット終了
 	bool animationEndFlag = false;
 
-
 	float animationBlendTime = 0.0f;
 	float animationBlendSeconds = 0.0f;
 
 	bool agterimagestop = false;
-
 
 	// 上半身用のアニメーション時間
 	int currentAnimationIndexUpeer = -1;				//アニメーション番号
@@ -229,31 +178,3 @@ private:
 	// 再生　逆再生
 	bool anim = true;
 };
-//
-//template<class Archive>
-//inline void Model::VectorKeyframe::serialize(Archive& archive)
-//{
-//	archive(
-//		CEREAL_NVP(seconds),
-//		CEREAL_NVP(value)
-//	);
-//}
-//
-//template<class Archive>
-//inline void Model::QuaternionKeyframe::serialize(Archive& archive)
-//{
-//	archive(
-//		CEREAL_NVP(seconds),
-//		CEREAL_NVP(value)
-//	);
-//}
-//
-//template<class Archive>
-//inline void Model::NodeAnim::serialize(Archive& archive)
-//{
-//	archive(
-//		CEREAL_NVP(positionKeyframes),
-//		CEREAL_NVP(rotationKeyframes),
-//		CEREAL_NVP(scaleKeyframes)
-//	);
-//}

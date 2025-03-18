@@ -33,7 +33,6 @@ void UiTime::Update(float elapsedTime)
 
 void UiTime::Render2D(RenderContext& rc, SpriteShader& shader)
 {
-
     // •ÏŠ·s—ñ
     DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
     DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
@@ -52,7 +51,6 @@ void UiTime::Render2D(RenderContext& rc, SpriteShader& shader)
         {
             int num = sc % number;
             float texPosX = num % numberX * (float)transForm2D->GetTexScale().x;
-            //float texPosY = num / 5 * (float)transForm2D->GetTexScale().y;
             // •`‰æ
             sprite->Render(rc.deviceContext,
                 transForm2D->GetPosition().x - add,

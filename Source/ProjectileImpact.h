@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Graphics//Model.h"
-#include "Projectile.h"
 #include "Component.h"
 #include "BulletFiring.h"
 #include "ModelControll.h"
@@ -32,14 +31,6 @@ public:
 
     // 当たり判定衝撃波
     void ImpactUpdate();
-
-    // 描画処理
-    //virtual void Render(const RenderContext& rc, ModelShader* shader) override;
-
-    //// 発射    (  どっちからはっしゃ向き、位置何処から)　targetに向かってホーミングスピード
-    //void Lanch(const DirectX::XMFLOAT3& direction,
-    //           const DirectX::XMFLOAT3& position,
-    //           const DirectX::XMFLOAT3& target);
 
     void SetTarget(DirectX::XMFLOAT3 target) { this->target = target; }
 
@@ -103,7 +94,4 @@ private:
     float scale = 10.0f;
 
     bool movementCheck = false;
-
-
-
 };
