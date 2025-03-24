@@ -53,7 +53,6 @@ public:
     // アウター
     float GetOuterCorn() { return outerCorn; }
     void SetOutnerCorn(float outerCOrn) { this->outerCorn = outerCOrn; }
-
 private:
     // 位置はいらない距離は今回関係ないから
     LightType lightType = LightType::Directional; // ライトタイプ

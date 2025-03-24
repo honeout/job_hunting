@@ -526,7 +526,7 @@ private:
 
 	float				turnSpeed = DirectX::XMConvertToRadians(720);
 
-	float               speed = 10;
+	float               speed = 13.0f;
 
 	float               attackSpeed = 3.0f;
 
@@ -548,7 +548,7 @@ private:
 	DirectX::XMFLOAT3 vector = {0,0,0};
 
 	// 攻撃サポート範囲
-	float attackCheckRange = 6.0f;
+	float attackCheckRange = 10.0f;
 
 	float attackCheckRangeMin = 2.6f;
 
@@ -820,9 +820,18 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
+
+	void RotateBullet(float elapsedTime);
 private:
+	std::unique_ptr<Effect> charge;
+	std::unique_ptr<Effect> chargeComplet;
+
+
 	// 回復魔法
 	std::unique_ptr<Effect> heale;
+
+	// 角度
+	DirectX::XMFLOAT3 angle;
 
 	// se
 	bool loopSe = false;
@@ -844,6 +853,7 @@ private:
 
 	// 向き
 	DirectX::XMFLOAT3 vector = { 0.0f,0.0f,0.0f };
+
 	// 距離
     float length = 0.0f;
 
@@ -852,6 +862,31 @@ private:
 
 	// 移動許可
 	bool isMove = false;
+
+	// 魔法ため
+	int magicCharge = 0;
+	int magicChargeMax = 5;
+	int magicChargeEnd = 0;
+
+	int firstMagic = 1;
+
+	// 魔法発射
+	bool magicStart = false;
+
+	// 回転速度
+	float rotationSpeed = 0.0f;
+
+	// 角度最大値　最低値
+	float angleMax = DirectX::XMConvertToRadians(30);
+	float angleMin = DirectX::XMConvertToRadians(-70);
+
+	// 回転角度
+	float angleAddX = DirectX::XMConvertToRadians(5);
+	float angleAddY = DirectX::XMConvertToRadians(5);
+
+	// 角度どうするか
+	bool isAngleAddX = true;
+	bool isAngleAddY= true;
 };
 
 // 近接必殺技ステートオブジェクト

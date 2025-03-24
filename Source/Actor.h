@@ -83,7 +83,7 @@ private:
 class ActorManager
 {
 private:
-	ActorManager() {}
+	ActorManager() {};
 	~ActorManager() {};
 public:
 	// インスタンス取得

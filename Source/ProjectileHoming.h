@@ -7,7 +7,6 @@
 #include "Effect.h"
 
 
-
 // ’Ç”ö’eŠÛ
 class ProjectileHoming :public Component
 {

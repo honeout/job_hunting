@@ -32,6 +32,7 @@ bool Mp::UpdateInbincibleTimer(float elapsedTime)
     return true;
 }
 
+// mp消費
 bool Mp::ApplyConsumption(int mpConsumption)
 {
     // mp消費が０の場合は変更する必要がない
@@ -53,11 +54,13 @@ bool Mp::ApplyConsumption(int mpConsumption)
 // チャージ中
 bool Mp::MpCharge(float elapedTime)
 {
+    // mpが最低値以下なら
     if (magic <= mpMin)
     {
         mpEmpth = true;
      
     }
+    // mpがたまった
     if (magic >= maxMagic)
     {
         mpEmpth = false;

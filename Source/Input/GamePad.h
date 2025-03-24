@@ -70,7 +70,6 @@ public:
 
 	// コマンド入力確認
 	bool ConfirmCommand(const std::vector<GamePadButton>& command, int frame);
-
 private:
 	GamePadButton		buttonState[2] = { 0 };
 	GamePadButton		buttonDown = 0;

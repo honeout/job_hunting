@@ -216,6 +216,5 @@ bool GamePad::ConfirmCommand(const std::vector<GamePadButton>& command, int fram
 			if (inputKeys[i] & command.at(number))
 				--number;
 		}
-	
 	return false;
 }

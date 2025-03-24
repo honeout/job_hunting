@@ -139,7 +139,6 @@ void ActorManager::Update(float elapsedTime)
 // •`‰æ
 void ActorManager::Render(RenderContext rc, ModelShader* shader)
 {
-	Graphics& graphics = Graphics::Instance();
 	// 3D
 	for (std::shared_ptr<Actor>& actor : updateActors)
 	{
@@ -151,7 +150,6 @@ void ActorManager::Render(RenderContext rc, ModelShader* shader)
 
 void ActorManager::Render(RenderContext rc, SpriteShader* shader)
 {
-	Graphics& graphics = Graphics::Instance();
 	for (std::shared_ptr<Actor>& actor : updateActors)
 	{
 		if (actor->GetCheck2d())
@@ -172,7 +170,6 @@ void ActorManager::RenderGui()
 
 void ActorManager::Render2D(RenderContext rc, SpriteShader* shader)
 {
-	Graphics& graphics = Graphics::Instance();
 	for (std::shared_ptr<Actor>& actor : updateActors)
 	{
 		if (actor->GetCheck2d())

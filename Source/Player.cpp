@@ -7,6 +7,7 @@
 #include "Audio\Audio.h"
 #include "ProjectileStraight.h"
 #include "ProjectileHoming.h"
+#include "ProjectileFullHoming.h"
 #include "Graphics/Model.h"
 #include "EnemyBoss.h"
 #include "ProjectileTornade.h"
@@ -168,6 +169,7 @@ void Player::Update(float elapsedTime)
         // 攻撃回数
         areAttackState = areAttackStateMax;
     }
+
     if (areAttackState <= areAttackStateEnd && isAreAttack)
     {
         // 攻撃許可
@@ -186,7 +188,6 @@ void Player::Update(float elapsedTime)
         InputSelectMagicCheck();
         // 魔法選択ショートカットキー
         InputShortCutkeyMagic();
-
         // ポストエフェクトｈｐの一定以下
         PinchMode(elapsedTime);
 
@@ -195,6 +196,7 @@ void Player::Update(float elapsedTime)
         {
             areWork->Stop(areWork->GetEfeHandle());
         }
+
         // 攻撃の時にステートを変更
         if (
             InputAttack() && GetSelectCheck() ==
@@ -237,6 +239,7 @@ void Player::Update(float elapsedTime)
 
             // もし地面なら何もしない
             bool noStart = false;
+
             // エフェクト再生
             areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
 
@@ -712,6 +715,8 @@ void Player::DrawDebugPrimitive()
 void Player::OnGUI()
 {
     ImGui::InputFloat("Move Speed", &moveSpeed);
+    ImGui::SliderFloat3("angle", &angle.x, -10, 10);
+    transform.lock()->SetAngle(angle);
     ImGui::InputInt("selectCheck", &selectCheck);
     ImGui::InputInt("isPlayerDrawCheck", &isPlayerDrawCheck);
     ImGui::InputInt("selectMagicCheck", &selectMagicCheck);
@@ -1245,6 +1250,36 @@ bool Player::InputShortCutkeyMagic()
         uiIdAttackCheckHeale.lock()->SetDrawCheck(isDrawUi);
         return true;
     }
+    // 魔法打ってる途中にショートカット離しても意味なし
+    if (stateMachine->GetStateIndex() == static_cast<int>(Player::State::Magic) &&
+        gamePad.GetButton() != GamePad::BTN_LEFT_SHOULDER)
+    {
+        return true;
+    }
+    // 魔法打った後
+    else
+    {
+        selectMagicCheck = (int)CommandMagic::Normal;
+        selectCheck = (int)CommandAttack::Attack;
+        magicAction = false;
+        // 炎
+        std::weak_ptr<Ui> uiIdAttackCheckFire = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutFire)->GetComponent<Ui>();
+        uiIdAttackCheckFire.lock()->SetDrawCheck(isDrawUiEmpth);
+        // 雷
+        std::weak_ptr<Ui> uiIdAttackCheckSunder = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutSunder)->GetComponent<Ui>();
+        uiIdAttackCheckSunder.lock()->SetDrawCheck(isDrawUiEmpth);
+        // 氷
+        std::weak_ptr<Ui> uiIdAttackCheckIce = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutIce)->GetComponent<Ui>();
+        uiIdAttackCheckIce.lock()->SetDrawCheck(isDrawUiEmpth);
+        // 回復
+        std::weak_ptr<Ui> uiIdAttackCheckHeale = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutKeule)->GetComponent<Ui>();
+        uiIdAttackCheckHeale.lock()->SetDrawCheck(isDrawUiEmpth);
+    }
+
     // 離したら
     if (gamePad.GetButtonUp() & GamePad::BTN_LEFT_SHOULDER)
     {
@@ -1744,7 +1779,8 @@ void Player::CollisionMagicVsEnemies()
                     enemyHeight,
                     outPositon))
             {
-                if (!projectile.lock()->GetComponent<ProjectileHoming>() && !projectile.lock()->GetComponent<ProjectileSunder>())return;
+                if (!projectile.lock()->GetComponent<ProjectileHoming>() && !projectile.lock()->GetComponent<ProjectileSunder>() &&
+                    !projectile.lock()->GetComponent<ProjectileFullHoming>())return;
                 if (projectile.lock()->GetComponent<ProjectileSunder>())
                 {
                     ++ThanderEnergyCharge;
@@ -1752,8 +1788,9 @@ void Player::CollisionMagicVsEnemies()
                     // 雷ダメージ
                     applyDamageMagic = applyDamageThander;
                 }
-                else
+                else if (projectile.lock()->GetComponent<ProjectileHoming>())
                 {
+                    // 通常魔法
                     switch (projectile.lock()->GetComponent<ProjectileHoming>()->GetMagicNumber())
                     {
                     case (int)ProjectileHoming::MagicNumber::Fire:
@@ -1774,9 +1811,32 @@ void Player::CollisionMagicVsEnemies()
                     }
                     }
                 }
+                else
+                {
+                    // 弧の時型の魔法
+                    switch (projectile.lock()->GetComponent<ProjectileFullHoming>()->GetMagicNumber())
+                    {
+                    case (int)ProjectileFullHoming::MagicNumber::Fire:
+                    {
+                        ++fireEnergyCharge;
+                        hitFire->Play(projectilePosition);
+                        // 炎ダメージ
+                        applyDamageMagic = applyDamageFire;
+                        break;
+                    }
+                    case (int)ProjectileFullHoming::MagicNumber::Ice:
+                    {
+                        ++iceEnergyCharge;
+                        hitIce->Play(projectilePosition);
+                        // 氷ダメージ
+                        applyDamageMagic = applyDamageIce;
+                        break;
+                    }
+                    }
+                }
                 hitEffect->Play(projectilePosition);
                 // ダメージを与える。
-                if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageMagic, slashAttackInvincibleTime))
+                if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageMagic, magicAttackInvincibleTime))
                 {
                     if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
                         enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump && 
@@ -1791,7 +1851,8 @@ void Player::CollisionMagicVsEnemies()
                     {
                         specialAttackCharge += specialAttackChargeMagicValue;
                     }
-                    if (projectile.lock()->GetComponent<ProjectileHoming>())
+                    if (projectile.lock()->GetComponent<ProjectileHoming>() || 
+                        projectile.lock()->GetComponent<ProjectileFullHoming>())
                         // 弾丸破棄
                         projectile.lock()->GetComponent<BulletFiring>()->Destroy();
                 }
@@ -2296,7 +2357,7 @@ bool Player::InputMagick()
     case (int)CommandMagic::Fire:
     {
         // 魔法
-        if (gamePad.GetButtonDown() & GamePad::BTN_B)
+        if (gamePad.GetButton() & GamePad::BTN_B)
         {
             return true;
         }
@@ -2305,7 +2366,7 @@ bool Player::InputMagick()
     case (int)CommandMagic::Thander:
     {
         // 魔法
-        if (gamePad.GetButtonDown() & GamePad::BTN_X)
+        if (gamePad.GetButton() & GamePad::BTN_X)
         {
             return true;
         }
@@ -2314,7 +2375,7 @@ bool Player::InputMagick()
     case (int)CommandMagic::Ice:
     {
         // 魔法
-        if (gamePad.GetButtonDown() & GamePad::BTN_A)
+        if (gamePad.GetButton() & GamePad::BTN_A)
         {
             return true;
         }
@@ -2323,7 +2384,7 @@ bool Player::InputMagick()
     case (int)CommandMagic::Heale:
     {
         // 魔法
-        if (gamePad.GetButtonDown() & GamePad::BTN_Y)
+        if (gamePad.GetButton() & GamePad::BTN_Y)
         {
             return true;
         }
@@ -2392,7 +2453,7 @@ bool Player::InputMagicframe()
             }
         }
         // 弾丸初期化
-        const char* filename = "Data/Model/Sword/Sword.mdl";
+        const char* filename = "Data/Model/Magic/gun.mdl";
         std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
         actor.lock()->AddComponent<ModelControll>();
         actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
@@ -2465,7 +2526,7 @@ bool Player::InputMagicIce()
         }
     }
     // 弾丸初期化
-    const char* filename = "Data/Model/Sword/Sword.mdl";
+    const char* filename = "Data/Model/Magic/gun.mdl";
     std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
     actor.lock()->AddComponent<ModelControll>();
     actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
@@ -2537,7 +2598,7 @@ bool Player::InputMagicLightning()
         }
     }
     // 弾丸初期化
-    const char* filename = "Data/Model/Sword/Sword.mdl";
+    const char* filename = "Data/Model/Magic/gun.mdl";
     std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
     actor.lock()->AddComponent<ModelControll>();
     actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
@@ -2571,6 +2632,157 @@ bool Player::InputMagicHealing()
     return true;
 }
 
+void Player::PushMagicFrame(DirectX::XMFLOAT3 angle)
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    // mp消費
+    mp.lock()->ApplyConsumption(magicConsumption);
+    // 前方向 sinの計算
+    DirectX::XMFLOAT3 dir;
+    //dir = GetForwerd(angle);
+    dir.x = sinf(angle.y);
+    dir.y = cosf(angle.x);
+    dir.z = cosf(angle.y);
+    // 発射位置（プレイヤーの腰当たり)
+    DirectX::XMFLOAT3 pos;
+    pos.x = position.x;
+    pos.y = position.y + height * 0.5f;// 身長÷位置のｙ
+    pos.z = position.z;
+    //ターゲット（デフォルトではプレイヤーの前方）
+    DirectX::XMFLOAT3 target;
+    // 敵がいなかった時のために　1000先まで飛んでくれ
+    target.x = pos.x + dir.x * magicMoveLength;
+    target.y = pos.y + dir.y * magicMoveLength;
+    target.z = pos.z + dir.z * magicMoveLength;
+    // 一番近くの敵をターゲットにする
+    float dist = FLT_MAX;// float の最大値float全体
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    int enemyCount = enemyManager.GetEnemyCount();
+    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+    {
+        // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
+        std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+        DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
+        // 敵の位置
+        DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
+        // 自分から敵までの位置を計測
+        DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
+        // ベクトルのながさを２乗する。√つけていない奴
+        DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
+        float d;
+        DirectX::XMStoreFloat(&d, D);
+        if (d < dist)
+        {
+            // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
+            dist = d;
+            target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
+            target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
+        }
+    }
+    // 初期化
+    {
+        const char* filename = "Data/Model/Magic/gun.mdl";
+        std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+        actor.lock()->AddComponent<ModelControll>();
+        actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+        actor.lock()->SetName("ProjectileHoming");
+        actor.lock()->AddComponent<Transform>();
+        actor.lock()->GetComponent<Transform>()->SetPosition(position);
+        actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+        actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+        actor.lock()->AddComponent<BulletFiring>();
+        actor.lock()->AddComponent<ProjectileFullHoming>();
+        const char* effectFilename = "Data/Effect/fire.efk";
+        actor.lock()->GetComponent<ProjectileFullHoming>()->SetEffectProgress(effectFilename);
+        int magicNumber = (int)ProjectileFullHoming::MagicNumber::Fire;
+        actor.lock()->GetComponent<ProjectileFullHoming>()->SetMagicNumber(magicNumber);
+        // これが２Dかの確認
+        bool check2d = false;
+        actor.lock()->SetCheck2d(check2d);
+        ProjectileManager::Instance().Register(actor.lock());
+        std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+        // 飛ぶ時間
+        float   lifeTimer = 3.0f;
+        // 発射
+        projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+        projectile.lock()->GetComponent<ProjectileFullHoming>()->SetTarget(target);
+    }
+    return;
+}
+
+void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    // mp消費
+    mp.lock()->ApplyConsumption(magicConsumption);
+    // 前方向 sinの計算
+    DirectX::XMFLOAT3 dir;
+    dir.x = sinf(angle.y);
+    dir.y = cosf(angle.x);
+    dir.z = cosf(angle.y);
+    // 発射位置（プレイヤーの腰当たり)
+    DirectX::XMFLOAT3 pos;
+    pos.x = position.x;
+    pos.y = position.y + height * 0.5f;// 身長÷位置のｙ
+    pos.z = position.z;
+    //ターゲット（デフォルトではプレイヤーの前方）
+    DirectX::XMFLOAT3 target;
+    // 敵がいなかった時のために　1000先まで飛んでくれ
+    target.x = pos.x + dir.x * magicMoveLength;
+    target.y = pos.y + dir.y * magicMoveLength;
+    target.z = pos.z + dir.z * magicMoveLength;
+    // 一番近くの敵をターゲットにする
+    float dist = FLT_MAX;// float の最大値float全体
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    int enemyCount = enemyManager.GetEnemyCount();
+    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+    {
+        // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
+        std::weak_ptr<Actor> enemy = EnemyManager::Instance().GetEnemy(i);
+        DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
+        // 敵の位置
+        DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemy.lock()->GetComponent<Transform>()->GetPosition());
+        // 自分から敵までの位置を計測
+        DirectX::XMVECTOR V = DirectX::XMVectorSubtract(E, P);
+        // ベクトルのながさを２乗する。√つけていない奴
+        DirectX::XMVECTOR D = DirectX::XMVector3LengthSq(V);
+        float d;
+        DirectX::XMStoreFloat(&d, D);
+
+        // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
+        dist = d;
+        target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
+        target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
+
+    }
+    // 弾丸初期化
+    const char* filename = "Data/Model/Magic/gun.mdl";
+    std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+    actor.lock()->AddComponent<ModelControll>();
+    actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+    actor.lock()->SetName("ProjectileFullHoming");
+    actor.lock()->AddComponent<Transform>();
+    actor.lock()->GetComponent<Transform>()->SetPosition(position);
+    actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+    actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+    actor.lock()->AddComponent<BulletFiring>();
+    actor.lock()->AddComponent<ProjectileFullHoming>();
+    const char* effectFilename = "Data/Effect/brezerd.efk";
+    actor.lock()->GetComponent<ProjectileFullHoming>()->SetEffectProgress(effectFilename);
+    int magicNumber = (int)ProjectileFullHoming::MagicNumber::Ice;
+    actor.lock()->GetComponent<ProjectileFullHoming>()->SetMagicNumber(magicNumber);
+    // これが２Dかの確認
+    bool check2d = false;
+    actor.lock()->SetCheck2d(check2d);
+    ProjectileManager::Instance().Register(actor.lock());
+    std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
+    // 飛ぶ時間
+    float   lifeTimer = 4.0f;
+    // 発射
+    projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
+    projectile.lock()->GetComponent<ProjectileFullHoming>()->SetTarget(target);
+}
+
 void Player::InputSpecialMagicframe()
 {
     DirectX::XMFLOAT3 dir;
@@ -2587,7 +2799,7 @@ void Player::InputSpecialMagicframe()
         target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
     }
     // 弾丸初期化
-    const char* filename = "Data/Model/Sword/Sword.mdl";
+    const char* filename = "Data/Model/Magic/gun.mdl";
     std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
     actor.lock()->AddComponent<ModelControll>();
     actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
@@ -2729,7 +2941,7 @@ void Player::UiControlle(float elapsedTime)
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
     if (uiCount <= uiCountMax) return;
-    float gaugeWidth = hp.lock()->GetMaxHealth() * hp.lock()->GetHealth() * 0.1f;
+    float gaugeWidth = hp.lock()->GetMaxHealth() * hp.lock()->GetHealth() * 0.08f;
     // hpゲージ
     std::weak_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
     std::weak_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();

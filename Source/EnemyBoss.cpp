@@ -71,9 +71,9 @@ void EnemyBoss::Start()
 void EnemyBoss::Update(float elapsedTime)
 {
     //// 動作するかどうか
-    if (moveCheck)
-    //// ステート毎の処理
-    stateMachine->Update(elapsedTime);
+    //if (moveCheck)
+    ////// ステート毎の処理
+    //stateMachine->Update(elapsedTime);
 
     // 敵覚醒管理
     ManageAwakeTime(elapsedTime);
@@ -178,6 +178,10 @@ void EnemyBoss::OnGUI()
     if (ImGui::Button("StartAwake"))
     {
         stateMachine->ChangeState(static_cast<int>(State::AwakeStart));
+    }
+    if (ImGui::Button("stateStop"))
+    {
+        moveCheck = !moveCheck;
     }
 }
 #endif // _DEBUG
@@ -404,7 +408,7 @@ void EnemyBoss::CollisionImpactVsPlayer()
                     // 高さが一定以下なら通る
                     if (projectilePosition.y + projectileHeight < playerPosition.y) return;
                     // ダメージを与える。
-                    if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamageImpact, 0.5f))
+                    if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamageImpact, impactInvincibleTime))
                     {
                         player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
 

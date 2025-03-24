@@ -32,13 +32,11 @@ public:
     // ’eŠÛ”æ“¾
     int GetProjectileCount() const { return static_cast<int> (projectiles.size()); }
 
-
     // ’eŠÛæ“¾
     std::shared_ptr<Actor> GetProjectile(int index) { return projectiles.at(index); }
 
     // ’eŠÛíœ
     void Remove(std::shared_ptr<Actor> projectile);
-
 private:
     std::vector<std::shared_ptr<Actor>>   projectiles;
     // “Á’è‚Ì’eŠÛíœ‚¾‚êíœ‚·‚é

@@ -3,6 +3,7 @@
 #include "ModelControll.h"
 #include "ProjectileManager.h"
 
+// まっすぐ飛ぶ
 void BulletFiring::Move(float speed,float elapsedTime)
 {
     //　寿命処理 
@@ -50,11 +51,7 @@ bool BulletFiring::Turn(float turnspeed,const DirectX::XMFLOAT3 &target, float e
         DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Direction, Vec);
         float dot;
         DirectX::XMStoreFloat(&dot, Dot);
-        // 回転速度調整最後の微調整行き過ぎないように少しずつ小さく出来る。
-        // アークコサインでも出来るしかも一瞬でその値を入れる。
-        // 2つの単位ベクトルの角度が小さい程
-        // 1.0に近づくという性質を利用して回転速度を調整する
-        //if (dot )
+        // 回転の角度
         float rot;
         // 1.0f　dotは０に近づく程１になるからーくとこっちも０になる
         rot = 1.0f - dot;
@@ -64,7 +61,7 @@ bool BulletFiring::Turn(float turnspeed,const DirectX::XMFLOAT3 &target, float e
         {
             rot = bulletTurnSpeed;
         }
-        // 回転角度があるなら回転処理する　ここで０を取ってないと外積が全く同じになって計算出来ない
+        // 回転処理
         if (fabsf(rot) >= 0.0001)
         {
             // 回転軸を算出  外積  向かせたい方を先に 
@@ -86,7 +83,7 @@ bool BulletFiring::Turn(float turnspeed,const DirectX::XMFLOAT3 &target, float e
     }
     return false;
 }
-
+// ｙ無し
 bool BulletFiring::Turn2D(float speed, DirectX::XMFLOAT3& direction, float elapedTime)
 {
     std::shared_ptr<Actor> actor = GetActor();
@@ -136,7 +133,7 @@ bool BulletFiring::Turn2D(float speed, DirectX::XMFLOAT3& direction, float elape
     }
     return false;
 }
-
+// 尾弾
 void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime)
 {
     std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
@@ -165,7 +162,7 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
         DirectX::XMVECTOR LengthSq = DirectX::XMVector3LengthSq(Vec);
         float lengthSq;
         DirectX::XMStoreFloat(&lengthSq, LengthSq);
-        if (lengthSq > rangeMin && lengthSq <= rangeMax)
+        if (lengthSq >= rangeMin && lengthSq <= rangeMax)
         {
             // ターゲットまでのベクトルを単位ベクトル化
             Vec = DirectX::XMVector3Normalize(Vec);
@@ -175,6 +172,83 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
             DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Direction, Vec);
             float dot;
             DirectX::XMStoreFloat(&dot, Dot);
+            // 角度
+            float rot;
+            rot = 1.0f - dot;
+            // だから１のほうがでかければスピードを入れる
+            // ターンスピードよりロットの方が小さい時に
+            if (rot > bulletTurnSpeed)
+            {
+                rot = bulletTurnSpeed;
+            }
+            // 回転角度があるなら回転処理する　ここで０を取ってないと外積が全く同じになって計算出来ない
+            if (fabsf(rot) >= 0.0001)
+            {
+                // 回転軸を算出  外積  向かせたい方を先に 
+                DirectX::XMVECTOR Axis = DirectX::XMVector3Cross(Direction, Vec);
+                // 誤差防止の為に単位ベクトルした方が安全
+                Axis = DirectX::XMVector3Normalize(Axis);
+                // 回転軸と回転量から回転行列を算出 回転量を求めている。
+                DirectX::XMMATRIX Rotation = DirectX::XMMatrixRotationAxis(Axis, rot);
+                // 現在の行列を回転させる　自分自身の姿勢
+                DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transformid.lock()->GetTransform());
+                Transform = DirectX::XMMatrixMultiply(Transform, Rotation); // 同じだからただ×だけ  Transform*Rotation
+                // 回転後の前方方向を取り出し、単位ベクトル化する
+                Direction = DirectX::XMVector3Normalize(Transform.r[2]);// row
+                DirectX::XMStoreFloat3(&direction, Direction);
+            }
+        }
+    }
+    transformid.lock()->SetDirection(direction);
+    transformid.lock()->SetPosition(position);
+}
+
+void BulletFiring::MoveFullHoming(
+    float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime)
+{
+    std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
+    //　寿命処理 
+    lifeTimer -= elapsedTime;
+    if (lifeTimer <= 0.0f)// 寿命が尽きたら自害
+    {
+        // 自分を削除
+        Destroy();
+    }
+    ProjectileManager::Instance().DeleteUpdate(elapsedTime);
+    // 移動　　秒じゃなくとフレームに
+    float bulletspeed = speed * elapsedTime;
+    // 　だからかけ算で向きにこれだけ進だから位置に入れた
+    position.x += bulletspeed * direction.x;
+    position.y += bulletspeed * direction.y;
+    position.z += bulletspeed * direction.z;
+
+    // 進んだ距離
+    addLength += bulletspeed;
+
+
+    // 旋回
+    if(addLength >= lengthMax)
+    {
+        float bulletTurnSpeed = turnSpeed * elapsedTime;
+        // ターゲットまでのベクトルを算出
+        DirectX::XMVECTOR Position = DirectX::XMLoadFloat3(&position);
+        DirectX::XMVECTOR Target = DirectX::XMLoadFloat3(&target);
+        DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(Target, Position);
+        // ゼロベクトルでないなら回転処理　ピッタリ同じなら回転できるから確認
+        DirectX::XMVECTOR LengthSq = DirectX::XMVector3LengthSq(Vec);
+        float lengthSq;
+        DirectX::XMStoreFloat(&lengthSq, LengthSq);
+        if (lengthSq >= rangeMin)
+        {
+            // ターゲットまでのベクトルを単位ベクトル化
+            Vec = DirectX::XMVector3Normalize(Vec);
+            // 向いてる方向ベクトルを算出　direction単位ベクトル前提
+            DirectX::XMVECTOR Direction = DirectX::XMLoadFloat3(&direction);
+            // 前方方向ベクトルとターゲットまでのベクトルの内積（角度）を算出
+            DirectX::XMVECTOR Dot = DirectX::XMVector3Dot(Direction, Vec);
+            float dot;
+            DirectX::XMStoreFloat(&dot, Dot);
+            // 角度
             float rot;
             rot = 1.0f - dot;
             // だから１のほうがでかければスピードを入れる
@@ -341,10 +415,9 @@ void BulletFiring::Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 targ
     position.x += bulletspeed * direction.x;
     position.y += bulletspeed * direction.y;
     position.z += bulletspeed * direction.z;
-    // if (position.y <= 0)
     transformid.lock()->SetPosition(position);
 }
-
+// 初期値
 void BulletFiring::Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position, float   lifeTimer)
 {
     // トランスフォーム取得

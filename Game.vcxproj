@@ -167,6 +167,7 @@
     <ClInclude Include="Source\Mp.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\PostprocessingRenderer.h" />
+    <ClInclude Include="Source\ProjectileFullHoming.h" />
     <ClInclude Include="Source\ProjectileHoming.h" />
     <ClInclude Include="Source\ProjectileImpact.h" />
     <ClInclude Include="Source\ProjectileManager.h" />
@@ -244,6 +245,7 @@
     <ClCompile Include="Source\Mp.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\PostprocessingRenderer.cpp" />
+    <ClCompile Include="Source\ProjectileFullHoming.cpp" />
     <ClCompile Include="Source\ProjectileHoming.cpp" />
     <ClCompile Include="Source\ProjectileImpact.cpp" />
     <ClCompile Include="Source\ProjectileManager.cpp" />

@@ -65,7 +65,7 @@ public:
 	const ModelResource* GetResource() const { return resource.get(); }
 
 	// アニメーション更新処理
-	void UpdateAnimation(float elapsedTime, bool blend = false);
+	void UpdateAnimation(float elapsedTime, bool blend = true);
 
 	// 逆再生
 	void ReverseplaybackAnimation(float elapsedTime, bool blend = false);

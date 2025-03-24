@@ -30,6 +30,7 @@ void HP::UpdateInbincibleTimer(float elapsedTime)
     }
 }
 
+// ƒ_ƒ[ƒW‚ð—^‚¦‚é
 bool HP::ApplyDamage(int damage, float invincibleTime)
 {
     // ƒqƒbƒg‚µ‚½‚©‚Ç‚¤‚©
@@ -94,9 +95,11 @@ void HP::SetIsBonusHpActive(bool isBonusHpActive)
     }
     else
     {
+        // ‘Ï‹v‰ðœ
         bonusHp = bonusHpEnd;
     }
 }
+// hp‚Ì‰ñ•œ
 void HP::AddHealth(int health)
 {
     this->health += health;
@@ -117,6 +120,7 @@ bool HP::OnDead()
     return true;
 }
 
+// HP‚ª4/1‚È‚ç
 bool HP::HealthPinch()
 {
     if (health <= (maxHealth / 4))
@@ -125,6 +129,7 @@ bool HP::HealthPinch()
     return false;
 }
 
+// –³“GŽžŠÔƒQƒbƒg
 bool HP::InvincibleTimerCheck()
 {
     if (invincibleTimer > invincibleTimerMin)

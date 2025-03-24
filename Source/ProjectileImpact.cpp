@@ -8,7 +8,6 @@ ProjectileImpact::ProjectileImpact()
 // デストラクタ
 ProjectileImpact::~ProjectileImpact()
 {
-
     // エフェクト更新削除
     if (effectProgress)
     {
@@ -30,7 +29,6 @@ void ProjectileImpact::Start()
 {
     // モデル一様
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
-
 
     // トランスフォーム取得
     transform = GetActor()->GetComponent<Transform>();

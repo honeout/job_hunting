@@ -39,6 +39,7 @@ void Collision::OnGUI()
     return true;
 }
 
+// ‰~’Œ‚Æ‰~’Œ‚Ì“–‚½‚è”»’è
 bool Collision::IntersectCylinderVsCylinder(
     const DirectX::XMFLOAT3& positionA, 
     float radiusA, 

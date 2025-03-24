@@ -9,6 +9,7 @@ Transform::~Transform()
 {
 }
 
+// modelをワールド位置に
 void Transform::UpdateTransform()
 {
 	// スケールだけ行列を作成

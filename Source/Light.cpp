@@ -106,8 +106,6 @@ void Light::DrawDebugGUI()
             break;
         }
         }
-
-
         ImGui::TreePop();
     }
   }
@@ -188,7 +186,6 @@ void Light::DrawDebugPrimitive()
                 lineRenderer->AddVertex(OldPoint, color);
                 lineRenderer->AddVertex(pos, color);
                 OldPoint = pos;
-
             }
         }
         break;

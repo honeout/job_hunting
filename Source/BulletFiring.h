@@ -17,15 +17,20 @@ public:
 
     // 追跡移動
     void MoveHoming(float speed,float turnSpeed,DirectX::XMFLOAT3 target, float elapsedTime);
-    
+
+    // 追跡常時移動
+    void MoveFullHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime);
+
     // ルビー下から飛び出し
     void JumpOut(float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime);
     
     // ルビー逆にいく
     void PushDown(float speed, float turnSpeed, float elapsedTime);
 
+    // 雷
     void Sunder(DirectX::XMFLOAT3 target,float elapsedTime);
-    
+
+    // 投的
     void Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 target, bool turnPermission, float elapsedTime);
 
     // 発射    (  どっちからはっしゃ向き、位置何処から)
@@ -50,4 +55,10 @@ private:
     Model* model;
     float rangeMin = 0.01f;
     float rangeMax = 30;
+
+    float rangeFullHoming = 10.0f;
+
+    // 進んだ距離
+    float addLength = 0.0f;
+    float lengthMax = 3.0f;
 };

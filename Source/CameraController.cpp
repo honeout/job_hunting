@@ -204,7 +204,7 @@ void CameraController::FreeCamera(float elapsedTime)
 	newPosition.y = target.y - front.y * range;
 	newPosition.z = target.z - front.z * range;
 }
-
+//  通常ロックオン更新
 void CameraController::LockonCamera(float elapsedTime)
 {
 	//	後方斜に移動させる
@@ -231,6 +231,17 @@ void CameraController::LockonCamera(float elapsedTime)
 		, DirectX::XMVectorReplicate(lengthLimit[1]));
 	t0 = DirectX::XMVectorMultiplyAdd(l, DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), t0);
 
+	// 一定以下のカメラ距離
+	if (attackMinRange >= len)
+	{
+		// 少し離れる
+		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(attacklengthMinRock), t0);
+
+		DirectX::XMStoreFloat3(&newPosition, t0);
+		newPosition.y = heightAttackMaxRock;
+		return;
+	}
+
 	// 距離が一定以上
 	if (lengthMin <= len)
 	{
@@ -243,6 +254,7 @@ void CameraController::LockonCamera(float elapsedTime)
 
 
 	}
+	// 近い時のカメラ
 	else
 	{
 		// 少し離れる
@@ -253,9 +265,10 @@ void CameraController::LockonCamera(float elapsedTime)
 	}
 
 
+
 	
 }
-
+// 敵攻撃時のカメラアングル更新
 void CameraController::LockonTopHeightCamera(float elapsedTime)
 {
 	//	後方斜に移動させる
@@ -281,6 +294,17 @@ void CameraController::LockonTopHeightCamera(float elapsedTime)
 		, DirectX::XMVectorReplicate(lengthLimit[1]));
 	t0 = DirectX::XMVectorMultiplyAdd(l, DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), t0);
 
+	// 一定以下のカメラ距離
+	if (attackMinRange >= len)
+	{
+		// 少し離れる
+		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(attacklengthMinRock), t0);
+
+		DirectX::XMStoreFloat3(&newPosition, t0);
+		newPosition.y = heightAttackMaxRock;
+		return;
+	}
+
 	if (len > cameraDisableRange)
 	// 少し離れる 16.0f
 	t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(lengthMinRock), t0);
@@ -295,7 +319,7 @@ void CameraController::LockonTopHeightCamera(float elapsedTime)
 	// 高さ指定
 	newPosition.y = topHeight;
 }
-
+// モーションカメラの更新
 void CameraController::MotionCamera(float elapsedTime)
 {
 	if (motionData.empty())
@@ -362,7 +386,7 @@ void CameraController::MotionCamera(float elapsedTime)
 		}
 	}
 }
-
+// フリーカメラ初期化
 void CameraController::OnFreeSelectMode(void* data)
 {
 	MessageData::CAMERACHANGEFREESELECTMODEDATA* p = static_cast<MessageData::CAMERACHANGEFREESELECTMODEDATA*>(data);
@@ -384,7 +408,7 @@ void CameraController::OnFreeSelectMode(void* data)
 	this->newTarget = p->target;
 	this->newTarget.y += 0.01f;
 }
-
+// フリーカメラ初期化
 void CameraController::OnFreeMode(void* data)
 {
 	MessageData::CAMERACHANGEFREEMODEDATA* p = static_cast<MessageData::CAMERACHANGEFREEMODEDATA*>(data);
@@ -406,7 +430,7 @@ void CameraController::OnFreeMode(void* data)
 	this->newTarget = p->target;
 	this->newTarget.y += 0.01f;
 }
-
+// ロックオン初期化
 void CameraController::OnLockonMode(void* data)
 {
 	MessageData::CAMERACHANGELOCKONMODEDATA* p = static_cast<MessageData::CAMERACHANGELOCKONMODEDATA*>(data);
@@ -419,7 +443,7 @@ void CameraController::OnLockonMode(void* data)
 	targetWork[0].y += 0.01f;
 	targetWork[1].y += 0.01f;
 }
-
+// 敵攻撃中ロックオン初期化
 void CameraController::OnLockonTopHeightMode(void* data)
 {
 	MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA* p = static_cast<MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA*>(data);
@@ -432,7 +456,7 @@ void CameraController::OnLockonTopHeightMode(void* data)
 	targetWork[0].y += 0.01f;
 	targetWork[1].y += 0.01f;
 }
-
+// モーションカメラ初期化
 void CameraController::OnMotionMode(void* data)
 {
 	MessageData::CAMERACHANGEMOTIONMODEDATA* p = static_cast<MessageData::CAMERACHANGEMOTIONMODEDATA*>(data);
@@ -443,7 +467,7 @@ void CameraController::OnMotionMode(void* data)
 
 	this->motionData = p->data;
 }
-
+// 揺らす初期化
 void CameraController::OnShake(void* data)
 {
 	MessageData::CAMERASHAKEDATA* p = static_cast<MessageData::CAMERASHAKEDATA*>(data);

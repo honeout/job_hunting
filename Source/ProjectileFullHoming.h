@@ -1,21 +1,22 @@
 #pragma once
-
+#pragma once
 #include "Graphics//Model.h"
 #include "Component.h"
 #include "BulletFiring.h"
 #include "ModelControll.h"
 #include "Transform.h"
-#include "Movement.h"
 #include "Effect.h"
+
+
 // 追尾弾丸
-class ProjectileTornade :public Component
+class ProjectileFullHoming :public Component
 {
 public:
-    ProjectileTornade();
-    virtual ~ProjectileTornade();
+    ProjectileFullHoming();
+    ~ProjectileFullHoming() override;
 
     // 名前取得
-    const char* GetName() const override { return "ProjectileHoming"; }
+    const char* GetName() const override { return "ProjectileFullHoming"; }
 
     // 開始処理
     void Start() override;
@@ -34,9 +35,6 @@ public:
     void SetEffectProgress(const char* storageLocation)
     {
         effectProgress = new Effect(storageLocation);
-
-        effectProgress->SetScale(effectProgress->GetEfeHandle(),
-            { scale,scale,scale });
     }
 
     // エフェクト終了時
@@ -60,6 +58,19 @@ public:
     void SetMovementCheck(bool movementCheck)
     {
         this->movementCheck = movementCheck;
+    }
+
+    void SetMagicNumber(int magicNumber) { this->magicNumber = magicNumber; }
+
+    int GetMagicNumber() { return magicNumber; }
+
+public:
+    enum class MagicNumber
+    {
+        Unnorne = -1,
+        Fire,
+        Thander,
+        Ice,
     };
 
 private:
@@ -73,18 +84,17 @@ private:
     // 進速度
     float          moveSpeed = 10.0f;
     // 回転の速度
+    //float         turnSpeed = DirectX::XMConvertToRadians(1);// 
     float         turnSpeed = DirectX::XMConvertToRadians(180);// 
 
     std::shared_ptr<BulletFiring> bulletFiring;
-
     std::shared_ptr<Transform> transform;
 
-    float radius = 1.0f;
+    float radius = 0.3f;
 
-    float scale = 2.0f;
+    float scale = 1.0f;
 
     bool movementCheck = true;
 
-    // 高さ
-    float height = 0.0f;
+    int magicNumber = (int)MagicNumber::Thander;
 };

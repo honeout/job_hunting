@@ -90,7 +90,6 @@ private:
     // ÕŒ‚”g‹N‚±‚é”ÍˆÍ“à‘¤
     float radiusInSide = 0.3f;
 
-
     float scale = 10.0f;
 
     bool movementCheck = false;

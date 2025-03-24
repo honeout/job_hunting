@@ -21,7 +21,6 @@ public:
 
 	// ƒ}ƒEƒXæ“¾
 	Mouse& GetMouse() { return mouse; }
-
 private:
 	static Input*		instance;
 	GamePad				gamePad;

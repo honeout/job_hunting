@@ -57,7 +57,6 @@ public:
     {
         this->movementCheck = movementCheck;
     };
-
 private:
     Model* model = nullptr;
     Effect* effectProgress = nullptr;

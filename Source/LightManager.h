@@ -42,7 +42,6 @@ public:
     // ƒ‰ƒCƒg‚Ìî•ñ
     int GetLightCount() const { return static_cast<int> (lights.size()); }
     Light* GetLight(int index) const { return lights.at(index); }
-
 private:
     std::vector<Light*> lights;
     DirectX::XMFLOAT4 ambientColor = { 0.2f,0.2f,0.2f,1.0f };

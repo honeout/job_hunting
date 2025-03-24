@@ -119,6 +119,7 @@ private:
 
 	// 加速
 	float acceleration = 1.0f;
+
 	// speed最大値
 	float maxMoveSpeed = 5.0f;
 
@@ -133,15 +134,19 @@ private:
 
 	// 移動方向Xと速度
 	float moveVecX = 0.0f;
+
 	// 移動方向Yと速度
 	float moveVecZ = 0.0f;
 
 	// 移動Yの最大値
 	float posYMax = -3.620f;
+
 	// 時間
 	float flame = 60.0f;
+
 	// 一時停止
 	float stopVelocity = 0.0f;
+
 	// 入力有無
 	float isImputEmpty = 0.0f;
 

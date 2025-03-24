@@ -98,6 +98,7 @@ bool Movement::Turn(const DirectX::XMFLOAT3& direction,float speed, float elapse
     }
     return false;
 }
+// 回転出来るか
 bool Movement::TurnCheck(const DirectX::XMFLOAT3& direction, DirectX::XMFLOAT2 angleRange, float elapsedTime)
 {
     std::weak_ptr<Actor> actor = GetActor();
@@ -143,6 +144,7 @@ void Movement::OnLanding()
     }
 }
 
+// ジャンプ
 void Movement::JumpVelocity(float speed)
 {
     std::weak_ptr<Actor> actor = GetActor();
@@ -150,13 +152,14 @@ void Movement::JumpVelocity(float speed)
     velocity.y = speed;
 }
 
+// 吹っ飛ばし
 void Movement::AddImpulse(const DirectX::XMFLOAT3& impulse)
 {
     velocity.x += impulse.x;
     velocity.y += impulse.y;
     velocity.z += impulse.z;
 }
-
+// 水平速力更新処理
 void Movement::UpdateHorizontalVelocity( float elapsedFrame)
 {
     std::weak_ptr<Actor> actor = GetActor();
@@ -223,7 +226,7 @@ void Movement::UpdateHorizontalVelocity( float elapsedFrame)
     moveVecX = 0.0f;
     moveVecZ = 0.0f;
 }
-
+// 水平移動更新処理
 void Movement::UpdateHorizontalMove( float elapsedTime)
 {
     std::weak_ptr<Actor> actor = GetActor();
@@ -255,14 +258,14 @@ void Movement::UpdateHorizontalMove( float elapsedTime)
     }
     transformid.lock()->SetPosition(position);
 }
-
+// 垂直速力更新処理
 void Movement::UpdateVerticalVelocity( float elapsedFrame)
 {
     std::weak_ptr<Actor> actor = GetActor();
     // 重力処理
     velocity.y += gravity * elapsedFrame;
 }
-
+// 垂直移動更新処理
 void Movement::UpdateVerticalMove( float elapsedTime)
 {
     std::weak_ptr<Actor> actor = GetActor();
@@ -324,7 +327,7 @@ void Movement::UpdateVerticalMove( float elapsedTime)
     transformid.lock()->SetPosition(position);
     transformid.lock()->SetAngle(angle);
 }
-
+// 速力処理更新
 void Movement::UpdateVelocity( float elapsedTime)
 {
     // 経過フレーム
@@ -355,7 +358,7 @@ void Movement::UpdateVelocity( float elapsedTime)
         velocity.y = stopVelocity;
     }
 }
-
+// 行動範囲チェックX
 bool Movement::IsOutOfAreaX(const float& positionX)
 {
     if ((positionX + velocity.x) < area.min.x || (positionX + velocity.x) > area.max.x)
@@ -365,7 +368,7 @@ bool Movement::IsOutOfAreaX(const float& positionX)
     }
     return false;
 }
-
+// 行動範囲チェックZ
 bool Movement::IsOutOfAreaZ( const float& positionZ)
 {
     if ((positionZ + velocity.z) < area.min.z || (positionZ + velocity.z) > area.max.z)
@@ -375,7 +378,7 @@ bool Movement::IsOutOfAreaZ( const float& positionZ)
     }
     return false;
 }
-
+// 行動範囲チェックY
 bool Movement::IsOutOfAreaY(const float& positionY)
 {
     return positionY < area.min.y || positionY > area.max.y;

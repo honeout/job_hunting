@@ -53,9 +53,11 @@ public:
 
 	// 残機
 	void SetLife(int life) { this->life += life; }
+
 	// 残機
 	int GetLife() const { return life; }
 
+	// HPが4/1なら
 	bool HealthPinch();
 
 	// 無敵時間中
@@ -67,9 +69,10 @@ public:
 	// 無敵時間
 	void SetInvincibleTimer(float invincibleTimer) { this->invincibleTimer = invincibleTimer; }
 
-	// 一定期間ないにダメージを一定数以上食らったら
+	// 被ダメ一定数
 	bool CheckDamageThresholdWithinTime(float elapsedTime,float damageThreshold, float timeLimit);
 
+	// ダメージ一定数解放
 	void ResetOnDamageThresholdTime();
 
 	//  ダメージが設定された限界を超えたこと
@@ -104,7 +107,9 @@ private:
 
 	// 追加の耐久力
 	int bonusHp = 0;
+	// 耐久解除
 	int bonusHpEnd = 0;
+	// 耐久力の追加、解除
 	bool isBonusHpActive = false;
 
 	// ダメージ判定

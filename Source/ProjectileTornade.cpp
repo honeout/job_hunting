@@ -52,8 +52,6 @@ void ProjectileTornade::Update(float elapsedTime)
 
     model->UpdateTransform(transform->GetTransform());
 
-    //DrawDebugPrimitive();
-
     if (effectProgress)
         effectProgress->SetPosition(effectProgress->GetEfeHandle(), transform->GetPosition());
 

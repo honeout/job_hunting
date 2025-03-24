@@ -1,11 +1,11 @@
-#include "ProjectileSunder.h"
+#include "ProjectileFullHoming.h"
 #include "Graphics/Graphics.h"
 // コンストラクタ
-ProjectileSunder::ProjectileSunder()
+ProjectileFullHoming::ProjectileFullHoming()
 {
 }
 // デストラクタ
-ProjectileSunder::~ProjectileSunder()
+ProjectileFullHoming::~ProjectileFullHoming()
 {
     // エフェクト更新削除
     if (effectProgress)
@@ -24,7 +24,7 @@ ProjectileSunder::~ProjectileSunder()
     }
 }
 
-void ProjectileSunder::Start()
+void ProjectileFullHoming::Start()
 {
     // モデル一様
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
@@ -43,10 +43,9 @@ void ProjectileSunder::Start()
 }
 
 // 更新処理
-void ProjectileSunder::Update(float elapsedTime)
+void ProjectileFullHoming::Update(float elapsedTime)
 {
-    if (movementCheck)
-        bulletFiring->Sunder( target, elapsedTime);
+    bulletFiring->MoveFullHoming(moveSpeed, turnSpeed, target, elapsedTime);
 
     transform->UpdateTransformProjectile();
 
@@ -60,7 +59,7 @@ void ProjectileSunder::Update(float elapsedTime)
 }
 
 // 描画処理
-void ProjectileSunder::Render(RenderContext& rc, ModelShader& shader)
+void ProjectileFullHoming::Render(RenderContext& rc, ModelShader& shader)
 {
     Graphics& graphics = Graphics::Instance();
     shader = *graphics.GetShader(ModelShaderId::Lanbert);
@@ -69,7 +68,7 @@ void ProjectileSunder::Render(RenderContext& rc, ModelShader& shader)
     shader.End(rc);
 }
 
-void ProjectileSunder::DrawDebugPrimitive()
+void ProjectileFullHoming::DrawDebugPrimitive()
 {
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
 
@@ -78,23 +77,23 @@ void ProjectileSunder::DrawDebugPrimitive()
     debugRenderer->DrawSphere(transform->GetPosition(), radius, DirectX::XMFLOAT4(0, 0, 1, 1));
 }
 
-void ProjectileSunder::EffectProgressPlay()
+void ProjectileFullHoming::EffectProgressPlay()
 {
     effectProgress->Play(transform->GetPosition(), scale);
 }
 
-void ProjectileSunder::EffectHitPlay(float elapsedTime)
+void ProjectileFullHoming::EffectHitPlay(float elapsedTime)
 {
     effectHit->Play(transform->GetPosition(), scale);
 }
 
-void ProjectileSunder::EffectProgressUpdate(float elapsedTime)
+void ProjectileFullHoming::EffectProgressUpdate(float elapsedTime)
 {
     effectProgress->SetPosition(effectProgress->GetEfeHandle(),
         transform->GetPosition());
 }
 
-void ProjectileSunder::EffectHitUpdate(float elapsedTime)
+void ProjectileFullHoming::EffectHitUpdate(float elapsedTime)
 {
     effectHit->SetPosition(effectHit->GetEfeHandle(),
         transform->GetPosition());

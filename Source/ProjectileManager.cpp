@@ -12,10 +12,6 @@ void ProjectileManager::DeleteUpdate(float elapsedTime)
         {
             projectiles.erase(it);// íœ
         }
-
-        // ’eŠÛ‚Ì”jŠüˆ—
-        //delete projectile;// “ü‚ê•¨”jŠü
-
     }
     // ”jŠüƒŠƒXƒg‚ğƒNƒŠƒA
     removes.clear();

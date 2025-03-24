@@ -61,6 +61,7 @@ public:
         PlayerCommandSpeciulIce,
         PlayerCommandSpeciulThander,
         PlayerHPBar,
+        PlayerMPBar,
         EnemyHPBar,
         EnemyHPLife01,
         EnemyHPLife02,

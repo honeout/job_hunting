@@ -300,6 +300,9 @@
     <ClInclude Include="Source\Logger.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ProjectileFullHoming.h">
+      <Filter>Source\Projectile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -520,6 +523,9 @@
     </ClCompile>
     <ClCompile Include="Source\Logger.cpp">
       <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ProjectileFullHoming.cpp">
+      <Filter>Source\Projectile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -24,6 +24,7 @@ public:
 
     // —h‚ç‚·”ÍˆÍÅ‘å
     void SetUiMax(int max) { this->max = max; }
+
     // —h‚ç‚·”ÍˆÍÅ¬
     void SetUiMin(int min) { this->min = min; }
 
@@ -66,7 +67,6 @@ public:
 
     // ŽžŠÔI—¹‚©‚Ç‚¤‚©
     bool GetShakeEnd() { return shakeTimeUi >= shakeTimeUiMax ? true : false; }
-
 private:
     // ‰æ‘œ‚ÌˆÊ’u
     DirectX::XMFLOAT2 position = {0,0};

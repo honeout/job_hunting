@@ -11,7 +11,6 @@ public:
 	static const MouseButton BTN_LEFT = (1 << 0);
 	static const MouseButton BTN_MIDDLE = (1 << 1);
 	static const MouseButton BTN_RIGHT = (1 << 2);
-
 public:
 	Mouse(HWND hWnd);
 	~Mouse() {}
@@ -57,7 +56,6 @@ public:
 
 	// ƒXƒNƒŠ[ƒ“‚‚³Žæ“¾
 	int GetScreenHeight() const { return screenHeight; }
-
 private:
 	MouseButton		buttonState[2] = { 0 };
 	MouseButton		buttonDown = 0;

@@ -160,6 +160,10 @@ public:
     bool InputMagicLightning();
     bool InputMagicHealing();
 
+    // 魔法を撃つ
+    void PushMagicFrame(DirectX::XMFLOAT3 angle);
+    void PushMagicIce(DirectX::XMFLOAT3 angle);
+
     void InputSpecialMagicframe();
 
     void AttackCheckUI();
@@ -290,7 +294,8 @@ public:
         Anim_MagicSeconde,
         Anim_SpecialAttack,
         Anim_Land,
-        Anim_Roll
+        Anim_Roll,
+        Anim_MagicArch
     };
 
     // アニメーション再生方法
@@ -554,6 +559,7 @@ private:
     DirectX::XMFLOAT2   scereenPositionOffset = { 34.0f,25.0f };
 
     float               slashAttackInvincibleTime = 0.5f;
+    float               magicAttackInvincibleTime = 0.1f;
 
     // 攻撃方法の選択
     int selectCheck = 0;

@@ -3,7 +3,6 @@
 // コンストラクタ
 ProjectileHoming::ProjectileHoming()
 {
-   
 }
 // デストラクタ
 ProjectileHoming::~ProjectileHoming()
@@ -38,7 +37,6 @@ void ProjectileHoming::Start()
 
     // トランスフォーム取得
     transform = GetActor()->GetComponent<Transform>();
-
 
     if (effectProgress)
         effectProgress->Play(transform->GetPosition(),1);

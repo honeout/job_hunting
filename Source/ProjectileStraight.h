@@ -27,17 +27,14 @@ public:
 
     // “–‚½‚è”»’èŒ©‚é
     void DrawDebugPrimitive();
-
 #ifdef _DEBUG
     // GUI•`‰æ
     void OnGUI() override;
 #endif // _DEBUG
-
-
 private:
     Model* model = nullptr;
-    float  speed = 10.0f;// ‚P•bŠÔ‚P‚Oƒ[ƒgƒ‹
 
+    float  speed = 10.0f;// ‚P•bŠÔ‚P‚Oƒ[ƒgƒ‹
 
     // ’eŠÛ¶–½ŠÔ
     float   lifeTimer = 3.0f;
@@ -48,5 +45,4 @@ private:
     std::shared_ptr<Transform> transform;
 
     float radius = 0.3f;
-
 };

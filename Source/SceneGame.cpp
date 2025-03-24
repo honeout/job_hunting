@@ -165,6 +165,9 @@ void SceneGame::Update(float elapsedTime)
 	// エフェクト更新処理
 	EffectManager::Instance().Update(dlayTime);
 
+	// ポストエフェクト
+	PlayEffectsShaders(elapsedTime);
+
 	// シーン切り替え
 	{
 		
@@ -884,7 +887,7 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 932, 421 };
+		DirectX::XMFLOAT2 pos = { 902, 421 };
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -1778,6 +1781,54 @@ void SceneGame::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
+	// UI PlayerMPBar
+	{
+		const char* filename = "Data/Sprite/MP.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("PlayerMPBar");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		DirectX::XMFLOAT2 pos = { 930, 649 };
+		transform2D->SetPosition(pos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+		DirectX::XMFLOAT2 scale = { 310,52 };
+		transform2D->SetScale(scale);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+
+		// UI揺らす範囲を指定揺らす場合
+		int max = (int)pos.y + 3;
+		int min = (int)pos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		bool drawCheck = true;
+		ui->SetDrawCheck(drawCheck);
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
 	// UI EnemyHP
 	{
 		const char* filename = "Data/Sprite/enemy_status.png";
@@ -2111,7 +2162,7 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 932, 515 };
+		DirectX::XMFLOAT2 pos = { 989, 510 };
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
