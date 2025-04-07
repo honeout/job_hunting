@@ -8,20 +8,43 @@ ProjectileStraight::ProjectileStraight()
 // デストラクタ
 ProjectileStraight::~ProjectileStraight()
 {
+    // エフェクト更新削除
+    if (effectProgress)
+    {
+        effectProgress->Stop(effectProgress->GetEfeHandle());
+        delete effectProgress;
+        effectProgress = nullptr;
+    }
+
+    if (effectSpawned)
+    {
+        effectSpawned->Stop(effectSpawned->GetEfeHandle());
+        delete effectSpawned;
+        effectSpawned = nullptr;
+    }
 }
 void ProjectileStraight::Start()
 {
     // モデル一様
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
+    //// 当たり判定を共有
+    //GetActor()->GetComponent<Transform>()->SetRadius(radius);
+
     // 当たり判定を共有
-    GetActor()->GetComponent<Transform>()->SetRadius(radius);
+    radius = GetActor()->GetComponent<Collision>()->GetRadius();
     
     // 銃移動のコンポーネント
     bulletFiring = GetActor()->GetComponent<BulletFiring>();
 
     // トランスフォーム取得
     transform = GetActor()->GetComponent<Transform>();
+
+    if (effectProgress)
+        effectProgress->Play(transform->GetPosition(), 1);
+
+    if (effectSpawned)
+        effectSpawned->Play(transform->GetPosition());
 }
 // 更新処理
 void ProjectileStraight::Update(float elapsedTime)
@@ -32,6 +55,10 @@ void ProjectileStraight::Update(float elapsedTime)
     transform->UpdateTransformProjectile();
 
     model->UpdateTransform(transform->GetTransform());
+
+
+    if (effectProgress)
+        effectProgress->SetPosition(effectProgress->GetEfeHandle(), transform->GetPosition());
 }
 
 // 描画

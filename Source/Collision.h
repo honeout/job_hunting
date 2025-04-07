@@ -68,9 +68,24 @@ public:
 
     // ƒŒƒC‚Æƒ‚ƒfƒ‹‚ÌŒğ·”»’è
     static bool IntersectRayVsModel(
-    const DirectX::XMFLOAT3& start,
-    const DirectX::XMFLOAT3& end,
+        const DirectX::XMFLOAT3& start,
+        const DirectX::XMFLOAT3& end,
         const Model* model,
         HitResult& result
     );
+
+    // ”¼Œa@
+    float GetRadius() { return radius; }
+    void  SetRadius(float radius) { this->radius = radius; }
+
+    // ‚‚³
+    float GetHeight() { return height; }
+    void  SetHeight(float height) { this->height = height; }
+
+private:
+    // ”¼Œa05 
+    float radius = 0.6f;
+
+    // ‚‚³
+    float height = 1;
 };

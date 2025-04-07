@@ -32,6 +32,9 @@ void ProjectileImpact::Start()
 
     // トランスフォーム取得
     transform = GetActor()->GetComponent<Transform>();
+
+    // コリジョン取得
+    collision = GetActor()->GetComponent<Collision>();
     
     // 円の当たり判定内側
     radiusInSide = 0.1f;
@@ -84,9 +87,6 @@ void ProjectileImpact::Render(RenderContext& rc, ModelShader& shader)
 
 void ProjectileImpact::DrawDebugPrimitive()
 {
-#ifdef DEBUG
-
-
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
 
     // 今は何も表示しない
@@ -94,8 +94,7 @@ void ProjectileImpact::DrawDebugPrimitive()
     debugRenderer->DrawSphere(transform->GetPosition(), radiusInSide, DirectX::XMFLOAT4(0, 0, 1, 1));
     debugRenderer->DrawSphere(transform->GetPosition(), radiusOutSide, DirectX::XMFLOAT4(0, 1, 0, 1));
 
-    debugRenderer->DrawCylinder(transform->GetPosition(), 15, transform->GetHeight(), DirectX::XMFLOAT4(0, 1, 1, 1));
-#endif // DEBUG
+    debugRenderer->DrawCylinder(transform->GetPosition(), 15, collision.lock()->GetHeight(), DirectX::XMFLOAT4(0, 1, 1, 1));
 }
 
 void ProjectileImpact::Destoroy()
@@ -107,10 +106,10 @@ void ProjectileImpact::Destoroy()
 void ProjectileImpact::ImpactUpdate()
 {
     // 当たり判定増大
-    radiusInSide += 0.3f;
+    radiusInSide += 0.13f;
     
     // 当たり判定増大
-    radiusOutSide += 0.3f;
+    radiusOutSide += 0.13f;
 }
 
 void ProjectileImpact::EffectProgressPlay()

@@ -236,3 +236,163 @@ void ActorManager::DrawDetail()
 	ImGui::End();
 }
 #endif // _DEBUG
+
+
+
+// ì¬ ì‚Á‚½“z‚ğ“ü‚ê‚éB
+std::shared_ptr<Actor> ActorSceneLoadManager::Create()
+{
+	std::shared_ptr<Actor> actor = std::make_shared<Actor>();
+	{
+		static int id = 0;
+		char name[256];
+		::sprintf_s(name, sizeof(name), "Actor%d", id++);
+		actor->SetName(name);
+	}
+	startActors.emplace_back(actor);
+	return actor;
+}
+
+// íœ ‚É’Ç‰Á
+void ActorSceneLoadManager::Remove(std::shared_ptr<Actor> actor)
+{
+	removeActors.insert(actor);
+}
+
+// XV
+void ActorSceneLoadManager::Update(float elapsedTime)
+{
+	for (std::shared_ptr<Actor>& actor : startActors)
+	{
+		actor->Start();
+		updateActors.emplace_back(actor);
+	}
+	startActors.clear();
+
+	for (std::shared_ptr<Actor>& actor : updateActors)
+	{
+		actor->Update(elapsedTime);
+	}
+
+	for (const std::shared_ptr<Actor>& actor : removeActors)
+	{
+		std::vector<std::shared_ptr<Actor>>::iterator itStart = std::find(startActors.begin(), startActors.end(), actor);
+		if (itStart != startActors.end())
+		{
+			startActors.erase(itStart);
+		}
+		std::vector<std::shared_ptr<Actor>>::iterator itUpdate = std::find(updateActors.begin(), updateActors.end(), actor);
+		if (itUpdate != updateActors.end())
+		{
+			updateActors.erase(itUpdate);
+		}
+		std::set<std::shared_ptr<Actor>>::iterator itSelection = selectionActors.find(actor);
+		if (itSelection != selectionActors.end())
+		{
+			selectionActors.erase(itSelection);
+		}
+	}
+	removeActors.clear();
+}
+
+
+// •`‰æ
+void ActorSceneLoadManager::Render(RenderContext rc, ModelShader* shader)
+{
+	// 3D
+	for (std::shared_ptr<Actor>& actor : updateActors)
+	{
+		if (!actor->GetCheck2d())
+			// ƒ‚ƒfƒ‹‚ª‚ ‚ê‚Î•`‰æ
+			actor->Render(rc, shader);
+	}
+}
+
+void ActorSceneLoadManager::Render(RenderContext rc, SpriteShader* shader)
+{
+	for (std::shared_ptr<Actor>& actor : updateActors)
+	{
+		if (actor->GetCheck2d())
+			// ƒ‚ƒfƒ‹‚ª‚ ‚ê‚Î•`‰æ
+			actor->Render2D(rc, shader);
+	}
+}
+
+void ActorSceneLoadManager::RenderGui()
+{
+#ifdef _DEBUG
+	// ƒŠƒXƒ^[•`‰æ
+	DrawLister();
+	// Ú×•`‰æ
+	DrawDetail();
+#endif // _DEBUG
+}
+
+void ActorSceneLoadManager::Render2D(RenderContext rc, SpriteShader* shader)
+{
+	for (std::shared_ptr<Actor>& actor : updateActors)
+	{
+		if (actor->GetCheck2d())
+			// ƒ‚ƒfƒ‹‚ª‚ ‚ê‚Î•`‰æ
+			actor->Render2D(rc, shader);
+	}
+}
+
+void ActorSceneLoadManager::Clear()
+{
+	for (std::shared_ptr<Actor>& actor : updateActors)// 
+	{
+		// À‘Ì‚ğÁ‚µ‚½ŠÇ—‚µ‚Ä‚¢‚é”‚Í‚»‚Ì‚Ü‚Ü
+		actor.reset();
+	}
+	updateActors.clear();
+}
+#ifdef _DEBUG
+// ƒŠƒXƒ^[•`‰æ
+void ActorSceneLoadManager::DrawLister()
+{
+	ImGui::SetNextWindowPos(ImVec2(30, 50), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+	hiddenLister = !ImGui::Begin("Actor Lister", nullptr, ImGuiWindowFlags_None);
+	if (!hiddenLister)
+	{
+		for (std::shared_ptr<Actor>& actor : updateActors)
+		{
+			ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_Leaf;
+			if (selectionActors.find(actor) != selectionActors.end())
+			{
+				nodeFlags |= ImGuiTreeNodeFlags_Selected;
+			}
+			ImGui::TreeNodeEx(actor.get(), nodeFlags, actor->GetName());
+			if (ImGui::IsItemClicked())
+			{
+				// ’Pˆê‘I‘ğ‚¾‚¯‘Î‰‚µ‚Ä‚¨‚­
+				ImGuiIO& io = ImGui::GetIO();
+				selectionActors.clear();
+				selectionActors.insert(actor);
+			}
+			ImGui::TreePop();
+		}
+	}
+	ImGui::End();
+}
+#endif // _DEBUG
+
+#ifdef _DEBUG
+// Ú×•`‰æ
+void ActorSceneLoadManager::DrawDetail()
+{
+	ImGui::SetNextWindowPos(ImVec2(950, 50), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+	hiddenDetail = !ImGui::Begin("Actor Detail", nullptr, ImGuiWindowFlags_None);
+	if (!hiddenDetail)
+	{
+		std::shared_ptr<Actor> lastSelected = selectionActors.empty() ? nullptr : *selectionActors.rbegin();
+		if (lastSelected != nullptr)
+		{
+			lastSelected->OnGUI();
+		}
+	}
+	ImGui::End();
+}
+#endif // _DEBUG

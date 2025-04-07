@@ -225,7 +225,6 @@ void BulletFiring::MoveFullHoming(
     // i‚ñ‚¾‹——£
     addLength += bulletspeed;
 
-
     // ù‰ñ
     if(addLength >= lengthMax)
     {

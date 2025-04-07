@@ -83,6 +83,7 @@ private:
 
     std::shared_ptr<BulletFiring> bulletFiring;
     std::shared_ptr<Transform> transform;
+    std::weak_ptr<Collision> collision;
 
     // ÕŒ‚”g‹N‚±‚é”ÍˆÍŠO‘¤
     float radiusOutSide = 0.3f;

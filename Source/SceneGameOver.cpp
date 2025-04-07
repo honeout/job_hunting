@@ -20,8 +20,6 @@ void SceneGameOver::Initialize()
 	// 選択の種類
 	selectPush = (int)Select::Game;
 
-	// 音BGM
-	StartBgm();
     // カメラ初期化
     cameraControlle = nullptr;
     cameraControlle = new CameraController();
@@ -126,6 +124,12 @@ void SceneGameOver::Initialize()
 		postprocessingRenderer.SetColorGradingData(colorGradingData);
 		postprocessingRenderer.SetColorGradingMinData(colorGradingData);
 	}
+}
+
+void SceneGameOver::Start()
+{
+	// 音BGM
+	StartBgm();
 }
 
 void SceneGameOver::Finalize()
@@ -781,7 +785,7 @@ void SceneGameOver::SelectScene()
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
 		{
 			//　シーン変更
-			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
+			SceneManager::Instance().ChangeScene(new SceneTitle);
 		}
 
 		break;

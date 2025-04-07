@@ -84,7 +84,7 @@ private:
 	// ターゲットの最低距離
 	float               lengthMin = 8.5f;
 	// ターゲットの攻撃許可最低距離
-	float				attackMinRange = 5.0f;
+	float				attackMinRange = 7.0f;
 
 	// 一定以下でカメラ機能無視
 	float				cameraDisableRange = 4.0f;
@@ -98,7 +98,8 @@ private:
 	float				heightAttackMaxRock = -1.0f;
 
 	// カメラの距離
-	float				attacklengthMinRock = 8.0f;
+	float				attacklengthMinRock = 10.0f;
+	float				attacklengthMinRockScale = 1.3f;
 
 	// ターゲットの一定以上高い
 	float               topHeight = 2.0f;

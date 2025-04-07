@@ -18,8 +18,6 @@ void SceneTitle::Initialize()
     // スプライト初期化
 	InitializeComponent();
 
-	StartMusic();
-
 	// カメラ初期設定 見える位置追いかけるものなど
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
@@ -125,6 +123,11 @@ void SceneTitle::Initialize()
 	// カメラ初期化
 	cameraControlle = nullptr;
 	cameraControlle = new CameraController();
+
+	StartMusic();
+}
+void SceneTitle::Start()
+{
 }
 // 終了化
 void SceneTitle::Finalize()

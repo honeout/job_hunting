@@ -76,6 +76,10 @@ private:
 
     // 角度
     float angle = 0;
+
+    // 位置変更処理をした時に最初の奴を記録
+    DirectX::XMFLOAT2 memoryPosition = { 0,0 };
+
     // 画像の大きさ
     DirectX::XMFLOAT2 scale = {0,0};
 

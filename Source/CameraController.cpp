@@ -208,15 +208,20 @@ void CameraController::FreeCamera(float elapsedTime)
 void CameraController::LockonCamera(float elapsedTime)
 {
 	//	後方斜に移動させる
+	
 	DirectX::XMVECTOR	t0 = DirectX::XMVectorSet(targetWork[0].x, targetWork[0].y, targetWork[0].z, 0);
+	DirectX::XMVECTOR	t0XZ = DirectX::XMVectorSet(targetWork[0].x, targetWork[0].z,0,0);
 	DirectX::XMVECTOR	t1 = DirectX::XMVectorSet(targetWork[1].x, targetWork[1].y, targetWork[1].z, 0);
+	DirectX::XMVECTOR	t1XZ = DirectX::XMVectorSet(targetWork[1].x, targetWork[1].z,0,0);
 	DirectX::XMVECTOR	crv = DirectX::XMLoadFloat3(&Camera::Instance().GetRight());
 	DirectX::XMVECTOR	cuv = DirectX::XMVectorSet(0, 1, 0, 0);
 	DirectX::XMVECTOR   spacingValue = DirectX::XMVectorSet(0, 1, 1, 0);
 	DirectX::XMVECTOR	v = DirectX::XMVectorSubtract(t1, t0);
+	DirectX::XMVECTOR	vXZ = DirectX::XMVectorSubtract(t1XZ, t0XZ);
 	DirectX::XMVECTOR	l = DirectX::XMVector3Length(v);
+	DirectX::XMVECTOR	lXZ = DirectX::XMVector3Length(vXZ);
 	float len;
-	DirectX::XMStoreFloat(&len,l);
+	DirectX::XMStoreFloat(&len, lXZ);
 	cameraRandeDebug = len;
 	t0 = DirectX::XMLoadFloat3(&targetWork[0]);
 	t1 = DirectX::XMLoadFloat3(&targetWork[1]);
@@ -231,7 +236,7 @@ void CameraController::LockonCamera(float elapsedTime)
 		, DirectX::XMVectorReplicate(lengthLimit[1]));
 	t0 = DirectX::XMVectorMultiplyAdd(l, DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), t0);
 
-	// 一定以下のカメラ距離
+	// 距離一定以下のカメラ距離
 	if (attackMinRange >= len)
 	{
 		// 少し離れる
@@ -239,6 +244,7 @@ void CameraController::LockonCamera(float elapsedTime)
 
 		DirectX::XMStoreFloat3(&newPosition, t0);
 		newPosition.y = heightAttackMaxRock;
+		newPosition.z *= attacklengthMinRockScale;
 		return;
 	}
 
@@ -247,13 +253,11 @@ void CameraController::LockonCamera(float elapsedTime)
 	{
 		// 少し上
 		t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(topHeight), t0);
-
-
-
 		DirectX::XMStoreFloat3(&newPosition, t0);
-
+		newPosition.y = heightAttackMaxRock;
 
 	}
+
 	// 近い時のカメラ
 	else
 	{
@@ -263,10 +267,6 @@ void CameraController::LockonCamera(float elapsedTime)
 		DirectX::XMStoreFloat3(&newPosition, t0);
 		newPosition.y = heightMaxRock;
 	}
-
-
-
-	
 }
 // 敵攻撃時のカメラアングル更新
 void CameraController::LockonTopHeightCamera(float elapsedTime)

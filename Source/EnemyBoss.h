@@ -200,6 +200,7 @@ public:
 
     // 半径
     float GetRadius() { return radius; }
+    float GetUpperRadius() { return radiusUpper; }
 
     // 近距離攻撃時の当たり判定
     void SetAttackRightFootRange(float attackRightFootRange) { this->attackRightFootRange = attackRightFootRange; }
@@ -250,6 +251,7 @@ private:
 
     std::weak_ptr<Movement>	movement;
     std::weak_ptr<HP>	hp;
+    std::weak_ptr<Collision> collision;
     std::weak_ptr<Transform>	transform;
 
     // 覚醒有無
@@ -323,7 +325,8 @@ private:
     int maxHealth = 50;
 
     // 半径
-    float radius = 1.5f;
+    float radius = 2.3f;
+    float radiusUpper = 1.8f;
 
     // 高さ
     float height = 9.0f;
@@ -336,7 +339,6 @@ private:
     int isRimRightning = 0;
     // modelオンオフ
     int StencilRef = 0;
-
 
     // ステートマシン用
     std::unique_ptr <StateMachine> stateMachine;
@@ -382,7 +384,6 @@ private:
 
     // ブラーかける
     bool blurCheck = false;
-
 
     // Se関係の値
     bool isLoopDisabled = false;

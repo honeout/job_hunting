@@ -30,7 +30,10 @@ void ProjectileSunder::Start()
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
     // 当たり判定を共有
-    GetActor()->GetComponent<Transform>()->SetRadius(radius);
+    // GetActor()->GetComponent<Transform>()->SetRadius(radius);
+
+    // 当たり判定を共有
+    radius = GetActor()->GetComponent<Collision>()->GetRadius();
 
     // 銃移動のコンポーネント
     bulletFiring = GetActor()->GetComponent<BulletFiring>();

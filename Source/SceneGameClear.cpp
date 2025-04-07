@@ -126,7 +126,11 @@ void SceneGameClear::Initialize()
 	selectPush = (int)Select::Game;
 }
 
-
+void SceneGameClear::Start()
+{
+	// 音BGM
+	StartBgm();
+}
 
 void SceneGameClear::Finalize()
 {
@@ -680,9 +684,6 @@ void SceneGameClear::InitializeComponent()
 		actor->SetCheck2d(check2d);
 		UiManager::Instance().Register(actor);
 	}
-
-	// 音BGM
-	StartBgm();
 }
 
 void SceneGameClear::StartBgm()
@@ -731,7 +732,7 @@ void SceneGameClear::SelectScene()
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
 		{
 			//　シーン変更
-			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
+			SceneManager::Instance().ChangeScene(new SceneTitle);
 		}
 
 		break;
@@ -756,7 +757,7 @@ void SceneGameClear::SelectScene()
 			if (playerId.lock()->GetEndState())
 			{
 				//　シーン変更
-				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
+				SceneManager::Instance().ChangeScene(new SceneGame);
 			}
 		}
 

@@ -79,6 +79,8 @@ private:
 
     std::shared_ptr<Transform> transform;
 
+    std::weak_ptr<Collision> collision;
+
     float radius = 1.0f;
 
     float scale = 2.0f;

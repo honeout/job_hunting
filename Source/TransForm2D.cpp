@@ -16,6 +16,8 @@ void TransForm2D::OnGUI()
 #endif // _DEBUG
 void TransForm2D::Shake()
 {
+    if (shakeTimeUi <= shakeTimeUiMin)
+        memoryPosition = position;
     if (!GetShakeEnd())
     {
         if (position.y > max)
@@ -35,6 +37,7 @@ void TransForm2D::Shake()
     else
     {
         shakeTimeUi = shakeTimeUiMin;
+        position = memoryPosition;
     }
 }
 // é˚èk

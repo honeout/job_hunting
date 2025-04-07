@@ -23,6 +23,9 @@ public:
 	// 初期化
 	void Initialize() override;
 
+	// スタート
+	void Start() override;
+
 	// 終了化
 	void Finalize() override;
 
@@ -52,7 +55,7 @@ private:
 	void InitializeComponent();
 
 	// BGM再生
-	void UpdateBgm();
+	void StartBgm();
 
 	// BGM停止
 	void StopBgm();
@@ -129,7 +132,8 @@ private:
 	DirectX::XMFLOAT3 shadowColor = { 0.2f,0.2f,0.2f };// 影の色
 	float shadowBias = 0.001f;// 深度比較用のオフセット値
 
-	CameraController* cameraControlle = nullptr;
+	//CameraController* cameraControlle = nullptr;
+	std::unique_ptr<CameraController> cameraControlle;
 
 	// 周辺減光周り
 		// 周辺減光

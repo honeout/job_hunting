@@ -36,7 +36,7 @@ void SceneManager::ChangeScene(Scene* scene)
 
     // 古いシーン終了処理
     Clear();
-
+    
     // 新しいシーンを設定
     currentScene = nextScene;
     nextScene = nullptr;
@@ -45,4 +45,6 @@ void SceneManager::ChangeScene(Scene* scene)
     // 違う場所で呼ばれてるからもし呼ばれていたら通らない風にする。
     if (!currentScene->IsReady())
         currentScene->Initialize();
+    else
+        currentScene->Start();
 }

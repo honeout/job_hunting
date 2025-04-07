@@ -50,6 +50,9 @@ private:
 	RadialBlurData radialBlurData;
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
+
+	// 最初のスローの時間
+	float slowWalkTime = 3.8f;
 };
 
 // 待機ステートオブジェクト
@@ -546,11 +549,14 @@ private:
 	float length = 0;
 
 	DirectX::XMFLOAT3 vector = {0,0,0};
+	DirectX::XMFLOAT2 playerPosXZ;
+	DirectX::XMFLOAT2 enemyPosXZ;
+	DirectX::XMFLOAT3 enemyPos;
 
 	// 攻撃サポート範囲
 	float attackCheckRange = 10.0f;
 
-	float attackCheckRangeMin = 2.6f;
+	float attackCheckRangeMin = 3.5f;
 
 	float gravity = -0.2f;
 
@@ -558,8 +564,8 @@ private:
 	DirectX::XMFLOAT3 velocity = { 0,0,0 };
 
 	// コマンド確認
-	std::vector<GamePadButton> commandSeconde;
-	std::vector<GamePadButton> commandThrede;
+	std::vector<GamePadButton> commandSecondeButtonB;
+	std::vector<GamePadButton> commandSecondeButtonRight;
 	
 	// ダメージ食らった時に強制終了
 	bool deleteCheck = false;
@@ -569,7 +575,7 @@ private:
 	int attackMemoryMax = 3;
 
 	// コマンド操作の記録確認時間
-	int frame = 150;
+	int frame = 15;
 
 	// 角度範囲
 	DirectX::XMFLOAT2 angleRange = { 0.1f,0.1f };
@@ -640,8 +646,9 @@ private:
 	DirectX::XMFLOAT3 velocity = { 0,0,0 };
 
 	// コマンド確認
-	std::vector<GamePadButton> commandSeconde;
-	std::vector<GamePadButton> commandThrede;
+	//std::vector<GamePadButton> commandSeconde;
+	std::vector<GamePadButton> commandThredeButtonB;
+	std::vector<GamePadButton> commandThredeButtonRight;
 
 	// ダメージ食らった時に強制終了
 	bool deleteCheck = false;
@@ -651,7 +658,7 @@ private:
 	int attackMemoryMax = 3;
 
 	// コマンド操作の記録確認時間
-	int frame = 150;
+	int frame = 15;
 
 	// 角度範囲
 	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
@@ -725,19 +732,12 @@ private:
 	// 加速度
 	DirectX::XMFLOAT3 velocity = { 0,0,0 };
 
-	// コマンド確認
-	std::vector<GamePadButton> commandSeconde;
-	std::vector<GamePadButton> commandThrede;
-
 	// ダメージ食らった時に強制終了
 	bool deleteCheck = false;
 
 	// ３回目の攻撃で強制終了
 	int attackMemory = 0;
 	int attackMemoryMax = 3;
-
-	// コマンド操作の記録確認時間
-	int frame = 150;
 
 	// 角度範囲
 	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
@@ -887,6 +887,9 @@ private:
 	// 角度どうするか
 	bool isAngleAddX = true;
 	bool isAngleAddY= true;
+
+	// 氷連射動き開始
+	bool iceMagicMoveCheck = true;
 };
 
 // 近接必殺技ステートオブジェクト

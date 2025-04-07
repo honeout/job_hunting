@@ -6,6 +6,7 @@
 #include "ProjectileManager.h"
 #include "Audio/AudioSource.h"
 #include "Component.h"
+#include "Collision.h"
 #include "Movement.h"
 #include "HP.h"
 #include "Mp.h"
@@ -117,6 +118,9 @@ public:
     // ショートカットキー
     bool InputShortCutkeyMagic();
 
+    // 魔法選択UI解除
+    void RemoveUIMagic();
+
     // 特殊攻撃選択
     bool InputSpecialAttackCharge();
 
@@ -153,6 +157,9 @@ public:
 
     // メニュー開く入力
     bool InputMenue();
+
+    // デバッグ用距離
+    void DebugLength();
 
     // 魔法入力
     bool InputMagicframe();
@@ -410,6 +417,7 @@ public:
 private:
     std::weak_ptr<Movement>	movement;
     std::weak_ptr<HP> hp;
+    std::weak_ptr<Collision> collision;
     std::weak_ptr<Mp> mp;
     std::weak_ptr<Transform> transform;
 
@@ -481,6 +489,7 @@ private:
     std::unique_ptr<Effect> areWork;
     std::unique_ptr<Effect> effectFocus2D;
 
+
     State                   state = State::Idle;
     State                   stated = State::Idle;
 
@@ -491,6 +500,10 @@ private:
 
     float				lockonTargetChangeTime = 0;
     float				lockonTargetChangeTimeMax = 8;
+
+    // 位置情報のランダム
+    DirectX::XMFLOAT3 randomPosMax = {1.5f,3.0f,1.5f};
+    DirectX::XMFLOAT3 randomPosMin = {1.0f,0.1f,1.0f};
 
     // 重力
     float gravity = -0.5f;
@@ -651,9 +664,9 @@ private:
 
     // ダメージ量
     int applyDamageNormal = 3;
-    int applyDamageFire = 4;
+    int applyDamageFire = 3;
     int applyDamageThander = 2;
-    int applyDamageIce = 3;
+    int applyDamageIce = 4;
     // マジックダメージ
     int applyDamageMagic = 0;
     // 必殺技ダメージ量
@@ -749,6 +762,15 @@ private:
     float vignetteNormalSmoothness = 0.0f;
     float vignetteNormalIntensity = 0.0f;
 
+
+    // 氷連射一時停止
+    bool iceMagicMoveCheck = false;
+
+    // デバッグ
+    float debugLength;
+
+    // 押し続けるか
+    bool ButtonDownCountinue = true;
 };
 
 // プレイヤーマネージャー

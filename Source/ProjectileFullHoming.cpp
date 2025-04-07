@@ -29,8 +29,10 @@ void ProjectileFullHoming::Start()
     // モデル一様
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
+    //// 当たり判定を共有
+    //GetActor()->GetComponent<Transform>()->SetRadius(radius);
     // 当たり判定を共有
-    GetActor()->GetComponent<Transform>()->SetRadius(radius);
+    radius = GetActor()->GetComponent<Collision>()->GetRadius();
 
     // 銃移動のコンポーネント
     bulletFiring = GetActor()->GetComponent<BulletFiring>();
@@ -45,6 +47,7 @@ void ProjectileFullHoming::Start()
 // 更新処理
 void ProjectileFullHoming::Update(float elapsedTime)
 {
+    if (movementCheck)
     bulletFiring->MoveFullHoming(moveSpeed, turnSpeed, target, elapsedTime);
 
     transform->UpdateTransformProjectile();

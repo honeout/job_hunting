@@ -48,6 +48,8 @@ bool Mp::ApplyConsumption(int mpConsumption)
     else
     {
         magic -= mpConsumption;
+        magic = magic <= mpMin ? mpMin : magic;
+        mpEmpth = magic <= mpMin ? true : false;
         return true;
     }
 }

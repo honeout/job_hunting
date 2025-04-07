@@ -45,13 +45,16 @@ public:
     DirectX::XMFLOAT3 GetDirection() { return direction; }
     void SetDirection(DirectX::XMFLOAT3 direction) { this->direction = direction; } 
 
-    // 半径　
-    float GetRadius() { return radius; }
-    void  SetRadius(float radius) { this->radius = radius; }
+    //// 半径　
+    //float GetRadius() { return radius; }
+    //void  SetRadius(float radius) { this->radius = radius; }
 
-    // 高さ
-    float GetHeight() { return height; }
-    void  SetHeight(float height) { this->height = height; }
+    //// 高さ
+    //float GetHeight() { return height; }
+    //void  SetHeight(float height) { this->height = height; }
+
+    // ランダム位置に出す。
+    void SpawnRandomInArea(DirectX::XMFLOAT3 maxPos, DirectX::XMFLOAT3 minPos);
 private:
     // 行列中身
     DirectX::XMFLOAT3 position;
@@ -64,10 +67,10 @@ private:
     // 向き
     DirectX::XMFLOAT3 direction;
 
-    // 半径05 
-    float radius = 0.6f;
+    //// 半径05 
+    //float radius = 0.6f;
 
-    // 高さ
-    float height = 1;
+    //// 高さ
+    //float height = 1;
 };
 

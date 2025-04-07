@@ -45,8 +45,6 @@ Player::~Player()
     stateMachine.reset(nullptr);
 }
 
-
-
 void Player::Start()
 {
     // ムーブメント関数を使えるように
@@ -59,6 +57,8 @@ void Player::Start()
     movement.lock()->SetStopMove(stopMove);
     // hp関数を使えるように
     hp = GetActor()->GetComponent<HP>();
+    // collisionを使えるように
+    collision = GetActor()->GetComponent<Collision>();
     // mp関数を使えるように
     mp = GetActor()->GetComponent<Mp>();
     // トランスフォーム関数を呼び出し
@@ -104,9 +104,9 @@ void Player::Start()
     // mp最大値
     mp.lock()->SetMaxMagic(magicPoint);
     // 半径
-    transform.lock()->SetRadius(radius);
+    collision.lock()->SetRadius(radius);
     // 身長
-    transform.lock()->SetHeight(height);
+    collision.lock()->SetHeight(height);
     // コマンド操作用
     selectCheck = (int)CommandAttack::Attack;
     // 魔法選択用
@@ -128,10 +128,8 @@ void Player::Start()
     attackNumberSave = 0;
 
     endState = false;
-
     // エネミーロックオン用ステート確認
     stateEnemyIndex = 0;
-
     // 経過時間測る用
     timeElapsed = 0.0f;
 }
@@ -245,6 +243,10 @@ void Player::Update(float elapsedTime)
 
             areWork->Play(position);
         }
+        else
+        {
+
+        }
         if(GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
         // 特殊攻撃
@@ -313,7 +315,6 @@ void Player::Update(float elapsedTime)
         // モデル逆再生アニメーション更新処理
         model->ReverseplaybackAnimation(elapsedTime, true);
         break;
-
     }
     }
     // 位置更新
@@ -714,8 +715,10 @@ void Player::DrawDebugPrimitive()
 #ifdef _DEBUG
 void Player::OnGUI()
 {
+    DebugLength();
     ImGui::InputFloat("Move Speed", &moveSpeed);
     ImGui::SliderFloat3("angle", &angle.x, -10, 10);
+    ImGui::SliderFloat("debugLength", &debugLength, -10, 10);
     transform.lock()->SetAngle(angle);
     ImGui::InputInt("selectCheck", &selectCheck);
     ImGui::InputInt("isPlayerDrawCheck", &isPlayerDrawCheck);
@@ -1058,7 +1061,7 @@ bool Player::InputSelectMagicCheck()
         selectMagicCheck = (int)CommandMagic::Heale;
     }
     ///////////////////////////
-    // ショートカットキー 試し中
+    // ショートカットキー
     if (gamePad.GetButtonUp())
     {
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies(
@@ -1119,12 +1122,13 @@ bool Player::InputSelectMagicCheck()
     {
         selectMagicCheck = (int)CommandMagic::Normal;
     }
-    if (InputShortCutkeyMagic()) return false;
+    /*if (InputShortCutkeyMagic()) return false;*/
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
     if (uiCount <= uiCountMax) return false;
     // UI設定 炎
-    if (selectMagicCheck == (int)CommandMagic::Fire && magicAction)
+    if (selectMagicCheck == (int)CommandMagic::Fire && magicAction&&
+        !InputShortCutkeyMagic())
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
@@ -1138,17 +1142,18 @@ bool Player::InputSelectMagicCheck()
         uiIdAttack.lock()->SetDrawCheck(isDrawUi);
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUiEmpth);
     }
-    if (!magicAction)
+    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
+    if (!magicAction ||
+        InputShortCutkeyMagic())
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck)->GetComponent<Ui>();
-
-
         uiIdAttack.lock()->SetDrawCheck(isDrawUiEmpth);
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUiEmpth);
     }
     // UI設定 雷
-    if (selectMagicCheck == (int)CommandMagic::Thander && magicAction)
+    if (selectMagicCheck == (int)CommandMagic::Thander && magicAction &&
+        !InputShortCutkeyMagic())
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
@@ -1162,7 +1167,9 @@ bool Player::InputSelectMagicCheck()
         uiIdAttack.lock()->SetDrawCheck(isDrawUi);
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUiEmpth);
     }
-    if (!magicAction)
+    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
+    if (!magicAction || 
+        InputShortCutkeyMagic())
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck)->GetComponent<Ui>();
@@ -1170,7 +1177,8 @@ bool Player::InputSelectMagicCheck()
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUiEmpth);
     }
     // UI設定 氷
-    if (selectMagicCheck == (int)CommandMagic::Ice && magicAction)
+    if (selectMagicCheck == (int)CommandMagic::Ice && magicAction &&
+        !InputShortCutkeyMagic())
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
@@ -1184,7 +1192,9 @@ bool Player::InputSelectMagicCheck()
         uiIdAttack.lock()->SetDrawCheck(isDrawUi);
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUiEmpth);
     }
-    if (!magicAction)
+    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
+    if (!magicAction || 
+        InputShortCutkeyMagic())
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck)->GetComponent<Ui>();
@@ -1192,7 +1202,8 @@ bool Player::InputSelectMagicCheck()
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUiEmpth);
     }
     // UI設定 回復
-    if (selectMagicCheck == (int)CommandMagic::Heale && magicAction)
+    if (selectMagicCheck == (int)CommandMagic::Heale && magicAction &&
+        !InputShortCutkeyMagic())
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHealeCheck)->GetComponent<Ui>();
@@ -1206,7 +1217,9 @@ bool Player::InputSelectMagicCheck()
         uiIdAttack.lock()->SetDrawCheck(isDrawUi);
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUiEmpth);
     }
-    if (!magicAction)
+    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
+    if (!magicAction ||
+        InputShortCutkeyMagic())
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<Ui>();
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHealeCheck)->GetComponent<Ui>();
@@ -1250,18 +1263,19 @@ bool Player::InputShortCutkeyMagic()
         uiIdAttackCheckHeale.lock()->SetDrawCheck(isDrawUi);
         return true;
     }
-    // 魔法打ってる途中にショートカット離しても意味なし
-    if (stateMachine->GetStateIndex() == static_cast<int>(Player::State::Magic) &&
-        gamePad.GetButton() != GamePad::BTN_LEFT_SHOULDER)
-    {
-        return true;
-    }
+    //// 魔法打ってる途中にショートカット離しても意味なし
+    //if (stateMachine->GetStateIndex() == static_cast<int>(Player::State::Magic) &&
+    //    gamePad.GetButton() != GamePad::BTN_LEFT_SHOULDER)
+    //{
+    //    return true;
+    //}
     // 魔法打った後
-    else
+    else if (gamePad.GetButton() == GamePad::BTN_LEFT_SHOULDER)
     {
-        selectMagicCheck = (int)CommandMagic::Normal;
-        selectCheck = (int)CommandAttack::Attack;
-        magicAction = false;
+        //selectMagicCheck = (int)CommandMagic::Normal;
+        ////selectCheck = (int)CommandAttack::Attack;
+        //magicAction = false;
+        
         // 炎
         std::weak_ptr<Ui> uiIdAttackCheckFire = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandShortCutFire)->GetComponent<Ui>();
@@ -1283,9 +1297,8 @@ bool Player::InputShortCutkeyMagic()
     // 離したら
     if (gamePad.GetButtonUp() & GamePad::BTN_LEFT_SHOULDER)
     {
-        selectMagicCheck = (int)CommandMagic::Normal;
-        selectCheck = (int)CommandAttack::Attack;
-        magicAction = false;
+        // 魔法選択UI解除
+        RemoveUIMagic();
         // 炎
         std::weak_ptr<Ui> uiIdAttackCheckFire = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandShortCutFire)->GetComponent<Ui>();
@@ -1304,6 +1317,13 @@ bool Player::InputShortCutkeyMagic()
         uiIdAttackCheckHeale.lock()->SetDrawCheck(isDrawUiEmpth);
     }
     return false;
+}
+// 魔法選択UI解除
+void Player::RemoveUIMagic()
+{
+    selectMagicCheck = (int)CommandMagic::Normal;
+    selectCheck = (int)CommandAttack::Attack;
+    magicAction = false;
 }
 
 bool Player::InputSpecialAttackCharge()
@@ -1703,8 +1723,8 @@ void Player::CollisionMagicVsEnemies()
         {
             std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
             DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-            float enemyRudius = enemy.lock()->GetComponent<Transform>()->GetRadius();
-            float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
+            float enemyRudius = enemy.lock()->GetComponent<Collision>()->GetRadius();
+            float enemyHeight = enemy.lock()->GetComponent<Collision>()->GetHeight();
             Model::Node* nodeHeart = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("body2");
             Model::Node* nodeLeftArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("boss_left_hand2");
             Model::Node* nodeRightArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("boss_right_hand2");
@@ -1731,10 +1751,10 @@ void Player::CollisionMagicVsEnemies()
             };
             std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
             DirectX::XMFLOAT3 projectilePosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
-            float projectileRadius = projectile.lock()->GetComponent<Transform>()->GetRadius();
+            float projectileRadius = projectile.lock()->GetComponent<Collision>()->GetRadius();
             //// 衝突処理
             DirectX::XMFLOAT3 outPositon;
-            if (Collision::IntersectSphereVsCylinder(
+            if (collision.lock()->IntersectSphereVsCylinder(
                 projectilePosition,
                 leftHandRadius,
                 {
@@ -1745,7 +1765,7 @@ void Player::CollisionMagicVsEnemies()
                 enemyRudius,
                 enemyHeight,
                 outPositon) ||
-                Collision::IntersectSpherVsSphere(
+                collision.lock()->IntersectSpherVsSphere(
                     projectilePosition,
                     leftHandRadius,
                     {
@@ -1756,7 +1776,7 @@ void Player::CollisionMagicVsEnemies()
                     enemyRudius,
                     outPositon) ||
 
-                Collision::IntersectSphereVsCylinder(
+                collision.lock()->IntersectSphereVsCylinder(
                     projectilePosition,
                     leftHandRadius,
                     {
@@ -1767,7 +1787,7 @@ void Player::CollisionMagicVsEnemies()
                     enemyRudius,
                     enemyHeight,
                     outPositon) ||
-                Collision::IntersectSphereVsCylinder(
+                collision.lock()->IntersectSphereVsCylinder(
                     projectilePosition,
                     leftHandRadius,
                     {
@@ -1780,7 +1800,8 @@ void Player::CollisionMagicVsEnemies()
                     outPositon))
             {
                 if (!projectile.lock()->GetComponent<ProjectileHoming>() && !projectile.lock()->GetComponent<ProjectileSunder>() &&
-                    !projectile.lock()->GetComponent<ProjectileFullHoming>())return;
+                    !projectile.lock()->GetComponent<ProjectileFullHoming>() && 
+                    !projectile.lock()->GetComponent<ProjectileStraight>())return;
                 if (projectile.lock()->GetComponent<ProjectileSunder>())
                 {
                     ++ThanderEnergyCharge;
@@ -1811,6 +1832,13 @@ void Player::CollisionMagicVsEnemies()
                     }
                     }
                 }
+                else if (projectile.lock()->GetComponent<ProjectileStraight>())
+                {
+                    ++iceEnergyCharge;
+                    hitIce->Play(projectilePosition);
+                    // 氷ダメージ
+                    applyDamageMagic = applyDamageIce;           
+                }
                 else
                 {
                     // 弧の時型の魔法
@@ -1824,14 +1852,14 @@ void Player::CollisionMagicVsEnemies()
                         applyDamageMagic = applyDamageFire;
                         break;
                     }
-                    case (int)ProjectileFullHoming::MagicNumber::Ice:
-                    {
-                        ++iceEnergyCharge;
-                        hitIce->Play(projectilePosition);
-                        // 氷ダメージ
-                        applyDamageMagic = applyDamageIce;
-                        break;
-                    }
+                    //case (int)ProjectileFullHoming::MagicNumber::Ice:
+                    //{
+                    //    ++iceEnergyCharge;
+                    //    hitIce->Play(projectilePosition);
+                    //    // 氷ダメージ
+                    //    applyDamageMagic = applyDamageIce;
+                    //    break;
+                    //}
                     }
                 }
                 hitEffect->Play(projectilePosition);
@@ -1852,7 +1880,8 @@ void Player::CollisionMagicVsEnemies()
                         specialAttackCharge += specialAttackChargeMagicValue;
                     }
                     if (projectile.lock()->GetComponent<ProjectileHoming>() || 
-                        projectile.lock()->GetComponent<ProjectileFullHoming>())
+                        projectile.lock()->GetComponent<ProjectileFullHoming>() ||
+                        projectile.lock()->GetComponent<ProjectileStraight>())
                         // 弾丸破棄
                         projectile.lock()->GetComponent<BulletFiring>()->Destroy();
                 }
@@ -1873,9 +1902,9 @@ void Player::CollisionPlayerVsEnemies()
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
         DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-        float enemyRadius = enemy.lock()->GetComponent<Transform>()->GetRadius();
-        float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
-        if (Collision::IntersectCylinderVsCylinder(
+        float enemyRadius = enemy.lock()->GetComponent<Collision>()->GetRadius();
+        float enemyHeight = enemy.lock()->GetComponent<Collision>()->GetHeight();
+        if (collision.lock()->IntersectCylinderVsCylinder(
             enemyPosition,
             enemyRadius,
             enemyHeight,
@@ -1914,9 +1943,10 @@ void Player::CollisionBornVsProjectile(const char* bornname)
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
         DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-        float enemyRadius = enemy.lock()->GetComponent<Transform>()->GetRadius();
-        float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
-        if (Collision::IntersectCylinderVsCylinder(
+        //float enemyRadius = enemy.lock()->GetComponent<Transform>()->GetRadius();
+        float enemyRadius = enemy.lock()->GetComponent<EnemyBoss>()->GetUpperRadius();
+        float enemyHeight = enemy.lock()->GetComponent<Collision>()->GetHeight();
+        if (collision.lock()->IntersectCylinderVsCylinder(
             {
                 nodePosition.x,
                 nodePosition.y - 0.1f,
@@ -1970,8 +2000,8 @@ bool Player::CollisionNodeVsEnemies(
     {
         std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
         DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-        float enemyRudius = enemy.lock()->GetComponent<Transform>()->GetRadius();
-        float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
+        float enemyRudius = enemy.lock()->GetComponent<Collision>()->GetRadius();
+        float enemyHeight = enemy.lock()->GetComponent<Collision>()->GetHeight();
         Model::Node* nodeHeart = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(nodeHeartName);
         Model::Node* nodeLeftArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(nodeLeftArmName);
         Model::Node* nodeRightArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(nodeRightArmName);
@@ -1998,7 +2028,7 @@ bool Player::CollisionNodeVsEnemies(
         };
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
-        if (Collision::IntersectSphereVsCylinder(
+        if (collision.lock()->IntersectSphereVsCylinder(
             nodePosition,
             leftHandRadius,
             {
@@ -2009,7 +2039,7 @@ bool Player::CollisionNodeVsEnemies(
             enemyRudius,
             enemyHeight,
             outPositon) ||
-            Collision::IntersectSpherVsSphere(
+            collision.lock()->IntersectSpherVsSphere(
                 nodePosition,
                 leftHandRadius,
                 {
@@ -2020,7 +2050,7 @@ bool Player::CollisionNodeVsEnemies(
                 enemyRudius,
                 outPositon) ||
 
-            Collision::IntersectSphereVsCylinder(
+            collision.lock()->IntersectSphereVsCylinder(
                 nodePosition,
                 leftHandRadius,
                 {
@@ -2031,7 +2061,7 @@ bool Player::CollisionNodeVsEnemies(
                 enemyRudius,
                 enemyHeight,
                 outPositon) ||
-            Collision::IntersectSphereVsCylinder(
+            collision.lock()->IntersectSphereVsCylinder(
                 nodePosition,
                 leftHandRadius,
                 {
@@ -2123,18 +2153,18 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
             DirectX::XMFLOAT3 projectilePosition = projectille.lock()->GetComponent<Transform>()->GetPosition();
             float projectileInRudius = projectille.lock()->GetComponent<ProjectileImpact>()->GetRadiusInSide();
             float projectileOutRudius = projectille.lock()->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
-            float projectileHeight = projectille.lock()->GetComponent<Transform>()->GetHeight();
+            float projectileHeight = projectille.lock()->GetComponent<Collision>()->GetHeight();
             //// 衝突処理
             DirectX::XMFLOAT3 outPositon;
             std::weak_ptr<EnemyBoss> enemyBoss = enemy.lock()->GetComponent<EnemyBoss>();
             // 球と球
-            if (Collision::IntersectSpherVsSphere(
+            if (collision.lock()->IntersectSpherVsSphere(
                 nodePosition,
                 nodeRadius,
                 projectilePosition,
                 projectileOutRudius,
                 outPositon) && 
-                !Collision::IntersectSpherVsSphere(
+                !collision.lock()->IntersectSpherVsSphere(
                     nodePosition,
                     nodeRadius,
                     projectilePosition,
@@ -2344,6 +2374,10 @@ bool Player::InputAttack()
     {
         return true;
     }
+    if (gamePad.GetButtonDown() & GamePad::BTN_RIGHT)
+    {
+        return true;
+    }
     return false;
 }
 
@@ -2408,6 +2442,33 @@ bool Player::InputMenue()
     return false;
 }
 
+void Player::DebugLength()
+{
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    int enemyCount = enemyManager.GetEnemyCount();
+
+    DirectX::XMFLOAT2 playerPos = {transform.lock()->GetPosition().x
+        ,transform.lock()->GetPosition().z};
+    DirectX::XMVECTOR playerPositionXZ = DirectX::XMLoadFloat2(&playerPos);
+    DirectX::XMFLOAT2 enemyPosXZ;
+    DirectX::XMVECTOR VectorXZ;
+    DirectX::XMVECTOR LengthSqDebug;
+
+    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
+    {
+        enemyPosXZ.x = enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition().x;
+        enemyPosXZ.y = enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition().z;
+        DirectX::XMVECTOR enemyPositionXZ = DirectX::XMLoadFloat2(&enemyPosXZ);
+
+        VectorXZ = DirectX::XMVectorSubtract(enemyPositionXZ, playerPositionXZ);
+
+        LengthSqDebug = DirectX::XMVector2Length(VectorXZ);
+
+
+        DirectX::XMStoreFloat(&debugLength, LengthSqDebug);
+    }
+}
+
 bool Player::InputMagicframe()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
@@ -2449,7 +2510,7 @@ bool Player::InputMagicframe()
                 // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
                 dist = d;
                 target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
-                target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
+                target.y += enemy.lock()->GetComponent<Collision>()->GetHeight() * 0.5f;// 位置に身長分
             }
         }
         // 弾丸初期化
@@ -2462,6 +2523,8 @@ bool Player::InputMagicframe()
         actor.lock()->GetComponent<Transform>()->SetPosition(position);
         actor.lock()->GetComponent<Transform>()->SetAngle(angle);
         actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+        actor.lock()->AddComponent<Collision>();
+        actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
         actor.lock()->AddComponent<BulletFiring>();
         actor.lock()->AddComponent<ProjectileHoming>();
         const char* effectFilename = "Data/Effect/fire.efk";
@@ -2484,6 +2547,8 @@ bool Player::InputMagicframe()
 bool Player::InputMagicIce()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
+   
+
     // mp消費
     mp.lock()->ApplyConsumption(magicConsumption);
     // 前方向 sinの計算
@@ -2522,7 +2587,7 @@ bool Player::InputMagicIce()
             // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
             dist = d;
             target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
-            target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
+            target.y += enemy.lock()->GetComponent<Collision>()->GetHeight() * 0.5f;// 位置に身長分
         }
     }
     // 弾丸初期化
@@ -2535,12 +2600,15 @@ bool Player::InputMagicIce()
     actor.lock()->GetComponent<Transform>()->SetPosition(position);
     actor.lock()->GetComponent<Transform>()->SetAngle(angle);
     actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+    actor.lock()->AddComponent<Collision>();
+    actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
     actor.lock()->AddComponent<BulletFiring>();
-    actor.lock()->AddComponent<ProjectileHoming>();
+    actor.lock()->AddComponent<ProjectileStraight>();
     const char* effectFilename = "Data/Effect/brezerd.efk";
-    actor.lock()->GetComponent<ProjectileHoming>()->SetEffectProgress(effectFilename);
-    int magicNumber = (int)ProjectileHoming::MagicNumber::Ice;
-    actor.lock()->GetComponent<ProjectileHoming>()->SetMagicNumber(magicNumber);
+    actor.lock()->GetComponent<ProjectileStraight>()->SetEffectProgress(effectFilename);
+    
+    //int magicNumber = (int)ProjectileHoming::MagicNumber::Ice;
+    //actor.lock()->GetComponent<ProjectileHoming>()->SetMagicNumber(magicNumber);
     // これが２Dかの確認
     bool check2d = false;
     actor.lock()->SetCheck2d(check2d);
@@ -2548,9 +2616,12 @@ bool Player::InputMagicIce()
     std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
     // 飛ぶ時間
     float   lifeTimer = 4.0f;
+
+
+
     // 発射
     projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
-    projectile.lock()->GetComponent<ProjectileHoming>()->SetTarget(target);
+    //projectile.lock()->GetComponent<ProjectileHoming>()->SetTarget(target);
     return true;
 }
 
@@ -2594,7 +2665,7 @@ bool Player::InputMagicLightning()
             // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
             dist = d;
             target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
-            target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
+            target.y += enemy.lock()->GetComponent<Collision>()->GetHeight() * 0.5f;// 位置に身長分
         }
     }
     // 弾丸初期化
@@ -2607,6 +2678,8 @@ bool Player::InputMagicLightning()
     actor.lock()->GetComponent<Transform>()->SetPosition(pos);
     actor.lock()->GetComponent<Transform>()->SetAngle(angle);
     actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+    actor.lock()->AddComponent<Collision>();
+    actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
     actor.lock()->AddComponent<BulletFiring>();
     actor.lock()->AddComponent<ProjectileSunder>();
     const char* effectFilename = "Data/Effect/lightningStrike.efk";
@@ -2676,7 +2749,7 @@ void Player::PushMagicFrame(DirectX::XMFLOAT3 angle)
             // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
             dist = d;
             target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
-            target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
+            target.y += enemy.lock()->GetComponent<Collision>()->GetHeight() * 0.5f;// 位置に身長分
         }
     }
     // 初期化
@@ -2690,6 +2763,8 @@ void Player::PushMagicFrame(DirectX::XMFLOAT3 angle)
         actor.lock()->GetComponent<Transform>()->SetPosition(position);
         actor.lock()->GetComponent<Transform>()->SetAngle(angle);
         actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+        actor.lock()->AddComponent<Collision>();
+        actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
         actor.lock()->AddComponent<BulletFiring>();
         actor.lock()->AddComponent<ProjectileFullHoming>();
         const char* effectFilename = "Data/Effect/fire.efk";
@@ -2717,9 +2792,10 @@ void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
     mp.lock()->ApplyConsumption(magicConsumption);
     // 前方向 sinの計算
     DirectX::XMFLOAT3 dir;
-    dir.x = sinf(angle.y);
+   /* dir.x = sinf(angle.y);
     dir.y = cosf(angle.x);
-    dir.z = cosf(angle.y);
+    dir.z = cosf(angle.y);*/
+    dir = GetForwerd(angle);
     // 発射位置（プレイヤーの腰当たり)
     DirectX::XMFLOAT3 pos;
     pos.x = position.x;
@@ -2752,7 +2828,7 @@ void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
         // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
         dist = d;
         target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
-        target.y += enemy.lock()->GetComponent<Transform>()->GetHeight() * 0.5f;// 位置に身長分
+        target.y += enemy.lock()->GetComponent<Collision>()->GetHeight() * 0.5f;// 位置に身長分
 
     }
     // 弾丸初期化
@@ -2760,17 +2836,32 @@ void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
     std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
     actor.lock()->AddComponent<ModelControll>();
     actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
-    actor.lock()->SetName("ProjectileFullHoming");
+    actor.lock()->SetName("ProjectileIce");
     actor.lock()->AddComponent<Transform>();
-    actor.lock()->GetComponent<Transform>()->SetPosition(position);
+    actor.lock()->GetComponent<Transform>()->SetPosition(pos);
+    actor.lock()->GetComponent<Transform>()->SpawnRandomInArea(randomPosMax, randomPosMin);
     actor.lock()->GetComponent<Transform>()->SetAngle(angle);
     actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+    pos = actor.lock()->GetComponent<Transform>()->GetPosition();
+    actor.lock()->AddComponent<Collision>();
+    actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
     actor.lock()->AddComponent<BulletFiring>();
-    actor.lock()->AddComponent<ProjectileFullHoming>();
+    actor.lock()->AddComponent<ProjectileStraight>();
     const char* effectFilename = "Data/Effect/brezerd.efk";
-    actor.lock()->GetComponent<ProjectileFullHoming>()->SetEffectProgress(effectFilename);
-    int magicNumber = (int)ProjectileFullHoming::MagicNumber::Ice;
-    actor.lock()->GetComponent<ProjectileFullHoming>()->SetMagicNumber(magicNumber);
+    actor.lock()->GetComponent<ProjectileStraight>()->SetEffectProgress(effectFilename);
+
+
+    effectFilename = "Data/Effect/flozeTime.efk";
+    actor.lock()->GetComponent<ProjectileStraight>()->SetEffectSpawned(effectFilename);
+    //int magicNumber = (int)ProjectileStraight::MagicNumber::Ice;
+    //actor.lock()->GetComponent<ProjectileFullHoming>()->SetMagicNumber(magicNumber);
+    //// 回転速度変更
+    //float migicIceTurnSpeed = DirectX::XMConvertToRadians(200);
+    //actor.lock()->GetComponent<ProjectileFullHoming>()->SetTurnSpeed(migicIceTurnSpeed);
+
+    //// 一時停止
+    //actor.lock()->GetComponent<ProjectileFullHoming>()->SetMovementCheck(iceMagicMoveCheck);
+
     // これが２Dかの確認
     bool check2d = false;
     actor.lock()->SetCheck2d(check2d);
@@ -2780,7 +2871,7 @@ void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
     float   lifeTimer = 4.0f;
     // 発射
     projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
-    projectile.lock()->GetComponent<ProjectileFullHoming>()->SetTarget(target);
+   // projectile.lock()->GetComponent<ProjectileFullHoming>()->SetTarget(target);
 }
 
 void Player::InputSpecialMagicframe()
@@ -2808,6 +2899,8 @@ void Player::InputSpecialMagicframe()
     actor.lock()->GetComponent<Transform>()->SetPosition(target);
     actor.lock()->GetComponent<Transform>()->SetAngle(angle);
     actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+    actor.lock()->AddComponent<Collision>();
+    actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
     actor.lock()->AddComponent<BulletFiring>();
     actor.lock()->AddComponent<ProjectileTornade>();
     const char* effectFilename = "Data/Effect/fireTornade.efk";
@@ -2838,12 +2931,12 @@ void Player::AttackCheckUI()
         {
             std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
             DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-            float enemyRudius = enemy.lock()->GetComponent<Transform>()->GetRadius() + 1;
-            float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
+            float enemyRudius = enemy.lock()->GetComponent<Collision>()->GetRadius() + 1;
+            float enemyHeight = enemy.lock()->GetComponent<Collision>()->GetHeight();
             //// 衝突処理
             DirectX::XMFLOAT3 outPositon;
             // 円柱と円
-            if (Collision::IntersectSphereVsCylinder(
+            if (collision.lock()->IntersectSphereVsCylinder(
                 position,
                 radius,
                 {
@@ -2969,14 +3062,14 @@ void Player::UiControlle(float elapsedTime)
     //　初期化
     if (uiHp.lock()->GetShakeEnd())
     {
-        float positionStandardBar = 593;
-        float positionStandard = 421;
+        //float positionStandardBar = 508;
+        //float positionStandard = 421;
         shakeMode = false;
-        int shakeTime = 0;
-        uiHp.lock()->SetShakeTime(shakeTime);
-        uiHpBar.lock()->SetShakeTime(shakeTime);
-        uiHp.lock()->SetPosition({ uiHp.lock()->GetPosition().x ,positionStandardBar });
-        uiHpBar.lock()->SetPosition({ uiHpBar.lock()->GetPosition().x ,positionStandard });
+        //int shakeTime = 0;
+        //uiHp.lock()->SetShakeTime(shakeTime);
+        //uiHpBar.lock()->SetShakeTime(shakeTime);
+        //uiHp.lock()->SetPosition({ uiHp.lock()->GetPosition().x ,positionStandardBar });
+        //uiHpBar.lock()->SetPosition({ uiHpBar.lock()->GetPosition().x ,positionStandard });
     
     }
 }
@@ -2990,8 +3083,8 @@ void Player::SpecialApplyDamageInRadius()
     {
         std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
         DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-        float enemyRudius = enemy.lock()->GetComponent<Transform>()->GetRadius();
-        float enemyHeight = enemy.lock()->GetComponent<Transform>()->GetHeight();
+        float enemyRudius = enemy.lock()->GetComponent<Collision>()->GetRadius();
+        float enemyHeight = enemy.lock()->GetComponent<Collision>()->GetHeight();
         ProjectileManager& projectileManager = ProjectileManager::Instance();
         for (int ii = 0; ii < projectileManager.GetProjectileCount(); ++ii)
         {
@@ -2999,13 +3092,13 @@ void Player::SpecialApplyDamageInRadius()
             if (!projectile.lock()->GetComponent<ProjectileTornade>()) return;
             // 魔法位置
             DirectX::XMFLOAT3 magicPosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
-            float magicRadius = projectile.lock()->GetComponent<Transform>()->GetRadius();
-            float magicHeight = projectile.lock()->GetComponent<Transform>()->GetHeight();
+            float magicRadius = projectile.lock()->GetComponent<Collision>()->GetRadius();
+            float magicHeight = projectile.lock()->GetComponent<Collision>()->GetHeight();
             //// 衝突処理
             DirectX::XMFLOAT3 outPositon;
             // 下半身
             // 円柱と円
-            if (Collision::IntersectCylinderVsCylinder(
+            if (collision.lock()->IntersectCylinderVsCylinder(
                 magicPosition,
                 magicRadius,
                 magicHeight,

@@ -90,11 +90,18 @@ public:
 	//アニメーション再生
 	void PlayUpeerBodyAnimation(ModelAnim animeRule);
 
+
+	// アニメーション途中でアニメーション再生ルールを変える。
+	void UpeerBodyAnimationRuleChanger(float currentAnimationUpperAddSeconds = 0);
+
 	//アニメーション再生
 	void PlayLowerBodyAnimation(int index, bool loop, float blendSeconds = 0.2f);
 
 	// アニメーション再生
 	void PlayAnimation(ModelAnim animeRule);
+
+	// アニメーション途中でアニメーション再生ルールを変える。
+	void AnimationRuleChanger(float currentAnimationAddSeconds = 0);
 
 	//逆再生アニメーション
 	void PlayReverseAnimation(ModelAnim animeRule);

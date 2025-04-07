@@ -1220,6 +1220,11 @@ void Model::PlayUpeerBodyAnimation(ModelAnim animeRule)
 	this->keyFrameEndUpper = animeRule.keyFrameEnd;
 }
 
+void Model::UpeerBodyAnimationRuleChanger(float currentAnimationUpperAddSeconds)
+{
+	this->currentAnimationUpperAddSeconds = currentAnimationUpperAddSeconds;
+}
+
 void Model::PlayLowerBodyAnimation(int index, bool loop, float blendSeconds)
 {
 	currentAnimationIndex = index;
@@ -1241,6 +1246,12 @@ void Model::PlayAnimation(ModelAnim animeRule)
 	animationBlendSeconds = animeRule.blendSeconds;
 	this->currentAnimationAddSeconds = animeRule.currentAnimationAddSeconds;
 	this->keyFrameEnd = animeRule.keyFrameEnd;
+}
+
+// アニメーション途中でアニメーション再生ルールを変える。
+void Model::AnimationRuleChanger(float currentAnimationAddSeconds)
+{
+	this->currentAnimationAddSeconds = currentAnimationAddSeconds;
 }
 
 void Model::PlayReverseAnimation(ModelAnim animeRule)

@@ -31,6 +31,9 @@ public:
 
     void SetTarget(DirectX::XMFLOAT3 target) { this->target = target; }
 
+    // 回転速度
+    void SetTurnSpeed(float turnSpeed) { this->turnSpeed = turnSpeed; }
+
     // エフェクト更新
     void SetEffectProgress(const char* storageLocation)
     {

@@ -33,13 +33,18 @@ void ProjectileTornade::Start()
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
 
     // 当たり判定を共有
-    GetActor()->GetComponent<Transform>()->SetRadius(radius);
+    //GetActor()->GetComponent<Transform>()->SetRadius(radius);
+    // 当たり判定を共有
+    radius = GetActor()->GetComponent<Collision>()->GetRadius();
 
     // 銃移動のコンポーネント
     bulletFiring = GetActor()->GetComponent<BulletFiring>();
 
     // トランスフォーム取得
     transform = GetActor()->GetComponent<Transform>();
+
+    // コリジョン取得
+    collision = GetActor()->GetComponent<Collision>();
 
     if (effectProgress)
         effectProgress->Play(transform->GetPosition(), 1); 
@@ -74,7 +79,7 @@ void ProjectileTornade::DrawDebugPrimitive()
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
     // 今は何も表示しない
         //// 衝突判定用のデバッグ球を描画
-    debugRenderer->DrawCylinder(transform->GetPosition(), radius, transform->GetHeight(), DirectX::XMFLOAT4(0, 0, 1, 1));
+    debugRenderer->DrawCylinder(transform->GetPosition(), radius, collision.lock()->GetHeight(), DirectX::XMFLOAT4(0, 0, 1, 1));
 }
 
 void ProjectileTornade::EffectProgressPlay()

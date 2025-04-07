@@ -10,6 +10,9 @@ public:
     // ‰Šú‰»
     virtual void Initialize() = 0;
 
+    // n‚ß
+    virtual void Start() = 0;
+
     // I—¹‰»
     virtual void Finalize() = 0;
 

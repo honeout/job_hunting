@@ -20,6 +20,9 @@ public:
     // 初期化
     void Initialize() override;
 
+	// スタート
+	void Start() override;
+
     // 終了化
     void Finalize() override;
     // 更新処理

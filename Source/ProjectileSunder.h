@@ -2,6 +2,7 @@
 
 #include "Graphics//Model.h"
 #include "Component.h"
+#include "Collision.h"
 #include "BulletFiring.h"
 #include "ModelControll.h"
 #include "Transform.h"

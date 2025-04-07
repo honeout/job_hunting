@@ -77,6 +77,9 @@ public:
         Push2,
         PushShort,
         ShortCut,
+        OperationInstructionsSelect,
+        OperationInstructionsButton,
+        OperationInstructionsRBLB,
     };
 
     enum class UiCountTitle
@@ -100,6 +103,54 @@ public:
     enum class UiCountGameCler
     {
         GameClerSprite = 0,
+        Start,
+        Title,
+        Push,
+        Select,
+    };
+
+private:
+    // ui取得
+    std::vector<std::shared_ptr<Actor>>   uies;
+    // 特定ui削除登録
+    std::set<std::shared_ptr<Actor>>       removes;
+};
+
+
+// uiマネージャー
+class UiLoadingManager// 複数の弾がん球数
+{
+public:
+
+    UiLoadingManager() {};
+    // 誰が持つか分からないから複数の奴が別々に持つかもしれない
+    ~UiLoadingManager() {};
+
+    // インスタンス取得
+    static UiLoadingManager& Instance()
+    {
+        static UiLoadingManager instance;
+        return instance;
+    }
+
+    // ui登録
+    void Register(std::shared_ptr<Actor> ui);
+
+    // ui全削除
+    void Clear();
+
+    // ui数取得
+    int GetUiesCount() const { return static_cast<int> (uies.size()); }
+
+    // ui取得
+    std::shared_ptr<Actor> GetUies(int index) { return uies.at(index); }
+
+    // ui削除
+    void Remove(std::shared_ptr<Actor> ui);
+public:
+    enum class UiCountLoading
+    {
+        LodingIcon = 0,
         Start,
         Title,
         Push,

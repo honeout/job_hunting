@@ -112,6 +112,60 @@ public:
 	void Render2D(RenderContext rc, SpriteShader* shader);
 	// 全削除
 	void Clear();
+
+	// 数取得
+	int GetStartCount() const { return static_cast<int>(startActors.size()); }
+	int GetCount() const { return static_cast<int>(updateActors.size()); }
+private:
+#ifdef _DEBUG
+	void DrawLister();
+	void DrawDetail();
+#endif // _DEBUG
+private:
+	std::vector<std::shared_ptr<Actor>>		startActors;
+	std::vector<std::shared_ptr<Actor>>		updateActors;
+	std::set<std::shared_ptr<Actor>>		selectionActors;
+	std::set<std::shared_ptr<Actor>>		removeActors;
+	bool					hiddenLister = false;
+	bool					hiddenDetail = false;
+};
+
+
+// loadアクターマネージャー
+class ActorSceneLoadManager
+{
+private:
+	ActorSceneLoadManager() {};
+	~ActorSceneLoadManager() {};
+public:
+	// インスタンス取得
+	static ActorSceneLoadManager& Instance()
+	{
+		static ActorSceneLoadManager instance;
+		return instance;
+	}
+
+	// 作成
+	std::shared_ptr<Actor> Create();
+
+	// 一つづつ削除
+	void Remove(std::shared_ptr<Actor> actor);
+
+	// 更新
+	void Update(float elapsedTime);
+
+	// 3D描画
+	void Render(RenderContext rc, ModelShader* shader);
+	void Render(RenderContext rc, SpriteShader* shader);
+
+	void RenderGui();
+
+	// 2D描画
+	void Render2D(RenderContext rc, SpriteShader* shader);
+	// 全削除
+	void Clear();
+	// 数取得
+	int GetCount() const { return static_cast<int>(updateActors.size()); }
 private:
 #ifdef _DEBUG
 	void DrawLister();

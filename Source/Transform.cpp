@@ -1,5 +1,6 @@
 #include <imgui.h>
 #include "Transform.h"
+#include "Mathf.h"
 
 Transform::Transform()
 {
@@ -74,6 +75,23 @@ void Transform::OnGUI()
     ImGui::InputFloat3("Position", &position.x);
     ImGui::InputFloat3("Angle", &angle.x);
     ImGui::InputFloat3("Scale", &scale.x);
+}
+
+void Transform::SpawnRandomInArea(DirectX::XMFLOAT3 maxPos, DirectX::XMFLOAT3 minPos)
+{
+	//// Maxポジション
+	//maxPos.x += position.x;
+	//maxPos.y += position.y;
+	//maxPos.z += position.z;
+
+	//// Minポジション
+	//minPos.x += position.x;
+	//minPos.y += position.y;
+	//minPos.z += position.z;
+
+	position.x += Mathf::RandomRange(minPos.x, maxPos.x);
+	position.y += Mathf::RandomRange(minPos.y, maxPos.y);
+	position.z += Mathf::RandomRange(minPos.z, maxPos.z);
 }
 
 #endif // _DEBUG
