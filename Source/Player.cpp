@@ -1069,18 +1069,25 @@ bool Player::InputSelectMagicCheck()
 
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUiEmpth);
     }
+    // ショートカットキー炎選択
     if (InputShortCutkeyMagic() &&
         gamePad.GetButtonDown() & GamePad::BTN_B )
     {
         selectMagicCheck = (int)CommandMagic::Fire;
         std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::Push)->GetComponent<Ui>();
+        // 選択Icon表示と位置の調整を想定して変えておく
         std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::Push)->GetComponent<TransForm2D>();
-        DirectX::XMFLOAT2 pos = { 179, 340 };
+        // ショートカット魔法炎の位置
+        std::weak_ptr<TransForm2D> uiIdFireShortCutCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutFire)->GetComponent<TransForm2D>();
+        //DirectX::XMFLOAT2 pos = { 179, 340 };
+        DirectX::XMFLOAT2 pos = uiIdFireShortCutCheckPos.lock()->GetPosition();
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUi);
         uiIdAttackCheckPos.lock()->SetPosition(pos);
     }
+    // ショートカットキー雷選択
     if (InputShortCutkeyMagic() &&
         gamePad.GetButtonDown() & GamePad::BTN_X)
     {
@@ -1089,10 +1096,14 @@ bool Player::InputSelectMagicCheck()
             (int)UiManager::UiCount::Push)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::Push)->GetComponent<TransForm2D>();
-        DirectX::XMFLOAT2 pos = { 179, 440 };
+        // ショートカット魔法雷の位置
+        std::weak_ptr<TransForm2D> uiIdSunderShortCutCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutSunder)->GetComponent<TransForm2D>();
+        DirectX::XMFLOAT2 pos = uiIdSunderShortCutCheckPos.lock()->GetPosition();
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUi);
         uiIdAttackCheckPos.lock()->SetPosition(pos);
     }
+    // ショートカットキー回復選択
     if (InputShortCutkeyMagic() &&
         gamePad.GetButtonDown() & GamePad::BTN_Y )
     {
@@ -1101,10 +1112,14 @@ bool Player::InputSelectMagicCheck()
             (int)UiManager::UiCount::Push)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::Push)->GetComponent<TransForm2D>();
-        DirectX::XMFLOAT2 pos = { 200, 640 };
+        // ショートカット魔法回復の位置
+        std::weak_ptr<TransForm2D> uiIdHealeShortCutCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutKeule)->GetComponent<TransForm2D>();
+        DirectX::XMFLOAT2 pos = uiIdHealeShortCutCheckPos.lock()->GetPosition();
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUi);
         uiIdAttackCheckPos.lock()->SetPosition(pos);
     }
+    // ショートカットキー氷選択
     if (InputShortCutkeyMagic() &&
         gamePad.GetButtonDown() & GamePad::BTN_A )
     {
@@ -1113,7 +1128,10 @@ bool Player::InputSelectMagicCheck()
             (int)UiManager::UiCount::Push)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::Push)->GetComponent<TransForm2D>();
-        DirectX::XMFLOAT2 pos = { 179, 540 };
+        // ショートカット魔法氷の位置
+        std::weak_ptr<TransForm2D> uiIdIceShortCutCheckPos = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandShortCutIce)->GetComponent<TransForm2D>();
+        DirectX::XMFLOAT2 pos = uiIdIceShortCutCheckPos.lock()->GetPosition();
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUi);
         uiIdAttackCheckPos.lock()->SetPosition(pos);
     }

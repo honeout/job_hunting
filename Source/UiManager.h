@@ -151,10 +151,12 @@ public:
     enum class UiCountLoading
     {
         LodingIcon = 0,
+        NowLoading,
+        GameStart,
+        Control,
+        ControlPC,
         Start,
-        Title,
-        Push,
-        Select,
+        Button,
     };
 
 private:

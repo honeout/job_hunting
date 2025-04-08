@@ -59,6 +59,7 @@ private:
     DirectX::XMFLOAT3 minPos = { 0.0f,0.0f,0.0f };
     DirectX::XMFLOAT3 maxPos = { 0.0f,0.0f,0.0f };
 
+    // actorManagerÇ™ÇPà»è„Ç»ÇÁ
     int sceneGameCountMin = 1;
 
     std::unique_ptr<Scene> currentScene;
