@@ -155,6 +155,7 @@ void GamePad::Update()
 
 		if (GetAsyncKeyState('T') & 0x8000)	newButtonState |= BTN_RIGHT_SHOULDER;
 		if (GetAsyncKeyState(VK_CONTROL) & 0x8000)	newButtonState |= BTN_LEFT_SHOULDER;
+		if (GetAsyncKeyState('C') & 0x8000)	newButtonState |= BTN_LEFT_TRIGGER;
 
 #if 0
 		if (newButtonState & BTN_UP)    ly = 1.0f;

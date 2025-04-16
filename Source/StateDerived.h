@@ -820,8 +820,6 @@ public:
 	void Execute(float elapsedTime)override;
 	// ステートから出ていくときのメソッド
 	void Exit()override;
-
-	void RotateBullet(float elapsedTime);
 private:
 	std::unique_ptr<Effect> charge;
 	std::unique_ptr<Effect> chargeComplet;
@@ -1011,11 +1009,15 @@ private:
 	float               speed = 4.5f;
 	float               flySpeed = 3.0f;
 
+	float				rotateSpeed = 2.0f;
+
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 	Model::ModelAnim modelAnimUpper;
 	// 可速度
 	float addHeight = 1.0f;
+	// 回転ベクトル
+	DirectX::XMFLOAT3 rotateVec;
 };
 
 // 反射ステートオブジェクト

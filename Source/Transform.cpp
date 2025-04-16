@@ -76,7 +76,7 @@ void Transform::OnGUI()
     ImGui::InputFloat3("Angle", &angle.x);
     ImGui::InputFloat3("Scale", &scale.x);
 }
-
+#endif // _DEBUG
 void Transform::SpawnRandomInArea(DirectX::XMFLOAT3 maxPos, DirectX::XMFLOAT3 minPos)
 {
 	//// Maxƒ|ƒWƒVƒ‡ƒ“
@@ -94,4 +94,3 @@ void Transform::SpawnRandomInArea(DirectX::XMFLOAT3 maxPos, DirectX::XMFLOAT3 mi
 	position.z += Mathf::RandomRange(minPos.z, maxPos.z);
 }
 
-#endif // _DEBUG

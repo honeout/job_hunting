@@ -23,7 +23,6 @@ public:
 	static const GamePadButton BTN_RIGHT_SHOULDER	= (1 << 13);
 	static const GamePadButton BTN_LEFT_TRIGGER		= (1 << 14);
 	static const GamePadButton BTN_RIGHT_TRIGGER	= (1 << 15);
-
 public:
 	GamePad() {}
 	~GamePad() {}
@@ -83,7 +82,7 @@ private:
 	int					slot = 0;
 
 	// 先行入力最大保存値
-	static const int MAX_INPUT_KEY = 60;
+	static const int MAX_INPUT_KEY = 10;
 	// コマンド操作用
 	GamePadButton							inputKeys[MAX_INPUT_KEY];
 

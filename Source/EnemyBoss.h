@@ -397,7 +397,7 @@ private:
     int applyDamageStamp = 6;
     int applyDamageImpact = 5;
     int applyDamageDush = 7;
-    float nuckleInvincibleTime = 1.0f;
+    float nuckleInvincibleTime = 0.5f;
     float jampInvincibleTime = 1.0f;
     float impactInvincibleTime = 0.5f;
 
@@ -410,6 +410,9 @@ private:
 
     // シェイク用
     RadialBlurData damageDistortion;
+
+    bool isPlayerStopMove;
+    bool isPlayerStopFall;
 };
 
 // エネミーマネージャー

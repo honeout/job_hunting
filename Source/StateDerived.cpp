@@ -387,9 +387,11 @@ void JumpState::Execute(float elapsedTime)
 		// ラジアルブラー
 		radialBlurData.radius = 30;
 		postprocessingRenderer.SetRadialBlurData(radialBlurData);
+		 // 左足当たり判定
+		enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamageJumpStart);
 	}
 	// 左足当たり判定
-	enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamageJumpStart);
+	//enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamageJumpStart);
 }
 // 終了処理
 void JumpState::Exit()
@@ -826,14 +828,14 @@ void PlayerIdleState::Execute(float elapsedTime)
 	// ロックオン処理
 	playerid.lock()->UpdateCameraState(elapsedTime);
 	// 移動入力処理
-	if (playerid.lock()->InputMove(elapsedTime))
+	if (playerid.lock()->InputMove())
 	{
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 	}
-	// 反射入力処理
+	// 回避入力処理
 	if (playerid.lock()->InputAvoidance())
 	{
-		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Reflection));
+		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 	}
 	// ジャンプ入力処理
 	if (playerid.lock()->InputJump())
@@ -873,7 +875,7 @@ void PlayerMovestate::Execute(float elapsedTime)
 	// ロックオン処理
 	playerid.lock()->UpdateCameraState(elapsedTime);
 	// 移動入力処理
-	if (!playerid.lock()->InputMove(elapsedTime))
+	if (!playerid.lock()->InputMove())
 	{
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 	}
@@ -920,7 +922,7 @@ void PlayerJumpState::Execute(float elapsedTime)
 	// ロックオン処理
 	playerid.lock()->UpdateCameraState(elapsedTime);
 	// 移動
-	if (playerid.lock()->InputMove(elapsedTime))
+	if (playerid.lock()->InputMove())
 	{
 		playerid.lock()->GetMoveVec(elapsedTime);
 	}
@@ -940,7 +942,7 @@ void PlayerJumpState::Execute(float elapsedTime)
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Land));
 	}
 	// 着地移動
-	if (moveid.lock()->GetOnLadius() && playerid.lock()->InputMove(elapsedTime))
+	if (moveid.lock()->GetOnLadius() && playerid.lock()->InputMove())
 	{
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 	}
@@ -974,7 +976,7 @@ void PlayerLandState::Execute(float elapsedTime)
 	// ロックオン処理
 	playerid.lock()->UpdateCameraState(elapsedTime);
 	// 歩き
-	if (playerid.lock()->InputMove(elapsedTime))
+	if (playerid.lock()->InputMove())
 	{
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 	}
@@ -1018,7 +1020,7 @@ void PlayerJumpFlipState::Execute(float elapsedTime)
 	// ロックオン処理
 	playerid.lock()->UpdateCameraState(elapsedTime);
 	// 移動
-	if (playerid.lock()->InputMove(elapsedTime))
+	if (playerid.lock()->InputMove())
 	{
 		bool afterimagemove = true;
 	}
@@ -1104,7 +1106,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	}
 
 	// 回避
-	if (playerid.lock()->InputAvoidance() && playerid.lock()->InputMove(elapsedTime))
+	if (playerid.lock()->InputAvoidance() && playerid.lock()->InputMove())
 	{
 		bool stop = false;
 		moveid.lock()->SetStopMove(stop);
@@ -1205,6 +1207,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 				Model::ModelAnim modelAnimUpperBody;
 				modelAnim.index = Player::Anim_Jump;
 				modelAnimUpperBody.index = Player::Anim_Slash;
+				modelAnimUpperBody.currentAnimationAddSeconds = 0.033f;
 				modelAnim.loop = true;
 				modelAnim.currentAnimationAddSeconds = 0.03f;
 				// アニメーション再生
@@ -1222,7 +1225,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 				// アニメーションルール
 				Model::ModelAnim modelAnim;
 				modelAnim.index = Player::Animation::Anim_Slash;
-				modelAnim.currentAnimationAddSeconds = 0.03f;
+				modelAnim.currentAnimationAddSeconds = 0.033f;
 				// アニメーション再生
 				model->PlayAnimation(modelAnim);
 				// 攻撃三回で一度強制終了
@@ -1378,7 +1381,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 		}
 	}
 	// 回避
-	if (playerid.lock()->InputAvoidance() && playerid.lock()->InputMove(elapsedTime))
+	if (playerid.lock()->InputAvoidance() && playerid.lock()->InputMove())
 	{
 		bool stop = false;
 		moveid.lock()->SetStopMove(stop);
@@ -1476,7 +1479,7 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	// ロックオン処理
 	playerid.lock()->UpdateCameraState(elapsedTime);
 	// 回避
-	if (playerid.lock()->InputAvoidance() && playerid.lock()->InputMove(elapsedTime))
+	if (playerid.lock()->InputAvoidance() && playerid.lock()->InputMove())
 	{
 		bool stop = false;
 		moveid.lock()->SetStopMove(stop);
@@ -2074,20 +2077,20 @@ void PlayerMagicState::Execute(float elapsedTime)
 		DirectX::XMStoreFloat(&length, lengthSqXM);
 	}
 
-	// 魔法内ながら移動
-	if (playerid.lock()->InputMove(elapsedTime) && !isMove
-		&& magicType != (int)Player::CommandMagic::Heale)
-	{
-		bool stop = false;
-		moveid.lock()->SetStopMove(stop);
-		// 移動値
-		playerid.lock()->GetMagicMoveVec(elapsedTime);
-	}
-	else
-	{
-		// 入った瞬間から移動していないといみなし
-		isMove = true;
-	}
+	//// 魔法内ながら移動
+	//if (playerid.lock()->InputMove() && !isMove
+	//	&& magicType != (int)Player::CommandMagic::Heale)
+	//{
+	//	bool stop = false;
+	//	moveid.lock()->SetStopMove(stop);
+	//	// 移動値
+	//	playerid.lock()->GetMagicMoveVec(elapsedTime);
+	//}
+	//else
+	//{
+	//	// 入った瞬間から移動していないといみなし
+	//	isMove = true;
+	//}
 
 	// 相手の方を向く
 	// 回転
@@ -2309,13 +2312,8 @@ void PlayerMagicState::Exit()
 	bool stopFall = false;
 	moveid.lock()->SetStopFall(stopFall);
 
-	// 魔法選択UI解除
-	playerid.lock()->RemoveUIMagic();
-}
-
-void PlayerMagicState::RotateBullet(float elapsedTime)
-{
-
+	//// 魔法選択UI解除
+	//playerid.lock()->RemoveUIMagic();
 }
 
 void PlayerSpecialMagicState::Enter()
@@ -2549,7 +2547,7 @@ void PlayerDamageState::Enter()
 	// 歩き許可
 	bool stopMove = false;
 	moveid.lock()->SetStopMove(stopMove);
-	// 重力オフ
+	// 重力オン
 	bool stopFall = false;
 	moveid.lock()->SetStopFall(stopFall);
 	modelAnim.index = Player::Animation::Anim_Pain;
@@ -2694,8 +2692,19 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 			transformid.lock()->GetPosition().y + addHeight,
 			transformid.lock()->GetPosition().z
 		});
+	// 回転
+	if (animationTime <= 0.5f)
+	{
+		// 入力情報を取得
+		GamePad& gamePad = Input::Instance().GetGamePad();
+		rotateVec.x = gamePad.GetAxisLX();
+		rotateVec.y = 0.0f;
+		rotateVec.z = gamePad.GetAxisLY();
+
+		moveid.lock()->Turn(rotateVec, rotateSpeed, elapsedTime);
+	}
 	// 地上ダッシュ
-	if (animationTime >= 0.7f && animationTime <= 0.8f && moveid.lock()->GetOnLadius())
+	if (animationTime >= 0.7f && animationTime <= 0.8f)
 	{
 		DirectX::XMFLOAT3 impulse =
 		{
@@ -2705,19 +2714,19 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 		};
 		moveid.lock()->AddImpulse(impulse);
 	}
-	// 空中ダッシュ
-	if (animationTime >= 0.7f  && animationTime <= 0.8f && !moveid.lock()->GetOnLadius())
-	{
-		DirectX::XMFLOAT3 impulse =
-		{
-			dir.x * flySpeed,
-			0,
-			dir.z * flySpeed,
-		};
-		moveid.lock()->AddImpulse(impulse);
-	}
+	//// 空中ダッシュ
+	//if (animationTime >= 0.7f  && animationTime <= 0.8f && !moveid.lock()->GetOnLadius())
+	//{
+	//	DirectX::XMFLOAT3 impulse =
+	//	{
+	//		dir.x * flySpeed,
+	//		0,
+	//		dir.z * flySpeed,
+	//	};
+	//	moveid.lock()->AddImpulse(impulse);
+	//}
 	// アニメーションダッシュ後通常移動
-	if (animationTime >= 1.0f && owner.lock()->GetComponent<Player>()->InputMove(elapsedTime))
+	if (animationTime >= 1.0f && owner.lock()->GetComponent<Player>()->InputMove())
 	{
 		owner.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 	}

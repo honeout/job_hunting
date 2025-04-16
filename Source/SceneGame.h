@@ -176,4 +176,8 @@ private:
 	DirectX::XMFLOAT2 debugPush2Scale = { 300,204 };
 	DirectX::XMFLOAT2 debugShortCutScale = { 300,204 };
 	DirectX::XMFLOAT2 debugShortPushScale = { 82.0f,49.0f };
+
+	// ‚QD•`‰æ‚³‚¹‚é‚©‚Ç‚¤‚©
+	bool DrawUi = true;
+	bool DrawUiEmpth = false;
 };

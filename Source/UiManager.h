@@ -14,9 +14,15 @@ public:
     ~UiManager() {};
 
     // インスタンス取得
+#if defined(_DEBUG)
+    inline static UiManager* debug_instance;
+#endif
     static UiManager& Instance()
     {
         static UiManager instance;
+#if defined(_DEBUG)
+        debug_instance = &instance;
+#endif
         return instance;
     }
 
@@ -39,10 +45,13 @@ public:
     {
         PlayerHp = 0,
         EnemyHp,
+        SpecialBox,
         PlayerCommandAttack,
         PlayerCommandMagick,
         PlayerCommandAttackCheck,
         PlayerCommandMagickCheck,
+        PlayerCommandSpecial,
+        PlayerCommandSpecialCheck,
         PlayerCommandFire,
         PlayerCommandFireCheck,
         PlayerCommandRigtning,
@@ -51,13 +60,12 @@ public:
         PlayerCommandIceCheck,
         PlayerCommandHeale,
         PlayerCommandHealeCheck,
+        PlayerComandSpeciulChargeBox,
         PlayerCommandSpeciulCharge01,
         PlayerCommandSpeciulCharge02,
         PlayerCommandSpeciulCharge03,
         PlayerCommandSpeciulShurashu,
-        PlayerCommandSpeciulShurashuPushu,
         PlayerCommandSpeciulFrame,
-        PlayerCommandSpeciulFramePushu,
         PlayerCommandSpeciulIce,
         PlayerCommandSpeciulThander,
         PlayerHPBar,
@@ -75,11 +83,14 @@ public:
         PlayerCommandShortCutKeule,
         Push,
         Push2,
-        PushShort,
         ShortCut,
+        PushShort,
         OperationInstructionsSelect,
         OperationInstructionsButton,
-        OperationInstructionsRBLB,
+        ButtonY,
+        CommandDisabled01,
+        CommandDisabled02,
+        //OperationInstructionsRBLB,
     };
 
     enum class UiCountTitle
@@ -157,6 +168,7 @@ public:
         ControlPC,
         Start,
         Button,
+        Debug,
     };
 
 private:

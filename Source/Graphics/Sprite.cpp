@@ -1,6 +1,7 @@
 #include <stdio.h> 
 #include <WICTextureLoader.h>
 #include "Sprite.h"
+#include "TransForm2D.h"
 #include "Misc.h"
 #include "Graphics/Graphics.h"
 
@@ -330,6 +331,12 @@ void Sprite::Update(float dx, float dy, float dw, float dh, float sx, float sy, 
 	}
 }
 
+#ifdef _DEBUG
+void Sprite::OnGUI()
+{
+}
+#endif // _DEBUG
+
 // •`‰æŽÀs
 void Sprite::Render(ID3D11DeviceContext *immediate_context,
 	float dx, float dy,
@@ -444,6 +451,57 @@ void Sprite::Render(ID3D11DeviceContext *immediate_context,
 		// •`‰æ
 		immediate_context->Draw(4, 0);
 	}
+}
+
+void Sprite::AddAnim(const AnimClip& clip)
+{
+	animationClips[clip.name] = clip;
+}
+
+void Sprite::PlayAnimation(const std::string& name, bool forceRestart)
+{
+	auto it = animationClips.find(name);
+	if (it != animationClips.end()) {
+		currentClip = &it->second;
+		currentFrameIndex = 0;
+		frameTimer = 0.0f;
+	}
+}
+
+void Sprite::UpdateAnimation(float elapsedTime)
+{
+	if (!currentClip) return;
+
+	std::weak_ptr<Actor> actor = GetActor();
+
+	frameTimer += elapsedTime;
+	for (; frameTimer >= currentClip->frames[currentFrameIndex].duration;)
+	{
+		frameTimer -= currentClip->frames[currentFrameIndex].duration;
+		currentFrameIndex++;
+
+		if (currentFrameIndex >= currentClip->frames.size()) {
+			DirectX::XMFLOAT2 pos;
+			pos.x = currentClip->frames.at(currentFrameIndex).rect.left;
+			pos.y = 0.0f;
+			
+			actor.lock()->GetComponent<TransForm2D>()->SetTexPosition(pos);
+
+			// Œ³‚Ì‘å‚«‚³
+			DirectX::XMFLOAT2 texScale;
+			texScale.x = currentClip->frames.at(currentFrameIndex).rect.right;
+			texScale.y = currentClip->frames.at(currentFrameIndex).rect.bottom;
+			actor.lock()->GetComponent<TransForm2D>()->SetTexScale(texScale);
+
+			if (currentClip->isLooping)
+				currentFrameIndex = 0;
+			else
+				currentFrameIndex = static_cast<int>(currentClip->frames.size()) - 1;
+			
+			
+		}
+	}
+
 }
 
 void Sprite::SetShaderResourceView(const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& srv, int texWidth, int texHeight)

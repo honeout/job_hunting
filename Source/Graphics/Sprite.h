@@ -1,7 +1,12 @@
 #pragma once
 #include <wrl.h>
 #include <d3d11.h>
+#include <map>
 #include <DirectXMath.h>
+#include <string>
+#include <vector>
+#include "Sprite.h"
+#include "Component.h"
 
 // スプライト
 class Sprite
@@ -9,7 +14,9 @@ class Sprite
 public:
 	Sprite();
 	Sprite(const char* filename);
-	~Sprite() {}
+    ~Sprite() {}
+
+
 
 	struct Vertex
 	{
@@ -36,6 +43,31 @@ public:
 		float angle,
 		float r, float g, float b, float a) const;
 
+	// アニメーションフレーム
+	struct AnimFrame
+	{
+		// 描画領域(UV短形)
+		RECT rect;
+		// このアニメーションの再生時間
+		float duration;
+	};
+
+	// アニメーションの種類
+	struct AnimClip
+	{
+		std::string name;
+		std::vector<AnimFrame> frames;
+		bool isLooping;
+	};
+
+	// アニメーションの追加
+	void AddAnim(const AnimClip& clip);
+
+	// アニメーションの選択
+	void PlayAnimation(const std::string& name, bool forceRestart = false);
+	
+	// スプライトのアニメーション再生
+	void UpdateAnimation(float elapsedTime);
 
 	// シェーダーリソースビューの設定
 	void SetShaderResourceView(const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& srv, int texWidth, int texHeight);
@@ -69,4 +101,10 @@ private:
 
 	int textureWidth = 0;
 	int textureHeight = 0;
+
+	// アニメーションの種類
+	std::map<std::string, AnimClip> animationClips;
+	const AnimClip* currentClip = nullptr;
+	int currentFrameIndex = 0;
+	float frameTimer = 0.0f;
 };

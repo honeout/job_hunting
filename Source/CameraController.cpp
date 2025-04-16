@@ -404,7 +404,6 @@ void CameraController::OnFreeSelectMode(void* data)
 		angle.x = atan2f(sinf(angle.x), cosf(angle.x));
 	}
 	this->mode = Mode::FreeSelectCamera;
-	this->position.y = -2.0f;
 	this->newTarget = p->target;
 	this->newTarget.y += 0.01f;
 }
@@ -426,7 +425,6 @@ void CameraController::OnFreeMode(void* data)
 		angle.x = atan2f(sinf(angle.x), cosf(angle.x));
 	}
 	this->mode = Mode::FreeCamera;
-	this->position.y = -2.0f;
 	this->newTarget = p->target;
 	this->newTarget.y += 0.01f;
 }

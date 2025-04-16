@@ -74,6 +74,11 @@ void SceneLoading::Update(float elapsedTime)
 
     ActorSceneLoadManager::Instance().Update(elapsedTime);
 
+    UiLoadingManager::Instance().GetUies(
+        (int)UiLoadingManager::UiCountLoading::Debug)->GetComponent<SpriteControll>()->GetSprite()
+        ->UpdateAnimation(elapsedTime);
+    
+
     // ゲームスタート準備完了UI表示
     if (nextScene->IsReady())
     {

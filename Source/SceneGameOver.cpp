@@ -455,6 +455,16 @@ void SceneGameOver::InitializeComponent()
 		maxPos.y = 3.625f;
 		maxPos.z = 30;
 	}
+	// 行動範囲
+	{
+		minPos.x = -30;
+		minPos.y = -3.525f;
+		minPos.z = -30;
+
+		maxPos.x = 30;
+		maxPos.y = 3.625f;
+		maxPos.z = 30;
+	}
 
 	// ステージ初期化
 	{
@@ -785,7 +795,7 @@ void SceneGameOver::SelectScene()
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
 		{
 			//　シーン変更
-			SceneManager::Instance().ChangeScene(new SceneTitle);
+			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
 		}
 
 		break;

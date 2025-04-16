@@ -294,12 +294,14 @@ void Movement::UpdateVerticalMove( float elapsedTime)
         }
         else
         {
-            // 着地
-            if (!isGround)
-            {
+            //// 着地
+            //if (!isGround)
+            //{
 
-                OnLanding();
-            }
+            //    OnLanding();
+            //}
+            // 着地したからリセット
+            jumpCount = jumpCountMin;
             isGround = true;
             onLadius = true;
             velocity.y = 0.0f;

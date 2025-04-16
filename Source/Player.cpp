@@ -118,6 +118,15 @@ void Player::Start()
     moveSpeedAnimation = 0.0f;
     // 特殊アクション発動不
     specialAttackTime = false;
+    // 必殺技初期化斬撃
+    SpecialAttack specialAttackInitialize;
+    specialAttackInitialize.id = (int)SpecialAttackType::Attack;
+    specialAttackInitialize.hasSkill = isSkillHave;
+    specialAttack.push_back(specialAttackInitialize);
+    // 必殺技初期化魔法火
+    specialAttackInitialize.id = (int)SpecialAttackType::MagicFire;
+    specialAttackInitialize.hasSkill = isSkillHave;
+    specialAttack.push_back(specialAttackInitialize);
     // 揺れモード
     shakeMode = false;
     // 回転確認
@@ -204,7 +213,7 @@ void Player::Update(float elapsedTime)
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::CycloneStrike)&&
                 GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) && 
                     GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) &&
-                        !isAreAttack
+                        !isAreAttack 
             )
         {
             // ステート遷移
@@ -226,6 +235,8 @@ void Player::Update(float elapsedTime)
             !gamePad.GetButtonDownCountinue()
                 )
         {
+            // デバッグ
+            debugInt++;
             if (mp.lock()->GetMpEmpth())
             {
                 magicAction = false;
@@ -251,6 +262,8 @@ void Player::Update(float elapsedTime)
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
         // 特殊攻撃
         InputSpecialAttackCharge();
+        // 特殊技変更
+        InputSpecialAttackChange();
         // UI必殺技演出
         SpecialPlayUlEffect(elapsedTime);
         // 攻撃範囲内なのでUI描画
@@ -826,7 +839,7 @@ void Player::OnGUI()
 #endif // _DEBUG
 
 // 移動入力処理
-bool Player::InputMove(float elapsedTime)
+bool Player::InputMove()
 {
     // 入力情報を取得
     GamePad& gamePad = Input::Instance().GetGamePad();
@@ -954,15 +967,15 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
 bool Player::InputSelectCheck()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_UP && !magicAction)
-    {
-        ++selectCheck;
-    }
-    if (gamePad.GetButtonDown() & GamePad::BTN_DOWN && !magicAction)
+    if (gamePad.GetButtonDown() & GamePad::BTN_UP && !magicAction && !specialAction)
     {
         --selectCheck;
     }
-    // コマンド操作階層下げ
+    if (gamePad.GetButtonDown() & GamePad::BTN_DOWN && !magicAction && !specialAction)
+    {
+        ++selectCheck;
+    }
+    // コマンド操作階層下げ 魔法
     if (gamePad.GetButtonDown() & GamePad::BTN_B && selectCheck == (int)CommandAttack::Magic && !magicAction)
     {
         magicAction = true;
@@ -970,6 +983,58 @@ bool Player::InputSelectCheck()
         gamePad.SetButtonDownCountinue(isPush);
         return true;
     }
+    // コマンド操作階層下げ 必殺技
+    if (gamePad.GetButtonDown() & GamePad::BTN_B && selectCheck == (int)CommandAttack::Special && !specialAction
+        || gamePad.GetButtonDown() & GamePad::BTN_RIGHT && selectCheck == (int)CommandAttack::Special)
+    {
+        specialAction = true;
+        bool isPush = true;
+        gamePad.SetButtonDownCountinue(isPush);
+        return true;
+    }
+    // 階層上げ
+    if (gamePad.GetButtonDown() & GamePad::BTN_LEFT && selectCheck == (int)CommandAttack::Special)
+    {
+        specialAction = false;
+    }
+    // コマンド選択必殺技を出す。
+    if (specialAction)
+    {
+        std::weak_ptr<Ui> uiIdSpecialComandoAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialComandoFire = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+        // 特殊技UIを影で隠す
+        std::weak_ptr<Ui> uiIdIsCommandDisabledAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled01)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdIsCommandDisabledFire = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled02)->GetComponent<Ui>();
+        uiIdSpecialComandoAttack.lock()->SetDrawCheck(isDrawUi);
+        uiIdSpecialComandoFire.lock()->SetDrawCheck(isDrawUi);
+
+        // 特殊技UIを影で隠すあるとき
+        if (isSpecialAttack)
+            uiIdIsCommandDisabledAttack.lock()->SetDrawCheck(isDrawUiEmpth);
+        else
+            uiIdIsCommandDisabledAttack.lock()->SetDrawCheck(isDrawUi);
+        if (isSpecialMagicFire)
+            uiIdIsCommandDisabledFire.lock()->SetDrawCheck(isDrawUiEmpth);
+        else
+            uiIdIsCommandDisabledFire.lock()->SetDrawCheck(isDrawUi);
+    }
+    else
+    {
+        std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
+        // 特殊技UIを影で隠す
+        std::weak_ptr<Ui> uiIdIsCommandDisabledAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled01)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdIsCommandDisabledFire = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled02)->GetComponent<Ui>();
+        uiIdAttack.lock()->SetDrawCheck(isDrawUiEmpth);
+        uiIdAttackCheck.lock()->SetDrawCheck(isDrawUiEmpth);
+
+        uiIdIsCommandDisabledAttack.lock()->SetDrawCheck(isDrawUiEmpth);
+        uiIdIsCommandDisabledFire.lock()->SetDrawCheck(isDrawUiEmpth);
+    }
+
+    
+    
+
     // 一度離すまでボタン効かない
     if (gamePad.GetButtonUp() & GamePad::BTN_B)
     {
@@ -983,14 +1048,14 @@ bool Player::InputSelectCheck()
         return true;
     }
     // ループ操作 最大にいったら
-    if (selectCheck > (int)CommandAttack::Magic)
+    if (selectCheck > (int)CommandAttack::Special)
     {
         selectCheck = (int)CommandAttack::Attack;
     }
     // ループ操作　最小に行ったら
     if (selectCheck < (int)CommandAttack::Attack)
     {
-        selectCheck = (int)CommandAttack::Magic;
+        selectCheck = (int)CommandAttack::Special;
     }
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
@@ -1004,7 +1069,7 @@ bool Player::InputSelectCheck()
         uiIdAttack.lock()->SetDrawCheck(isDrawUiEmpth);
         uiIdAttackCheck.lock()->SetDrawCheck(isDrawUi);
     }
-    // 魔法選んだ時
+    // 攻撃以外
     else
     {
         std::weak_ptr<Ui> uiIdAttack = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack)->GetComponent<Ui>();
@@ -1020,7 +1085,7 @@ bool Player::InputSelectCheck()
         uiIdMagick.lock()->SetDrawCheck(isDrawUiEmpth);
         uiIdMagickCheck.lock()->SetDrawCheck(isDrawUi);
     }
-    // 攻撃選ぶ
+    // 魔法以外
     else
     {
         std::weak_ptr<Ui> uiIdMagick = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick)->GetComponent<Ui>();
@@ -1028,6 +1093,23 @@ bool Player::InputSelectCheck()
         uiIdMagick.lock()->SetDrawCheck(isDrawUi);
         uiIdMagickCheck.lock()->SetDrawCheck(isDrawUiEmpth);
     }
+    // 必殺技選ぶ
+    if (selectCheck == (int)CommandAttack::Special)
+    {
+        std::weak_ptr<Ui> uiIdSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecialCheck)->GetComponent<Ui>();
+        uiIdSpecial.lock()->SetDrawCheck(isDrawUiEmpth);
+        uiIdSpecialCheck.lock()->SetDrawCheck(isDrawUi);
+    }
+    // 必殺技以外
+    else
+    {
+        std::weak_ptr<Ui> uiIdSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial)->GetComponent<Ui>();
+        std::weak_ptr<Ui> uiIdSpecialCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecialCheck)->GetComponent<Ui>();
+        uiIdSpecial.lock()->SetDrawCheck(isDrawUi);
+        uiIdSpecialCheck.lock()->SetDrawCheck(isDrawUiEmpth);
+    }
+
     return false;
 }
 
@@ -1343,7 +1425,7 @@ void Player::RemoveUIMagic()
     selectCheck = (int)CommandAttack::Attack;
     magicAction = false;
 }
-
+// 特殊攻撃選択
 bool Player::InputSpecialAttackCharge()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
@@ -1372,13 +1454,17 @@ bool Player::InputSpecialAttackCharge()
                 bool drawCheck = true;
                 uiIdAttackSpecial.lock()->SetDrawCheck(drawCheck);
                 // 必殺技何が登録されたか 斬撃
-                specialAttack.push((int)SpecialAttack::Attack);
-                DirectX::XMFLOAT2 pos;
-                pos = { 94,240 };
-                float add = 30;
-                if (2 < (int)specialAttack.size())
-                    pos.y = pos.y - (add * (float)specialAttack.size());
-                uiIdSpecialAttackTransForm2D.lock()->SetPosition(pos);
+                specialAttack.at((int)SpecialAttackType::Attack).hasSkill = true;
+
+                // 必殺技を放てるか
+                isSpecialAttack = true;
+
+                //DirectX::XMFLOAT2 pos;
+                //pos = { 94,240 };
+                //float add = 30;
+                //if (2 < (int)specialAttack.size())
+                //    pos.y = pos.y - (add * (float)specialAttack.size());
+                //uiIdSpecialAttackTransForm2D.lock()->SetPosition(pos);
                 // 一度発動すると初期化
                 specialAttackCharge = specialAttackChargeMin;
                 // 斬撃必殺技チャージ解消
@@ -1393,21 +1479,30 @@ bool Player::InputSpecialAttackCharge()
                 bool drawCheck = true;
                 uiIdSpecialFire.lock()->SetDrawCheck(drawCheck);
                 // 必殺技何が登録されたか 火
-                specialAttack.push((int)SpecialAttack::MagicFire);
-                DirectX::XMFLOAT2 pos;
-                pos = { 94,240 };
-                float add = 30;
-                if (2 < (int)specialAttack.size())
-                    pos.y = pos.y - (add * (float)specialAttack.size());
-                uiIdSpecialFireTransForm2D.lock()->SetPosition(pos);
+                specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill = true;
+
+                // 必殺技を放てるか
+                isSpecialMagicFire = true;
+
+                //DirectX::XMFLOAT2 pos;
+                //pos = { 94,240 };
+                //float add = 30;
+                //if (2 < (int)specialAttack.size())
+                //    pos.y = pos.y - (add * (float)specialAttack.size());
+                //uiIdSpecialFireTransForm2D.lock()->SetPosition(pos);
                 // 一度発動すると初期化
                 specialAttackCharge = specialAttackChargeMin;
                 // 火必殺技チャージ解消
                 fireEnergyCharge = fireEnergyChargeMin;
             }
     }
+
+    // 必殺技撃っていたら撃てない
+    if (stateMachine->GetStateIndex() == (int)Player::State::SpecialAttack ||
+        stateMachine->GetStateIndex() == (int)Player::State::SpecialMagic)return false;
+    
     // 技を放つ
-    if (gamePad.GetButtonDown() & GamePad::BTN_Y &&  !specialAttackTime && specialAttack.size() > 0&& !magicAction)
+    if (gamePad.GetButtonDown() & GamePad::BTN_Y &&  !specialAttackTime && !magicAction)
     {
         // エネミー呼ぶ奴
         EnemyManager& enemyManager = EnemyManager::Instance();
@@ -1426,23 +1521,27 @@ bool Player::InputSpecialAttackCharge()
             bool stopFall = true;
             enemyMove.lock()->SetStopFall(stopFall);
         }
-        switch (specialAttack.top())
+        
+        switch (specialAttackNum)
         {
         // 斬撃
-        case (int)SpecialAttack::Attack:
+        case (int)SpecialAttackType::Attack:
         {
+            if (!specialAttack.at((int)SpecialAttackType::Attack).hasSkill)return false;
             // 技確定
             std::weak_ptr<Ui> uiIdSpecialShurashu = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
-            std::weak_ptr<Ui> uiIdSpecialShurashuPush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<Ui>();
             std::weak_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
-            std::weak_ptr<TransForm2D> uiIdSpecialShurashuPushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashuPushu)->GetComponent<TransForm2D>();
             bool drawCheck = false;
             uiIdSpecialShurashu.lock()->SetDrawCheck(drawCheck);
             DirectX::XMFLOAT2 pos;
             pos = { uiIdSpecialShurashuTransForm2D.lock()->GetPosition() };
-            uiIdSpecialShurashuPushTransForm2D.lock()->SetPosition(pos);
-            specialAttack.pop();
+
+            // 必殺技否所持
+            specialAttack.at((int)SpecialAttackType::Attack).hasSkill = false;
+
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialAttack));
+            // 必殺技を所持を消す
+            isSpecialAttack = false;
             // もし地面なら何もしない
             bool noStart = false;
             // エフェクト再生
@@ -1451,20 +1550,23 @@ bool Player::InputSpecialAttackCharge()
             break;
         }
         // 魔法火
-        case (int)SpecialAttack::MagicFire:
+        case (int)SpecialAttackType::MagicFire:
         {
+            if (!specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill) return false;
             // 技確定
             std::weak_ptr<Ui> uiIdSpecialFrame = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
-            std::weak_ptr<Ui> uiIdSpecialFramePush = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<Ui>();
             std::weak_ptr<TransForm2D> uiIdSpecialFrameTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
-            std::weak_ptr<TransForm2D> uiIdSpecialFramePushTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFramePushu)->GetComponent<TransForm2D>();
             bool drawCheck = false;
             uiIdSpecialFrame.lock()->SetDrawCheck(drawCheck);
             DirectX::XMFLOAT2 pos;
             pos = { uiIdSpecialFrameTransForm2D.lock()->GetPosition() };
-            uiIdSpecialFramePushTransForm2D.lock()->SetPosition(pos);
-            specialAttack.pop();
+            
+            // 必殺技否所持
+            specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill = false;
+
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagic));
+            // 必殺技を所持を消す
+            isSpecialMagicFire = false;
             // もし地面なら何もしない
             bool noStart = false;
             // エフェクト再生
@@ -1485,101 +1587,105 @@ bool Player::InputSpecialAttackCharge()
         specialAttackTime = false;
     }
     // チャージを見やすく
-    if (specialAttackCharge >= 0.4f && specialAttackCharge < 0.8f)
+    if (specialAttackCharge >= 0.4f)
     {
-        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
         std::weak_ptr<Ui> uiIdSpecialCharge = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
         bool drawCheck = true;
         uiIdSpecialCharge.lock()->SetDrawCheck(drawCheck);
-        DirectX::XMFLOAT2 pos = { 110,250 };
-        uiIdSpecialTransForm2D.lock()->SetPosition(pos);
     }
     // チャージを見やすく
-    if (specialAttackCharge >= 0.8f && specialAttackCharge < 1.2f)
+    if (specialAttackCharge >= 0.8f)
     {
-        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
-        std::weak_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
-        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
         std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
         bool drawCheck = true;
-        uiIdSpecialChargeFurst.lock()->SetDrawCheck(drawCheck);
-        DirectX::XMFLOAT2 pos = { 47,250 };
-        uiIdSpecialTransForm2DFurst.lock()->SetPosition(pos);
         uiIdSpecialChargeSecond.lock()->SetDrawCheck(drawCheck);
-        pos = { 158,250 };
-        uiIdSpecialTransForm2DSecond.lock()->SetPosition(pos);
     }
     // チャージを見やすく
-    if (specialAttackCharge >= 1.2f && specialAttackCharge < 1.5f)
+    if (specialAttackCharge >= 1.2f)
     {
-        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<TransForm2D>();
-        std::weak_ptr<Ui> uiIdSpecialChargeFurst = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge01)->GetComponent<Ui>();
-        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<TransForm2D>();
-        std::weak_ptr<Ui> uiIdSpecialChargeSecond = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge02)->GetComponent<Ui>();
-        std::weak_ptr<TransForm2D> uiIdSpecialTransForm2DSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<TransForm2D>();
         std::weak_ptr<Ui> uiIdSpecialChargeSerde = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulCharge03)->GetComponent<Ui>();
         bool drawCheck = true;
-        uiIdSpecialChargeFurst.lock()->SetDrawCheck(drawCheck);
-        DirectX::XMFLOAT2 pos = { 0,250 };
-        uiIdSpecialTransForm2DFurst.lock()->SetPosition(pos);
-        uiIdSpecialChargeSecond.lock()->SetDrawCheck(drawCheck);
-        pos = { 94,250 };
-        uiIdSpecialTransForm2DSecond.lock()->SetPosition(pos);
         uiIdSpecialChargeSerde.lock()->SetDrawCheck(drawCheck);
-        pos = { 205,250 };
-        uiIdSpecialTransForm2DSerde.lock()->SetPosition(pos);
     }
     return false;
 }
-
-// 必殺技演出
+// 特殊技順番交代
+void Player::InputSpecialAttackChange()
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    if (gamePad.GetButtonDown() & GamePad::BTN_UP && specialAction)
+    {
+        --specialAttackNum;
+    }
+    if (gamePad.GetButtonDown() & GamePad::BTN_DOWN && specialAction)
+    {
+        ++specialAttackNum;
+    }
+    // 最低値まで行ったら戻す
+    if (specialAttackNum <= spCmdMoveLimitMin)
+        specialAttackNum = spCmdMoveLimitMin;
+    // 最大値まで行ったら戻す
+    if (specialAttackNum >= spCmdMoveLimitMax)
+        specialAttackNum = spCmdMoveLimitMax;
+}
+// UI必殺技演出
 void Player::SpecialPlayUlEffect(float elapsedTime)
 {
-    if (specialAttack.size() <= 0) return;
-    switch (specialAttack.top())
+    // 必殺技を出せない
+    /*if (specialAttack.size() < specialAttackMinSize)*/
+    if(!specialAction)
     {
-    case (int)SpecialAttack::Attack:
+        std::weak_ptr<Ui> uiIdSpecialButton = UiManager::Instance().GetUies((int)UiManager::UiCount::ButtonY)->GetComponent<Ui>();
+        uiIdSpecialButton.lock()->SetDrawCheck(false);
+
+        return;
+    }
+    switch (specialAttackNum)
+    {
+    case (int)SpecialAttackType::Attack:
     {
         // 近接攻撃
         std::weak_ptr<Ui> uiIdAttackSpecial = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu)->GetComponent<TransForm2D>();
-        if (uiIdAttackSpecial.lock()->GetDrawCheck())
-        {
-            uiIdSpecialAttackTransForm2D.lock()->ShrinkTexture(uiShrinkValueMax, uiShrinkValueMin, elapsedTime);
-        }
+        std::weak_ptr<Ui> uiIdSpecialButton = UiManager::Instance().GetUies((int)UiManager::UiCount::ButtonY)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialButtonTransForm2D= UiManager::Instance().GetUies((int)UiManager::UiCount::ButtonY)->GetComponent<TransForm2D>();
+        //float pos = 76;
+        float pos = 546;
+
+        uiIdSpecialButton.lock()->SetDrawCheck(true);
+        uiIdSpecialButtonTransForm2D.lock()->SetPositionY(pos);
+
         break;
     }
-    case (int)SpecialAttack::MagicFire:
+    case (int)SpecialAttackType::MagicFire:
     {
         // 炎
         std::weak_ptr<Ui> uiIdSpecialFire = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialFireTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame)->GetComponent<TransForm2D>();
-        if (uiIdSpecialFire.lock()->GetDrawCheck())
-        {
-            uiIdSpecialFireTransForm2D.lock()->ShrinkTexture(uiShrinkValueMax, uiShrinkValueMin, elapsedTime);
-        }
+        std::weak_ptr<Ui> uiIdSpecialButton = UiManager::Instance().GetUies((int)UiManager::UiCount::ButtonY)->GetComponent<Ui>();
+        std::weak_ptr<TransForm2D> uiIdSpecialButtonTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::ButtonY)->GetComponent<TransForm2D>();
+        //float pos = 149;
+        float pos = 631;
+
+        uiIdSpecialButton.lock()->SetDrawCheck(true);
+        uiIdSpecialButtonTransForm2D.lock()->SetPositionY(pos);
+
         break;
     }
-    case (int)SpecialAttack::MagicIce:
+    case (int)SpecialAttackType::MagicIce:
     {
         // 氷
         std::weak_ptr<Ui> uiIdSpecialIce = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialIceTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulIce)->GetComponent<TransForm2D>();
-        if (uiIdSpecialIce.lock()->GetDrawCheck())
-        {
-            uiIdSpecialIceTransForm2D.lock()->ShrinkTexture(uiShrinkValueMax, uiShrinkValueMin, elapsedTime);
-        }
+
         break;
     }
-    case (int)SpecialAttack::MagicThander:
+    case (int)SpecialAttackType::MagicThander:
     {
         // 雷
         std::weak_ptr<Ui> uiIdSpecialThander = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<Ui>();
         std::weak_ptr<TransForm2D> uiIdSpecialThanderTransForm2D = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulThander)->GetComponent<TransForm2D>();
-        if (uiIdSpecialThander.lock()->GetDrawCheck())
-        {
-            uiIdSpecialThanderTransForm2D.lock()->ShrinkTexture(uiShrinkValueMax, uiShrinkValueMin, elapsedTime);
-        }
+
         break;
     }
     }
@@ -2327,7 +2433,7 @@ void Player::PinchMode(float elapsedTime)
         vignetteData.color = vignetteNormalColor;
         postprocessingRenderer.SetVignetteData(vignetteData);
     }
-    if (mp.lock()->GetMpEmpth())
+  /*  if (mp.lock()->GetMpEmpth())
     {
         DirectX::XMFLOAT2 pos = { 179, 640 };
         std::weak_ptr<TransForm2D> uiIdAttackCheckPos = UiManager::Instance().GetUies(
@@ -2338,7 +2444,7 @@ void Player::PinchMode(float elapsedTime)
         pos = { 200, 525 };
         uiIdAttackCheckPos.lock()->SetPosition(pos);
         return;
-    }
+    }*/
     // ピンチの時にヒントを出す
     if (InputShortCutkeyMagic() &&
         isPintch)
@@ -2403,7 +2509,7 @@ bool Player::InputMagick()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
     if (!InputShortCutkeyMagic() && 
-        gamePad.GetButtonDown() & GamePad::BTN_B) return true;
+        gamePad.GetButton() & GamePad::BTN_B) return true;
     switch (selectMagicCheck)
     {
     case (int)CommandMagic::Fire:
@@ -3068,7 +3174,7 @@ void Player::UiControlle(float elapsedTime)
    mpUiColor = { 1,1,1,1 };
     if (mp.lock()->GetMpEmpth())
     {
-        mpUiColor = { 1,0,0,1 };
+        mpUiColor = { 1,0.5f,0,1 };
     }
    uiColor.lock()->SetColor(mpUiColor);
     // 揺れ

@@ -99,7 +99,7 @@ public:
     DirectX::XMFLOAT3 GetMagicMoveVec(float elapsedTime) const;
 
     // 移動入力処理
-    bool InputMove(float elapsedTime);
+    bool InputMove();
 
     // ロックオン入力
     bool InputRockOn();
@@ -123,6 +123,9 @@ public:
 
     // 特殊攻撃選択
     bool InputSpecialAttackCharge();
+
+    // 特殊技順番交代
+    void InputSpecialAttackChange();
 
     // UIの演出
     void SpecialPlayUlEffect(float elapsedTime);
@@ -319,7 +322,8 @@ public:
     enum class CommandAttack
     {
         Attack,
-        Magic
+        Magic,
+        Special
     };
 
     enum class CommandMagic
@@ -331,7 +335,7 @@ public:
         Heale
     };
 
-    enum class SpecialAttack
+    enum class SpecialAttackType
     {
         Normal = -1,
         Attack,
@@ -341,12 +345,12 @@ public:
     };
 
 private:
-    // 構造体
-    struct SpecialMode
-    {
-        bool specialAttack;
-        bool specialShot;
-    };
+        //// 構造体
+        //struct SpecialMode
+        //{
+        //    bool specialAttack;
+        //    bool specialShot;
+        //};
 public:
     bool GetAfterimageMove() const { return this->afterimagemove; }
 
@@ -413,6 +417,14 @@ public:
 
     // 描画するかどうか
     void SetPlayeDrawCheck(int isPlayerDrawCheck) { this->isPlayerDrawCheck = isPlayerDrawCheck; }
+
+private:
+    // 構造体
+    struct SpecialAttack
+    {
+        int id;
+        bool hasSkill;
+    };
 
 private:
     std::weak_ptr<Movement>	movement;
@@ -622,14 +634,39 @@ private:
     // 当たり判定無効判定
     bool invalidJudgment = true;
 
+    // 特殊攻撃
+    static const int specialAttackNumMax = 4;
+
+    int specialAttackNum = 0;
+
     // 特殊攻撃をためる奴
-    std::stack<int> specialAttack;
+    //std::stack<int> specialAttack;
+    //std::vector<int> specialAttack;
+    //bool specialAttack[specialAttackNumMax];
+    std::vector<SpecialAttack> specialAttack;
+
+    bool isSkillHave = false;
+
+    int spCmdMoveLimitMin = 0;
+    int spCmdMoveLimitMax = 1;
+
+    // 特殊攻撃のサイズが最低値ならやめる。
+    int specialAttackNumMin = 0;
 
     // 特殊アクション確認
     bool specialAttackTime = false;
 
     // 魔法攻撃を打つショートカット用
     bool magicAction = false;
+
+    // 特殊技コマンド開く
+    bool specialAction = false;
+
+    // 特殊技斬撃がたまったか
+    bool isSpecialAttack = false;
+
+    // 特殊技炎がたまったか
+    bool isSpecialMagicFire = false;
 
     // 揺れ
     bool shakeMode = false;
@@ -771,6 +808,9 @@ private:
 
     // 押し続けるか
     bool ButtonDownCountinue = true;
+
+    // デバッグ
+    int debugInt = 0;
 };
 
 // プレイヤーマネージャー

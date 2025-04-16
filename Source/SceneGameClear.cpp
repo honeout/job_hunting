@@ -757,7 +757,7 @@ void SceneGameClear::SelectScene()
 			if (playerId.lock()->GetEndState())
 			{
 				//　シーン変更
-				SceneManager::Instance().ChangeScene(new SceneGame);
+				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
 			}
 		}
 
