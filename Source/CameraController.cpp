@@ -5,7 +5,7 @@
 #include "StageMain.h"
 
 
-
+// 初期化
 CameraController::CameraController()
 {
 	position = Camera::Instance().GetEye();
@@ -50,11 +50,7 @@ void CameraController::Update(float elapsedTime)
 		newPosition.z += (rand() % 3 - 1) * shakePower;
 		shakeTimer -= elapsedTime;
 	}
-
-
-
-
-		// X軸のカメラ回転を制限
+	// X軸のカメラ回転を制限
 	if (angle.x < minAngleX)
 	{
 		angle.x = minAngleX;
@@ -78,7 +74,6 @@ void CameraController::Update(float elapsedTime)
 	{
 		newPosition.y  = minPositionY;
 	}
-
 
 	// 徐々に目標に近づける
 	static	constexpr	float	Speed = 1.0f / 8.0f;
@@ -111,7 +106,7 @@ void CameraController::OnGUI()
 	ImGui::Separator();
 }
 #endif // _DEBUG
-
+// モーションタイミング
 bool CameraController::GetCameraMortionDataTime()
 {
 	// その瞬間だけ欲しい
@@ -124,7 +119,7 @@ bool CameraController::GetCameraMortionDataTime()
 
 	return isEffect;
 }
-
+// 操作不能カメラ
 void CameraController::FreeSelectCamera(float elapsedTime)
 {
 	// X軸のカメラ回転を制限
@@ -159,7 +154,7 @@ void CameraController::FreeSelectCamera(float elapsedTime)
 	newPosition.y = target.y - front.y * range;
 	newPosition.z = target.z - front.z * range;
 }
-
+// 通常カメラ
 void CameraController::FreeCamera(float elapsedTime)
 {
 	GamePad& gamePad = Input::Instance().GetGamePad();
@@ -419,10 +414,12 @@ void CameraController::OnFreeMode(void* data)
 		v.y = newPosition.y - newTarget.y;
 		v.z = newPosition.z - newTarget.z;
 		angle.y = atan2f(v.x, v.z) + DirectX::XM_PI;
-		angle.x = atan2f(v.y, v.z);
+		// 修正点
+		angle.x = 0.0f;
+		//
 		//	角度の正規化
 		angle.y = atan2f(sinf(angle.y), cosf(angle.y));
-		angle.x = atan2f(sinf(angle.x), cosf(angle.x));
+
 	}
 	this->mode = Mode::FreeCamera;
 	this->newTarget = p->target;

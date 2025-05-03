@@ -599,7 +599,8 @@ void SceneTitle::InitializeComponent()
 		const char* filename = "Data/Sprite/タイトル画像.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UITitle");
-		actor->AddComponent<Sprite>(filename);
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
@@ -634,7 +635,8 @@ void SceneTitle::InitializeComponent()
 		const char* filename = "Data/Sprite/スタートボタン.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UIPush");
-		actor->AddComponent<Sprite>(filename);
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
@@ -670,7 +672,8 @@ void SceneTitle::InitializeComponent()
 		const char* filename = "Data/Sprite/EXIT.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UITitle");
-		actor->AddComponent<Sprite>(filename);
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
@@ -705,7 +708,8 @@ void SceneTitle::InitializeComponent()
 		const char* filename = "Data/Sprite/選択 ボタン.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UI Button");
-		actor->AddComponent<Sprite>(filename);
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
@@ -740,7 +744,8 @@ void SceneTitle::InitializeComponent()
 		const char* filename = "Data/Sprite/選択.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UI Select");
-		actor->AddComponent<Sprite>(filename);
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();

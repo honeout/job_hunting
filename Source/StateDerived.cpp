@@ -390,8 +390,6 @@ void JumpState::Execute(float elapsedTime)
 		 // 左足当たり判定
 		enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamageJumpStart);
 	}
-	// 左足当たり判定
-	//enemyid.lock()->DetectHitByBodyPart(bossLeftFootPosition, applyDamageJumpStart);
 }
 // 終了処理
 void JumpState::Exit()
@@ -552,7 +550,7 @@ void AttackState::Exit()
 	if (chargeCompleate->GetEfeHandle())
 		chargeCompleate->Stop(chargeCompleate->GetEfeHandle());
 }
-
+// ダメージ判定
 void DamageState::Enter()
 {
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
@@ -583,7 +581,6 @@ void DamageState::Execute(float elapsedTime)
 void DamageState::Exit()
 {
 }
-
 // 混乱開始
 void ConfusionState::Enter()
 {
@@ -633,7 +630,7 @@ void ConfusionState::Execute(float elapsedTime)
 void ConfusionState::Exit()
 {
 }
-
+// 倒れる
 void DeathState::Enter()
 {
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
@@ -729,7 +726,7 @@ void AwakeStartState::Exit()
 	// 覚醒時間
 	enemyid.lock()->ResetAwakeTime();
 }
-
+// クリア倒れて待機時
 void ClearState::Enter()
 {
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
@@ -774,7 +771,7 @@ void ClearState::Execute(float elapsedTime)
 void ClearState::Exit()
 {
 }
-
+// クリア復活して
 void ClearReviveState::Enter()
 {
 	std::weak_ptr<EnemyBoss> enemyid = owner.lock()->GetComponent<EnemyBoss>();
@@ -807,7 +804,7 @@ void ClearReviveState::Exit()
 {
 }
 
-// プレイヤー
+// プレイヤー待機
 void PlayerIdleState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
@@ -847,7 +844,7 @@ void PlayerIdleState::Execute(float elapsedTime)
 void PlayerIdleState::Exit()
 {
 }
-
+// プレイヤー移動
 void PlayerMovestate::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
@@ -898,7 +895,7 @@ void PlayerMovestate::Exit()
 	playerid.lock()->InputStopWalkSE();
 }
 
-
+// プレイヤージャンプ
 void PlayerJumpState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
@@ -954,8 +951,7 @@ void PlayerJumpState::Exit()
 	// ジャンプ音
 	playerid.lock()->InputJampSE();
 }
-
-
+// プレイヤー着地
 void PlayerLandState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
@@ -998,7 +994,7 @@ void PlayerLandState::Exit()
 		// ジャンプ音
 	playerid.lock()->InputJampSE();
 }
-
+// プレイヤージャンプ中
 void PlayerJumpFlipState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
@@ -1041,7 +1037,7 @@ void PlayerJumpFlipState::Exit()
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
 	playerid.lock()->InputStopJampSE();
 }
-
+// プレイヤー初撃
 void PlayerQuickJabState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
@@ -1076,6 +1072,13 @@ void PlayerQuickJabState::Enter()
 
 	// ホーミングするか
 	isHomingStartCheck = true;
+
+	// エネミー非接触
+	isEnemyHit = false;
+	// 接触
+	EnemyHit = true;
+	// 非接触
+	EnemySafe = false;
 }
 
 void PlayerQuickJabState::Execute(float elapsedTime)
@@ -1160,8 +1163,10 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	// 回転
 	if (!rotateCheck)
 	{
-			// 距離
-		if (length < attackCheckRange && length > attackCheckRangeMin)
+		isEnemyHit = !playerid.lock()->GetIsEnemyHit() && !playerid.lock()->GetIsEnemyHitBody() ?
+			EnemySafe : EnemyHit;
+		// 距離
+		if (length < attackCheckRange && !isEnemyHit)
 		{
 			bool stop = false;
 			moveid.lock()->SetStopMove(stop);
@@ -1200,14 +1205,14 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 			// 空中
 			if (!moveid.lock()->GetOnLadius())
 			{
-				// 空中攻撃で行動階数減少
-				playerid.lock()->AreAttackDecreaseAmount();
+				//// 空中攻撃で行動階数減少
+				//playerid.lock()->AreAttackDecreaseAmount();
 				// アニメーションルール
 				Model::ModelAnim modelAnim;
 				Model::ModelAnim modelAnimUpperBody;
 				modelAnim.index = Player::Anim_Jump;
 				modelAnimUpperBody.index = Player::Anim_Slash;
-				modelAnimUpperBody.currentAnimationAddSeconds = 0.033f;
+				modelAnimUpperBody.currentAnimationAddSeconds = 0.030f;
 				modelAnim.loop = true;
 				modelAnim.currentAnimationAddSeconds = 0.03f;
 				// アニメーション再生
@@ -1225,7 +1230,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 				// アニメーションルール
 				Model::ModelAnim modelAnim;
 				modelAnim.index = Player::Animation::Anim_Slash;
-				modelAnim.currentAnimationAddSeconds = 0.033f;
+				modelAnim.currentAnimationAddSeconds = 0.031f;
 				// アニメーション再生
 				model->PlayAnimation(modelAnim);
 				// 攻撃三回で一度強制終了
@@ -1243,7 +1248,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 
 	// 1撃目
-	if (animationTime >= 0.8f )
+	if (animationTime >= 0.8f  && playerid.lock()->InputAttack())
 	{
 		// １回目の攻撃なら
 		oneAttackCheck = false;
@@ -1253,7 +1258,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(button  ? Player::State::SideCut : Player::State::Move));
 		return;
 	}
-
+	// 斬撃の当たり判定
 	playerid.lock()->CollisionNodeVsEnemies("mixamorig:LeftHand",
 		owner.lock()->GetComponent<Player>()->GetLeftHandRadius(),
 		"body2", "boss_left_hand2", "boss_right_hand2");
@@ -1285,11 +1290,10 @@ void PlayerQuickJabState::Exit()
 
 	// 描画
 	isPlayerDrawCheck = 1;
-
+	// 非表示の場合表示する
 	playerid.lock()->SetPlayeDrawCheck(isPlayerDrawCheck);
 }
-
-
+// 2連撃目
 void PlayerSideCutState::Enter()
 {
 	bool loop = false;
@@ -1406,6 +1410,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(buttonSeconde ? Player::State::CycloneStrike : Player::State::Move));
 		return;
 	}
+	// 攻撃当たり判定
 	playerid.lock()->CollisionNodeVsEnemies("mixamorig:LeftHand"
 		, playerid.lock()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 }
@@ -1424,7 +1429,7 @@ void PlayerSideCutState::Exit()
 	bool stopFall = false;
 	moveid.lock()->SetStopFall(stopFall);
 }
-
+// 3撃目
 void PlayerCycloneStrikeState::Enter()
 {
 	bool loop = false;
@@ -1553,6 +1558,7 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 		playerid.lock()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 		return;
 	}
+	// 当たり判定
 	playerid.lock()->CollisionNodeVsEnemies("mixamorig:LeftHand",
 		playerid.lock()->GetLeftHandRadius(), "body2", "boss_left_hand2", "boss_right_hand2");
 }
@@ -1572,7 +1578,7 @@ void PlayerCycloneStrikeState::Exit()
 	bool stopFall = false;
 	moveid.lock()->SetStopFall(stopFall);
 }
-
+// 特殊技斬撃
 void PlayerSpecialAttackState::Enter()
 {
 	// コンポネント取得
@@ -1642,10 +1648,14 @@ void PlayerSpecialAttackState::Enter()
 void PlayerSpecialAttackState::Execute(float elapsedTime)
 {
 	// コンポネント取得
-	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
-	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
-	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
-	Model* model = owner.lock()->GetComponent<ModelControll>()->GetModel();
+	auto a = owner.lock();
+	if (!a)
+		return;
+
+	std::shared_ptr<Player> playerid = a->GetComponent<Player>();
+	std::shared_ptr<Movement> moveid = a->GetComponent<Movement>();
+	std::shared_ptr<Transform> transformid = a->GetComponent<Transform>();
+	Model* model = a->GetComponent<ModelControll>()->GetModel();
 	std::weak_ptr<HP> enemyHpId ;
 	// エネミーの前に向く
 	{
@@ -1675,10 +1685,10 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 					MessageData::CAMERACHANGEMOTIONMODEDATA	p;
 					position = transformid.lock()->GetPosition();
 					angle = transformid.lock()->GetAngle();
-					float vx = sinf(angle.y) * 6;
-					float vz = cosf(angle.y) * 6;
-					float vx2 = sinf(angle.y) - 10;
-					float vz2 = cosf(angle.y) * 7;
+					float vx = sinf(angle.y) * 6.0f;
+					float vz = cosf(angle.y) * 6.0f;
+					float vx2 = sinf(angle.y) - 10.0f;
+					float vz2 = cosf(angle.y) * 7.0f;
 					float vx3 = sinf(angle.y);
 					p.data.push_back({ 0, {position.x + vx, position.y + 3, position.z + vz }, position });
 					p.data.push_back({ 50, {position.x + vx, position.y + 3, position.z + vz }, position });
@@ -1719,7 +1729,7 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 	}
 	if (button)
 	{
-					// 任意のアニメーション再生区間でのみ衝突判定処理をする
+		// 任意のアニメーション再生区間でのみ衝突判定処理をする
 		float animationTime = moveid.lock()->GetOnLadius() ?
 			model->GetCurrentANimationSeconds() :
 			model->GetCurrentAnimationSecondsUpeer();
@@ -1762,7 +1772,7 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 				model->GetCurrentANimationSeconds() :
 				model->GetCurrentAnimationSecondsUpeer();
 		// スローモーションと色を明るく
-		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON)
+		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.5f + FLT_EPSILON)
 		{
 			PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 			ColorGradingData colorGradingData;
@@ -1857,7 +1867,7 @@ void PlayerSpecialAttackState::Exit()
 	bool specialRockOff = false;
 	playerid.lock()->SetSpecialRockOff(specialRockOff);
 }
-
+// 特殊技火魔法
 void PlayerMagicState::Enter()
 {
 	std::weak_ptr<Player> playerid = owner.lock()->GetComponent<Player>();
@@ -1865,6 +1875,11 @@ void PlayerMagicState::Enter()
 	std::weak_ptr<Movement> moveid = owner.lock()->GetComponent<Movement>();
 	std::weak_ptr<Transform> transformid = owner.lock()->GetComponent<Transform>();
 	std::weak_ptr<Mp> mpId = owner.lock()->GetComponent<Mp>();
+
+	// se再生
+	seParam.filename = "Data/Audio/SE/チャージ音敵.wav";
+	seParam.volume = 0.5f;
+	playerid.lock()->InputSe(seParam);
 
 	// エフェクト
 	charge = std::make_unique<Effect>("Data/Effect/magicCharge.efk");
@@ -1902,48 +1917,6 @@ void PlayerMagicState::Enter()
 			break;
 		}
 	}
-
-	//magicType = playerid.lock()->GetSelectMagicCheck();
-	//switch (magicType)
-	//{
-	//case (int)Player::CommandMagic::Fire:
-	//{
-	//	modelAnim.index = Player::Animation::Anim_Magic;
-	//	// アニメーション再生
-	//	model->PlayAnimation(modelAnim);
-	//	break;
-	//}
-	//case (int)Player::CommandMagic::Ice:
-	//{
-	//	modelAnim.index = Player::Animation::Anim_Magic;
-	//	// アニメーション再生
-	//	model->PlayAnimation(modelAnim);
-	//	break;
-	//}
-
-	//case ((int)Player::CommandMagic::Thander):
-	//{
-	//	modelAnim.index = Player::Animation::Anim_MagicSeconde;
-	//	// アニメーション再生
-	//	model->PlayAnimation(modelAnim);
-	//	break;
-	//}
-
-	//case ((int)Player::CommandMagic::Heale):
-	//{
-	//	modelAnim.index = Player::Animation::Anim_MagicSeconde;
-	//	// アニメーション再生
-	//	model->PlayAnimation(modelAnim);
-	//	// エフェクト回復
-	//	heale = std::make_unique<Effect>("Data/Effect/heale.efk");
-	//	// エフェクト再生
-	//	heale->Play(transformid.lock()->GetPosition());
-	//	break;
-	//}
-	//default:
-	//	break;
-	//}
-
 	// アニメーション再生
 	owner.lock()->GetComponent<Player>()->SetUpdateAnim(Player::UpAnim::Normal);
 	// 落ちるの停止
@@ -2010,6 +1983,9 @@ void PlayerMagicState::Execute(float elapsedTime)
 		!playerid.lock()->InputMagick() && 
 		!magicStart)
 	{
+		// se停止
+		playerid.lock()->StopSe(seParam);
+
 		// エフェクト再生してたら停止
 		if (charge->GetEfeHandle())
 		{
@@ -2021,7 +1997,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 		}
 
 		// 魔法種類
-		//magicType = playerid.lock()->GetSelectMagicCheck();
 		switch (magicType)
 		{
 		case (int)Player::CommandMagic::Fire:
@@ -2077,21 +2052,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 		DirectX::XMStoreFloat(&length, lengthSqXM);
 	}
 
-	//// 魔法内ながら移動
-	//if (playerid.lock()->InputMove() && !isMove
-	//	&& magicType != (int)Player::CommandMagic::Heale)
-	//{
-	//	bool stop = false;
-	//	moveid.lock()->SetStopMove(stop);
-	//	// 移動値
-	//	playerid.lock()->GetMagicMoveVec(elapsedTime);
-	//}
-	//else
-	//{
-	//	// 入った瞬間から移動していないといみなし
-	//	isMove = true;
-	//}
-
 	// 相手の方を向く
 	// 回転
 	if (isRotate)
@@ -2103,7 +2063,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 		{
 			// 正面
 			moveid.lock()->Turn(vector,turnSpeed,elapsedTime);
-
 		}
 		else
 		{
@@ -2111,6 +2070,8 @@ void PlayerMagicState::Execute(float elapsedTime)
 		}
 	}
 
+	// UI処理の初期化
+	owner.lock()->GetComponent<Player>()->StartMagicUiFire();
 	// 魔法の種類で終わりを帰る。
 	switch (magicType)
 	{
@@ -2119,25 +2080,13 @@ void PlayerMagicState::Execute(float elapsedTime)
 		// 時間
 		if (animationTime <= 0.5f)return;
 
-		//angle.x += 0.7f;
-		//angle.y += 0.7f;
-
-		//DirectX::XMFLOAT3 dir;
-
-		//angle.x += rotationSpeed * angleAdd;
-		//angle.y += rotationSpeed * angleAdd;
-
 		// 角度下に
 		if (angle.x > angleMax)
 			isAngleAddX = false;
-		//if (angle.y > angleMax)
-		//	isAngleAddY = false;
 
 		// 角度上に
 		if (angle.x < angleMin)
 			isAngleAddX = true;
-		//if (angle.y < angleMin)
-		//	isAngleAddY = true;
 
 		// 角度下に
 		if (!isAngleAddX)
@@ -2152,17 +2101,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 		angle.y += rotationSpeed * angleAddY;
 
-		//// 角度下に
-		//if (!isAngleAddY)
-		//	angle.y -= rotationSpeed * angleAddY;
-		//// 角度上に
-		//else
-		//	angle.y += rotationSpeed * angleAddY;
-
-		//dir.x = sinf(angle.y);// 三角を斜めにして位置を変えた
-		//dir.y = cosf(angle.x);
-		//dir.z = cosf(angle.y);
-		
 		// １発
 		if (magicCharge <= magicChargeEnd)
 		{
@@ -2174,7 +2112,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 		else
 		{
 			// 炎発射
-			//owner.lock()->GetComponent<Player>()->InputMagicframe();
 			owner.lock()->GetComponent<Player>()->PushMagicFrame(angle);
 		}
 		// SE炎
@@ -2186,8 +2123,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 		else
 			--magicCharge;
-		// 魔法打つ
-		//magicStart = false;
 		break;
 	}
 
@@ -2241,9 +2176,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 		// １発
 		if (magicCharge <= magicChargeEnd)
 		{
-			//// 角度
-			//angle = transformid.lock()->GetAngle();
-
 			// 氷発射
 			owner.lock()->GetComponent<Player>()->InputMagicIce();
 		}
@@ -2251,7 +2183,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 		{
 			// 角度
 			angle = transformid.lock()->GetAngle();
-			/*angle.y += rotationSpeed * angleAddY;*/
 			playerid.lock()->PushMagicIce(angle);
 		}
 
@@ -2292,6 +2223,11 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 void PlayerMagicState::Exit()
 {
+	// 一回だけ
+	GamePad& gamePad = Input::Instance().GetGamePad();
+	bool isPush = true;
+	gamePad.SetButtonDownCountinue(isPush);
+
 	// エフェクト再生してたら停止
 	if (charge->GetEfeHandle())
 	{
@@ -2311,9 +2247,6 @@ void PlayerMagicState::Exit()
 	// 落ちるの再開
 	bool stopFall = false;
 	moveid.lock()->SetStopFall(stopFall);
-
-	//// 魔法選択UI解除
-	//playerid.lock()->RemoveUIMagic();
 }
 
 void PlayerSpecialMagicState::Enter()
@@ -2664,6 +2597,8 @@ void PlayerAvoidanceState::Enter()
 		});
 	// 角度変更
 	wind->SetAngle(wind->GetEfeHandle(), transformid.lock()->GetAngle());
+	// 衝撃波初期化
+	impactInitialize = true;
 }
 
 // 回避更新
@@ -2712,19 +2647,10 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 			0,
 			dir.z * speed,
 		};
-		moveid.lock()->AddImpulse(impulse);
+		moveid.lock()->AddImpulse(impulse, impactInitialize);
+		impactInitialize = false;
 	}
-	//// 空中ダッシュ
-	//if (animationTime >= 0.7f  && animationTime <= 0.8f && !moveid.lock()->GetOnLadius())
-	//{
-	//	DirectX::XMFLOAT3 impulse =
-	//	{
-	//		dir.x * flySpeed,
-	//		0,
-	//		dir.z * flySpeed,
-	//	};
-	//	moveid.lock()->AddImpulse(impulse);
-	//}
+
 	// アニメーションダッシュ後通常移動
 	if (animationTime >= 1.0f && owner.lock()->GetComponent<Player>()->InputMove())
 	{

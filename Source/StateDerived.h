@@ -556,7 +556,7 @@ private:
 	// 攻撃サポート範囲
 	float attackCheckRange = 10.0f;
 
-	float attackCheckRangeMin = 3.5f;
+	float attackCheckRangeMin = 3.0f;
 
 	float gravity = -0.2f;
 
@@ -585,6 +585,10 @@ private:
 	int				  isPlayerDrawCheck = 0;
 	// ホーミング一回だけ
 	bool			  isHomingStartCheck = false;
+	// エネミー接触判定
+	bool              isEnemyHit;
+	bool              EnemyHit;
+	bool              EnemySafe;
 };
 
 // 攻撃ステートオブジェクト
@@ -824,6 +828,8 @@ private:
 	std::unique_ptr<Effect> charge;
 	std::unique_ptr<Effect> chargeComplet;
 
+	// se再生情報
+	AudioParam seParam;
 
 	// 回復魔法
 	std::unique_ptr<Effect> heale;
@@ -998,6 +1004,7 @@ public:
 	void Exit()override;
 
 private:
+	bool impactInitialize = true;
 	bool loopSe = false;
 
 	// エフェクト

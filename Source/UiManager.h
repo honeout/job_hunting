@@ -45,12 +45,13 @@ public:
     {
         PlayerHp = 0,
         EnemyHp,
-        SpecialBox,
+        //SpecialBox,
         PlayerCommandAttack,
         PlayerCommandMagick,
         PlayerCommandAttackCheck,
         PlayerCommandMagickCheck,
         PlayerCommandSpecial,
+        PlayerCommandSpecialUnCheck,
         PlayerCommandSpecialCheck,
         PlayerCommandFire,
         PlayerCommandFireCheck,
@@ -81,6 +82,10 @@ public:
         PlayerCommandShortCutSunder,
         PlayerCommandShortCutIce,
         PlayerCommandShortCutKeule,
+        PlayerCommandPush,
+        PlayerCommandPushNow,
+        PlayerCommandCharge,
+        //PlayerCommandChargeFire,
         Push,
         Push2,
         ShortCut,
@@ -168,7 +173,6 @@ public:
         ControlPC,
         Start,
         Button,
-        Debug,
     };
 
 private:

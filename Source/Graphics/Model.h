@@ -10,7 +10,7 @@ class Model
 public:
 	Model(const char* filename);
 	~Model() {}
-
+	// ボーン
 	struct Node
 	{
 		const char*			name;
@@ -27,14 +27,14 @@ public:
 		int now;
 	};
 
-	// 
+
 	struct NodePose
 	{
 		DirectX::XMFLOAT3	position = { 0, 0, 0 };
 		DirectX::XMFLOAT4	rotation = { 0, 0, 0, 1 };
 		DirectX::XMFLOAT3	scale = { 1, 1, 1 };
 	};
-
+	// アニメーションの再生
 	struct ModelAnim
 	{
 		int index = 0;
@@ -50,9 +50,9 @@ public:
 	// 行列計算　ボーン情報を共有
 	void UpdateTransform(const DirectX::XMFLOAT4X4& transform,  std::vector<Node> nodes);
 
-	//// アニメーション計算
+	// アニメーション計算
 	void ComputeAnimation(int animationIndex, int nodeIndex, float time, NodePose& nodePose, float blendRate) ;
-	//// 全骨の姿勢
+	// 全骨の姿勢
 	void ComputeAnimation(int animationIndex, float time, std::vector<NodePose>& nodePoses, float blendRate) ;
 
 	// ルートモーションアップデート

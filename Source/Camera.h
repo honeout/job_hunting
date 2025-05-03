@@ -46,7 +46,8 @@ public:
     // ‰E•ûŒüæ“¾
     const DirectX::XMFLOAT3& GetRight() const { return right; }
 
-
+    // Šp“x‚ğu‚É•Ï‚¦‚é
+    float MoveTowardsTargetRadian(float currentRadian, float targetRadian);
 private:
     DirectX::XMFLOAT4X4     view = {
     0.0f,0.0f,0.0f,0.0f,

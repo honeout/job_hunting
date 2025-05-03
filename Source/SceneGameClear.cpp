@@ -16,6 +16,8 @@
 
 void SceneGameClear::Initialize()
 {
+	// bgm
+	StartBgm();
     // アクター初期化
     InitializeComponent();
 
@@ -129,7 +131,7 @@ void SceneGameClear::Initialize()
 void SceneGameClear::Start()
 {
 	// 音BGM
-	StartBgm();
+	//StartBgm();
 }
 
 void SceneGameClear::Finalize()
@@ -504,7 +506,6 @@ void SceneGameClear::InitializeComponent()
 		actor->GetComponent<EnemyBoss>()->StateMachineCreate();
 
 		// ステートマシンにステート登録
-		//actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new DeathState(actor));
 		actor->GetComponent<EnemyBoss>()->GetStateMachine()->RegisterState(new ClearState(actor));
 
 		// ステートセット
@@ -691,7 +692,6 @@ void SceneGameClear::StartBgm()
 	Audio& Se = Audio::Instance();
 	AudioParam audioParam;
 	audioParam.filename = "Data/Audio/BGM/maou_bgm_healing14b.wav";
-	audioParam.keyName = "BGM";
 	audioParam.loop = false;
 	audioParam.volume = bgmVolume;
 	Se.Play(audioParam);

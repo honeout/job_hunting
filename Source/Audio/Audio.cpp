@@ -3,8 +3,6 @@
 #include "Audio/Audio.h"
 #include "Audio\AudioResourceManager.h"
 
-//Audio* Audio::instance = nullptr;
-
 // コンストラクタ
 Audio::Audio()
 {
@@ -34,7 +32,6 @@ Audio::Audio()
 // デストラクタ
 Audio::~Audio()
 {
-
 	// オーディオソースの削除
 	{
 		for (AudioSource* source : this->audio_source_pool)
@@ -74,7 +71,6 @@ void Audio::Play(AudioParam param)
 	// オーディオソース作成
 	AudioSource* audio = audio_source_pool.emplace_back(new AudioSource(this->xaudio, resource, param));
 
-
 	audio->Play();
 }
 
@@ -82,8 +78,8 @@ void Audio::Stop(AudioParam param)
 {
 	// リソース作成
 	AudioResourceManager& audioResourceManager = AudioResourceManager::Instance();
-	//if (&audioResourceManager) return;
 	std::shared_ptr<AudioResource> resource = audioResourceManager.LoadAudioResource(param.filename.c_str());
+	
 	// オーディオソース作成
 	AudioSource* audio = this->audio_source_pool.emplace_back(new AudioSource(this->xaudio, resource, param));
 
@@ -114,7 +110,6 @@ void Audio::AllStart()
 {
 	for (AudioSource* audio_source : this->audio_source_pool)
 	{
-		
 		audio_source->Play();
 	}
 }

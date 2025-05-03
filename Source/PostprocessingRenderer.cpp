@@ -179,6 +179,10 @@ void PostprocessingRenderer::MoveTowards()
             colorGradingDataMin.hueShift : colorGradingData.hueShift - stepValueColor;
         colorGradingData.saturation = colorGradingDataMin.saturation + FLT_EPSILON >= colorGradingData.saturation - FLT_EPSILON ?
             colorGradingDataMin.saturation : colorGradingData.saturation - stepValueColor;
+        // èâä˙âª
+        colorGradingDataMin.brigthness = 1.0f;
+        colorGradingDataMin.saturation = 1.0f;
+        colorGradingDataMin.hueShift = 3.0f;
     }
     // ílè„è∏
     if (isIncreasingRadialBlur)

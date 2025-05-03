@@ -31,7 +31,9 @@ void EnemyBoss::Start()
     hp.lock()->SetHealth(health);
     hp.lock()->SetMaxHealth(maxHealth);
     collision.lock()->SetRadius(radius);
+    collision.lock()->SetPartRadius(partRadius);
     collision.lock()->SetHeight(height);
+    collision.lock()->SetSecondesHeight(confusionHeight);
     // エフェクト
     moveAttackEffect = std::make_unique<Effect>("Data/Effect/enemyMoveAttackHit.efk");
     awakeEffect = std::make_unique<Effect>("Data/Effect/awake.efk");
@@ -72,10 +74,10 @@ void EnemyBoss::Start()
 // 更新処理
 void EnemyBoss::Update(float elapsedTime)
 {
-    //// 動作するかどうか
-    //if (moveCheck)
-    //// ステート毎の処理
-    //stateMachine->Update(elapsedTime);
+    // 動作するかどうか
+    if (moveCheck)
+    // ステート毎の処理
+    stateMachine->Update(elapsedTime);
 
     // 敵覚醒管理
     ManageAwakeTime(elapsedTime);
@@ -99,6 +101,7 @@ void EnemyBoss::Update(float elapsedTime)
     // 削除
     ProjectileManager::Instance().DeleteUpdate(elapsedTime);//todo いるの？
 
+    // ワールド位置
     transform.lock()->UpdateTransform();
 
     // ダメージ点滅
@@ -139,6 +142,7 @@ void EnemyBoss::Update(float elapsedTime)
         }
     }
 
+    // 姿勢
     model->UpdateTransform(transform.lock()->GetTransform());
     
     // ゲージ管理
@@ -219,6 +223,7 @@ void EnemyBoss::DrawDebugPrimitive()
     debugRenderer->DrawCylinder(position, attackRange, 1.0f, DirectX::XMFLOAT4(1, 0, 0, 1));
 
     debugRenderer->DrawSphere(position, 10, DirectX::XMFLOAT4(0, 1, 0, 1));
+
     debugRenderer->DrawSphere(position, 3, DirectX::XMFLOAT4(0, 1, 0, 1));
 
     debugRenderer->DrawCylinder(targetPosition, radius, height, DirectX::XMFLOAT4(1, 1, 0, 1));
@@ -453,7 +458,7 @@ void EnemyBoss::CollisionImpactVsPlayer()
         }
     }
 }
-
+// ジャンプ処理
 bool EnemyBoss::CollisionPlayerWithRushEnemy()
 {
         int playerCount = PlayerManager::Instance().GetPlayerCount();
@@ -639,7 +644,7 @@ void EnemyBoss::ResetAwakeTime()
     // 覚醒中のエフェクト
     awakeEffect->Play(position);
 }
-
+// パーツごとの当たり判定
 void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int applyDamage)
 {
     int playerCount = PlayerManager::Instance().GetPlayerCount();
@@ -703,7 +708,7 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
         }
     }
 }
-
+// 衝撃波発射
 void EnemyBoss::InputImpact(DirectX::XMFLOAT3 pos)
 {
     {
@@ -737,7 +742,7 @@ void EnemyBoss::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
     territoryOrigin = origin;
     territoryRange = range;
 }
-
+// 敵HPのUI
 void EnemyBoss::UiControlle(float elapsedTime)
 {
     if (UiManager::Instance().GetUiesCount() <= uiCountMax)return;
@@ -764,7 +769,7 @@ void EnemyBoss::UiControlle(float elapsedTime)
         break;
     }
 }
-// 点滅
+// エネミー点滅
 void EnemyBoss::OnHit(float elapsedTime)
 {
     if (hp.lock()->FlashTime(elapsedTime))
@@ -798,7 +803,7 @@ void EnemyBoss::OnHit(float elapsedTime)
         colorGB = { 1,1 };
     }
 }
-
+// 移動位置
 void EnemyBoss::SetRandomTargetPosition()
 {
     float theta = Mathf::RandomRange(-DirectX::XM_PI, DirectX::XM_PI);
@@ -807,7 +812,7 @@ void EnemyBoss::SetRandomTargetPosition()
     targetPosition.y = territoryOrigin.y;
     targetPosition.z = territoryOrigin.z + cosf(theta) * range;
 }
-
+// ターゲット位置までの移動
 void EnemyBoss::MoveToTarget(float elapsedTime, float speedRate)
 {
     // ターゲット方向への進行ベクトルを算出
@@ -834,7 +839,7 @@ void EnemyBoss::TurnToTarget(float elapsedTime, float speedRate)
     // 回転
     movement.lock()->Turn({ vx,vy ,vz }, turnSpeed, elapsedTime);
 }
-
+// ジャンプ
 void EnemyBoss::InputJump()
 {
     // 強制停止
@@ -849,7 +854,7 @@ void EnemyBoss::InputJump()
         movement.lock()->JumpVelocity(jumpSpeedMin);
     }
 }
-
+// プレイヤーの位置
 bool EnemyBoss::SearchPlayer()
 {
     // プレイヤー取得
@@ -883,12 +888,12 @@ bool EnemyBoss::SearchPlayer()
     }
     return false;
 }
-
+// エネミー削除
 void EnemyBoss::Destroy()
 {
     EnemyManager::Instance().Remove(GetActor());
 }
-
+// 画面を揺らす
 void EnemyBoss::StartDamageShake()
 {
     // シェイク時間 パワー
@@ -901,11 +906,11 @@ void EnemyBoss::StartDamageShake()
     damageDistortion.mask_radius = 200.0f;
     postprocessingRenderer.SetRadialBlurMaxData(damageDistortion);
 }
-
+// 削除更新
 void EnemyManager::DeleteUpdate(float elapsedTime)
 {
     // 破棄処理 毎フレームここで一気に消す。
-    for (std::shared_ptr<Actor> enemy : removes)// 殺しますよリストを殺す
+    for (std::shared_ptr<Actor> enemy : removes)// リストを消す
     {
         std::vector<std::shared_ptr<Actor>>::iterator it = std::find(enemies.begin(), enemies.end(),
             enemy);
@@ -917,22 +922,22 @@ void EnemyManager::DeleteUpdate(float elapsedTime)
     // 破棄リストをクリア
     removes.clear();
 }
-
+// エネミー作成
 void EnemyManager::Register(std::shared_ptr<Actor> actor)
 {
     enemies.emplace_back(actor);
 }
-
+// 全削除
 void EnemyManager::Clear()
 {
-    for (std::shared_ptr<Actor>& actor : enemies)// 
+    for (std::shared_ptr<Actor>& actor : enemies)
     {
         // 実体を消した管理している数はそのまま
         actor.reset();
     }
     enemies.clear();
 }
-
+// 削除登録
 void EnemyManager::Remove(std::shared_ptr<Actor> actor)
 {
     // 削除登録

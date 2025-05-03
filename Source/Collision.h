@@ -45,17 +45,6 @@ public:
         DirectX::XMFLOAT3& outPositionB// ‰Ÿ‚³‚ê‚½‘Šè‚ª•Ï‚¦‚é
     );
 
-    // ‰~’Œ‰¡‚Æ‰~’Œ‰¡‚ÌŒğ·”»’è@‚¤‚»‚Ì
-    static bool IntersectCylinderWidthVsCylinderWidth(
-        const DirectX::XMFLOAT3& positionA,//player
-        float radiusA,
-        float widthA,
-        const DirectX::XMFLOAT3& positionB,//ƒXƒ‰ƒCƒ€
-        float radiusB,
-        float widthB,
-        DirectX::XMFLOAT3& outPositionB// ‰Ÿ‚³‚ê‚½‘Šè‚ª•Ï‚¦‚é
-    );
-
     // ‹…‚Æ‰~’Œ‚ÌŒğ·”»’è@‚¤‚»‚Ì
     static bool IntersectSphereVsCylinder(
         const DirectX::XMFLOAT3& spherePosition,
@@ -77,15 +66,26 @@ public:
     // ”¼Œa@
     float GetRadius() { return radius; }
     void  SetRadius(float radius) { this->radius = radius; }
+    // ”¼Œaƒp[ƒc‚²‚Æ‚É
+    float GetPartRadius() { return partRadius; }
+    void  SetPartRadius(float partRadius) { this->partRadius = radius; }
 
     // ‚‚³
     float GetHeight() { return height; }
     void  SetHeight(float height) { this->height = height; }
 
+    // “ñŒÂ–Ú‚Ì‚‚³
+    float GetSecondesHeight() { return secondesHeight; }
+    void  SetSecondesHeight(float secondesHeight) { this->secondesHeight = secondesHeight; }
 private:
     // ”¼Œa05 
     float radius = 0.6f;
 
+    // ”¼Œaˆê•”
+    float partRadius = 0.1f;
+
     // ‚‚³
-    float height = 1;
+    float height = 1.0f;
+
+    float secondesHeight = 0.0f;
 };

@@ -153,8 +153,17 @@ void Movement::JumpVelocity(float speed)
 }
 
 // êÅÇ¡îÚÇŒÇµ
-void Movement::AddImpulse(const DirectX::XMFLOAT3& impulse)
+void Movement::AddImpulse(const DirectX::XMFLOAT3& impulse, bool initialize)
 {
+    // èCê≥ì_
+    if (initialize)
+    {
+        velocity.x = 0.0f;
+        velocity.y = 0.0f;
+        velocity.z = 0.0f;
+    }
+    //
+
     velocity.x += impulse.x;
     velocity.y += impulse.y;
     velocity.z += impulse.z;

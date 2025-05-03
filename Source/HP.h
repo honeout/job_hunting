@@ -63,7 +63,7 @@ public:
 	// 無敵時間中
 	bool InvincibleTimerCheck();
 
-	// ダメージ時を取得
+	// ダメージを食らって一定時間
 	bool FlashTime(float elapsedTime);
 
 	// 無敵時間

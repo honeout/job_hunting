@@ -22,6 +22,7 @@ void HP::OnGUI()
 	ImGui::SliderInt("bonusHp", &bonusHp,0,maxHealth);
 }
 #endif // _DEBUG
+// 無敵時間
 void HP::UpdateInbincibleTimer(float elapsedTime)
 {
     if (invincibleTimer > invincibleTimerMin)
@@ -108,19 +109,19 @@ void HP::AddHealth(int health)
         this->health = maxHealth;
     }
 }
-
+// ダメージ量を取得
 bool HP::OnDamaged()
 {
     return onDamage;
 }
-
+// 死亡
 bool HP::OnDead()
 {
     ActorManager::Instance().Remove(GetActor());
     return true;
 }
 
-// HPが4/1なら
+// HPが4/1なら　ピンチ状態
 bool HP::HealthPinch()
 {
     if (health <= (maxHealth / 4))
@@ -137,7 +138,7 @@ bool HP::InvincibleTimerCheck()
 
         return false;
 }
-
+// ダメージを食らって一定時間
 bool HP::FlashTime(float elapsedTime)
 {
     if (onDamage)

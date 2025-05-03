@@ -67,6 +67,12 @@ public:
     void InputAttackSlashSpecileLightningStrikeSE();
     // SE再生 必殺技魔法　炎
     void InputAttackFlameSpecileSE();
+
+    // SE再生
+    void InputSe(AudioParam param);
+    // se停止
+    void StopSe(AudioParam param);
+
     // カメラ切り替え処理
     void UpdateCameraState(float elapsedTime);
     // 弾丸と敵の衝突処理
@@ -178,8 +184,6 @@ public:
 
     void AttackCheckUI();
 
-    void inFloat3(DirectX::XMFLOAT3 value, DirectX::XMFLOAT3& inValue);
-
     DirectX::XMFLOAT3 GetForwerd(DirectX::XMFLOAT3 angle);
 
     StateMachine* GetStateMachine() { return stateMachine.get(); }
@@ -230,6 +234,11 @@ public:
 
     // ダメージ判定
     void SpecialApplyDamageInRadius();
+
+    // エネミー接触判定
+    bool GetIsEnemyHit() { return isEnemyHit; }
+    // エネミー接触判定上半身
+    bool GetIsEnemyHitBody() { return isEnemyHitBody; }
 public:
     // ゲームステート
     enum class State
@@ -344,13 +353,6 @@ public:
         MagicIce,
     };
 
-private:
-        //// 構造体
-        //struct SpecialMode
-        //{
-        //    bool specialAttack;
-        //    bool specialShot;
-        //};
 public:
     bool GetAfterimageMove() const { return this->afterimagemove; }
 
@@ -418,6 +420,13 @@ public:
     // 描画するかどうか
     void SetPlayeDrawCheck(int isPlayerDrawCheck) { this->isPlayerDrawCheck = isPlayerDrawCheck; }
 
+    // Ui魔法チャージ動作開始
+    void StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax);
+    // Ui魔法チャージ動作発射
+    void StartMagicUiFire();
+
+    // デバッグ用
+    bool GetDebugCameraTime() { return debugCameraTime; }
 private:
     // 構造体
     struct SpecialAttack
@@ -441,13 +450,13 @@ private:
     // 空中行動許可間隔
     int areAttackState = 0;
     int areAttackStateEnd = 0;
-    int areAttackStateMax = 1;
+    int areAttackStateMax = 3;
 
     // 空中行動間隔時間
-    float areAttackTime = 0.0f;
-    float areAttackTimeEnd = 0.0f;
-    float areAttackTimeMax = 1.0f;
-    float areAttackTimeValue = 0.1f;
+    int areAttackTimeEnd = 0;
+    int areAttackTimeMax = 3;
+    int areAttackTimeValue = 1;
+    int areAttackTime;
 
     // 経過時間を測る
     float timeElapsed = 0.0f;
@@ -523,7 +532,7 @@ private:
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
     float jumpfliptime = gravity * 5;
 
-    float            leftHandRadius = 1.0f;
+    float            leftHandRadius = 1.8f;
 
     bool             attackCollisionFlag = false;
 
@@ -662,11 +671,8 @@ private:
     // 特殊技コマンド開く
     bool specialAction = false;
 
-    // 特殊技斬撃がたまったか
-    bool isSpecialAttack = false;
-
-    // 特殊技炎がたまったか
-    bool isSpecialMagicFire = false;
+    // 特殊技たまった時の反応
+    bool isUiSpecilDrawCheck = false;
 
     // 揺れ
     bool shakeMode = false;
@@ -811,6 +817,24 @@ private:
 
     // デバッグ
     int debugInt = 0;
+
+    // UI操作用
+    float playerCommandPushUiChargeTime = 0.0f;
+
+    // 魔法チャージ加算
+    float commandChargeAddMin = 0.065f;
+
+    // se再生情報
+    AudioParam seParam;
+
+    // エネミー接触判定
+    bool isEnemyHit;
+    // エネミー接触判定上半身
+    bool isEnemyHitBody;
+
+    bool debugShaderFlash = false;
+    bool debugShaderFlashSeconde = false;
+    bool debugCameraTime = false;
 };
 
 // プレイヤーマネージャー

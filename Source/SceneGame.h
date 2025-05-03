@@ -23,7 +23,7 @@ public:
 	// 初期化
 	void Initialize() override;
 
-	// スタート
+	//　ゲーム始まった瞬間だけ
 	void Start() override;
 
 	// 終了化
@@ -93,7 +93,7 @@ private:
 	float lightPositionScale = -250.0f;
 
 	// BGMの音の大きさ
-	float bgmVolume = 1.0f;
+	float bgmVolume = 0.8f;
 
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;

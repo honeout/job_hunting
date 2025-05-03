@@ -42,7 +42,7 @@ public:
 	void JumpVelocity  ( float speed);
 
 	// ÕŒ‚”g
-	void AddImpulse(const DirectX::XMFLOAT3& impulse);
+	void AddImpulse(const DirectX::XMFLOAT3& impulse, bool initialize = false);
 
 	// …•½‘¬—ÍXVˆ—
 	void UpdateHorizontalVelocity( float elapsedFrame);
@@ -181,4 +181,7 @@ private:
 
 	// s“®”ÍˆÍ
 	Area area;
+
+	// ÕŒ‚”g‚©
+	bool isImpactV = false;
 };

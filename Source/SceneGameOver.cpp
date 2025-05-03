@@ -14,6 +14,8 @@
 #include "EffectManager.h"
 void SceneGameOver::Initialize()
 {
+	// bgm
+	StartBgm();
     // コンポーネント初期化
     InitializeComponent();
 
@@ -129,7 +131,7 @@ void SceneGameOver::Initialize()
 void SceneGameOver::Start()
 {
 	// 音BGM
-	StartBgm();
+	//StartBgm();
 }
 
 void SceneGameOver::Finalize()
@@ -844,7 +846,6 @@ void SceneGameOver::StartBgm()
 	Audio& Se = Audio::Instance();
 	AudioParam audioParam;
 	audioParam.filename = "Data/Audio/BGM/maou_bgm_fantasy06.wav";
-	audioParam.keyName = "BGM";
 	audioParam.loop = false;
 	audioParam.volume = bgmVolume;
 	Se.Play(audioParam);

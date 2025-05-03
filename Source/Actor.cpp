@@ -22,7 +22,7 @@ void Actor::Update(float elapsedTime)
 		component->Update(elapsedTime);
 	}
 }
-
+// ‚RD•`‰æ
 void Actor::Render(RenderContext rc, ModelShader* shader)
 {
 	// 3D•`‰æ
@@ -31,7 +31,7 @@ void Actor::Render(RenderContext rc, ModelShader* shader)
 		component->Render(rc, *shader);
 	}
 }
-
+// 2D•`‰æ
 void Actor::Render(RenderContext rc, SpriteShader* shader)
 {
 	// ‚QD•`‰æ
@@ -40,13 +40,12 @@ void Actor::Render(RenderContext rc, SpriteShader* shader)
 		component->Render(rc, *shader);
 	}
 }
-
+// 2D•`‰æ
 void Actor::Render2D(RenderContext rc, SpriteShader* shader)
 {
 	// ‚QD•`‰æ
 	for (std::shared_ptr<Component>& component : components)
 	{
-
 
 		component->Render2D(rc, *shader);
 	}
@@ -134,8 +133,6 @@ void ActorManager::Update(float elapsedTime)
 	}
 	removeActors.clear();
 }
-
-
 // •`‰æ
 void ActorManager::Render(RenderContext rc, ModelShader* shader)
 {
@@ -180,7 +177,7 @@ void ActorManager::Render2D(RenderContext rc, SpriteShader* shader)
 
 void ActorManager::Clear()
 {
-	for (std::shared_ptr<Actor>& actor : updateActors)// 
+	for (std::shared_ptr<Actor>& actor : updateActors)
 	{
 		// À‘Ì‚ğÁ‚µ‚½ŠÇ—‚µ‚Ä‚¢‚é”‚Í‚»‚Ì‚Ü‚Ü
 		actor.reset();
@@ -340,7 +337,7 @@ void ActorSceneLoadManager::Render2D(RenderContext rc, SpriteShader* shader)
 
 void ActorSceneLoadManager::Clear()
 {
-	for (std::shared_ptr<Actor>& actor : updateActors)// 
+	for (std::shared_ptr<Actor>& actor : updateActors)
 	{
 		// À‘Ì‚ğÁ‚µ‚½ŠÇ—‚µ‚Ä‚¢‚é”‚Í‚»‚Ì‚Ü‚Ü
 		actor.reset();

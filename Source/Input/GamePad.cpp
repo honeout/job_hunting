@@ -179,8 +179,6 @@ void GamePad::Update()
 		}
 	}
 
-
-
 	// ボタン情報の更新
 	{
 		// スイッチ履歴
@@ -197,7 +195,6 @@ void GamePad::SetInputKey(GamePadButton newButtonState)
 	// 入力されたら
 	for (int i = MAX_INPUT_KEY - 1; i > 0; --i)
 	{
-
 		inputKeys[i] = inputKeys[i - 1];
 	}
 	inputKeys[0] = newButtonState;

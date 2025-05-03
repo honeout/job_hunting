@@ -81,6 +81,7 @@ public:
     // 当たり判定右端
     void DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int applyDamage);
 
+    // 衝撃波発生
     void InputImpact(DirectX::XMFLOAT3 pos);
 
     // 縄張り設定
@@ -98,11 +99,12 @@ public:
     void StateMachineCreate() { stateMachine = std::make_unique<StateMachine>(); }
 
 public:
+    // クリア用のステート
     enum class ClearState
     {
         Death,
     };
-
+    // gameステート管理
     enum class State
     {
         Wander,
@@ -140,14 +142,14 @@ public:
         Reverseplayback,
 
     };
-
+    // 攻撃モード
     enum class AttackMode
     {
         AssaultAttack,
         JumpStompAttack,
         DushAttack,
     };
-
+    // 行動ランダム
     enum class ExitRoot
     {
         ExitJamp,
@@ -325,11 +327,15 @@ private:
     int maxHealth = 50;
 
     // 半径
-    float radius = 2.3f;
+    float radius = 2.0f;
+    // パーツ事
+    float partRadius = 2.8f;
     float radiusUpper = 1.8f;
 
     // 高さ
-    float height = 9.0f;
+    float height = 5.5f;
+    // 混乱状態高さ
+    float confusionHeight = 3.0f;
 
     float territoryarea = 10.0f;
 

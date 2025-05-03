@@ -136,7 +136,6 @@ void DebugRenderer::Render(ID3D11DeviceContext* context, const DirectX::XMFLOAT4
 
 	// 定数バッファ設定
 	context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
-	//context->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
 	// レンダーステート設定
 	const float blendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };

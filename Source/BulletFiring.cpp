@@ -73,8 +73,7 @@ bool BulletFiring::Turn(float turnspeed,const DirectX::XMFLOAT3 &target, float e
             // 現在の行列を回転させる　自分自身の姿勢
             DirectX::XMMATRIX Transformmid = DirectX::XMLoadFloat4x4(&transformid.lock()->GetTransform());
             Transformmid = DirectX::XMMatrixMultiply(Transformmid, Rotation); // 同じだからただ×だけ  Transform*Rotation
-            //// DirectX::XMMatrixMultrixMultiply
-            //// 回転後の前方方向を取り出し、単位ベクトル化する
+            // 回転後の前方方向を取り出し、単位ベクトル化する
             Direction = DirectX::XMVector3Normalize(Transformmid.r[2]);// row
             DirectX::XMStoreFloat3(&direction, Direction);
             actor.lock()->GetComponent<Transform>()->SetDirection(direction);
@@ -118,7 +117,7 @@ bool BulletFiring::Turn2D(float speed, DirectX::XMFLOAT3& direction, float elape
     {
         angle.y += rot;
     }
-    //// 正面の向きベクトル
+    // 正面の向きベクトル
     this->direction.x = sinf(angle.y);// 三角を斜めにして位置を変えた
     //this->direction.y = get;
     this->direction.z = cosf(angle.y);
@@ -202,7 +201,7 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
     transformid.lock()->SetDirection(direction);
     transformid.lock()->SetPosition(position);
 }
-
+// 通常ホーミング
 void BulletFiring::MoveFullHoming(
     float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime)
 {
@@ -277,7 +276,7 @@ void BulletFiring::MoveFullHoming(
     transformid.lock()->SetDirection(direction);
     transformid.lock()->SetPosition(position);
 }
-
+// ルビー下から飛び出し
 void BulletFiring::JumpOut(float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime)
 {
     std::weak_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
@@ -375,7 +374,6 @@ void BulletFiring::Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 targ
             // アークコサインでも出来るしかも一瞬でその値を入れる。
             // 2つの単位ベクトルの角度が小さい程
             // 1.0に近づくという性質を利用して回転速度を調整する
-            //if (dot )
             float rot;
             // 1.0f　dotは０に近づく程１になるからーくとこっちも０になる
             rot = 1.0f - dot;
@@ -397,7 +395,6 @@ void BulletFiring::Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 targ
                 // 現在の行列を回転させる　自分自身の姿勢
                 DirectX::XMMATRIX Transform = DirectX::XMLoadFloat4x4(&transformid.lock()->GetTransform());
                 Transform = DirectX::XMMatrixMultiply(Transform, Rotation); // 同じだからただ×だけ  Transform*Rotation
-                // DirectX::XMMatrixMultrixMultiply
                 // 回転後の前方方向を取り出し、単位ベクトル化する
                 Direction = DirectX::XMVector3Normalize(Transform.r[2]);// row
                 DirectX::XMStoreFloat3(&direction, Direction);

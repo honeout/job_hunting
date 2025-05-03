@@ -42,5 +42,24 @@ void Camera::SetPerspedtiveFov(float forY, float aspect, float nearZ, float farZ
     DirectX::XMStoreFloat4x4(&projection, Projection);
     //‚¢‚Â‚Å‚àview projection‚ªŽg‚¦‚é‚Ì‚ªŠÌ
 }
+// Šp“x‚ðuŽž‚É•Ï‚¦‚é
+float Camera::MoveTowardsTargetRadian(float currentRadian, float targetRadian)
+{
+    // ·•ªŒvŽZ
+    float diff = targetRadian - currentRadian;
+
+    // ƒ‰ƒWƒAƒ“‚ð[-ƒÎAƒÎ]‚Ì”ÍˆÍ‚É³‹K‰»
+    for (; diff > DirectX::XM_PI;)diff -= DirectX::XM_2PI;
+    for (; diff < -DirectX::XM_PI;)diff += DirectX::XM_2PI;
+
+    // ¡‰ñ‚Íˆê‹C‚ÉŒü‚©‚¹‚é
+    currentRadian += diff;
+
+    // 2ƒÎˆÈ“à‚É”[‚ß‚é
+    if (currentRadian < 0.0f)currentRadian += DirectX::XM_2PI;
+    if (currentRadian >= DirectX::XM_PI)currentRadian -= DirectX::XM_2PI;
+
+    return sinf(currentRadian);
+}
 
 

@@ -193,7 +193,6 @@ PhonShader::PhonShader(ID3D11Device* device)
         HRESULT hr = device->CreateSamplerState(&desc, samplerState.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
-        // UNIT11
         // シャドウマップ用
         desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
         desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
@@ -221,7 +220,6 @@ void PhonShader::Begin(const RenderContext& rc)
         sceneConstantBuffer.Get(),
         meshConstantBuffer.Get(),
         subsetConstantBuffer.Get(),
-        // UNIT11
         shadowMapConstantBuffer.Get()
     };
     rc.deviceContext->VSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
@@ -244,7 +242,7 @@ void PhonShader::Begin(const RenderContext& rc)
         samplerState.Get(),
         shadowMapSamplerState.Get()
     };
-    // UNIT11
+
     rc.deviceContext->PSSetSamplers(0, ARRAYSIZE(samplerStates), samplerStates);
 
     // シーン用定数バッファ更新
@@ -282,7 +280,6 @@ void PhonShader::Begin(const RenderContext& rc)
 
     rc.deviceContext->UpdateSubresource(sceneConstantBuffer.Get(), 0, 0, &cbScene, 0, 0);
 
-    // UNIT11
     // シャドウマップ用定数バッファ更新
     CbShadowMap cbShadowMap;
     cbShadowMap.shadowColor = rc.shadowMapData.shadowColor;

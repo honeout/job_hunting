@@ -1,7 +1,6 @@
 #include <stdio.h> 
 #include <WICTextureLoader.h>
 #include "Sprite.h"
-#include "TransForm2D.h"
 #include "Misc.h"
 #include "Graphics/Graphics.h"
 
@@ -331,11 +330,6 @@ void Sprite::Update(float dx, float dy, float dw, float dh, float sx, float sy, 
 	}
 }
 
-#ifdef _DEBUG
-void Sprite::OnGUI()
-{
-}
-#endif // _DEBUG
 
 // ï`âÊé¿çs
 void Sprite::Render(ID3D11DeviceContext *immediate_context,
@@ -472,26 +466,28 @@ void Sprite::UpdateAnimation(float elapsedTime)
 {
 	if (!currentClip) return;
 
-	std::weak_ptr<Actor> actor = GetActor();
+	//std::weak_ptr<Actor> actor = GetActor();
 
 	frameTimer += elapsedTime;
 	for (; frameTimer >= currentClip->frames[currentFrameIndex].duration;)
 	{
-		frameTimer -= currentClip->frames[currentFrameIndex].duration;
+		frameTimer = 0.0f;
 		currentFrameIndex++;
+		
+
 
 		if (currentFrameIndex >= currentClip->frames.size()) {
-			DirectX::XMFLOAT2 pos;
-			pos.x = currentClip->frames.at(currentFrameIndex).rect.left;
-			pos.y = 0.0f;
-			
-			actor.lock()->GetComponent<TransForm2D>()->SetTexPosition(pos);
+			//DirectX::XMFLOAT2 pos;
+			//pos.x = currentClip->frames.at(currentFrameIndex).rect.left;
+			//pos.y = 0.0f;
+			//
+			//actor.lock()->GetComponent<TransForm2D>()->SetTexPosition(pos);
 
-			// å≥ÇÃëÂÇ´Ç≥
-			DirectX::XMFLOAT2 texScale;
-			texScale.x = currentClip->frames.at(currentFrameIndex).rect.right;
-			texScale.y = currentClip->frames.at(currentFrameIndex).rect.bottom;
-			actor.lock()->GetComponent<TransForm2D>()->SetTexScale(texScale);
+			//// å≥ÇÃëÂÇ´Ç≥
+			//DirectX::XMFLOAT2 texScale;
+			//texScale.x = currentClip->frames.at(currentFrameIndex).rect.right;
+			//texScale.y = currentClip->frames.at(currentFrameIndex).rect.bottom;
+			//actor.lock()->GetComponent<TransForm2D>()->SetTexScale(texScale);
 
 			if (currentClip->isLooping)
 				currentFrameIndex = 0;

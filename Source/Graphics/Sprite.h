@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 #include "Sprite.h"
-#include "Component.h"
 
 // スプライト
 class Sprite
@@ -84,6 +83,21 @@ public:
 
 	// テクスチャ高さ取得
 	int GetTextureHeight() const { return textureHeight; }
+private:
+	struct Texture
+	{
+		// 今のアニメーションの画像位置
+		int animIndex;
+		// 元画像の位置１ポーズ
+		DirectX::XMFLOAT2 texPos;
+		// 元画像の全体
+		DirectX::XMFLOAT2 texPosMax;
+		// 余白
+		float top = 0.0f;
+		float left = 0.0f;
+		// 何処を参照するか
+		DirectX::XMFLOAT2 spriteSheat;
+	};
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vertexShader;
@@ -107,4 +121,6 @@ private:
 	const AnimClip* currentClip = nullptr;
 	int currentFrameIndex = 0;
 	float frameTimer = 0.0f;
+
+
 };

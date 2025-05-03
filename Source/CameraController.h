@@ -73,7 +73,6 @@ private:
 	DirectX::XMFLOAT3	newTarget = { 0, 0, 0 };
 	DirectX::XMFLOAT3	targetWork[2] = { { 0, 0, 0 }, { 0, 0, 0 } };	// 0 : 座標, 1 : 注視点
 	float				lengthLimit[2] = { 6, 8 };
-	//float				lengthLimit[2] = { 5, 7 };
 	float				sideValue = 1;
 	// モーションカメラ
 	float				motionTimer = 0;

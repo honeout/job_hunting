@@ -523,7 +523,7 @@ void Model::ReverseplaybackAnimation(float elapsedTime, bool blend)
 		}
 	}
 }
-
+// 制作途中のブレンドアニメーション
 void Model::Update_blend_animations_gun(float elapsedTime, float blendrate, float currentAnimationSeconds, float currentAnimationSecondsblend, bool blend)
 {
 	// 再生中でないなら処理しない
@@ -567,7 +567,7 @@ void Model::Update_blend_animations_gun(float elapsedTime, float blendrate, floa
 		}
 	}
 }
-
+// 制作途中のブレンドアニメーション
 void Model::Update_blend_animations(float elapsedTime,   bool blend)
 {
 	// 再生中でないなら処理しない
