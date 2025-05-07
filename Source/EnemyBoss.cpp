@@ -18,22 +18,33 @@ EnemyBoss::~EnemyBoss()
 
 void EnemyBoss::Start()
 {
-    // ムーブメント関数を使えるように
-    movement = GetActor()->GetComponent<Movement>();
-    // hp関数を使えるように
-    hp = GetActor()->GetComponent<HP>();
-    // collisionを使えるように
-    collision = GetActor()->GetComponent<Collision>();
-    // transform関数を使えるように
-    transform = GetActor()->GetComponent<Transform>();
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+
+    // コンポーネントを使えるように
+    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
+    std::shared_ptr hpId = sharedId->GetComponent<HP>();
+    std::shared_ptr transformId = sharedId->GetComponent<Transform>();
+    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+
+    //// ムーブメント関数を使えるように
+    //movement = GetActor()->GetComponent<Movement>();
+    //// hp関数を使えるように
+    //hp = GetActor()->GetComponent<HP>();
+    //// collisionを使えるように
+    //collision = GetActor()->GetComponent<Collision>();
+    //// transform関数を使えるように
+    //transform = GetActor()->GetComponent<Transform>();
     // モデルデータを入れる。
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
-    hp.lock()->SetHealth(health);
-    hp.lock()->SetMaxHealth(maxHealth);
-    collision.lock()->SetRadius(radius);
-    collision.lock()->SetPartRadius(partRadius);
-    collision.lock()->SetHeight(height);
-    collision.lock()->SetSecondesHeight(confusionHeight);
+    hpId->SetHealth(health);
+    hpId->SetMaxHealth(maxHealth);
+    collisionId->SetRadius(radius);
+    collisionId->SetPartRadius(partRadius);
+    collisionId->SetHeight(height);
+    collisionId->SetSecondesHeight(confusionHeight);
     // エフェクト
     moveAttackEffect = std::make_unique<Effect>("Data/Effect/enemyMoveAttackHit.efk");
     awakeEffect = std::make_unique<Effect>("Data/Effect/awake.efk");
@@ -74,6 +85,16 @@ void EnemyBoss::Start()
 // 更新処理
 void EnemyBoss::Update(float elapsedTime)
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+
+    // コンポーネントを使えるように
+    std::shared_ptr transformId = sharedId->GetComponent<Transform>();
+    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
+    std::shared_ptr hpId = sharedId->GetComponent<HP>();
+
     // 動作するかどうか
     if (moveCheck)
     // ステート毎の処理
@@ -83,17 +104,17 @@ void EnemyBoss::Update(float elapsedTime)
     ManageAwakeTime(elapsedTime);
 
     // 位置
-    position = transform.lock()->GetPosition();
+    position = transformId->GetPosition();
     // 向き
-    angle = transform.lock()->GetAngle();
+    angle = transformId->GetAngle();
     // 大きさ
-    scale = transform.lock()->GetScale();
+    scale = transformId->GetScale();
 
     // 速力処理更新
-    movement.lock()->UpdateVelocity(elapsedTime);
+    movementId->UpdateVelocity(elapsedTime);
 
     // 無敵時間更新
-    hp.lock()->UpdateInbincibleTimer(elapsedTime);
+    hpId->UpdateInbincibleTimer(elapsedTime);
 
     // 当たり判定衝撃波とプレイヤー
     CollisionImpactVsPlayer();
@@ -102,7 +123,7 @@ void EnemyBoss::Update(float elapsedTime)
     ProjectileManager::Instance().DeleteUpdate(elapsedTime);//todo いるの？
 
     // ワールド位置
-    transform.lock()->UpdateTransform();
+    transformId->UpdateTransform();
 
     // ダメージ点滅
     OnHit(elapsedTime);
@@ -143,7 +164,7 @@ void EnemyBoss::Update(float elapsedTime)
     }
 
     // 姿勢
-    model->UpdateTransform(transform.lock()->GetTransform());
+    model->UpdateTransform(transformId->GetTransform());
     
     // ゲージ管理
     UiControlle(elapsedTime);
@@ -167,6 +188,13 @@ void EnemyBoss::Render(RenderContext& rc, ModelShader& shader)
 #ifdef _DEBUG
 void EnemyBoss::OnGUI()
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+
+    std::shared_ptr hpId = sharedId->GetComponent<HP>();
+
     if(ImGui::Button("drawtrue"))
     {
         modelDrawCheck = true;
@@ -180,7 +208,7 @@ void EnemyBoss::OnGUI()
         ResetAwakeTime();
         bool check = isEnemyAwakened ? true : false;
         // 耐久力追加
-        hp.lock()->SetIsBonusHpActive(check);
+        hpId->SetIsBonusHpActive(check);
     }
     if (ImGui::Button("StartAwake"))
     {
@@ -363,6 +391,12 @@ void EnemyBoss::InputChargeSe()
 // 足踏み(衝撃波)の当たり判定
 void EnemyBoss::CollisionImpactVsPlayer()
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+
     PlayerManager& playerManager = PlayerManager::Instance();
 
     ProjectileManager& projectileManager = ProjectileManager::Instance();
@@ -397,14 +431,14 @@ void EnemyBoss::CollisionImpactVsPlayer()
                 // 衝突処理
                 DirectX::XMFLOAT3 outPositon;
                 // 円柱と円
-                if (collision.lock()->IntersectSphereVsCylinder(
+                if (collisionId->IntersectSphereVsCylinder(
                     projectilePosition,
                     projectileRadiusOutLine,
                     playerPosition,
                     playerRadius,
                     playerHeight,
                     outPositon) &&
-                    !collision.lock()->IntersectSphereVsCylinder(
+                    !collisionId->IntersectSphereVsCylinder(
                         projectilePosition,
                         projectileRadiusInLine,
                         playerPosition,
@@ -461,77 +495,91 @@ void EnemyBoss::CollisionImpactVsPlayer()
 // ジャンプ処理
 bool EnemyBoss::CollisionPlayerWithRushEnemy()
 {
-        int playerCount = PlayerManager::Instance().GetPlayerCount();
-        for (int j = 0; j < playerCount; ++j)
-        {
-            std::weak_ptr<Actor> player = PlayerManager::Instance().GetPlayer(j);
-            DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
-            float playerRadius = player.lock()->GetComponent<Collision>()->GetRadius();
-            float playerHeight = player.lock()->GetComponent<Collision>()->GetHeight();
-            // 衝突処理
-            DirectX::XMFLOAT3 outPositon;
-            // 球と球
-            if (collision.lock()->IntersectCylinderVsCylinder(
-                position,
-                attackRange,
-                height,
-                {
-                playerPosition.x,
-                playerPosition.y,
-                playerPosition.z,
-                },
-                playerRadius ,
-                playerHeight,
-                outPositon))
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return false;
 
+    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+
+    int playerCount = PlayerManager::Instance().GetPlayerCount();
+    for (int j = 0; j < playerCount; ++j)
+    {
+        std::weak_ptr<Actor> player = PlayerManager::Instance().GetPlayer(j);
+        DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
+        float playerRadius = player.lock()->GetComponent<Collision>()->GetRadius();
+        float playerHeight = player.lock()->GetComponent<Collision>()->GetHeight();
+        // 衝突処理
+        DirectX::XMFLOAT3 outPositon;
+        // 球と球
+        if (collisionId->IntersectCylinderVsCylinder(
+            position,
+            attackRange,
+            height,
             {
-                // ダメージを与える。
-                if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamageJamp, jampInvincibleTime))
+            playerPosition.x,
+            playerPosition.y,
+            playerPosition.z,
+            },
+            playerRadius,
+            playerHeight,
+            outPositon))
+
+        {
+            // ダメージを与える。
+            if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamageJamp, jampInvincibleTime))
+            {
+                // 振動
+                StartDamageShake();
+                DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
+                DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
+                DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
+                DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
+                DirectX::XMFLOAT3 normal;
+                DirectX::XMStoreFloat3(&normal, N);
+                float jumpSpeed = 5.0f;
+                // 衝撃
+                const float power = 10.0f;
+                DirectX::XMFLOAT3 impulse;
+                impulse.y = power * 0.5f;
+                player.lock()->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
+                //// 吹き飛ばす
                 {
-                    // 振動
-                    StartDamageShake();
-                    DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
-                    DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
-                    DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
-                    DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
-                    DirectX::XMFLOAT3 normal;
-                    DirectX::XMStoreFloat3(&normal, N);
-                    float jumpSpeed = 5.0f;
-                    // 衝撃
-                    const float power = 10.0f;
+                    // 衝動
                     DirectX::XMFLOAT3 impulse;
+                    // 衝撃
+                    const float power = 20.0f;
+                    float vx = playerPosition.x - position.x;
+                    float vz = playerPosition.z - position.z;
+                    float lengthXZ = sqrtf(vx * vx + vz * vz);
+                    vx /= lengthXZ;
+                    vz /= lengthXZ;
+                    impulse.x = vx * power;
                     impulse.y = power * 0.5f;
-                    player.lock()->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
-                    //// 吹き飛ばす
-                    {
-                        // 衝動
-                        DirectX::XMFLOAT3 impulse;
-                        // 衝撃
-                        const float power = 20.0f;
-                        float vx = playerPosition.x - position.x;
-                        float vz = playerPosition.z - position.z;
-                        float lengthXZ = sqrtf(vx * vx + vz * vz);
-                        vx /= lengthXZ;
-                        vz /= lengthXZ;
-                        impulse.x = vx * power;
-                        impulse.y = power * 0.5f;
-                        impulse.z = vz * power;
-                        player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
-                        // ヒットエフェクト再生
-                        playerPosition.y += playerHeight * 0.5f;
-                        player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
-                        // UI揺れ
-                        player.lock()->GetComponent<Player>()->SetShakeMode(shakeStart);
-                    }
+                    impulse.z = vz * power;
+                    player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
+                    // ヒットエフェクト再生
+                    playerPosition.y += playerHeight * 0.5f;
+                    player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
+                    // UI揺れ
+                    player.lock()->GetComponent<Player>()->SetShakeMode(shakeStart);
                 }
             }
         }
+    }
     return false;
 }
 
 // 衝撃波
 void EnemyBoss::CollisionInpact()
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+
+    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+
     // 衝撃波の有無
     if (!IsInpact) return;
     PlayerManager& playerManager = PlayerManager::Instance();
@@ -559,21 +607,22 @@ void EnemyBoss::CollisionInpact()
     int projectileCount = projectileManager.GetProjectileCount();
     for (int j = 0; j < playerCount; ++j)
     {
-        std::weak_ptr<Actor> player = playerManager.GetPlayer(j);//外ループの方が軽い
-        DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
-        float playerRadius = player.lock()->GetComponent<Collision>()->GetRadius();
-        float playerHeight = player.lock()->GetComponent<Collision>()->GetHeight();
+        std::shared_ptr<Actor> player = playerManager.GetPlayer(j);//外ループの方が軽い
+        if (!player) return;
+        DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
+        float playerRadius = player->GetComponent<Collision>()->GetRadius();
+        float playerHeight = player->GetComponent<Collision>()->GetHeight();
         // 衝突処理
         DirectX::XMFLOAT3 outPositon;
         // 円柱と円
-        if (collision.lock()->IntersectSphereVsCylinder(
+        if (collisionId->IntersectSphereVsCylinder(
             bossLeftFootPosition,
             radiusInpactOutSide,
             playerPosition,
             playerRadius,
             playerHeight,
             outPositon) &&
-            !collision.lock()->IntersectSphereVsCylinder(
+            !collisionId->IntersectSphereVsCylinder(
                 bossLeftFootPosition,
                 radiusInpactInSide,
                 playerPosition,
@@ -585,9 +634,9 @@ void EnemyBoss::CollisionInpact()
             // 高さが一定以下なら通る
             if (bossLeftFootPosition.y + radiusInpactHeight < playerPosition.y) return;
             // ダメージを与える。
-            if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamageImpact, impactInvincibleTime))
+            if (player->GetComponent<HP>()->ApplyDamage(applyDamageImpact, impactInvincibleTime))
             {
-                player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+                player->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
 
                 // 吹き飛ばす
                 {
@@ -603,7 +652,7 @@ void EnemyBoss::CollisionInpact()
                     impulse.x = vx * power;
                     impulse.y = power * 0.5f;
                     impulse.z = vz * power;
-                    player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
+                    player->GetComponent<Movement>()->AddImpulse(impulse);
                 }
                 // ヒットエフェクト再生
                 {
@@ -647,6 +696,13 @@ void EnemyBoss::ResetAwakeTime()
 // パーツごとの当たり判定
 void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int applyDamage)
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+
+    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+
     int playerCount = PlayerManager::Instance().GetPlayerCount();
     for (int j = 0; j < playerCount; ++j)
     {
@@ -657,7 +713,7 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
         // 衝突処理
         DirectX::XMFLOAT3 outPositon;
         // 球と球
-        if (collision.lock()->IntersectSphereVsCylinder(
+        if (collisionId->IntersectSphereVsCylinder(
             partBodyPosition,
             attackRightFootRange,
             playerPosition,
@@ -745,15 +801,22 @@ void EnemyBoss::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
 // 敵HPのUI
 void EnemyBoss::UiControlle(float elapsedTime)
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+    // コンポーネントを使えるように
+    std::shared_ptr hpId = sharedId->GetComponent<HP>();
+
     if (UiManager::Instance().GetUiesCount() <= uiCountMax)return;
-    float gaugeWidth = hp.lock()->GetMaxHealth() * hp.lock()->GetHealth() * 0.12f;
+    float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.12f;
     std::weak_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp.lock()->GetScale().y };
     uiHp.lock()->SetScale(scale);
     std::weak_ptr<Ui> uiHpLife1 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife01)->GetComponent<Ui>();
     std::weak_ptr<Ui> uiHpLife2 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife02)->GetComponent<Ui>();
     bool checkDraw = false;
-    switch (hp.lock()->GetLife())
+    switch (hpId->GetLife())
     {
     case 1:
     {
@@ -772,7 +835,14 @@ void EnemyBoss::UiControlle(float elapsedTime)
 // エネミー点滅
 void EnemyBoss::OnHit(float elapsedTime)
 {
-    if (hp.lock()->FlashTime(elapsedTime))
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+    // コンポーネントを使えるように
+    std::shared_ptr hpId = sharedId->GetComponent<HP>();
+
+    if (hpId->FlashTime(elapsedTime))
     {
         ++damageStateTime;
         if (damageStateTime >= damageStateTimeMax)
@@ -815,6 +885,13 @@ void EnemyBoss::SetRandomTargetPosition()
 // ターゲット位置までの移動
 void EnemyBoss::MoveToTarget(float elapsedTime, float speedRate)
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+    // コンポーネントを使えるように
+    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
+
     // ターゲット方向への進行ベクトルを算出
     float vx = targetPosition.x - position.x;
     float vy = 0.0f;
@@ -823,13 +900,20 @@ void EnemyBoss::MoveToTarget(float elapsedTime, float speedRate)
     vx /= dist;
     vz /= dist;
     // 移動処理
-    movement.lock()->Move({ vx,vy ,vz }, moveSpeed * speedRate, elapsedTime);
-    movement.lock()->Turn({ vx,vy ,vz } ,turnSpeed,elapsedTime);
+    movementId->Move({ vx,vy ,vz }, moveSpeed * speedRate, elapsedTime);
+    movementId->Turn({ vx,vy ,vz } ,turnSpeed,elapsedTime);
 }
 
 // 目的方向への回転
 void EnemyBoss::TurnToTarget(float elapsedTime, float speedRate)
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+    // コンポーネントを使えるように
+    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
+
     float vx = targetPosition.x - position.x;
     float vy = 0.0f;
     float vz = targetPosition.z - position.z;
@@ -837,21 +921,28 @@ void EnemyBoss::TurnToTarget(float elapsedTime, float speedRate)
     vx /= dist;
     vz /= dist;
     // 回転
-    movement.lock()->Turn({ vx,vy ,vz }, turnSpeed, elapsedTime);
+    movementId->Turn({ vx,vy ,vz }, turnSpeed, elapsedTime);
 }
 // ジャンプ
 void EnemyBoss::InputJump()
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+    // コンポーネントを使えるように
+    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
+
     // 強制停止
     if (position.y >= jumpLimit)
     {
         jumpSpeed = 0;
-        movement.lock()->JumpVelocity(jumpSpeed);
+        movementId->JumpVelocity(jumpSpeed);
     }
 
-    if (movement.lock()->GetOnLadius())
+    if (movementId->GetOnLadius())
     {
-        movement.lock()->JumpVelocity(jumpSpeedMin);
+        movementId->JumpVelocity(jumpSpeedMin);
     }
 }
 // プレイヤーの位置

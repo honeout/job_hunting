@@ -251,10 +251,10 @@ private:
     DirectX::XMFLOAT3 angle = {};
     DirectX::XMFLOAT3 scale = {};
 
-    std::weak_ptr<Movement>	movement;
-    std::weak_ptr<HP>	hp;
-    std::weak_ptr<Collision> collision;
-    std::weak_ptr<Transform>	transform;
+    //std::weak_ptr<Movement>	movement;
+    //std::weak_ptr<HP>	hp;
+    //std::weak_ptr<Collision> collision;
+    //std::weak_ptr<Transform>	transform;
 
     // äoê¡óLñ≥
     bool isEnemyAwakened = false;
