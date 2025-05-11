@@ -17,6 +17,7 @@
 #include "Transform.h"
 #include "StateMachine.h"
 #include "PostprocessingRenderer.h"
+#include "EnemyBoss.h"
 #include <stack>
 
 // プレイヤー
@@ -77,6 +78,29 @@ public:
     void UpdateCameraState(float elapsedTime);
     // 弾丸と敵の衝突処理
     void CollisionMagicVsEnemies();
+
+    // 弾丸と敵の衝突処理
+    void CollisionMagicVsEnemies(const char* bornName);
+
+    // 当たり判定パーツ事
+    bool CheckAllPartsCollision(DirectX::XMFLOAT3 pos, float rudius);
+
+    // 魔法の種類チェック炎
+    bool CheckMagicFire(std::shared_ptr<Actor> projectile);
+    // 魔法の種類チェック雷
+    bool CheckMagicThunder(std::shared_ptr<Actor> projectile);
+    // 魔法の種類チェック氷
+    bool CheckMagicIce(std::shared_ptr<Actor> projectile);
+
+    // 魔法火と敵との衝突判定
+    void CollisionMagicFire();
+
+    // 魔法雷と敵との衝突判定
+    void CollisionMagicSunder();
+
+    // 魔法氷と敵との衝突判定
+    void CollisionMagicIce();
+
     // プレイヤーとエネミーとの衝突処理
     void CollisionPlayerVsEnemies();
     // ボーンと攻撃の衝突判定
@@ -353,6 +377,11 @@ public:
         MagicIce,
     };
 
+    // エネミーに与える
+    enum AttackType {
+
+    };
+
 public:
     bool GetAfterimageMove() const { return this->afterimagemove; }
 
@@ -495,12 +524,12 @@ private:
 
     ProjectileManager projectileManager;
 
-    Effect* hitEffect = nullptr;
-    Effect* magicFireHitEffect = nullptr;
-    Effect* magicThenderHitEffect = nullptr;
-    Effect* magicIceHitEffect = nullptr;
-    Effect* ImpactEffect = nullptr;
-    Effect* desEffect = nullptr;
+    std::unique_ptr<Effect> hitEffect;
+    std::unique_ptr<Effect> magicFireHitEffect;
+    std::unique_ptr<Effect> magicThenderHitEffect;
+    std::unique_ptr<Effect> magicIceHitEffect;
+    std::unique_ptr<Effect> ImpactEffect;
+    std::unique_ptr<Effect> desEffect;
     std::unique_ptr<Effect> hitSlash;
     std::unique_ptr<Effect> lightningAttack;
     std::unique_ptr<Effect> hitFire;

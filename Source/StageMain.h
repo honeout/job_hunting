@@ -41,7 +41,7 @@ public:
 
 private:
     Model* model = nullptr;
-    std::shared_ptr<Transform> transformid;
+   /* std::shared_ptr<Transform> transformid;*/
     // スペキュラー無効化
     int isSpecular = 0;
     // 解消度を上げる。

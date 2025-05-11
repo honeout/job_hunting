@@ -11,13 +11,26 @@ StageMain::~StageMain()
 
 void StageMain::Start()
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+
+    std::shared_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
-    transformid = GetActor()->GetComponent<Transform>();
+    //transformid = GetActor()->GetComponent<Transform>();
 }
 
 // 更新処理
 void StageMain::Update(float elasedTime)
 {
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+
+    std::shared_ptr<Transform> transformid = GetActor()->GetComponent<Transform>();
+
     // 今は特にやることなし
     transformid->UpdateTransform();
     model->UpdateTransform(transformid->GetTransform());

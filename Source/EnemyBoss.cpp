@@ -29,14 +29,6 @@ void EnemyBoss::Start()
     std::shared_ptr transformId = sharedId->GetComponent<Transform>();
     std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
 
-    //// ムーブメント関数を使えるように
-    //movement = GetActor()->GetComponent<Movement>();
-    //// hp関数を使えるように
-    //hp = GetActor()->GetComponent<HP>();
-    //// collisionを使えるように
-    //collision = GetActor()->GetComponent<Collision>();
-    //// transform関数を使えるように
-    //transform = GetActor()->GetComponent<Transform>();
     // モデルデータを入れる。
     model = GetActor()->GetComponent<ModelControll>()->GetModel();
     hpId->SetHealth(health);
@@ -45,10 +37,12 @@ void EnemyBoss::Start()
     collisionId->SetPartRadius(partRadius);
     collisionId->SetHeight(height);
     collisionId->SetSecondesHeight(confusionHeight);
+
     // エフェクト
     moveAttackEffect = std::make_unique<Effect>("Data/Effect/enemyMoveAttackHit.efk");
     awakeEffect = std::make_unique<Effect>("Data/Effect/awake.efk");
     inpactEffect = std::make_unique<Effect>("Data/Effect/hit fire.efk");
+
     // アニメーションルール
     updateanim = UpAnim::Normal;
     // 上半身スタート再生開始場所
@@ -221,7 +215,6 @@ void EnemyBoss::OnGUI()
 }
 #endif // _DEBUG
 
-
 // デバッグプリミティブ描画
 void EnemyBoss::DrawDebugPrimitive()
 {
@@ -256,7 +249,7 @@ void EnemyBoss::DrawDebugPrimitive()
 
     debugRenderer->DrawCylinder(targetPosition, radius, height, DirectX::XMFLOAT4(1, 1, 0, 1));
 }
-
+// 後変更se
 void EnemyBoss::InputSlashSe()
 {
     Audio& Se = Audio::Instance();
@@ -266,7 +259,7 @@ void EnemyBoss::InputSlashSe()
     audioParam.volume = seVolume;
     Se.Play(audioParam);
 }
-
+// 後変更se
 void EnemyBoss::InputStopSlashSe()
 {
     Audio& Se = Audio::Instance();
@@ -276,7 +269,7 @@ void EnemyBoss::InputStopSlashSe()
     // 種類停止
     Se.Stop(filename);
 }
-
+// 後変更se
 void EnemyBoss::InputJampSe()
 {
     Audio& Se = Audio::Instance();
@@ -291,7 +284,7 @@ void EnemyBoss::InputJampSe()
 
     Se.Play(audioParam);
 }
-
+// 後変更se
 void EnemyBoss::InputStopJampSe()
 {
     Audio& Se = Audio::Instance();
@@ -301,7 +294,7 @@ void EnemyBoss::InputStopJampSe()
     // 種類停止
     Se.Stop(filename);
 }
-
+// 後変更se
 void EnemyBoss::InputDashSe()
 {
     Audio& Se = Audio::Instance();
@@ -316,7 +309,7 @@ void EnemyBoss::InputDashSe()
 
     Se.Play(audioParam);
 }
-
+// 後変更se
 void EnemyBoss::InputStopDashSe()
 {
     Audio& Se = Audio::Instance();
@@ -326,7 +319,7 @@ void EnemyBoss::InputStopDashSe()
     // 種類停止
     Se.Stop(filename);
 }
-
+// 後変更se
 void EnemyBoss::InputAwakeSe()
 {
     
@@ -342,7 +335,7 @@ void EnemyBoss::InputAwakeSe()
 
     Se.Play(audioParam);
 }
-
+// 後変更se
 void EnemyBoss::InputImpactSe()
 {
     Audio& Se = Audio::Instance();
@@ -357,7 +350,7 @@ void EnemyBoss::InputImpactSe()
 
     Se.Play(audioParam);
 }
-
+// 後変更se
 void EnemyBoss::InputDamageSe()
 {
     Audio& Se = Audio::Instance();
@@ -372,7 +365,7 @@ void EnemyBoss::InputDamageSe()
 
     Se.Play(audioParam);
 }
-
+// 後変更se
 void EnemyBoss::InputChargeSe()
 {
     Audio& Se = Audio::Instance();
@@ -388,6 +381,7 @@ void EnemyBoss::InputChargeSe()
     Se.Play(audioParam);
 }
 
+// 後変更Collision
 // 足踏み(衝撃波)の当たり判定
 void EnemyBoss::CollisionImpactVsPlayer()
 {
@@ -492,6 +486,8 @@ void EnemyBoss::CollisionImpactVsPlayer()
         }
     }
 }
+
+// 後変更Collision
 // ジャンプ処理
 bool EnemyBoss::CollisionPlayerWithRushEnemy()
 {
@@ -570,6 +566,7 @@ bool EnemyBoss::CollisionPlayerWithRushEnemy()
     return false;
 }
 
+// 後変更Collision
 // 衝撃波
 void EnemyBoss::CollisionInpact()
 {
@@ -663,6 +660,7 @@ void EnemyBoss::CollisionInpact()
     }
 }
 
+// 後変更いるかどうか
 // 敵覚醒管理
 void EnemyBoss::ManageAwakeTime(float elapsedTime)
 {
@@ -685,6 +683,8 @@ void EnemyBoss::ManageAwakeTime(float elapsedTime)
         awakeEffect->SetPosition(awakeEffect->GetEfeHandle(), position);
     }
 }
+
+// 後変更いるかどうか
 // 敵覚醒時間初期化
 void EnemyBoss::ResetAwakeTime()
 {
@@ -693,6 +693,8 @@ void EnemyBoss::ResetAwakeTime()
     // 覚醒中のエフェクト
     awakeEffect->Play(position);
 }
+
+// 後変更Collision
 // パーツごとの当たり判定
 void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int applyDamage)
 {
@@ -764,40 +766,43 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
         }
     }
 }
+
+// 後変更衝撃波飛ばす
 // 衝撃波発射
 void EnemyBoss::InputImpact(DirectX::XMFLOAT3 pos)
 {
-    {
-        // 弾丸初期化
-        const char* filename = "Data/Model/SpikeBall/SpikeBall.mdl";
-        std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
-        actor.lock()->AddComponent<ModelControll>();
-        actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
-        actor.lock()->SetName("ProjectileImpact");
-        actor.lock()->AddComponent<Transform>();
-        actor.lock()->GetComponent<Transform>()->SetPosition(pos);
-        actor.lock()->GetComponent<Transform>()->SetAngle(angle);
-        actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
-        actor.lock()->AddComponent<Collision>();
-        actor.lock()->AddComponent<ProjectileImpact>();
-        const char* effectFilename = "Data/Effect/inpact.efk";
-        actor.lock()->GetComponent<ProjectileImpact>()->SetEffectProgress(effectFilename);
-        // 生存時間
-        float lifeTimer = 50.0f;
-        actor.lock()->GetComponent<ProjectileImpact>()->SetLifeTimer(lifeTimer);
-        // これが２Dかの確認
-        bool check2d = false;
-        actor.lock()->SetCheck2d(check2d);
-        ProjectileManager::Instance().Register(actor.lock());
-    }
+    // 弾丸初期化
+    const char* filename = "Data/Model/SpikeBall/SpikeBall.mdl";
+    std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
+    actor.lock()->AddComponent<ModelControll>();
+    actor.lock()->GetComponent<ModelControll>()->LoadModel(filename);
+    actor.lock()->SetName("ProjectileImpact");
+    actor.lock()->AddComponent<Transform>();
+    actor.lock()->GetComponent<Transform>()->SetPosition(pos);
+    actor.lock()->GetComponent<Transform>()->SetAngle(angle);
+    actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+    actor.lock()->AddComponent<Collision>();
+    actor.lock()->AddComponent<ProjectileImpact>();
+    const char* effectFilename = "Data/Effect/inpact.efk";
+    actor.lock()->GetComponent<ProjectileImpact>()->SetEffectProgress(effectFilename);
+    // 生存時間
+    float lifeTimer = 50.0f;
+    actor.lock()->GetComponent<ProjectileImpact>()->SetLifeTimer(lifeTimer);
+    // これが２Dかの確認
+    bool check2d = false;
+    actor.lock()->SetCheck2d(check2d);
+    ProjectileManager::Instance().Register(actor.lock());
 }
 
+// 後変更 縄張り設定
 // 縄張り設定
 void EnemyBoss::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
 {
     territoryOrigin = origin;
     territoryRange = range;
 }
+
+// 後変更 UIControlle
 // 敵HPのUI
 void EnemyBoss::UiControlle(float elapsedTime)
 {
@@ -832,6 +837,8 @@ void EnemyBoss::UiControlle(float elapsedTime)
         break;
     }
 }
+
+// 後変更 エネミー点滅
 // エネミー点滅
 void EnemyBoss::OnHit(float elapsedTime)
 {
@@ -873,6 +880,7 @@ void EnemyBoss::OnHit(float elapsedTime)
         colorGB = { 1,1 };
     }
 }
+
 // 移動位置
 void EnemyBoss::SetRandomTargetPosition()
 {
@@ -882,6 +890,8 @@ void EnemyBoss::SetRandomTargetPosition()
     targetPosition.y = territoryOrigin.y;
     targetPosition.z = territoryOrigin.z + cosf(theta) * range;
 }
+
+// 後変更　ターゲット位置まで移動
 // ターゲット位置までの移動
 void EnemyBoss::MoveToTarget(float elapsedTime, float speedRate)
 {
@@ -904,6 +914,7 @@ void EnemyBoss::MoveToTarget(float elapsedTime, float speedRate)
     movementId->Turn({ vx,vy ,vz } ,turnSpeed,elapsedTime);
 }
 
+// 後変更　回転
 // 目的方向への回転
 void EnemyBoss::TurnToTarget(float elapsedTime, float speedRate)
 {
@@ -923,6 +934,7 @@ void EnemyBoss::TurnToTarget(float elapsedTime, float speedRate)
     // 回転
     movementId->Turn({ vx,vy ,vz }, turnSpeed, elapsedTime);
 }
+
 // ジャンプ
 void EnemyBoss::InputJump()
 {
@@ -945,7 +957,8 @@ void EnemyBoss::InputJump()
         movementId->JumpVelocity(jumpSpeedMin);
     }
 }
-// プレイヤーの位置
+
+// プレイヤーの位置を探す。
 bool EnemyBoss::SearchPlayer()
 {
     // プレイヤー取得
@@ -979,11 +992,13 @@ bool EnemyBoss::SearchPlayer()
     }
     return false;
 }
+
 // エネミー削除
 void EnemyBoss::Destroy()
 {
     EnemyManager::Instance().Remove(GetActor());
 }
+
 // 画面を揺らす
 void EnemyBoss::StartDamageShake()
 {
@@ -997,6 +1012,7 @@ void EnemyBoss::StartDamageShake()
     damageDistortion.mask_radius = 200.0f;
     postprocessingRenderer.SetRadialBlurMaxData(damageDistortion);
 }
+
 // 削除更新
 void EnemyManager::DeleteUpdate(float elapsedTime)
 {
@@ -1013,11 +1029,13 @@ void EnemyManager::DeleteUpdate(float elapsedTime)
     // 破棄リストをクリア
     removes.clear();
 }
+
 // エネミー作成
 void EnemyManager::Register(std::shared_ptr<Actor> actor)
 {
     enemies.emplace_back(actor);
 }
+
 // 全削除
 void EnemyManager::Clear()
 {
@@ -1028,6 +1046,7 @@ void EnemyManager::Clear()
     }
     enemies.clear();
 }
+
 // 削除登録
 void EnemyManager::Remove(std::shared_ptr<Actor> actor)
 {

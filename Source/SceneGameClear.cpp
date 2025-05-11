@@ -164,7 +164,6 @@ void SceneGameClear::Update(float elapsedTime)
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
 
-
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
 
 	SelectScene();

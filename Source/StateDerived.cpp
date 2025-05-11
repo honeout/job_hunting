@@ -36,12 +36,15 @@ void WanderState::Enter()
 		attackCount = attackCountMin;
 		modelAnim.keyFrameEnd = 288;
 	}
+
+	// アニメーション設定
 	modelAnim.index = (int)EnemyBoss::Animation::Anim_Movie;
 	modelAnim.loop = false;
 	modelAnim.currentanimationseconds = 3.3f;
 	modelAnim.blendSeconds = 0.7f;
 	modelAnim.currentAnimationAddSeconds = 0.008f;
 	modelAnim.keyFrameEnd = 300.0f;
+
 	// アニメーション再生
 	model->
 		PlayAnimation(modelAnim);
@@ -89,6 +92,7 @@ void WanderState::Execute(float elapsedTime)
 		model->
 			PlayAnimation(modelAnim);
 	}
+
 	// アニメーション終わり　待機に
 	if (!model->IsPlayAnimation())
 	{
@@ -107,13 +111,13 @@ void WanderState::Execute(float elapsedTime)
 		postprocessingRenderer.SetRadialBlurData(radialBlurData);
 	}
 
-
 	// 最初の速度が遅い後に通常に戻す
 	if (animationTime >= slowWalkTime)
 	{
 		modelAnim.currentAnimationAddSeconds = 0.00f;
 		model->AnimationRuleChanger(modelAnim.currentAnimationAddSeconds);
 	}
+	// 後変更
 	// 予備動作中は当たり判定無し
 	else
 		return;
@@ -207,9 +211,11 @@ void IdleState::Enter()
 	modelAnim.currentanimationseconds = 0.0f;
 	modelAnim.blendSeconds = 0.7f;
 	model->PlayAnimation(modelAnim);
+
 	// アニメーションルール
 	enemyid->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 	stateTimer = stateTimerMax;
+
 	// 逃げる条件初期化
 	hp->ResetOnDamageThresholdTime();
 	randRoot = rand() % 2;
@@ -218,6 +224,7 @@ void IdleState::Enter()
 // update
 void IdleState::Execute(float elapsedTime)
 {
+	// 制限時間経過
 	 stateTimer -= elapsedTime;
 
 	 auto sharedId = owner.lock();
@@ -227,19 +234,24 @@ void IdleState::Execute(float elapsedTime)
 	 std::shared_ptr<EnemyBoss> enemyid = sharedId->GetComponent<EnemyBoss>();
 	 Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	 std::shared_ptr <HP> hp = sharedId->GetComponent<HP>();
+	 // 制限時間過ぎたら
 	if (stateTimer <= stateTimerEnd)
 	{
+		// playerSearch
 		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Pursuit));
 	}
+
 	// 一定ダメージの最大値
 	float damageThreshold = 10;
 	float timeLimit = 5;
+
 	// 逃走
 	if (hp->CheckDamageThresholdWithinTime(elapsedTime, damageThreshold, timeLimit)&&
 		randRoot == (int)EnemyBoss::ExitRoot::ExitJamp)
 	{
 		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Jump));
 	}
+
 	// ダメージモーション対策
 	if (!model->IsPlayAnimation())
 	{
@@ -261,6 +273,7 @@ void IdleState::Exit()
 // 初期化
 void PursuitState::Enter()
 {
+	// アニメーション設定
 	modelAnim.index = EnemyBoss::Animation::Anim_Standby;
 	modelAnim.loop = true;
 	modelAnim.currentanimationseconds = 0.0f;
@@ -274,8 +287,10 @@ void PursuitState::Enter()
 	std::shared_ptr<EnemyBoss> enemyid = sharedId->GetComponent<EnemyBoss>();
 	enemyid->GetActor()->GetComponent<ModelControll>()->GetModel()->PlayAnimation(
 		modelAnim);
+
 	// アニメーションルール
 	enemyid->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
+
 	// 攻撃の種類を出す
 	randamAttack = rand() % 3;
 }
@@ -295,6 +310,7 @@ void PursuitState::Execute(float elapsedTime)
 	float vy = targetPosition.y - enemyid->GetPosition().y;
 	float vz = targetPosition.z - enemyid->GetPosition().z;
 	float dist = sqrtf(vx * vx + vy * vy + vz * vz);
+	// 攻撃の種類
 	switch (randamAttack)
 	{
 	case (int)EnemyBoss::AttackMode::AssaultAttack:
@@ -330,6 +346,7 @@ void JumpState::Enter()
 		return;
 
 	std::shared_ptr<EnemyBoss> enemyid = sharedId->GetComponent<EnemyBoss>();
+	// アニメーション設定
 	modelAnim.index = EnemyBoss::Animation::Anim_Attack;
 	modelAnim.loop = true;
 	modelAnim.currentanimationseconds = 2.0f;
@@ -366,6 +383,8 @@ void JumpState::Enter()
 	// 煙エフェクト
 	smorker = std::make_unique<Effect>("Data/Effect/smorkeDash.efk");
 }
+
+// 後変更
 // 更新処理
 void JumpState::Execute(float elapsedTime)
 {
@@ -393,6 +412,7 @@ void JumpState::Execute(float elapsedTime)
 	bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = model->GetCurrentANimationSeconds();
+	// 後変更
 	if (animationTime - FLT_EPSILON <= 0.8f + FLT_EPSILON && !jumpStart)
 	{
 		bool blurCheck = true;
@@ -482,6 +502,7 @@ void AttackState::Enter()
 	charge = std::make_unique<Effect>("Data/Effect/effectCharge.efk");
 	chargeCompleate = std::make_unique<Effect>("Data/Effect/chargecompleted.efk");
 }
+
 // update
 void AttackState::Execute(float elapsedTime)
 {
@@ -589,6 +610,8 @@ void AttackState::Execute(float elapsedTime)
 		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
 	}
 }
+
+// 後変更
 // 最後にやりたい処理全般
 void AttackState::Exit()
 {
@@ -604,6 +627,8 @@ void AttackState::Exit()
 	if (chargeCompleate->GetEfeHandle())
 		chargeCompleate->Stop(chargeCompleate->GetEfeHandle());
 }
+
+// 後変更
 // ダメージ判定
 void DamageState::Enter()
 {
@@ -965,7 +990,11 @@ void PlayerMovestate::Enter()
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	// se再生
-	playerid->InputWalkSE();
+	audioParam.filename = "Data/Audio/SE/足音.wav";
+	audioParam.loop = loopSe;
+	audioParam.volume = volumeSe;
+	playerid->InputSe(audioParam);
+
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Anim_Running;
 	modelAnim.loop = true;
@@ -1015,7 +1044,7 @@ void PlayerMovestate::Exit()
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	//se再生削除
-	playerid->InputStopWalkSE();
+	playerid->StopSe(audioParam);
 }
 
 // プレイヤージャンプ
@@ -1124,7 +1153,7 @@ void PlayerLandState::Execute(float elapsedTime)
 	{
 		playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
 	}
-		// 回避
+	// 回避
 	if (playerid->InputAvoidance())
 	{
 		playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
@@ -1144,9 +1173,11 @@ void PlayerLandState::Exit()
 		return;
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
-		// ジャンプ音
+	// ジャンプ音
 	playerid->InputJampSE();
 }
+
+// 後変更
 // プレイヤージャンプ中
 void PlayerJumpFlipState::Enter()
 {
@@ -1254,6 +1285,7 @@ void PlayerQuickJabState::Enter()
 	EnemySafe = false;
 }
 
+// 後変更
 void PlayerQuickJabState::Execute(float elapsedTime)
 {
 	// 安全チェック
@@ -1329,7 +1361,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	}
 
 	// 攻撃量最大
-	if (attackMemory > attackMemoryMax)
+	if (attackMemory > attackMemoryMax ||!model->IsPlayAnimation())
 	{
 		// 入力確認でステート変更
 		playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
@@ -1476,6 +1508,7 @@ void PlayerQuickJabState::Exit()
 	// 非表示の場合表示する
 	playerid->SetPlayeDrawCheck(isPlayerDrawCheck);
 }
+
 // 2連撃目
 void PlayerSideCutState::Enter()
 {
@@ -2444,7 +2477,7 @@ void PlayerMagicState::Execute(float elapsedTime)
 		if (animationTime <= 1.1f)return;
 		// 回復音
 		playerid->InputAttackHealeSE();
-		// 雷発射
+		// 回復発動
 		playerid->InputMagicHealing();
 		playerid->GetStateMachine()->ChangeState((int)Player::State::Idle);
 		break;

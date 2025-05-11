@@ -243,6 +243,38 @@ public:
     // シェイク時間 パワー
     void StartDamageShake();
 
+public:
+
+    // 部位タイプ
+    enum BodyPart {
+        Head = 0,
+        ArmRight,
+        ArmLeft,
+        Waist,
+        LegRight,
+        LegLeft
+    };
+
+    // パーツの当たり判定
+    float GetBodyPart(BodyPart part) const {
+        return hitSizes.at(part);
+    }
+
+    // ボーンパーツ取得
+    char* GetBodyPartBorn(BodyPart part) const {
+        return bornPart.at(part);
+    }
+
+    // パーツの最大値
+    std::unordered_map<BodyPart, float> GetBodyPartSize() const {
+        return hitSizes;
+    }
+
+    // ボーンの最大値
+    std::unordered_map<BodyPart, char*> GetBodyPartBornSize() const {
+        return bornPart;
+    }
+
 private:
     // モデル情報を確保
     Model* model = nullptr;
@@ -251,6 +283,7 @@ private:
     DirectX::XMFLOAT3 angle = {};
     DirectX::XMFLOAT3 scale = {};
 
+    // 後変更
     //std::weak_ptr<Movement>	movement;
     //std::weak_ptr<HP>	hp;
     //std::weak_ptr<Collision> collision;
@@ -262,6 +295,26 @@ private:
     float enemyAwakeningDuration = 0.0f;
     float enemyAwakeningDurationMax = 30;
     float enemyAwakeningDurationEnd = 0.0f;
+
+    // パーツの当たり判定
+    std::unordered_map<BodyPart, float> hitSizes = {
+        {Head, 3.8f},           // 頭
+        {ArmRight, 3.8f},       // 右腕
+        {ArmLeft, 3.8f},        // 左腕
+        {Waist, 3.8f},          // 腰
+        {LegRight, 3.8f},       // 右足
+        {LegLeft, 3.8f}         // 左足
+    };
+
+    // ボーン情報取得
+    std::unordered_map<BodyPart, char*> bornPart = {
+        {Head, "body1"},                     // 頭
+        {ArmRight,"boss_right_hand2"},       // 右腕
+        {ArmLeft, "boss_left_hand2"},        // 左腕
+        {Waist, "shoulder"},                 // 腰
+        {LegRight,"boss_right_foot1"},       // 右足
+        {LegLeft, "boss_left_foot1"}         // 左足
+    };
 
     // プレイヤーに与ダメエフェ
     std::unique_ptr<Effect> moveAttackEffect;
@@ -451,6 +504,15 @@ public:
     std::shared_ptr<Actor> GetEnemy(int index) { return enemies.at(index); }
 
     void Remove(std::shared_ptr<Actor> projectile);
+
+public:
+
+    // エネミーの種類
+    enum class EnemyType
+    {
+        Boss = 0,
+    };
+
 private:
     std::vector<std::shared_ptr<Actor>> enemies;
 

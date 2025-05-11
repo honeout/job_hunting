@@ -421,6 +421,10 @@ public:
 	void Exit()override;
 private:
 	bool loopSe = true;
+	float volumeSe = 0.5f;
+
+	// se再生
+	AudioParam audioParam;
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
