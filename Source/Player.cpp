@@ -206,7 +206,7 @@ void Player::Update(float elapsedTime)
             // ステート遷移
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
             // 音再生
-            InputAttackSlashSE();
+            PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
             // もし地面なら何もしない
             bool noStart = false;
             // エフェクト再生
@@ -259,7 +259,7 @@ void Player::Update(float elapsedTime)
         // 攻撃範囲内なのでUI描画
         AttackCheckUI();
         // ゲージ管理
-        UiControlle(elapsedTime);
+        UiControlleGauge(elapsedTime);
     }
     position = transformId->GetPosition();
     angle = transformId->GetAngle();
@@ -353,152 +353,38 @@ void Player::RenderShadowmap(RenderContext& rc)
     shader->End(rc);
 }
 
-void Player::InputWalkSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/足音.wav";
-    audioParam.loop = isLoopSe;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::InputStopWalkSE()
-{
-    Audio& Se = Audio::Instance();
-    std::string filename = "Data/Audio/SE/足音.wav";
-    // 種類停止
-    Se.Stop(filename);
-}
-
-void Player::InputJampSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/Enemy歩き攻撃ヒット.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::InputStopJampSE()
-{
-    Audio& Se = Audio::Instance();
-    std::string filename = "Data/Audio/SE/Enemy歩き攻撃ヒット.wav";
-    // 種類停止
-    Se.Stop(filename);
-}
-
-void Player::InputAreWalkSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/空中攻撃時.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::InputDashSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/ヒットストップ.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-// SE再生 斬撃
-void Player::InputAttackSlashSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/スラッシュ２回目.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::InputAttackFlameSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/炎飛行時.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::InputAttackThanderSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/雷.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::InputStopAttackThanderSE()
-{
-    Audio& Se = Audio::Instance();
-    std::string filename = "Data/Audio/SE/雷.wav";
-    // 種類停止
-    Se.Stop(filename);
-}
-
-void Player::InputAttackIceSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/氷発射.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::InputAttackHealeSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/maou_se_magical11.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::InputAttackSlashSpecileLightningStrikeSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/必殺技雷.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::InputAttackFlameSpecileSE()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/必殺技炎.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
 // Se再生
 void Player::InputSe(AudioParam param)
 {
     Audio& Se = Audio::Instance();
     Se.Play(param);
 }
+// 音再生
+void Player::PlaySe(const std::string& filename)
+{
+    Audio& Se = Audio::Instance();
+    AudioParam audioParam;
+    audioParam.filename = filename;
+    audioParam.loop = isLoopDisabled;
+    audioParam.volume = seVolume;
+    Se.Play(audioParam);
+}
+// 音ループ再生
+void Player::PlayLoopSe(const std::string& filename, bool isLoop)
+{
+    Audio& Se = Audio::Instance();
+    AudioParam audioParam;
+    audioParam.filename = filename;
+    audioParam.loop = isLoop;
+    audioParam.volume = seVolume;
+    Se.Play(audioParam);
+}
 // se停止
-void Player::StopSe(AudioParam param)
+void Player::StopSe(const std::string& filename)
 {
     Audio& Se = Audio::Instance();
     // 種類停止
-    Se.Stop(param.filename);
+    Se.Stop(filename);
 }
 // カメラのステート管理
 void Player::UpdateCameraState(float elapsedTime)
@@ -1924,42 +1810,14 @@ bool Player::InputSpecialAttackCharge()
         stateMachine->GetStateIndex() == (int)Player::State::SpecialMagic)return false;
     
     // 技を放つ
-    if (gamePad.GetButton() & GamePad::BTN_B &&
+    if (gamePad.GetButtonDown() & GamePad::BTN_B &&
         !specialAttackTime && !magicAction && specialAction&&
         !gamePad.GetButtonDownCountinue())
     {
-        // 技撃てる
-        if (!specialAttack.at((int)SpecialAttackType::Attack).hasSkill &&
-            specialAttackNum == (int)SpecialAttackType::Attack) return false;
 
-        if (!specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill &&
-            specialAttackNum == (int)SpecialAttackType::MagicFire) return false;
-        // エネミー呼ぶ奴
-        EnemyManager& enemyManager = EnemyManager::Instance();
-        int enemyManagerCount = enemyManager.GetEnemyCount();
-        // 動作させるかどうか
-        if (enemyManagerCount > 0)
-        {
-            // 安全チェック
-            auto sharedEnemyId = enemyManager.GetEnemy(enemyManagerCount - 1);
-            if (!sharedEnemyId)
-                return false;
-
-            std::shared_ptr<EnemyBoss> enemy = sharedEnemyId->GetComponent<EnemyBoss>();
-            std::shared_ptr<Movement> enemyMove = sharedEnemyId->GetComponent<Movement>();
-            bool moveCheck = false;
-            enemy->SetMoveCheck(moveCheck);
-            // 速度停止
-            bool stopVelocity = true;
-            enemyMove->SetStopMove(stopVelocity);
-            // 落ちるの停止
-            bool stopFall = true;
-            enemyMove->SetStopFall(stopFall);
-        }
-        
         switch (specialAttackNum)
         {
-        // 斬撃
+            // 斬撃
         case (int)SpecialAttackType::Attack:
         {
             if (!specialAttack.at(specialAttackNum).hasSkill)
@@ -1968,6 +1826,8 @@ bool Player::InputSpecialAttackCharge()
                 seParam.filename = "Data/Audio/SE/魔法打てない.wav";
                 seParam.volume = 1.0f;
                 InputSe(seParam);
+                // 必殺技UIを解除
+                specialAction = false;
                 return false;
             }
             // 安全チェック
@@ -2004,6 +1864,8 @@ bool Player::InputSpecialAttackCharge()
                 seParam.filename = "Data/Audio/SE/魔法打てない.wav";
                 seParam.volume = 1.0f;
                 InputSe(seParam);
+                // 必殺技UIを解除
+                specialAction = false;
                 return false;
             }
             // 安全チェック
@@ -2034,6 +1896,36 @@ bool Player::InputSpecialAttackCharge()
             break;
         }
         }
+
+        // 技撃てる
+        if (!specialAttack.at((int)SpecialAttackType::Attack).hasSkill &&
+            specialAttackNum == (int)SpecialAttackType::Attack) return false;
+
+        if (!specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill &&
+            specialAttackNum == (int)SpecialAttackType::MagicFire) return false;
+        // エネミー呼ぶ奴
+        EnemyManager& enemyManager = EnemyManager::Instance();
+        int enemyManagerCount = enemyManager.GetEnemyCount();
+        // 動作させるかどうか
+        if (enemyManagerCount > 0)
+        {
+            // 安全チェック
+            auto sharedEnemyId = enemyManager.GetEnemy(enemyManagerCount - 1);
+            if (!sharedEnemyId)
+                return false;
+
+            std::shared_ptr<EnemyBoss> enemy = sharedEnemyId->GetComponent<EnemyBoss>();
+            std::shared_ptr<Movement> enemyMove = sharedEnemyId->GetComponent<Movement>();
+            bool moveCheck = false;
+            enemy->SetMoveCheck(moveCheck);
+            // 速度停止
+            bool stopVelocity = true;
+            enemyMove->SetStopMove(stopVelocity);
+            // 落ちるの停止
+            bool stopFall = true;
+            enemyMove->SetStopFall(stopFall);
+        }
+        
         specialAttackTime = true;
         return true;
     }
@@ -2388,7 +2280,7 @@ DirectX::XMFLOAT3 Player::GetMagicMoveVec(float elapsedTime)
     }
     return vec;
 }
-// 後変更Collision
+// 後変更Collision 消してよし
 // 魔法と敵の衝突処理
 void Player::CollisionMagicVsEnemies()
 {
@@ -2571,7 +2463,7 @@ void Player::CollisionMagicVsEnemies()
         }
     }
 }
-// 後変更 Collision改造
+// 後変更 Collision改造 消してよし
 void Player::CollisionMagicVsEnemies(const char* bornName)
 {
     // 安全チェック
@@ -2773,7 +2665,6 @@ bool Player::CheckAllPartsCollision(DirectX::XMFLOAT3 pos,float rudius)
 // 魔法の種類チェック炎
 bool Player::CheckMagicFire(std::shared_ptr<Actor> projectile)
 {
-
     // 魔法炎単発
     if (projectile->GetComponent<ProjectileHoming>())
     {
@@ -3011,7 +2902,7 @@ void Player::CollisionMagicIce()
         projectile->GetComponent<BulletFiring>()->Destroy();
     }
 }
-// 後変更Collision
+// 後変更Collision 消してよし
 // プレイヤーとエネミーとの衝突処理
 void Player::CollisionPlayerVsEnemies()
 {
@@ -3028,14 +2919,16 @@ void Player::CollisionPlayerVsEnemies()
     int enemyCount = enemyManager.GetEnemyCount();
     for (int i = 0; i < enemyCount; ++i)
     {
-        std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+        // 安全チェック
+        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+        if (!enemy) return;
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
-        DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-        float enemyRadius = enemy.lock()->GetComponent<Collision>()->GetRadius();
+        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+        float enemyRadius = enemy->GetComponent<Collision>()->GetRadius();
         // もし高さが一緒なら
-        float enemyHeight = enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle ?
-            enemy.lock()->GetComponent<Collision>()->GetHeight() : enemy.lock()->GetComponent<Collision>()->GetSecondesHeight();
+        float enemyHeight = enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle ?
+            enemy->GetComponent<Collision>()->GetHeight() : enemy->GetComponent<Collision>()->GetSecondesHeight();
         if (collisionId->IntersectCylinderVsCylinder(
             enemyPosition,
             enemyRadius,
@@ -3061,7 +2954,7 @@ void Player::CollisionPlayerVsEnemies()
     isEnemyHit = false;
 }
 // 後変更Collision
-// 敵の範囲内に入らないように
+// 敵の範囲内に入らないように ボーン位置一定以下には入れない
 void Player::CollisionBornVsProjectile(const char* bornname)
 {
     // 安全チェック
@@ -3076,9 +2969,11 @@ void Player::CollisionBornVsProjectile(const char* bornname)
     int enemyCount = enemyManager.GetEnemyCount();
     for (int i = 0; i < enemyCount; ++i)
     {
-        std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+        // 安全チェック
+        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+        if (!enemy) return;
         // ノード取得
-        Model::Node* node = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode(bornname);
+        Model::Node* node = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(bornname);
         // ノード位置取得
         DirectX::XMFLOAT3 nodePosition;
         nodePosition = {
@@ -3088,12 +2983,11 @@ void Player::CollisionBornVsProjectile(const char* bornname)
         };
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
-        DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-        //float enemyRadius = enemy.lock()->GetComponent<Transform>()->GetRadius();
-        float enemyRadius = enemy.lock()->GetComponent<EnemyBoss>()->GetUpperRadius();
+        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
+        float enemyRadius = enemy->GetComponent<EnemyBoss>()->GetUpperRadius();
         // もし高さが一緒なら
-        float enemyHeight = enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle ?
-            enemy.lock()->GetComponent<Collision>()->GetHeight() : enemy.lock()->GetComponent<Collision>()->GetSecondesHeight();
+        float enemyHeight = enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle ?
+            enemy->GetComponent<Collision>()->GetHeight() : enemy->GetComponent<Collision>()->GetSecondesHeight();
         if (collisionId->IntersectCylinderVsCylinder(
             {
                 nodePosition.x,
@@ -3111,23 +3005,20 @@ void Player::CollisionBornVsProjectile(const char* bornname)
             DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
             DirectX::XMFLOAT3 normal;
             DirectX::XMStoreFloat3(&normal, N);
-            if (normal.y > 0.8f)
-            {
-            }
-            else
-            {
-                position = outPositon;
-                transformId->SetPosition(position);
-            }
             // 接触
             isEnemyHitBody = true;
+
+            if (normal.y > 0.8f) return;
+
+            position = outPositon;
+            transformId->SetPosition(position);
             return;
         }
     }
     // 非接触
     isEnemyHitBody = false;
 }
-// 後変更Collision
+// 後変更Collision 全パーツと当たり判定 いらない
 // ノードと敵の衝突判定
 bool Player::CollisionNodeVsEnemies(
     const char* nodeName, float nodeRadius,
@@ -3152,6 +3043,7 @@ bool Player::CollisionNodeVsEnemies(
         node->worldTransform._42,
         node->worldTransform._43
     };
+
     // マネージャー取得
     EnemyManager& enemyManager = EnemyManager::Instance();
     int enemyCount = enemyManager.GetEnemyCount();
@@ -3238,8 +3130,9 @@ bool Player::CollisionNodeVsEnemies(
         {
             if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
             {
-                // 斬撃音
-                InputAttackSlashSE();
+                // 斬撃se再生
+                PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
+
                 hitSlash->Play(nodePosition, slashScale);
 
                 if (enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
@@ -3288,6 +3181,89 @@ bool Player::CollisionNodeVsEnemies(
     }
     return false;
 }
+
+// Collision 全パーツと当たり判定
+bool Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
+{
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return false;
+    // 移動コンポーネント
+    std::shared_ptr modelId = sharedId->GetComponent<Model>();
+
+    // 右腕ボーン名
+    Model::Node* rightName = model->FindNode(nodeName);
+    DirectX::XMFLOAT3 playerRightWeponPos = modelId->ConvertLocalToWorld(rightName);
+
+    // エネミー呼ぶ奴
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    int enemyCount = enemyManager.GetEnemyCount();
+
+    if (enemyCount <= 0) return false;
+
+    std::shared_ptr<Actor> enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
+    if (!enemyShader) return false;
+
+    std::shared_ptr<EnemyBoss> enemyBoss = enemyShader->GetComponent<EnemyBoss>();
+    std::shared_ptr<HP> enemyHp = enemyShader->GetComponent<HP>();
+    std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
+
+    // パーツごとの当たり判定
+    if (!CheckAllPartsCollision(playerRightWeponPos, nodeRadius)) return false;
+
+    // ダメージ判定
+    if (!enemyHp->ApplyDamage(applyDamageNormal, 0.5f)) return false;
+
+    // 斬撃se再生
+    PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
+    // エフェクト再生斬撃
+    hitSlash->Play(playerRightWeponPos, slashScale);
+
+    // 指定アニメーションだったら
+    if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
+        enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
+        enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
+    {
+        // ダメージモーション
+        if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack)
+        {
+            Model::ModelAnim modelAnim;
+            modelAnim.index = EnemyBoss::Animation::Anim_Movie;
+            modelAnim.currentanimationseconds = 1.0f;
+            modelAnim.keyFrameEnd = 153.0f;
+            // 通常
+            enemyModel->GetModel()->PlayAnimation(modelAnim);
+        }
+        // 死んだとき
+        if (enemyBoss->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle)
+        {
+            // model情報
+            Model::ModelAnim modelAnim;
+            modelAnim.index = EnemyBoss::Animation::Anim_Die;
+            modelAnim.currentanimationseconds = 0.3f;
+            modelAnim.keyFrameEnd = 55.0f;
+            enemyModel->GetModel()->PlayAnimation(modelAnim);
+        }
+        // 混乱状態
+        if (attackNumberSave == attackNumberSaveMax &&
+            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
+        {
+            enemyBoss->GetStateMachine()->ChangeState(
+                (int)EnemyBoss::State::IdleBattle);
+            // 攻撃連続ヒット停止
+            attackNumberSave = 0;
+        }
+    }
+    // 当たった時の副次的効果
+    specialAttackCharge += specialAttackChargeSlashValue;
+    // 斬撃チャージ
+    ++attackEnergyCharge;
+    // 攻撃ヒット回数
+    ++attackNumberSave;
+
+    return true;
+}
 // 後変更Collision
 // カウンター用
 void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius)
@@ -3309,6 +3285,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
         node->worldTransform._42,
         node->worldTransform._43
     };
+
     // マネージャー取得
     EnemyManager& enemyManager = EnemyManager::Instance();
     ProjectileManager& projectileManager = ProjectileManager::Instance();
@@ -3526,6 +3503,10 @@ bool Player::InputJump()
 
     // ボタンで入力でジャンプ（ジャンプ回数制限つき）
     GamePad& gamePad = Input::Instance().GetGamePad();
+
+    // 魔法コマンドを使っていたら
+    if (magicAction) return false;
+
     if (gamePad.GetButtonDown() & GamePad::BTN_A)
     {
         // 値を小さくする
@@ -3542,6 +3523,10 @@ bool Player::InputJump()
 bool Player::InputAvoidance()
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
+
+    // 魔法コマンドを使っていたら
+    if (magicAction) return false;
+
     if (gamePad.GetButtonDown() & GamePad::BTN_X)
     {
         return true;
@@ -4462,7 +4447,7 @@ void Player::DmageInvalidJudment(bool invalidJudgment)
 }
 
 // 後変更UI動作
-void Player::UiControlle(float elapsedTime)
+void Player::UiControlleGauge(float elapsedTime)
 {
     // 安全チェック
     auto sharedId = GetActor();
@@ -4476,33 +4461,39 @@ void Player::UiControlle(float elapsedTime)
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
     if (uiCount <= uiCountMax) return;
+
+    // hpゲージ操作用
     float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.08f;
     // hpゲージ
-    std::weak_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
-    std::weak_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
-    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp.lock()->GetScale().y };
-    uiHp.lock()->SetScale(scale);
+    std::shared_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
+    std::shared_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
+    
+    // hpゲージUI　変える
+    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
+    uiHp->SetScale(scale);
     gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.1f;
     // mpゲージ
-    std::weak_ptr<TransForm2D> uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();
-    std::weak_ptr<Ui> uiColor = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<Ui>();
-    scale = { gaugeWidth, uiMp.lock()->GetScale().y };
-    uiMp.lock()->SetScale(scale);
+    std::shared_ptr<TransForm2D> uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();
+    std::shared_ptr<Ui> uiColor = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<Ui>();
+    
+    // mpゲージUI　変える
+    scale = { gaugeWidth, uiMp->GetScale().y };
+    uiMp->SetScale(scale);
     // mp色
    mpUiColor = { 1,1,1,1 };
     if (mpId->GetMpEmpth())
     {
         mpUiColor = { 1,0.5f,0,1 };
     }
-   uiColor.lock()->SetColor(mpUiColor);
+   uiColor->SetColor(mpUiColor);
     // 揺れ
     if (shakeMode)
     {
-        uiHp.lock()->Shake();
-        uiHpBar.lock()->Shake();
+        uiHp->Shake();
+        uiHpBar->Shake();
     }
     //　初期化
-    if (uiHp.lock()->GetShakeEnd())
+    if (uiHp->GetShakeEnd())
     {
         shakeMode = false; 
     }

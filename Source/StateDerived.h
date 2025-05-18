@@ -403,6 +403,9 @@ private:
 	float				stateTimer = 0.0f;
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
+
+	// 描画
+	int isPlayerDrawCheck;
 };
 
 // 移動ステートオブジェクト
@@ -423,11 +426,14 @@ private:
 	bool loopSe = true;
 	float volumeSe = 0.5f;
 
-	// se再生
-	AudioParam audioParam;
-
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
+
+	// 描画
+	int isPlayerDrawCheck;
+
+	// アニメーションのループ再生
+	bool isLoopAnim = true;
 };
 
 // ジャンプステートオブジェクト
@@ -500,6 +506,8 @@ private:
 
 	// 回転スピード
 	float turnSpeed = DirectX::XMConvertToRadians(720);
+	// 音楽情報
+	AudioParam audioParam;
 };
 
 
@@ -898,6 +906,9 @@ private:
 
 	// 氷連射動き開始
 	bool iceMagicMoveCheck = true;
+
+	// 音情報
+	AudioParam audioParam;
 };
 
 // 近接必殺技ステートオブジェクト
@@ -968,6 +979,9 @@ private:
 
 	// 最大の回転
 	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
+
+	// 音情報
+	AudioParam audioParam;
 };
 
 // よろけステートオブジェクト
@@ -990,6 +1004,9 @@ private:
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
+
+	// 描画
+	int				  isPlayerDrawCheck = 0;
 };
 
 // 回避ステートオブジェクト

@@ -10,6 +10,8 @@
 #include "UiManager.h"
 #include "Ui.h"
 
+//
+
 // デストラクタ
 EnemyBoss::~EnemyBoss()
 {
@@ -249,136 +251,27 @@ void EnemyBoss::DrawDebugPrimitive()
 
     debugRenderer->DrawCylinder(targetPosition, radius, height, DirectX::XMFLOAT4(1, 1, 0, 1));
 }
-// 後変更se
-void EnemyBoss::InputSlashSe()
+// se再生
+void EnemyBoss::InputSe(AudioParam param)
+{
+    Audio& Se = Audio::Instance();
+    Se.Play(param);
+}
+void EnemyBoss::PlaySe(const std::string& filename)
 {
     Audio& Se = Audio::Instance();
     AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/スラッシュ２回目.wav";
+    audioParam.filename = filename;
     audioParam.loop = isLoopDisabled;
     audioParam.volume = seVolume;
     Se.Play(audioParam);
 }
-// 後変更se
-void EnemyBoss::InputStopSlashSe()
+// se停止
+void EnemyBoss::StopSe(const std::string& filename)
 {
     Audio& Se = Audio::Instance();
-
-    std::string filename = "Data/Audio/SE/スラッシュ２回目.wav";
-
     // 種類停止
     Se.Stop(filename);
-}
-// 後変更se
-void EnemyBoss::InputJampSe()
-{
-    Audio& Se = Audio::Instance();
-
-    AudioParam audioParam;
-
-    audioParam.filename = "Data/Audio/SE/Enemy着地.wav";
-
-    audioParam.loop = isLoopDisabled;
-
-    audioParam.volume = seVolume;
-
-    Se.Play(audioParam);
-}
-// 後変更se
-void EnemyBoss::InputStopJampSe()
-{
-    Audio& Se = Audio::Instance();
-
-    std::string filename = "Data/Audio/SE/Enemy着地.wav";
-
-    // 種類停止
-    Se.Stop(filename);
-}
-// 後変更se
-void EnemyBoss::InputDashSe()
-{
-    Audio& Se = Audio::Instance();
-
-    AudioParam audioParam;
-
-    audioParam.filename = "Data/Audio/SE/Enemy着地.wav";
-
-    audioParam.loop = isLoopDisabled;
-
-    audioParam.volume = seVolume;
-
-    Se.Play(audioParam);
-}
-// 後変更se
-void EnemyBoss::InputStopDashSe()
-{
-    Audio& Se = Audio::Instance();
-
-    std::string filename = "Data/Audio/SE/Enemy着地.wav";
-
-    // 種類停止
-    Se.Stop(filename);
-}
-// 後変更se
-void EnemyBoss::InputAwakeSe()
-{
-    
-    Audio& Se = Audio::Instance();
-
-    AudioParam audioParam;
-
-    audioParam.filename = "Data/Audio/SE/maou_se_voice_tiger01.wav";
-
-    audioParam.loop = isLoopDisabled;
-
-    audioParam.volume = seVolume;
-
-    Se.Play(audioParam);
-}
-// 後変更se
-void EnemyBoss::InputImpactSe()
-{
-    Audio& Se = Audio::Instance();
-
-    AudioParam audioParam;
-
-    audioParam.filename = "Data/Audio/SE/衝撃波ヒット.wav";
-
-    audioParam.loop = isLoopDisabled;
-
-    audioParam.volume = seVolume;
-
-    Se.Play(audioParam);
-}
-// 後変更se
-void EnemyBoss::InputDamageSe()
-{
-    Audio& Se = Audio::Instance();
-
-    AudioParam audioParam;
-
-    audioParam.filename = "Data/Audio/SE/打撃.wav";
-
-    audioParam.loop = isLoopDisabled;
-
-    audioParam.volume = seVolume;
-
-    Se.Play(audioParam);
-}
-// 後変更se
-void EnemyBoss::InputChargeSe()
-{
-    Audio& Se = Audio::Instance();
-
-    AudioParam audioParam;
-
-    audioParam.filename = "Data/Audio/SE/チャージ音敵.wav";
-
-    audioParam.loop = isLoopDisabled;
-
-    audioParam.volume = seVolume;
-
-    Se.Play(audioParam);
 }
 
 // 後変更Collision
@@ -398,91 +291,103 @@ void EnemyBoss::CollisionImpactVsPlayer()
     // 全ての敵と総当たりで衝突処理
     int playerCount = PlayerManager::Instance().GetPlayerCount();//todo 外
     int projectileCount = projectileManager.GetProjectileCount();
-    for (int j = 0; j < playerCount; ++j)
-    {
-        std::weak_ptr<Actor> player = playerManager.GetPlayer(j);//外ループの方が軽い
+
+    // player所持無し
+    if (playerCount <= 0) return;
+
+    // 安全チェック
+    std::shared_ptr<Actor> player = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
+    if (!player)
+        return;
+    // player関係
+    std::shared_ptr<Player> playerMain = player->GetComponent<Player>();
+    std::shared_ptr<Transform> playerTransform = player->GetComponent<Transform>();
+    std::shared_ptr<Movement> playerMovement = player->GetComponent<Movement>();
+    std::shared_ptr<Collision> playerCollision = player->GetComponent<Collision>();
+    std::shared_ptr<HP> playerHp = player->GetComponent<HP>();
+    // 位置、半径、高さ
+    DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
+    float playerRadius = playerCollision->GetRadius();
+    float playerHeight = playerCollision->GetHeight();
 
     for (int i = 0; i < projectileCount; ++i)
     {
         std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
-            if (projectile.lock()->GetComponent<ProjectileImpact>())
+        if (!projectile.lock()->GetComponent<ProjectileImpact>()) return;
+
+        DirectX::XMFLOAT3 projectilePosition =
+            projectile.lock()->GetComponent<Transform>()->GetPosition();
+
+        // 身長
+        float height = 1.0f;
+        projectile.lock()->GetComponent<Collision>()->SetHeight(height);
+        float projectileHeight = projectile.lock()->GetComponent<Collision>()->GetHeight();
+
+        float projectileRadiusOutLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
+        float projectileRadiusInLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusInSide();
+
+
+
+        // 衝突処理
+        DirectX::XMFLOAT3 outPositon;
+        // 円柱と円
+        if (collisionId->IntersectSphereVsCylinder(
+            projectilePosition,
+            projectileRadiusOutLine,
+            playerPosition,
+            playerRadius,
+            playerHeight,
+            outPositon) &&
+            !collisionId->IntersectSphereVsCylinder(
+                projectilePosition,
+                projectileRadiusInLine,
+                playerPosition,
+                playerRadius,
+                playerHeight,
+                outPositon))
+
+        {
+            // 高さが一定以下なら通る
+            if (projectilePosition.y + projectileHeight < playerPosition.y) return;
+            // ダメージを与える。
+            if (!playerHp->ApplyDamage(applyDamageImpact, impactInvincibleTime)) return;
+
+            playerMain->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+
+            // 衝撃波音
+            PlaySe("Data/Audio/SE/衝撃波ヒット.wav");
+
+            // 吹き飛ばす
             {
-                DirectX::XMFLOAT3 projectilePosition = 
-                    projectile.lock()->GetComponent<Transform>()->GetPosition();
+                // 衝動
+                DirectX::XMFLOAT3 impulse;
+                // 衝撃
+                const float power = 10.0f;
 
-                // 身長
-                float height = 1.0f;
-                projectile.lock()->GetComponent<Collision>()->SetHeight(height);
-                float projectileHeight = projectile.lock()->GetComponent<Collision>()->GetHeight();
+                float vx = playerPosition.x - projectilePosition.x;
+                float vz = playerPosition.z - projectilePosition.z;
+                float lengthXZ = sqrtf(vx * vx + vz * vz);
+                vx /= lengthXZ;
+                vz /= lengthXZ;
 
-                float projectileRadiusOutLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
-                float projectileRadiusInLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusInSide();
+                impulse.x = vx * power;
+                impulse.y = power * 0.5f;
+                impulse.z = vz * power;
 
-                DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
-                float playerRadius = player.lock()->GetComponent<Collision>()->GetRadius();
-                float playerHeight = player.lock()->GetComponent<Collision>()->GetHeight();
-
-                // 衝突処理
-                DirectX::XMFLOAT3 outPositon;
-                // 円柱と円
-                if (collisionId->IntersectSphereVsCylinder(
-                    projectilePosition,
-                    projectileRadiusOutLine,
-                    playerPosition,
-                    playerRadius,
-                    playerHeight,
-                    outPositon) &&
-                    !collisionId->IntersectSphereVsCylinder(
-                        projectilePosition,
-                        projectileRadiusInLine,
-                        playerPosition,
-                        playerRadius,
-                        playerHeight,
-                        outPositon))
-
-                {
-                    // 高さが一定以下なら通る
-                    if (projectilePosition.y + projectileHeight < playerPosition.y) return;
-                    // ダメージを与える。
-                    if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamageImpact, impactInvincibleTime))
-                    {
-                        player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
-
-                        InputImpactSe();
-
-                        // 吹き飛ばす
-                        {
-                            // 衝動
-                            DirectX::XMFLOAT3 impulse;
-                            // 衝撃
-                            const float power = 10.0f;
-
-                            float vx = playerPosition.x - projectilePosition.x;
-                            float vz = playerPosition.z - projectilePosition.z;
-                            float lengthXZ = sqrtf(vx * vx + vz * vz);
-                            vx /= lengthXZ;
-                            vz /= lengthXZ;
-
-                            impulse.x = vx * power;
-                            impulse.y = power * 0.5f;
-                            impulse.z = vz * power;
-
-                            player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
-                        }
-                        // ヒットエフェクト再生
-                        {
-                            playerPosition.y += playerHeight * 0.5f;
-
-                            bool loopSe = false;
-                        }
-                        // UI揺れ
-                        player.lock()->GetComponent<Player>()->SetShakeMode(true);
-
-                        // 振動
-                        StartDamageShake();
-                    }
-                }
+                playerMovement->AddImpulse(impulse);
             }
+            // ヒットエフェクト再生
+            {
+                playerPosition.y += playerHeight * 0.5f;
+
+                bool loopSe = false;
+            }
+            // UI揺れ
+            playerMain->SetShakeMode(true);
+
+            // 振動
+            StartDamageShake();
+
         }
     }
 }
@@ -498,69 +403,82 @@ bool EnemyBoss::CollisionPlayerWithRushEnemy()
 
     std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
 
-    int playerCount = PlayerManager::Instance().GetPlayerCount();
-    for (int j = 0; j < playerCount; ++j)
-    {
-        std::weak_ptr<Actor> player = PlayerManager::Instance().GetPlayer(j);
-        DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
-        float playerRadius = player.lock()->GetComponent<Collision>()->GetRadius();
-        float playerHeight = player.lock()->GetComponent<Collision>()->GetHeight();
-        // 衝突処理
-        DirectX::XMFLOAT3 outPositon;
-        // 球と球
-        if (collisionId->IntersectCylinderVsCylinder(
-            position,
-            attackRange,
-            height,
-            {
-            playerPosition.x,
-            playerPosition.y,
-            playerPosition.z,
-            },
-            playerRadius,
-            playerHeight,
-            outPositon))
+    PlayerManager& playerManager = PlayerManager::Instance();
 
+    // 全ての敵と総当たりで衝突処理
+    int playerCount = playerManager.GetPlayerCount();
+
+    // player所持無し
+    if (playerCount <= 0) return false;
+
+    // 安全チェック
+    std::shared_ptr<Actor> player = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
+    if (!player)
+        return false;
+    // player関係
+    std::shared_ptr<Player> playerMain = player->GetComponent<Player>();
+    std::shared_ptr<Transform> playerTransform = player->GetComponent<Transform>();
+    std::shared_ptr<Movement> playerMovement = player->GetComponent<Movement>();
+    std::shared_ptr<Collision> playerCollision = player->GetComponent<Collision>();
+    std::shared_ptr<HP> playerHp = player->GetComponent<HP>();
+    // 位置、半径、高さ
+    DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
+    float playerRadius = playerCollision->GetRadius();
+    float playerHeight = playerCollision->GetHeight();
+    // 衝突処理
+    DirectX::XMFLOAT3 outPositon;
+    // 球と球
+    if (collisionId->IntersectCylinderVsCylinder(
+        position,
+        attackRange,
+        height,
         {
-            // ダメージを与える。
-            if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamageJamp, jampInvincibleTime))
-            {
-                // 振動
-                StartDamageShake();
-                DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
-                DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
-                DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
-                DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
-                DirectX::XMFLOAT3 normal;
-                DirectX::XMStoreFloat3(&normal, N);
-                float jumpSpeed = 5.0f;
-                // 衝撃
-                const float power = 10.0f;
-                DirectX::XMFLOAT3 impulse;
-                impulse.y = power * 0.5f;
-                player.lock()->GetComponent<Movement>()->JumpVelocity(jumpSpeed);
-                //// 吹き飛ばす
-                {
-                    // 衝動
-                    DirectX::XMFLOAT3 impulse;
-                    // 衝撃
-                    const float power = 20.0f;
-                    float vx = playerPosition.x - position.x;
-                    float vz = playerPosition.z - position.z;
-                    float lengthXZ = sqrtf(vx * vx + vz * vz);
-                    vx /= lengthXZ;
-                    vz /= lengthXZ;
-                    impulse.x = vx * power;
-                    impulse.y = power * 0.5f;
-                    impulse.z = vz * power;
-                    player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
-                    // ヒットエフェクト再生
-                    playerPosition.y += playerHeight * 0.5f;
-                    player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
-                    // UI揺れ
-                    player.lock()->GetComponent<Player>()->SetShakeMode(shakeStart);
-                }
-            }
+        playerPosition.x,
+        playerPosition.y,
+        playerPosition.z,
+        },
+        playerRadius,
+        playerHeight,
+        outPositon))
+
+    {
+        // ダメージを与える。
+        if (!playerHp->ApplyDamage(applyDamageJamp, jampInvincibleTime)) return false;
+
+        // 振動
+        StartDamageShake();
+        DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
+        DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
+        DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
+        DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
+        DirectX::XMFLOAT3 normal;
+        DirectX::XMStoreFloat3(&normal, N);
+        float jumpSpeed = 5.0f;
+        // 衝撃
+        const float power = 10.0f;
+        DirectX::XMFLOAT3 impulse;
+        impulse.y = power * 0.5f;
+        playerMovement->JumpVelocity(jumpSpeed);
+        //// 吹き飛ばす
+        {
+            // 衝動
+            DirectX::XMFLOAT3 impulse;
+            // 衝撃
+            const float power = 20.0f;
+            float vx = playerPosition.x - position.x;
+            float vz = playerPosition.z - position.z;
+            float lengthXZ = sqrtf(vx * vx + vz * vz);
+            vx /= lengthXZ;
+            vz /= lengthXZ;
+            impulse.x = vx * power;
+            impulse.y = power * 0.5f;
+            impulse.z = vz * power;
+            playerMovement->AddImpulse(impulse);
+            // ヒットエフェクト再生
+            playerPosition.y += playerHeight * 0.5f;
+            playerMain->GetStateMachine()->ChangeState((int)Player::State::Damage);
+            // UI揺れ
+            playerMain->SetShakeMode(shakeStart);
         }
     }
     return false;
@@ -579,7 +497,7 @@ void EnemyBoss::CollisionInpact()
 
     // 衝撃波の有無
     if (!IsInpact) return;
-    PlayerManager& playerManager = PlayerManager::Instance();
+
     ProjectileManager& projectileManager = ProjectileManager::Instance();
     // 左足のボーン名
     Model::Node* bossLeftFoot = model->FindNode("boss_left_foot1");
@@ -588,7 +506,7 @@ void EnemyBoss::CollisionInpact()
     DirectX::XMFLOAT3 bossLeftFootPosition;
     bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
 
-    DetectHitByBodyPart(bossLeftFootPosition,applyDamageStamp);
+    DetectHitByBodyPart(bossLeftFootPosition, applyDamageStamp);
 
     // 当たり判定増大
     radiusInpactInSide += 0.3f;
@@ -599,63 +517,74 @@ void EnemyBoss::CollisionInpact()
     // 当たり判定増大高さ
     radiusInpactHeight += 0.3f;
 
+    PlayerManager& playerManager = PlayerManager::Instance();
+
     // 全ての敵と総当たりで衝突処理
-    int playerCount = PlayerManager::Instance().GetPlayerCount();//todo 外
-    int projectileCount = projectileManager.GetProjectileCount();
-    for (int j = 0; j < playerCount; ++j)
-    {
-        std::shared_ptr<Actor> player = playerManager.GetPlayer(j);//外ループの方が軽い
-        if (!player) return;
-        DirectX::XMFLOAT3 playerPosition = player->GetComponent<Transform>()->GetPosition();
-        float playerRadius = player->GetComponent<Collision>()->GetRadius();
-        float playerHeight = player->GetComponent<Collision>()->GetHeight();
-        // 衝突処理
-        DirectX::XMFLOAT3 outPositon;
-        // 円柱と円
-        if (collisionId->IntersectSphereVsCylinder(
+    int playerCount = playerManager.GetPlayerCount();
+
+    // player所持無し
+    if (playerCount <= 0) return;
+
+    // 安全チェック
+    std::shared_ptr<Actor> player = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
+    if (!player)
+        return;
+    // player関係
+    std::shared_ptr<Player> playerMain = player->GetComponent<Player>();
+    std::shared_ptr<Transform> playerTransform = player->GetComponent<Transform>();
+    std::shared_ptr<Movement> playerMovement = player->GetComponent<Movement>();
+    std::shared_ptr<Collision> playerCollision = player->GetComponent<Collision>();
+    std::shared_ptr<HP> playerHp = player->GetComponent<HP>();
+    // 位置、半径、高さ
+    DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
+    float playerRadius = playerCollision->GetRadius();
+    float playerHeight = playerCollision->GetHeight();
+
+    // 衝突処理
+    DirectX::XMFLOAT3 outPositon;
+    // 円柱と円
+    if (collisionId->IntersectSphereVsCylinder(
+        bossLeftFootPosition,
+        radiusInpactOutSide,
+        playerPosition,
+        playerRadius,
+        playerHeight,
+        outPositon) &&
+        !collisionId->IntersectSphereVsCylinder(
             bossLeftFootPosition,
-            radiusInpactOutSide,
+            radiusInpactInSide,
             playerPosition,
             playerRadius,
             playerHeight,
-            outPositon) &&
-            !collisionId->IntersectSphereVsCylinder(
-                bossLeftFootPosition,
-                radiusInpactInSide,
-                playerPosition,
-                playerRadius,
-                playerHeight,
-                outPositon))
+            outPositon))
 
+    {
+        // 高さが一定以下なら通る
+        if (bossLeftFootPosition.y + radiusInpactHeight < playerPosition.y) return;
+        // ダメージを与える。
+        if (!playerHp->ApplyDamage(applyDamageImpact, impactInvincibleTime)) return;
+
+        playerMain->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+
+        // 吹き飛ばす
         {
-            // 高さが一定以下なら通る
-            if (bossLeftFootPosition.y + radiusInpactHeight < playerPosition.y) return;
-            // ダメージを与える。
-            if (player->GetComponent<HP>()->ApplyDamage(applyDamageImpact, impactInvincibleTime))
-            {
-                player->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
-
-                // 吹き飛ばす
-                {
-                    // 衝動
-                    DirectX::XMFLOAT3 impulse;
-                    // 衝撃
-                    const float power = 10.0f;
-                    float vx = playerPosition.x - bossLeftFootPosition.x;
-                    float vz = playerPosition.z - bossLeftFootPosition.z;
-                    float lengthXZ = sqrtf(vx * vx + vz * vz);
-                    vx /= lengthXZ;
-                    vz /= lengthXZ;
-                    impulse.x = vx * power;
-                    impulse.y = power * 0.5f;
-                    impulse.z = vz * power;
-                    player->GetComponent<Movement>()->AddImpulse(impulse);
-                }
-                // ヒットエフェクト再生
-                {
-                    playerPosition.y += playerHeight * 0.5f;
-                }
-            }
+            // 衝動
+            DirectX::XMFLOAT3 impulse;
+            // 衝撃
+            const float power = 10.0f;
+            float vx = playerPosition.x - bossLeftFootPosition.x;
+            float vz = playerPosition.z - bossLeftFootPosition.z;
+            float lengthXZ = sqrtf(vx * vx + vz * vz);
+            vx /= lengthXZ;
+            vz /= lengthXZ;
+            impulse.x = vx * power;
+            impulse.y = power * 0.5f;
+            impulse.z = vz * power;
+            playerMovement->AddImpulse(impulse);
+        }
+        // ヒットエフェクト再生
+        {
+            playerPosition.y += playerHeight * 0.5f;
         }
     }
 }
@@ -705,64 +634,181 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
 
     std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
 
-    int playerCount = PlayerManager::Instance().GetPlayerCount();
-    for (int j = 0; j < playerCount; ++j)
+    PlayerManager& playerManager = PlayerManager::Instance();
+
+    // 全ての敵と総当たりで衝突処理
+    int playerCount = playerManager.GetPlayerCount();
+
+    // 安全チェック
+    std::shared_ptr<Actor> player = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
+    if (!player)
+        return;
+    // player関係
+    std::shared_ptr<Player> playerMain = player->GetComponent<Player>();
+    std::shared_ptr<Transform> playerTransform = player->GetComponent<Transform>();
+    std::shared_ptr<Movement> playerMovement = player->GetComponent<Movement>();
+    std::shared_ptr<Collision> playerCollision = player->GetComponent<Collision>();
+    std::shared_ptr<HP> playerHp = player->GetComponent<HP>();
+    // 位置、半径、高さ
+    DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
+    float playerRadius = playerCollision->GetRadius();
+    float playerHeight = playerCollision->GetHeight();
+    // 衝突処理
+    DirectX::XMFLOAT3 outPositon;
+    // 球と球
+    if (collisionId->IntersectSphereVsCylinder(
+        partBodyPosition,
+        attackRightFootRange,
+        playerPosition,
+        playerRadius,
+        playerHeight,
+        outPositon))
     {
-        std::weak_ptr<Actor> player = PlayerManager::Instance().GetPlayer(j);
-        DirectX::XMFLOAT3 playerPosition = player.lock()->GetComponent<Transform>()->GetPosition();
-        float playerRadius = player.lock()->GetComponent<Collision>()->GetRadius();
-        float playerHeight = player.lock()->GetComponent<Collision>()->GetHeight();
+        // ダメージを与える。
+        if (!playerHp->ApplyDamage(applyDamage, nuckleInvincibleTime)) return;
+
+        // 斬撃音
+        PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
+
+        // se再生
+        AudioParam audioParam;
+        audioParam.filename = "Data/Audio/SE/スラッシュ２回目.wav";
+        audioParam.loop = isLoopDisabled;
+        audioParam.volume = seVolume;
+        InputSe(audioParam);
+
+
+        DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
+        DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
+        DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
+        DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
+        DirectX::XMFLOAT3 normal;
+        DirectX::XMStoreFloat3(&normal, N);
+        float jumpSpeed = 5.0f;
+        //// 吹き飛ばす
+        {
+            // 衝動
+            DirectX::XMFLOAT3 impulse;
+            // 衝撃
+            const float power = 10.0f;
+            float vx = outPositon.x - playerPosition.x;
+            float vz = outPositon.z - playerPosition.z;
+            float lengthXZ = sqrtf(vx * vx + vz * vz);
+            vx /= lengthXZ;
+            vz /= lengthXZ;
+            impulse.x = vx * power;
+            impulse.y = power * 0.5f;
+            impulse.z = vz * power;
+            playerMain->GetStateMachine()->ChangeState((int)Player::State::Damage);
+            playerMovement->AddImpulse(impulse);
+            // エフェクト発生位置
+            DirectX::XMFLOAT3 efcPos = playerPosition;
+            efcPos.y += playerCollision->GetHeight();
+            // ヒットエフェクト再生
+            moveAttackEffect->Play(playerPosition);
+            //SE
+            bool loopSe = false;
+            // UI揺れ
+            playerMain->SetShakeMode(true);
+            // 振動
+            StartDamageShake();
+        }
+    }
+}
+
+void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
+{
+    // 安全チェック
+    auto sharedId = GetActor();
+    if (!sharedId)
+        return;
+
+    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+    std::shared_ptr modelId = sharedId->GetComponent<ModelControll>();
+
+    PlayerManager& playerManager = PlayerManager::Instance();
+
+    // 全ての敵と総当たりで衝突処理
+    int playerCount = playerManager.GetPlayerCount();
+
+    // 安全チェック
+    std::shared_ptr<Actor> player = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
+    if (!player)
+        return;
+    // player関係
+    std::shared_ptr<Player> playerMain = player->GetComponent<Player>();
+    std::shared_ptr<Transform> playerTransform = player->GetComponent<Transform>();
+    std::shared_ptr<Movement> playerMovement = player->GetComponent<Movement>();
+    std::shared_ptr<Collision> playerCollision = player->GetComponent<Collision>();
+    std::shared_ptr<HP> playerHp = player->GetComponent<HP>();
+    // 位置、半径、高さ
+    DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
+    float playerRadius = playerCollision->GetRadius();
+    float playerHeight = playerCollision->GetHeight();
+
+    // パーツの種類
+    Model::Node* nodePart;
+
+    // パーツ全確認
+    for (auto& part : hitSizes)
+    {
+        // パーツの種類
+        nodePart = modelId->GetModel()->FindNode(bornPart.at(part.first));
+
+        // 位置
+        DirectX::XMFLOAT3 nodePosition;
+        nodePosition = modelId->GetModel()->ConvertLocalToWorld(nodePart);
+
         // 衝突処理
         DirectX::XMFLOAT3 outPositon;
         // 球と球
-        if (collisionId->IntersectSphereVsCylinder(
-            partBodyPosition,
-            attackRightFootRange,
+        if (!collisionId->IntersectSphereVsCylinder(
+            nodePosition,
+            hitSizes.at(part.first),
             playerPosition,
             playerRadius,
             playerHeight,
-            outPositon))
+            outPositon)) return;
+
+        // ダメージを与える。
+        if (!playerHp->ApplyDamage(applyDamage, nuckleInvincibleTime)) return;
+
+        // 斬撃音
+        PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
+        DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
+        DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
+        DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
+        DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
+        DirectX::XMFLOAT3 normal;
+        DirectX::XMStoreFloat3(&normal, N);
+        float jumpSpeed = 5.0f;
+        //// 吹き飛ばす
         {
-            // ダメージを与える。
-            if (player.lock()->GetComponent<HP>()->ApplyDamage(applyDamage, nuckleInvincibleTime))
-            {
-                InputSlashSe();
-                DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
-                DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
-                DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
-                DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
-                DirectX::XMFLOAT3 normal;
-                DirectX::XMStoreFloat3(&normal, N);
-                float jumpSpeed = 5.0f;
-                //// 吹き飛ばす
-                {
-                    // 衝動
-                    DirectX::XMFLOAT3 impulse;
-                    // 衝撃
-                    const float power = 10.0f;
-                    float vx = outPositon.x - playerPosition.x;
-                    float vz = outPositon.z - playerPosition.z;
-                    float lengthXZ = sqrtf(vx * vx + vz * vz);
-                    vx /= lengthXZ;
-                    vz /= lengthXZ;
-                    impulse.x = vx * power;
-                    impulse.y = power * 0.5f;
-                    impulse.z = vz * power;
-                    player.lock()->GetComponent<Player>()->GetStateMachine()->ChangeState((int)Player::State::Damage);
-                    player.lock()->GetComponent<Movement>()->AddImpulse(impulse);
-                    // エフェクト発生位置
-                    DirectX::XMFLOAT3 efcPos = playerPosition;
-                    efcPos.y += player.lock()->GetComponent<Collision>()->GetHeight();
-                    // ヒットエフェクト再生
-                    moveAttackEffect->Play(playerPosition);
-                    //SE
-                    bool loopSe = false;
-                    // UI揺れ
-                    player.lock()->GetComponent<Player>()->SetShakeMode(true);
-                    // 振動
-                    StartDamageShake();
-                }
-            }
+            // 衝動
+            DirectX::XMFLOAT3 impulse;
+            // 衝撃
+            const float power = 10.0f;
+            float vx = outPositon.x - playerPosition.x;
+            float vz = outPositon.z - playerPosition.z;
+            float lengthXZ = sqrtf(vx * vx + vz * vz);
+            vx /= lengthXZ;
+            vz /= lengthXZ;
+            impulse.x = vx * power;
+            impulse.y = power * 0.5f;
+            impulse.z = vz * power;
+            playerMain->GetStateMachine()->ChangeState((int)Player::State::Damage);
+            playerMovement->AddImpulse(impulse);
+            // エフェクト発生位置
+            DirectX::XMFLOAT3 efcPos = playerPosition;
+            efcPos.y += playerCollision->GetHeight();
+            // ヒットエフェクト再生
+            moveAttackEffect->Play(playerPosition);
+            //SE
+            bool loopSe = false;
+            // UI揺れ
+            playerMain->SetShakeMode(true);
+            // 振動
+            StartDamageShake();
         }
     }
 }
@@ -849,6 +895,7 @@ void EnemyBoss::OnHit(float elapsedTime)
     // コンポーネントを使えるように
     std::shared_ptr hpId = sharedId->GetComponent<HP>();
 
+    // 点滅時間
     if (hpId->FlashTime(elapsedTime))
     {
         ++damageStateTime;
@@ -857,6 +904,7 @@ void EnemyBoss::OnHit(float elapsedTime)
             damageStateCheck = damageStateCheck ? false : true;
             damageStateTime = 0;
         }
+        // 通常色
         if (damageStateCheck)
         {
             bool onHit = false;
@@ -864,6 +912,7 @@ void EnemyBoss::OnHit(float elapsedTime)
             colorGB.x += 0.1f;
             colorGB.y += 0.1f;
         }
+        // 赤
         else
         {
             bool onHit = true;

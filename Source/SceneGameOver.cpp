@@ -164,8 +164,9 @@ void SceneGameOver::Update(float elapsedTime)
 		PlayEffectsShaders(elapsedTime);
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
 
-	std::weak_ptr<Ui> uiId = UiManager::Instance().GetUies(0)->GetComponent<Ui>();
-	uiId.lock()->IncrementToAlpha(0.01f);
+	std::shared_ptr<Ui> uiId = UiManager::Instance().GetUies(0)->GetComponent<Ui>();
+	if (!uiId) return;
+	uiId->IncrementToAlpha(0.01f);
 	
 	if (gamePad.GetButtonDown() & GamePad::BTN_B)
 	{
@@ -797,7 +798,7 @@ void SceneGameOver::SelectScene()
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
 		{
 			//　シーン変更
-			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
+			SceneManager::Instance().ChangeScene(new SceneTitle);
 		}
 
 		break;

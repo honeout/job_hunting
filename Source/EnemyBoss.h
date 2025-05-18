@@ -38,30 +38,13 @@ public:
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
 
-    // SE再生 切り裂き
-    void InputSlashSe();
-    void InputStopSlashSe();
+    // SE再生
+    void InputSe(AudioParam param);
 
-    // SE再生 ジャンプ
-    void InputJampSe();
-    void InputStopJampSe();
-
-    // SE再生 ダッシュ
-    void InputDashSe();
-    // SE再生 ダッシュ
-    void InputStopDashSe();
-
-    // SE叫び声
-    void InputAwakeSe();
-
-    // SE衝撃波
-    void InputImpactSe();
-
-    // SEダメージ音
-    void InputDamageSe();
-
-    // SEチャージオン
-    void InputChargeSe();
+    // SE再生同じ
+    void PlaySe(const std::string& filename);
+    // Se停止
+    void StopSe(const std::string& filename);
 
     // 当たり判定衝撃波
     void CollisionImpactVsPlayer();
@@ -80,6 +63,9 @@ public:
 
     // 当たり判定右端
     void DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int applyDamage);
+    
+    // 当たり判定全部
+    void DetectHitByBodyAllPart(int applyDamage);
 
     // 衝撃波発生
     void InputImpact(DirectX::XMFLOAT3 pos);

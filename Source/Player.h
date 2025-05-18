@@ -43,36 +43,17 @@ public:
     void Render(RenderContext& rc, ModelShader& shader) override;
     // シャドウマップ処理
     void RenderShadowmap(RenderContext& rc) override;
-    // SE再生 歩き
-    void InputWalkSE();
-    void InputStopWalkSE();
-    // SE再生 ジャンプ
-    void InputJampSE();
-    void InputStopJampSE();
-    // SE再生 空中
-    void InputAreWalkSE();
-    // SE再生 ダッシュ
-    void InputDashSE();
-    // SE再生 斬撃
-    void InputAttackSlashSE();
-    // SE再生 魔法　炎
-    void InputAttackFlameSE();
-    // SE再生 魔法　雷
-    void InputAttackThanderSE();
-    void InputStopAttackThanderSE();
-    // SE再生 魔法　氷
-    void InputAttackIceSE();
-    // SE再生 魔法　回復
-    void InputAttackHealeSE();
-    // SE再生 必殺技斬撃
-    void InputAttackSlashSpecileLightningStrikeSE();
-    // SE再生 必殺技魔法　炎
-    void InputAttackFlameSpecileSE();
-
+ 
     // SE再生
     void InputSe(AudioParam param);
+    // SE再生同じ
+    void PlaySe(const std::string& filename);
+
+    // SE再生ループ
+    void PlayLoopSe(const std::string& filename, bool isLoop);
+
     // se停止
-    void StopSe(AudioParam param);
+    void StopSe(const std::string& filename);
 
     // カメラ切り替え処理
     void UpdateCameraState(float elapsedTime);
@@ -173,6 +154,11 @@ public:
 
     );
 
+    // ノードとエネミーの衝突処理
+    bool CollisionNodeVsEnemies(
+        const char* nodeName,
+        float nodeRadius);
+
     // ノードと弾丸の衝突処理
     void CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius);
 
@@ -254,7 +240,7 @@ public:
     void DmageInvalidJudment(bool invalidJudgment);
 
     //  UI操作
-    void UiControlle(float elapsedTime);
+    void UiControlleGauge(float elapsedTime);
 
     // ダメージ判定
     void SpecialApplyDamageInRadius();
@@ -658,7 +644,7 @@ private:
     std::stack<int> chargedSpecialMoves;
 
     // seの音の大きさ
-    float seVolume = 0.5f;
+    float seVolume = 0.8f;
 
     // ステートマシン用
     std::unique_ptr<StateMachine> stateMachine;
@@ -897,6 +883,15 @@ public:
     void Remove(std::shared_ptr<Actor> player);
 
     void Clear();
+
+public:
+
+    // プレイヤーの種類
+    enum class PlayerType
+    {
+        Main = 0,
+    };
+
 private:
     std::vector<std::shared_ptr<Actor>> players;
     // 削除予約

@@ -158,7 +158,8 @@ void SceneGame::Update(float elapsedTime)
 		isMenue = isMenue ? isMenueOf : isMenueOn;
 	}
 
-	if (isMenue)return;
+	// メニュー停止
+	//if (isMenue)return;
 
 	float dlayTime = dlayTimeCheck ?  elapsedTime / 2 : elapsedTime;
 
@@ -2139,7 +2140,7 @@ void SceneGame::InitializeComponent()
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 
 		// 位置
-		DirectX::XMFLOAT2 pos = { 640, 31 };
+		DirectX::XMFLOAT2 pos = { 100, 31 };
 		//DirectX::XMFLOAT2 pos = { 32, 31 };
 		transform2D->SetPosition(pos);
 
