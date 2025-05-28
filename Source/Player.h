@@ -50,26 +50,20 @@ public:
     void PlaySe(const std::string& filename);
 
     // SE再生ループ
-    void PlayLoopSe(const std::string& filename, bool isLoop);
+    void PlayLoopSe(const std::string& filename);
 
     // se停止
     void StopSe(const std::string& filename);
 
     // カメラ切り替え処理
     void UpdateCameraState(float elapsedTime);
-    // 弾丸と敵の衝突処理
-    void CollisionMagicVsEnemies();
-
-    // 弾丸と敵の衝突処理
-    void CollisionMagicVsEnemies(const char* bornName);
 
     // 当たり判定パーツ事
     bool CheckAllPartsCollision(DirectX::XMFLOAT3 pos, float rudius);
 
     // 魔法の種類チェック炎
     bool CheckMagicFire(std::shared_ptr<Actor> projectile);
-    // 魔法の種類チェック雷
-    bool CheckMagicThunder(std::shared_ptr<Actor> projectile);
+
     // 魔法の種類チェック氷
     bool CheckMagicIce(std::shared_ptr<Actor> projectile);
 
@@ -95,15 +89,6 @@ public:
     // hpピンチ
     void PinchMode(float elapsedTime);
 public:
-    // 曲再生
-    void PlayPintchSe();
-    void StopPintchSe();
-    // 必殺技ため終了
-    void PlaySpecialChargeCompleteSe();
-
-    // テレポート音
-    void PlayTellePortSe();
-
     // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
     DirectX::XMFLOAT3 GetMoveVec(float elapsedTime);
 
@@ -145,19 +130,7 @@ public:
     void SetSpecialAttackTime(bool specialAttackTime) { this->specialAttackTime = specialAttackTime; }
 
     // ノードとエネミーの衝突処理
-    bool CollisionNodeVsEnemies(
-        const char* nodeName,
-        float nodeRadius,
-        const char* nodeHeartName,
-        const char* nodeLeftArmName,
-        const char* nodeRightArmName
-
-    );
-
-    // ノードとエネミーの衝突処理
-    bool CollisionNodeVsEnemies(
-        const char* nodeName,
-        float nodeRadius);
+    bool CollisionNodeVsEnemies();
 
     // ノードと弾丸の衝突処理
     void CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius);
@@ -173,12 +146,6 @@ public:
 
     // 魔法入力
     bool InputMagick();
-
-    // メニュー開く入力
-    bool InputMenue();
-
-    // デバッグ用距離
-    void DebugLength();
 
     // 魔法入力
     bool InputMagicframe();
@@ -824,9 +791,6 @@ private:
     // 氷連射一時停止
     bool iceMagicMoveCheck = false;
 
-    // デバッグ
-    float debugLength;
-
     // 押し続けるか
     bool ButtonDownCountinue = true;
 
@@ -850,6 +814,9 @@ private:
     bool debugShaderFlash = false;
     bool debugShaderFlashSeconde = false;
     bool debugCameraTime = false;
+
+    // アニメーションのループ再生
+    bool isLoopAnim = true;
 };
 
 // プレイヤーマネージャー

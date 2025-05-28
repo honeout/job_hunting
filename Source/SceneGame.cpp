@@ -306,11 +306,11 @@ void SceneGame::Render()
 			ImGui::SliderFloat2("debugShortPushScale", &debugShortPushScale.x, 0.0f, 200.1f);
 
 			UiManager::Instance().GetUies((int)UiManager::UiCount::Push2)->GetComponent<TransForm2D>()->SetPosition(debugPush2Pos);
-			UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut)->GetComponent<TransForm2D>()->SetPosition(debugShortCutPos);
+			//UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut)->GetComponent<TransForm2D>()->SetPosition(debugShortCutPos);
 			UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->GetComponent<TransForm2D>()->SetPosition(debugShortPushPos);
 
 			UiManager::Instance().GetUies((int)UiManager::UiCount::Push2)->GetComponent<TransForm2D>()->SetScale(debugPush2Scale);
-			UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut)->GetComponent<TransForm2D>()->SetScale(debugShortCutScale);
+			//UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut)->GetComponent<TransForm2D>()->SetScale(debugShortCutScale);
 			UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->GetComponent<TransForm2D>()->SetScale(debugShortPushScale);
 
 			ImGui::TreePop();
@@ -2551,8 +2551,8 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 179, 285 };
-		transform2D->SetPosition(debugPush2Pos);
+		DirectX::XMFLOAT2 pos = { 140, 0 };
+		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
@@ -2786,8 +2786,8 @@ void SceneGame::InitializeComponent()
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		//DirectX::XMFLOAT2 pos = { 179, 285 };
-		DirectX::XMFLOAT2 pos = { 179, 285 };
-		transform2D->SetPosition(debugShortCutPos);
+		DirectX::XMFLOAT2 pos = { 140, 0 };
+		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
@@ -2822,8 +2822,8 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 179, 285 };
-		transform2D->SetPosition(debugShortPushPos);
+		DirectX::XMFLOAT2 pos = { 140, 120 };
+		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);

@@ -46,6 +46,8 @@ public:
 
 	void SetMpEmpth(bool mpEmpth) { this->mpEmpth = mpEmpth; }
 
+	// mpè¡îÔÇµÇΩÇ©
+	bool GetIsConsumption() const { return isConsumption; }
 private:
 	// ç≈ëÂílHP
 	int          maxMagic = 5;
@@ -66,5 +68,8 @@ private:
 
 	// îªíË
 	bool mpEmpth = false;
+
+	// è¡îÔÇµÇΩÇ©
+	bool isConsumption = false;
 };
 

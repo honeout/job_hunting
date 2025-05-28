@@ -152,7 +152,7 @@ void SceneTitle::Finalize()
 // 更新処理
 void SceneTitle::Update(float elapsedTime)
 {
-    GamePad& gamePad = Input::Instance().GetGamePad();
+	GamePad& gamePad = Input::Instance().GetGamePad();
 
 	ActorManager::Instance().Update(elapsedTime);
 	// 音更新
@@ -168,29 +168,33 @@ void SceneTitle::Update(float elapsedTime)
 	const GamePadButton anyButton =
 		GamePad::BTN_B;
 
-	for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
+	int playerCount = PlayerManager::Instance().GetPlayerCount();
+
+	if (playerCount < 0) return;
+
+	auto playerId = PlayerManager::Instance().GetPlayer((int)PlayerManager::PlayerType::Main);
+	std::shared_ptr<Player> playerIdMain = playerId->GetComponent<Player>();
+
+	// 演出開始
+	if (playerIdMain->InputAttack())
 	{
-		std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(i);
+		StopMusic();
 
-		if (playerid.lock()->GetComponent<Player>()->InputAttack())
-		{
-			StopMusic();
-
-			// 描画許可
-			isDrawButton = true;
-			// ボタンを押す描画許可
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
-				GetComponent<Ui>()->SetDrawCheck(isDrawButton);
-		}
-
-		if (playerid.lock()->GetComponent<Player>()->GetEndState())
-		{
-			//　シーン変更
-			playerid.lock()->GetComponent<Player>()->SetEndState(false);
-			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
-			return;
-		}
+		// 描画許可
+		isDrawButton = true;
+		// ボタンを押す描画許可
+		UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
+			GetComponent<Ui>()->SetDrawCheck(isDrawButton);
 	}
+	// 演出停止
+	if (playerIdMain->GetEndState())
+	{
+		//　シーン変更
+		playerIdMain->SetEndState(false);
+		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
+		return;
+	}
+	// UIコマンド操作
 	SelectScene();
 }
 // 描画処理
@@ -916,7 +920,7 @@ void SceneTitle::PlayEffectsShaders(float elapsedTime)
 		radialBlurData.mask_radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radislBlurMaskRadiusEffectOn : radislBlurMaskRadiusNormal;
 	}
 }
-
+// UIコマンド操作
 void SceneTitle::SelectScene()
 {
 	int uiManagerMax = UiManager::Instance().GetUiesCount();

@@ -35,6 +35,8 @@ bool Mp::UpdateInbincibleTimer(float elapsedTime)
 // mpÁ”ï
 bool Mp::ApplyConsumption(int mpConsumption)
 {
+    // Á”ï‚µ‚Ä‚È‚¢
+    isConsumption = false;
     // mpÁ”ï‚ª‚O‚Ìê‡‚Í•ÏX‚·‚é•K—v‚ª‚È‚¢
     if (mpConsumption == mpValueMin) return false;
     std::weak_ptr<Actor> actor = GetActor();
@@ -50,6 +52,7 @@ bool Mp::ApplyConsumption(int mpConsumption)
         magic -= mpConsumption;
         magic = magic <= mpMin ? mpMin : magic;
         mpEmpth = magic <= mpMin ? true : false;
+        isConsumption = true;
         return true;
     }
 }

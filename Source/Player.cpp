@@ -370,12 +370,12 @@ void Player::PlaySe(const std::string& filename)
     Se.Play(audioParam);
 }
 // 音ループ再生
-void Player::PlayLoopSe(const std::string& filename, bool isLoop)
+void Player::PlayLoopSe(const std::string& filename)
 {
     Audio& Se = Audio::Instance();
     AudioParam audioParam;
     audioParam.filename = filename;
-    audioParam.loop = isLoop;
+    audioParam.loop = isLoopAnim;
     audioParam.volume = seVolume;
     Se.Play(audioParam);
 }
@@ -392,200 +392,10 @@ void Player::UpdateCameraState(float elapsedTime)
     CameraState oldLockonState = lockonState;
     DirectX::XMFLOAT3 oldLockonCharacter = lockonCharactor;
     lockonState = CameraState::NotLockOn;
-    lockonCharactor = {0,0,0};
-        // ロックオンモード
-    if (rockCheck)
-    {
-        Model::Node* PRock = model->FindNode("mixamorig:Spine1");
-        DirectX::XMFLOAT3 pPosition =
-        {
-                    PRock->worldTransform._41,
-                    PRock->worldTransform._42,
-                    PRock->worldTransform._43
-        };
-        pPosition.z *= 1.1f;
-        DirectX::XMVECTOR p, t, v;
-        switch (oldLockonState)
-        {
-        // ノーマルカメラ
-        case	CameraState::NotLockOn:
-        {
-            // 一番近い距離のキャラクターを検索
-            float	length1, length2;
-            int enemyCount = EnemyManager::Instance().GetEnemyCount();
-            for (int ii = 0; ii < enemyCount; ++ii)
-            {
-                Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("shoulder");
-                // 敵位置
-                DirectX::XMFLOAT3 character = 
-                {
-                    characterWorld->worldTransform._41,
-                    characterWorld->worldTransform._42,
-                    characterWorld->worldTransform._43
-                };
-                // ロックオン
-                if (lockonState != CameraState::NotLockOn)
-                {
-                    p = DirectX::XMLoadFloat3(&pPosition);
-                    t = DirectX::XMLoadFloat3(&lockonCharactor);
-                    v = DirectX::XMVectorSubtract(t, p);
-                    DirectX::XMStoreFloat(&length2, DirectX::XMVector3LengthSq(v));
-                    p = DirectX::XMLoadFloat3(&pPosition);
-                    t = DirectX::XMLoadFloat3(&character);
-                    v = DirectX::XMVectorSubtract(t, p);
-                    DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
-                    if (length1 < length2)
-                    {
-                        lockonCharactor = character;
-                    }
-                }
-                // ノーマル
-                else
-                {
-                    p = DirectX::XMLoadFloat3(&pPosition);
-                    t = DirectX::XMLoadFloat3(&character);
-                    v = DirectX::XMVectorSubtract(t, p);
-                    DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
-                    lockonCharactor = character;
-                    lockonState = CameraState::LockOn;
-                }
-            }
-            break;
-        }
-        // ロックオン
-        case	CameraState::LockOn:
-        {
-            // ロックオン対象が存在しているかチェックして
-            // 対象がいればロックオンを継続させる
-            int enemyCount = EnemyManager::Instance().GetEnemyCount();
-            for (int ii = 0; ii < enemyCount; ++ii)
-            {
-                Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
-                // 敵位置
-                DirectX::XMFLOAT3 character =
-                {
-                    characterWorld->worldTransform._41,
-                    characterWorld->worldTransform._42,
-                    characterWorld->worldTransform._43
-                };
-                // エネミーステート
-                stateEnemyIndex = EnemyManager::Instance().GetEnemy(ii)->GetComponent<EnemyBoss>()->GetStateMachine()->
-                    GetStateIndex();
-                // エネミーの特定ステートならカメラ更新しない
-                if (stateEnemyIndex == (int)EnemyBoss::State::Jump ||
-                    stateEnemyIndex == (int)EnemyBoss::State::Attack ||
-                    stateEnemyIndex == (int)EnemyBoss::State::Wander
-                    )
-                {
-                    lockonState = CameraState::AttackLock;
-                }
-                // 通常ロックオンに
-                else
-                {
-                    lockonState = CameraState::LockOn;
-                }
-                p = DirectX::XMLoadFloat3(&pPosition);
-                t = DirectX::XMLoadFloat3(&character);
-                v = DirectX::XMVectorSubtract(t, p);
-                lockonCharactor = character;
-            }
-            // 右スティックでロックオン対象を変更する処理
-            GamePad& gamePad = Input::Instance().GetGamePad();
-            float ax = gamePad.GetAxisRX();	// 水平のみ
-            // 垂直方向は使わないでおく
-            lockonTargetChangeTime -= flame * elapsedTime;
-            if (
-                lockonTargetChangeTime <= 0 &&
-                ax * ax > 0.3f)
-            {
-                lockonTargetChangeTime = lockonTargetChangeTimeMax;
-                // ロックオン対象と自分自身の位置からベクトルを算出
-                float dx = oldLockonCharacter.x - pPosition.x;
-                float dz = oldLockonCharacter.z - pPosition.z;
-                float l = sqrtf(dx * dx + dz * dz);
-                dx /= l;
-                dz /= l;
-                // 外積を用いて左右判定を行い、角度的に最も近い対象にロックオンを変える
-                float angleMax = FLT_MAX;
-                for (int ii = 0; ii < enemyCount; ++ii)
-                {
-                    Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
-                    DirectX::XMFLOAT3 character =
-                    {
-                        characterWorld->worldTransform._41,
-                        characterWorld->worldTransform._42,
-                        characterWorld->worldTransform._43
-                    };
-                    float ddx = character.x - pPosition.x;
-                    float ddz = character.z - pPosition.z;
-                    float ll = sqrtf(ddx * ddx + ddz * ddz);
-                    ddx /= ll;
-                    ddz /= ll;
-                    float cross = dx * ddz - dz * ddx;
-                    if (ax > 0 && cross < 0)
-                    {
-                        cross = abs(cross);
-                        if (cross < angleMax)
-                        {
-                            angleMax = cross;
-                            lockonCharactor = character;
-                        }
-                    }
-                    else if (ax < 0 && cross > 0)
-                    {
-                        if (cross < angleMax)
-                        {
-                            angleMax = cross;
-                            lockonCharactor = character;
-                        }
-                    }
-                }
-            }
-            break;
-        }
-        // 敵の攻撃ロックオン
-        case CameraState::AttackLock:
-        {
-            // 敵攻撃ロックオンステート
-            lockonState = CameraState::AttackLock;
+    lockonCharactor = { 0,0,0 };
 
-            int enemyCount = EnemyManager::Instance().GetEnemyCount();
-            for (int ii = 0; ii < enemyCount; ++ii)
-            {
-                Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(ii)->GetComponent<ModelControll>()->GetModel()->FindNode("body1");
-                // 敵位置
-                lockonCharactor =
-                    EnemyManager::Instance().GetEnemy(ii)->
-                    GetComponent<ModelControll>()->GetModel()->
-                    ConvertLocalToWorld(characterWorld);
-                // 敵ステート
-                stateEnemyIndex = EnemyManager::Instance().GetEnemy(ii)->GetComponent<EnemyBoss>()->GetStateMachine()->
-                    GetStateIndex();
-                // 特定の行動以外なら通常ロックオンに
-                if (stateEnemyIndex != (int)EnemyBoss::State::Jump &&
-                    stateEnemyIndex != (int)EnemyBoss::State::Attack)
-                {
-                    lockonState = CameraState::LockOn;
-                }
-            }
-            break;
-        }
-        }
-        // ステートがロックオンならカメラにモードを送る。
-        if (lockonState == CameraState::LockOn)
-        {
-            MessageData::CAMERACHANGELOCKONMODEDATA	p = { pPosition, lockonCharactor };
-            Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONMODE, &p);
-        }
-        // ステートが敵攻撃ロックオンならカメラにモードを送る。
-        if (lockonState == CameraState::AttackLock)
-        {
-            MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA	p = { pPosition, lockonCharactor };
-            Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONTOPHEIGHTMODE, &p);
-        }
-    }
     // 通常カメラなら足元を送る。
-    else if(freeCameraCheck)
+    if (!rockCheck)
     {
         Model::Node* PRock = model->FindNode("mixamorig:Spine1");
         DirectX::XMFLOAT3 pPosition =
@@ -596,6 +406,131 @@ void Player::UpdateCameraState(float elapsedTime)
         };
         MessageData::CAMERACHANGEFREEMODEDATA	p = { pPosition };
         Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
+        return;
+    }
+
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    // エネミーの数
+    int enemyCount = enemyManager.GetEnemyCount();
+    // エネミーが一人でも生きていたら
+    if (enemyCount <= 0) return;
+    // エネミーの安全☑
+    std::shared_ptr<Actor> enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
+    if (!enemyShader) return;
+
+    std::shared_ptr<EnemyBoss> enemyBoss = enemyShader->GetComponent<EnemyBoss>();
+    std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
+
+    // ロックオンモード
+    Model::Node* PRock = model->FindNode("mixamorig:Spine1");
+    DirectX::XMFLOAT3 pPosition;
+    pPosition = enemyModel->GetModel()->ConvertLocalToWorld(PRock);
+    pPosition.z *= 1.1f;
+    DirectX::XMVECTOR p, t, v;
+    switch (oldLockonState)
+    {
+        // ノーマルカメラ
+    case	CameraState::NotLockOn:
+    {
+        // 一番近い距離のキャラクターを検索
+        float	length1, length2;
+
+        Model::Node* characterBorn = enemyModel->GetModel()->FindNode("shoulder");
+        // 敵位置
+        DirectX::XMFLOAT3 character;
+
+        character = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
+        // ロックオン
+        if (lockonState != CameraState::NotLockOn)
+        {
+            p = DirectX::XMLoadFloat3(&pPosition);
+            t = DirectX::XMLoadFloat3(&lockonCharactor);
+            v = DirectX::XMVectorSubtract(t, p);
+            DirectX::XMStoreFloat(&length2, DirectX::XMVector3LengthSq(v));
+            p = DirectX::XMLoadFloat3(&pPosition);
+            t = DirectX::XMLoadFloat3(&character);
+            v = DirectX::XMVectorSubtract(t, p);
+            DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
+            if (length1 < length2)
+            {
+                lockonCharactor = character;
+            }
+        }
+        // ノーマル
+        else
+        {
+            p = DirectX::XMLoadFloat3(&pPosition);
+            t = DirectX::XMLoadFloat3(&character);
+            v = DirectX::XMVectorSubtract(t, p);
+            DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
+            lockonCharactor = character;
+            lockonState = CameraState::LockOn;
+        }
+
+        break;
+    }
+    // ロックオン
+    case	CameraState::LockOn:
+    {
+        // ボーン名取得
+        Model::Node* characterBorn = enemyModel->GetModel()->FindNode("body1");
+        // 敵位置
+        DirectX::XMFLOAT3 character;
+
+        character = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
+
+        // エネミーステート
+        stateEnemyIndex = enemyBoss->GetStateMachine()->GetStateIndex();
+        // エネミーの特定ステートならカメラ更新しない
+        if (stateEnemyIndex == (int)EnemyBoss::State::Jump ||
+            stateEnemyIndex == (int)EnemyBoss::State::Attack ||
+            stateEnemyIndex == (int)EnemyBoss::State::Wander
+            )
+        {
+            lockonState = CameraState::AttackLock;
+        }
+        // 通常ロックオンに
+        else
+        {
+            lockonState = CameraState::LockOn;
+        }
+        lockonCharactor = character;
+        break;
+    }
+    // 敵の攻撃ロックオン
+    case CameraState::AttackLock:
+    {
+        // 敵攻撃ロックオンステート
+        lockonState = CameraState::AttackLock;
+
+        // ボーン名取得
+        Model::Node* characterBorn = enemyModel->GetModel()->FindNode("body1");
+
+        // 敵位置
+        lockonCharactor = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
+        // 敵ステート
+        stateEnemyIndex = enemyBoss->GetStateMachine()->GetStateIndex();
+        // 特定の行動以外なら通常ロックオンに
+        if (stateEnemyIndex != (int)EnemyBoss::State::Jump &&
+            stateEnemyIndex != (int)EnemyBoss::State::Attack)
+        {
+            lockonState = CameraState::LockOn;
+        }
+
+        break;
+    }
+    }
+    // ステートがロックオンならカメラにモードを送る。
+    if (lockonState == CameraState::LockOn)
+    {
+        MessageData::CAMERACHANGELOCKONMODEDATA	p = { pPosition, lockonCharactor };
+        Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONMODE, &p);
+    }
+    // ステートが敵攻撃ロックオンならカメラにモードを送る。
+    if (lockonState == CameraState::AttackLock)
+    {
+        MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA	p = { pPosition, lockonCharactor };
+        Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONTOPHEIGHTMODE, &p);
     }
 }
 
@@ -631,7 +566,6 @@ void Player::OnGUI()
         return;
 
     std::shared_ptr transformId = sharedId->GetComponent<Transform>();
-    DebugLength();
     if (ImGui::Button("debugCamera"))
     {
         debugCameraTime = !debugCameraTime;
@@ -707,7 +641,6 @@ void Player::OnGUI()
     ImGui::InputInt("areAttackState", &areAttackState);
     ImGui::InputFloat("Move Speed", &moveSpeed);
     ImGui::SliderFloat3("angle", &angle.x, -10, 10);
-    ImGui::SliderFloat("debugLength", &debugLength, -10, 10);
     transformId->SetAngle(angle);
     ImGui::InputInt("selectCheck", &selectCheck);
     ImGui::InputInt("isPlayerDrawCheck", &isPlayerDrawCheck);
@@ -894,61 +827,67 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
     uiIdSightMove = sharedUiMoveId->GetComponent<Ui>();
     uiIdSightMoveTransform = sharedUiMoveId->GetComponent<TransForm2D>();
     // 全ての敵の頭上にHPゲージを表示
+
     EnemyManager& enemyManager = EnemyManager::Instance();
+    // エネミーの数
     int enemyCount = enemyManager.GetEnemyCount();
-    for (int i = 0; i < enemyCount; ++i)
+    // エネミーが一人でも生きていたら
+    if (enemyCount <= 0) return;
+    // エネミーの安全☑
+    std::shared_ptr<Actor> enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
+    if (!enemyShader) return;
+
+    std::shared_ptr<EnemyBoss> enemyBoss = enemyShader->GetComponent<EnemyBoss>();
+    std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
+
+    Model::Node* characterBorn = enemyModel->GetModel()->FindNode("shoulder");
+    // エネミー腰位置
+    DirectX::XMFLOAT3 enemyPosition;
+
+    enemyPosition = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
+
+    // ワールドからスクリーン
+    DirectX::XMVECTOR enemyPositionVe = DirectX::XMLoadFloat3(&enemyPosition);
+    // ゲージ描画 // ワールドからスクリーン
+    DirectX::XMVECTOR screenPositionVe = DirectX::XMVector3Project(
+        enemyPositionVe,
+        viewport.TopLeftX,
+        viewport.TopLeftY,
+        viewport.Width,
+        viewport.Height,
+        viewport.MinDepth,
+        viewport.MaxDepth,
+        Projection,
+        View,
+        World
+    );
+    // スクリーン座標
+    DirectX::XMFLOAT3 scereenPosition;
+    DirectX::XMStoreFloat3(&scereenPosition, screenPositionVe);
+    // 必殺技がでていなかったらロックオン
+    if (rockCheck || !specialRockOff)
     {
-        Model::Node* characterWorld = EnemyManager::Instance().GetEnemy(i)->GetComponent<ModelControll>()->GetModel()->FindNode("shoulder");
-        // エネミー頭上位置
-        DirectX::XMFLOAT3 worldPosition =
-        {
-            characterWorld->worldTransform._41,
-            characterWorld->worldTransform._42,
-            characterWorld->worldTransform._43
-        };
-        // ワールドからスクリーン
-        DirectX::XMVECTOR WorldPosition = DirectX::XMLoadFloat3(&worldPosition);
-        // ゲージ描画 // ワールドからスクリーン
-        DirectX::XMVECTOR ScreenPosition = DirectX::XMVector3Project(
-            WorldPosition,
-            viewport.TopLeftX,
-            viewport.TopLeftY,
-            viewport.Width,
-            viewport.Height,
-            viewport.MinDepth,
-            viewport.MaxDepth,
-            Projection,
-            View,
-            World
-        );
-        // スクリーン座標
-        DirectX::XMFLOAT3 scereenPosition;
-        DirectX::XMStoreFloat3(&scereenPosition, ScreenPosition);
-        // 必殺技がでていなかったらロックオン
-        if (rockCheck || !specialRockOff)
-        {
-            uiIdSight->SetDrawCheck(isDrawUi);
-        }
-        // 必殺技中ロックオン系UIを消す。
-        if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f || !rockCheck || specialRockOff)
-        {
-            uiIdSight->SetDrawCheck(isDrawUiEmpth);
-            uiIdSightMove->SetDrawCheck(isDrawUiEmpth);
-            continue;
-        }
-        // 2Dスプライト描画
-        {
-            uiIdSightTransform->SetPosition(
-                { 
-                    scereenPosition.x,
-                    scereenPosition.y
-                });
-            uiIdSightMoveTransform->SetPosition(
-                {
-                    scereenPosition.x - scereenPositionOffset.x,
-                    scereenPosition.y - scereenPositionOffset.y
-                });
-        }
+        uiIdSight->SetDrawCheck(isDrawUi);
+    }
+    // 必殺技中ロックオン系UIを消す。
+    if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f || !rockCheck || specialRockOff)
+    {
+        uiIdSight->SetDrawCheck(isDrawUiEmpth);
+        uiIdSightMove->SetDrawCheck(isDrawUiEmpth);
+        return;
+    }
+    // 2Dスプライト描画
+    {
+        uiIdSightTransform->SetPosition(
+            {
+                scereenPosition.x,
+                scereenPosition.y
+            });
+        uiIdSightMoveTransform->SetPosition(
+            {
+                scereenPosition.x - scereenPositionOffset.x,
+                scereenPosition.y - scereenPositionOffset.y
+            });
     }
 }
 
@@ -1061,9 +1000,6 @@ bool Player::InputSelectCheck()
         uiIdIsCommandDisabledAttack->SetDrawCheck(isDrawUiEmpth);
         uiIdIsCommandDisabledFire->SetDrawCheck(isDrawUiEmpth);
     }
-
-    
-    
 
     // 一度離すまでボタン効かない
     if (gamePad.GetButtonUp() & GamePad::BTN_B)
@@ -1758,6 +1694,7 @@ bool Player::InputSpecialAttackCharge()
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
     if (uiCount <= uiCountMax) return false;
+    // 必殺技チャージ
     if (specialAttackCharge >= specialAttackChargeMax)
     {
         // 安全チェック
@@ -1773,36 +1710,38 @@ bool Player::InputSpecialAttackCharge()
         std::shared_ptr<Ui> uiIdSpecialChargeFurst = sharedUiSpecialChargeFurstId->GetComponent<Ui>();
         std::shared_ptr<Ui> uiIdSpecialChargeSecond = sharedUiSpecialChargeSecondId->GetComponent<Ui>();
         std::shared_ptr<Ui> uiIdSpecialChargeSerde = sharedUiSpecialChargeSerdeId->GetComponent<Ui>();
+
         // 必殺技たまった音
-        PlaySpecialChargeCompleteSe();
+        PlaySe("Data/Audio/SE/必殺技ため.wav");
+
         //// 一度発動すると初期化
         specialAttackCharge = 0.0f;
         bool drawCheck = false;
         uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
         uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
         uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
-            // 剣攻撃を一定以上溜めたら
-            if (attackEnergyCharge >= energyChargeMax)
-            {
-                // 技確定
-                // 必殺技何が登録されたか 斬撃
-                specialAttack.at((int)SpecialAttackType::Attack).hasSkill = true;
-                // 一度発動すると初期化
-                specialAttackCharge = specialAttackChargeMin;
-                // 斬撃必殺技チャージ解消
-                attackEnergyCharge = attackEnergyChargeMin;
-            }
-            // 炎魔法を一定以上溜めたら
-            if (fireEnergyCharge >= energyChargeMax)
-            {
-                //// 技確定
-                // 必殺技何が登録されたか 火
-                specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill = true;
-                // 一度発動すると初期化
-                specialAttackCharge = specialAttackChargeMin;
-                // 火必殺技チャージ解消
-                fireEnergyCharge = fireEnergyChargeMin;
-            }
+        // 剣攻撃を一定以上溜めたら
+        if (attackEnergyCharge >= energyChargeMax)
+        {
+            // 技確定
+            // 必殺技何が登録されたか 斬撃
+            specialAttack.at((int)SpecialAttackType::Attack).hasSkill = true;
+            // 一度発動すると初期化
+            specialAttackCharge = specialAttackChargeMin;
+            // 斬撃必殺技チャージ解消
+            attackEnergyCharge = attackEnergyChargeMin;
+        }
+        // 炎魔法を一定以上溜めたら
+        if (fireEnergyCharge >= energyChargeMax)
+        {
+            //// 技確定
+            // 必殺技何が登録されたか 火
+            specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill = true;
+            // 一度発動すると初期化
+            specialAttackCharge = specialAttackChargeMin;
+            // 火必殺技チャージ解消
+            fireEnergyCharge = fireEnergyChargeMin;
+        }
     }
 
     // 必殺技撃っていたら撃てない
@@ -2002,11 +1941,14 @@ void Player::InputSpecialAttackChange()
 void Player::SpecialPlayUlEffect(float elapsedTime)
 {
     // Ui必殺技選択してないとき コマンドUI点滅処理
-    if(!specialAction)
+    if (!specialAction)
     {
-        std::weak_ptr<Ui> uiIdSpecialButton = UiManager::Instance().GetUies((int)UiManager::UiCount::ButtonY)->GetComponent<Ui>();
+        auto uiId = UiManager::Instance().GetUies((int)UiManager::UiCount::ButtonY);
+        if (!uiId) return;
+
+        std::shared_ptr<Ui> uiIdSpecialButton = uiId->GetComponent<Ui>();
         // コマンド　ボタン　非表示
-        uiIdSpecialButton.lock()->SetDrawCheck(isDrawUiEmpth);
+        uiIdSpecialButton->SetDrawCheck(isDrawUiEmpth);
 
         // 安全チェック UIコマンド　点滅用
         auto sharedUiCommandSpecialUnCheckId = UiManager::Instance().GetUies(
@@ -2027,13 +1969,11 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         }
 
         // 特殊攻撃たまった 知らせるために コマンドUI点滅
-        if (UpdateElapsedTime(timeElapsedHintMax, elapsedTime))
-        {
-            // 点滅
-            isUiSpecilDrawCheck = isUiSpecilDrawCheck ? false : true;
-            // 表示　非表示
-            uiIdSpecialUnCheck->SetDrawCheck(isUiSpecilDrawCheck);
-        }
+        if (!UpdateElapsedTime(timeElapsedHintMax, elapsedTime))return;
+        // 点滅
+        isUiSpecilDrawCheck = isUiSpecilDrawCheck ? false : true;
+        // 表示　非表示
+        uiIdSpecialUnCheck->SetDrawCheck(isUiSpecilDrawCheck);
         return;
     }
 
@@ -2042,7 +1982,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
     {
     case (int)SpecialAttackType::Attack:
     {
-        // 近接攻撃
+        // 必殺技切りつけ
         // 安全チェック
         auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
@@ -2065,13 +2005,14 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         float offset = 20.0f;
         float pos = uiIdSpecialAttackTransForm2D->GetPosition().y + offset;
 
+        // 必殺技コマンド切りつけ
         uiIdSpecialButton->SetDrawCheck(isDrawUi);
         uiIdSpecialButtonTransForm2D->SetPositionY(pos);
         break;
     }
     case (int)SpecialAttackType::MagicFire:
     {
-        // 炎
+        // 必殺技炎
         // 安全チェック
         auto sharedUiCommandSpeciulFrameId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulFrame);
@@ -2093,6 +2034,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         float offset = 20.0f;
         float pos = uiIdSpecialFireTransForm2D->GetPosition().y + offset;
 
+        // 必殺技コマンド火
         uiIdSpecialButton->SetDrawCheck(isDrawUi);
         uiIdSpecialButtonTransForm2D->SetPositionY(pos);
         break;
@@ -2128,43 +2070,6 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
     }
 }
 
-void Player::PlayPintchSe()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/HP危険.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::StopPintchSe()
-{
-    Audio& bgm = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/HP危険.wav";
-    bgm.Stop(audioParam);
-}
-
-void Player::PlaySpecialChargeCompleteSe()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/必殺技ため.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-void Player::PlayTellePortSe()
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = "Data/Audio/SE/telleport.wav";
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
 // 歩き　移動　方向
 DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime)
 {
@@ -2280,331 +2185,6 @@ DirectX::XMFLOAT3 Player::GetMagicMoveVec(float elapsedTime)
     }
     return vec;
 }
-// 後変更Collision 消してよし
-// 魔法と敵の衝突処理
-void Player::CollisionMagicVsEnemies()
-{
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // 移動コンポーネント
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
-
-    EnemyManager& enemyManager = EnemyManager::Instance();
-    projectileManager = ProjectileManager::Instance();
-    // 全ての敵と総当たりで衝突処理
-    int projectileCount = projectileManager.GetProjectileCount();
-    for (int i = 0; i < projectileCount; ++i)
-    {
-        int enemyCount = enemyManager.GetEnemyCount();
-        // 指定のノードと全ての敵を総当たりで衝突処理
-        for (int i = 0; i < enemyCount; ++i)
-        {
-            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
-            DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-            float enemyRudius = enemy.lock()->GetComponent<Collision>()->GetRadius();
-            // もし高さが一緒なら
-            float enemyHeight = enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle ?
-                enemy.lock()->GetComponent<Collision>()->GetHeight() : enemy.lock()->GetComponent<Collision>()->GetSecondesHeight();
-            Model::Node* nodeHeart = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("body2");
-            Model::Node* nodeLeftArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("boss_left_hand2");
-            Model::Node* nodeRightArm = enemy.lock()->GetComponent<ModelControll>()->GetModel()->FindNode("boss_right_hand2");
-            // 心臓位置
-            DirectX::XMFLOAT3 nodeHeartPosition;
-            nodeHeartPosition = {
-            nodeHeart->worldTransform._41,
-            nodeHeart->worldTransform._42,
-            nodeHeart->worldTransform._43
-            };
-            //  左腕位置
-            DirectX::XMFLOAT3 nodeLeftArmPosition;
-            nodeLeftArmPosition = {
-            nodeLeftArm->worldTransform._41,
-            nodeLeftArm->worldTransform._42,
-            nodeLeftArm->worldTransform._43
-            };
-            // 右腕位置
-            DirectX::XMFLOAT3 nodeRightArmPosition;
-            nodeRightArmPosition = {
-            nodeRightArm->worldTransform._41,
-            nodeRightArm->worldTransform._42,
-            nodeRightArm->worldTransform._43
-            };
-            std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
-            DirectX::XMFLOAT3 projectilePosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
-            float projectileRadius = projectile.lock()->GetComponent<Collision>()->GetRadius();
-            //// 衝突処理
-            DirectX::XMFLOAT3 outPositon;
-            if (collisionId->IntersectSphereVsCylinder(
-                projectilePosition,
-                leftHandRadius,
-                {
-                enemyPosition.x,
-                enemyPosition.y,
-                enemyPosition.z
-                },
-                enemyRudius,
-                enemyHeight,
-                outPositon) ||
-                collisionId->IntersectSpherVsSphere(
-                    projectilePosition,
-                    leftHandRadius,
-                    {
-                    nodeHeartPosition.x,
-                    nodeHeartPosition.y,
-                    nodeHeartPosition.z
-                    },
-                    enemyRudius,
-                    outPositon) ||
-
-                collisionId->IntersectSphereVsCylinder(
-                    projectilePosition,
-                    leftHandRadius,
-                    {
-                    nodeLeftArmPosition.x,
-                    nodeLeftArmPosition.y,
-                    nodeLeftArmPosition.z
-                    },
-                    enemyRudius,
-                    enemyHeight,
-                    outPositon) ||
-                collisionId->IntersectSphereVsCylinder(
-                    projectilePosition,
-                    leftHandRadius,
-                    {
-                      nodeRightArmPosition.x,
-                      nodeRightArmPosition.y,
-                      nodeRightArmPosition.z
-                    },
-                    enemyRudius,
-                    enemyHeight,
-                    outPositon))
-            {
-                if (!projectile.lock()->GetComponent<ProjectileHoming>() && !projectile.lock()->GetComponent<ProjectileSunder>() &&
-                    !projectile.lock()->GetComponent<ProjectileFullHoming>() &&
-                    !projectile.lock()->GetComponent<ProjectileStraight>())return;
-                if (projectile.lock()->GetComponent<ProjectileSunder>())
-                {
-                    ++ThanderEnergyCharge;
-                    hitThander->Play(projectilePosition);
-                    // 雷ダメージ
-                    applyDamageMagic = applyDamageThander;
-                }
-                else if (projectile.lock()->GetComponent<ProjectileHoming>())
-                {
-                    // 通常魔法
-                    switch (projectile.lock()->GetComponent<ProjectileHoming>()->GetMagicNumber())
-                    {
-                    case (int)ProjectileHoming::MagicNumber::Fire:
-                    {
-                        ++fireEnergyCharge;
-                        hitFire->Play(projectilePosition);
-                        // 炎ダメージ
-                        applyDamageMagic = applyDamageFire;
-                        break;
-                    }
-                    case (int)ProjectileHoming::MagicNumber::Ice:
-                    {
-                        ++iceEnergyCharge;
-                        hitIce->Play(projectilePosition);
-                        // 氷ダメージ
-                        applyDamageMagic = applyDamageIce;
-                        break;
-                    }
-                    }
-                }
-                else if (projectile.lock()->GetComponent<ProjectileStraight>())
-                {
-                    ++iceEnergyCharge;
-                    hitIce->Play(projectilePosition);
-                    // 氷ダメージ
-                    applyDamageMagic = applyDamageIce;
-                }
-                else
-                {
-                    // 弧の時型の魔法
-                    switch (projectile.lock()->GetComponent<ProjectileFullHoming>()->GetMagicNumber())
-                    {
-                    case (int)ProjectileFullHoming::MagicNumber::Fire:
-                    {
-                        ++fireEnergyCharge;
-                        hitFire->Play(projectilePosition);
-                        // 炎ダメージ
-                        applyDamageMagic = applyDamageFire;
-                        break;
-                    }
-                    }
-                }
-                hitEffect->Play(projectilePosition);
-                // ダメージを与える。
-                if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageMagic, magicAttackInvincibleTime))
-                {
-                    if (enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
-                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
-                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle &&
-                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack
-                        )
-                    {
-                        // ダメージステートへ
-                        enemy.lock()->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
-                    }
-                    // 当たった時の副次的効果
-                    {
-                        specialAttackCharge += specialAttackChargeMagicValue;
-                    }
-                    if (projectile.lock()->GetComponent<ProjectileHoming>() ||
-                        projectile.lock()->GetComponent<ProjectileFullHoming>() ||
-                        projectile.lock()->GetComponent<ProjectileStraight>())
-                        // 弾丸破棄
-                        projectile.lock()->GetComponent<BulletFiring>()->Destroy();
-                }
-            }
-        }
-    }
-}
-// 後変更 Collision改造 消してよし
-void Player::CollisionMagicVsEnemies(const char* bornName)
-{
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // 移動コンポーネント
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
-
-    // 敵について
-    EnemyManager& enemyManager = EnemyManager::Instance();
-    projectileManager = ProjectileManager::Instance();
-
-    int enemyCount = enemyManager.GetEnemyCount();
-
-    if (enemyCount <= 0) return;
-
-    std::shared_ptr<Actor> enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
-    if (!enemyShader) return;
-
-    std::shared_ptr<EnemyBoss> enemyBoss = enemyShader->GetComponent<EnemyBoss>();
-    std::shared_ptr<Transform> enemyTransform = enemyShader->GetComponent<Transform>();
-    std::shared_ptr<HP> enemyHp = enemyShader->GetComponent<HP>();
-    std::shared_ptr<Collision> enemyCollision = enemyShader->GetComponent<Collision>();
-    std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
-
-    EnemyBoss::BodyPart partBornName;
-
-    DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
-    float enemyRudius = enemyCollision->GetRadius();
-    // もし高さが一緒なら
-    float enemyHeight = enemyBoss->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle ?
-        enemyShader->GetComponent<Collision>()->GetHeight() : enemyShader->GetComponent<Collision>()->GetSecondesHeight();
-
-    // パーツの種類
-    partBornName = EnemyBoss::BodyPart::Head;
-    Model::Node* nodeHeart = enemyModel->GetModel()->FindNode(enemyBoss->GetBodyPartBorn(partBornName));
-
-    // 位置
-    DirectX::XMFLOAT3 nodePosition;
-    nodePosition = enemyModel->GetModel()->ConvertLocalToWorld(nodeHeart);
-
-    // 全ての敵と総当たりで衝突処理
-    int projectileCount = projectileManager.GetProjectileCount();
-    for (int i = 0; i < projectileCount; ++i)
-    {
-        std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
-        DirectX::XMFLOAT3 projectilePosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
-        float projectileRadius = projectile.lock()->GetComponent<Collision>()->GetRadius();
-        //// 衝突処理
-        DirectX::XMFLOAT3 outPositon;
-        if (!collisionId->IntersectSpherVsSphere(
-            projectilePosition,
-            leftHandRadius,
-            nodePosition,
-            enemyBoss->GetBodyPart(partBornName),
-            outPositon)) return;
-
-        if (!projectile.lock()->GetComponent<ProjectileHoming>() && !projectile.lock()->GetComponent<ProjectileSunder>() &&
-            !projectile.lock()->GetComponent<ProjectileFullHoming>() &&
-            !projectile.lock()->GetComponent<ProjectileStraight>())return;
-        // 雷なら
-        if (projectile.lock()->GetComponent<ProjectileSunder>())
-        {
-            ++ThanderEnergyCharge;
-            hitThander->Play(projectilePosition);
-            // 雷ダメージ
-            applyDamageMagic = applyDamageThander;
-        }
-        // それ以外の魔法なら
-        else if (projectile.lock()->GetComponent<ProjectileHoming>())
-        {
-            // 通常魔法
-            switch (projectile.lock()->GetComponent<ProjectileHoming>()->GetMagicNumber())
-            {
-            case (int)ProjectileHoming::MagicNumber::Fire:
-            {
-                ++fireEnergyCharge;
-                hitFire->Play(projectilePosition);
-                // 炎ダメージ
-                applyDamageMagic = applyDamageFire;
-                break;
-            }
-            case (int)ProjectileHoming::MagicNumber::Ice:
-            {
-                ++iceEnergyCharge;
-                hitIce->Play(projectilePosition);
-                // 氷ダメージ
-                applyDamageMagic = applyDamageIce;
-                break;
-            }
-            }
-        }
-        // 連射用
-        else if (projectile.lock()->GetComponent<ProjectileStraight>())
-        {
-            ++iceEnergyCharge;
-            hitIce->Play(projectilePosition);
-            // 氷ダメージ
-            applyDamageMagic = applyDamageIce;
-        }
-        else
-        {
-            // 弧の時型の魔法
-            switch (projectile.lock()->GetComponent<ProjectileFullHoming>()->GetMagicNumber())
-            {
-            case (int)ProjectileFullHoming::MagicNumber::Fire:
-            {
-                ++fireEnergyCharge;
-                hitFire->Play(projectilePosition);
-                // 炎ダメージ
-                applyDamageMagic = applyDamageFire;
-                break;
-            }
-            }
-        }
-        hitEffect->Play(projectilePosition);
-        // ダメージを与える。
-        if (!enemyHp->ApplyDamage(applyDamageMagic, magicAttackInvincibleTime))return;
-
-        if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack
-            )
-        {
-            // ダメージステートへ
-            enemyBoss->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
-        }
-        // 当たった時の副次的効果
-        specialAttackCharge += specialAttackChargeMagicValue;
-
-        // 想定の魔法なら消す。
-        if (projectile.lock()->GetComponent<ProjectileHoming>() ||
-            projectile.lock()->GetComponent<ProjectileFullHoming>() ||
-            projectile.lock()->GetComponent<ProjectileStraight>())
-            // 弾丸破棄
-            projectile.lock()->GetComponent<BulletFiring>()->Destroy();
-
-    }
-}
 
 // 当たり判定敵の五体すべて
 bool Player::CheckAllPartsCollision(DirectX::XMFLOAT3 pos,float rudius)
@@ -2634,8 +2214,6 @@ bool Player::CheckAllPartsCollision(DirectX::XMFLOAT3 pos,float rudius)
 
     // 位置
     DirectX::XMFLOAT3 nodePosition;
-
-
     DirectX::XMFLOAT3 outPositon;
 
     //for (int i = 0; i < enemyBoss->GetBodyPartSize(); ++i)
@@ -2708,10 +2286,11 @@ void Player::CollisionMagicFire()
     EnemyManager& enemyManager = EnemyManager::Instance();
     projectileManager = ProjectileManager::Instance();
 
+    // エネミーの数
     int enemyCount = enemyManager.GetEnemyCount();
-
+    // エネミーが一人でも生きていたら
     if (enemyCount <= 0) return;
-
+    // エネミーの安全☑
     std::shared_ptr<Actor> enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
     if (!enemyShader) return;
 
@@ -2770,9 +2349,11 @@ void Player::CollisionMagicFire()
 // 魔法雷と敵との当たり判定
 void Player::CollisionMagicSunder()
 {
+
+    projectileManager = ProjectileManager::Instance();
+
     // 敵について
     EnemyManager& enemyManager = EnemyManager::Instance();
-    projectileManager = ProjectileManager::Instance();
 
     int enemyCount = enemyManager.GetEnemyCount();
 
@@ -2902,7 +2483,6 @@ void Player::CollisionMagicIce()
         projectile->GetComponent<BulletFiring>()->Destroy();
     }
 }
-// 後変更Collision 消してよし
 // プレイヤーとエネミーとの衝突処理
 void Player::CollisionPlayerVsEnemies()
 {
@@ -2915,46 +2495,52 @@ void Player::CollisionPlayerVsEnemies()
     std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
 
     EnemyManager& enemyManager = EnemyManager::Instance();
-    // 全ての敵と総当たりで衝突処理
-    int enemyCount = enemyManager.GetEnemyCount();
-    for (int i = 0; i < enemyCount; ++i)
-    {
-        // 安全チェック
-        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
-        if (!enemy) return;
-        //// 衝突処理
-        DirectX::XMFLOAT3 outPositon;
-        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-        float enemyRadius = enemy->GetComponent<Collision>()->GetRadius();
-        // もし高さが一緒なら
-        float enemyHeight = enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle ?
-            enemy->GetComponent<Collision>()->GetHeight() : enemy->GetComponent<Collision>()->GetSecondesHeight();
-        if (collisionId->IntersectCylinderVsCylinder(
-            enemyPosition,
-            enemyRadius,
-            enemyHeight,
-            position, radius, height,
-            outPositon))
 
-        {
-            DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemyPosition);
-            DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
-            DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
-            DirectX::XMFLOAT3 normal;
-            DirectX::XMStoreFloat3(&normal, N);
-            position = outPositon;
-            transformId->SetPosition(position);
-            // 接触
-            isEnemyHit = true;
-            return;
-        }
+    int enemyCount = enemyManager.GetEnemyCount();
+
+    if (enemyCount <= 0) return;
+    // 安全チェック
+    std::shared_ptr<Actor> enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
+    if (!enemyShader) return;
+
+    std::shared_ptr<EnemyBoss> enemyBoss = enemyShader->GetComponent<EnemyBoss>();
+    std::shared_ptr<Transform> enemyTransform = enemyShader->GetComponent<Transform>();
+    std::shared_ptr<Collision> enemyCollision = enemyShader->GetComponent<Collision>();
+    std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
+
+    //// 衝突処理
+    DirectX::XMFLOAT3 outPositon;
+    DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
+    float enemyRadius = enemyCollision->GetRadius();
+    // もし高さが一緒なら
+    float enemyHeight = enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle ?
+        enemyCollision->GetHeight() : enemyCollision->GetSecondesHeight();
+    // エネミーとプレイヤーの当たり判定はじき
+    if (collisionId->IntersectCylinderVsCylinder(
+        enemyPosition,
+        enemyRadius,
+        enemyHeight,
+        position, radius, height,
+        outPositon))
+
+    {
+        DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
+        DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemyPosition);
+        DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
+        DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
+        DirectX::XMFLOAT3 normal;
+        DirectX::XMStoreFloat3(&normal, N);
+        position = outPositon;
+        transformId->SetPosition(position);
+        // 接触
+        isEnemyHit = true;
+        return;
     }
     // 非接触
     isEnemyHit = false;
 }
 // 後変更Collision
-// 敵の範囲内に入らないように ボーン位置一定以下には入れない
+// 敵の範囲内に入らないように 腰以上
 void Player::CollisionBornVsProjectile(const char* bornname)
 {
     // 安全チェック
@@ -2965,77 +2551,24 @@ void Player::CollisionBornVsProjectile(const char* bornname)
     std::shared_ptr transformId = sharedId->GetComponent<Transform>();
     std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
 
+
     EnemyManager& enemyManager = EnemyManager::Instance();
+
     int enemyCount = enemyManager.GetEnemyCount();
-    for (int i = 0; i < enemyCount; ++i)
-    {
-        // 安全チェック
-        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
-        if (!enemy) return;
-        // ノード取得
-        Model::Node* node = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(bornname);
-        // ノード位置取得
-        DirectX::XMFLOAT3 nodePosition;
-        nodePosition = {
-            node->worldTransform._41,
-            node->worldTransform._42,
-            node->worldTransform._43
-        };
-        //// 衝突処理
-        DirectX::XMFLOAT3 outPositon;
-        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-        float enemyRadius = enemy->GetComponent<EnemyBoss>()->GetUpperRadius();
-        // もし高さが一緒なら
-        float enemyHeight = enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle ?
-            enemy->GetComponent<Collision>()->GetHeight() : enemy->GetComponent<Collision>()->GetSecondesHeight();
-        if (collisionId->IntersectCylinderVsCylinder(
-            {
-                nodePosition.x,
-                nodePosition.y - 0.1f,
-                nodePosition.z
-            },
-            enemyRadius,
-            enemyHeight,
-            position, radius, height,
-            outPositon))
-        {
-            DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
-            DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemyPosition);
-            DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
-            DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
-            DirectX::XMFLOAT3 normal;
-            DirectX::XMStoreFloat3(&normal, N);
-            // 接触
-            isEnemyHitBody = true;
 
-            if (normal.y > 0.8f) return;
-
-            position = outPositon;
-            transformId->SetPosition(position);
-            return;
-        }
-    }
-    // 非接触
-    isEnemyHitBody = false;
-}
-// 後変更Collision 全パーツと当たり判定 いらない
-// ノードと敵の衝突判定
-bool Player::CollisionNodeVsEnemies(
-    const char* nodeName, float nodeRadius,
-    const char* nodeHeartName,
-    const char* nodeLeftArmName,
-    const char* nodeRightArmName
-)
-{
+    if (enemyCount <= 0) return;
     // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return false;
-    // 移動コンポーネント
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+    std::shared_ptr<Actor> enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
+    if (!enemyShader) return;
+
+    std::shared_ptr<EnemyBoss> enemyBoss = enemyShader->GetComponent<EnemyBoss>();
+    std::shared_ptr<Transform> enemyTransform = enemyShader->GetComponent<Transform>();
+    std::shared_ptr<Collision> enemyCollision = enemyShader->GetComponent<Collision>();
+    std::shared_ptr<HP> enemyHp = enemyShader->GetComponent<HP>();
+    std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
 
     // ノード取得
-    Model::Node* node = model->FindNode(nodeName);
+    Model::Node* node = enemyModel->GetModel()->FindNode(bornname);
     // ノード位置取得
     DirectX::XMFLOAT3 nodePosition;
     nodePosition = {
@@ -3043,189 +2576,91 @@ bool Player::CollisionNodeVsEnemies(
         node->worldTransform._42,
         node->worldTransform._43
     };
-
-    // マネージャー取得
-    EnemyManager& enemyManager = EnemyManager::Instance();
-    int enemyCount = enemyManager.GetEnemyCount();
-    // 指定のノードと全ての敵を総当たりで衝突処理
-    for (int i = 0; i < enemyCount; ++i)
-    {
-        std::shared_ptr<Actor> enemy = enemyManager.GetEnemy(i);
-        if (!enemy) return false;
-        DirectX::XMFLOAT3 enemyPosition = enemy->GetComponent<Transform>()->GetPosition();
-        float enemyRudius = enemy->GetComponent<Collision>()->GetPartRadius();
-        // もし高さが一緒なら
-        float enemyHeight = enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle ?
-            enemy->GetComponent<Collision>()->GetHeight() : enemy->GetComponent<Collision>()->GetSecondesHeight();
-        Model::Node* nodeHeart = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(nodeHeartName);
-        Model::Node* nodeLeftArm = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(nodeLeftArmName);
-        Model::Node* nodeRightArm = enemy->GetComponent<ModelControll>()->GetModel()->FindNode(nodeRightArmName);
-        // 心臓位置
-        DirectX::XMFLOAT3 nodeHeartPosition;
-        nodeHeartPosition = {
-        nodeHeart->worldTransform._41,
-        nodeHeart->worldTransform._42,
-        nodeHeart->worldTransform._43
-        };
-        //  左腕位置
-        DirectX::XMFLOAT3 nodeLeftArmPosition;
-        nodeLeftArmPosition = {
-        nodeLeftArm->worldTransform._41,
-        nodeLeftArm->worldTransform._42,
-        nodeLeftArm->worldTransform._43
-        };
-        // 右腕位置
-        DirectX::XMFLOAT3 nodeRightArmPosition;
-        nodeRightArmPosition = {
-        nodeRightArm->worldTransform._41,
-        nodeRightArm->worldTransform._42,
-        nodeRightArm->worldTransform._43
-        };
-        //// 衝突処理
-        DirectX::XMFLOAT3 outPositon;
-        if (collisionId->IntersectSphereVsCylinder(
-            nodePosition,
-            leftHandRadius,
-            {
-            enemyPosition.x,
-            enemyPosition.y,
-            enemyPosition.z
-            },
-            enemyRudius,
-            enemyHeight,
-            outPositon) ||
-            collisionId->IntersectSpherVsSphere(
-                nodePosition,
-                leftHandRadius,
-                {
-                nodeHeartPosition.x,
-                nodeHeartPosition.y,
-                nodeHeartPosition.z
-                },
-                enemyRudius,
-                outPositon) ||
-
-            collisionId->IntersectSphereVsCylinder(
-                nodePosition,
-                leftHandRadius,
-                {
-                nodeLeftArmPosition.x,
-                nodeLeftArmPosition.y,
-                nodeLeftArmPosition.z
-                },
-                enemyRudius,
-                enemyHeight,
-                outPositon) ||
-            collisionId->IntersectSphereVsCylinder(
-                nodePosition,
-                leftHandRadius,
-                {
-                  nodeRightArmPosition.x,
-                  nodeRightArmPosition.y,
-                  nodeRightArmPosition.z
-                },
-                enemyRudius,
-                enemyHeight,
-                outPositon))
+    //// 衝突処理
+    DirectX::XMFLOAT3 outPositon;
+    DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
+    float enemyRadius = enemyBoss->GetUpperRadius();
+    // もし高さが一緒なら
+    float enemyHeight = enemyBoss->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle ?
+        enemyCollision->GetHeight() : enemyCollision->GetSecondesHeight();
+    // 当たり判定腰から上
+    if (collisionId->IntersectCylinderVsCylinder(
         {
-            if (enemy->GetComponent<HP>()->ApplyDamage(applyDamageNormal, 0.5f))
-            {
-                // 斬撃se再生
-                PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
+            nodePosition.x,
+            nodePosition.y - 0.1f,
+            nodePosition.z
+        },
+        enemyRadius,
+        enemyHeight,
+        position, radius, height,
+        outPositon))
+    {
+        DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&position);
+        DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&enemyPosition);
+        DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
+        DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
+        DirectX::XMFLOAT3 normal;
+        DirectX::XMStoreFloat3(&normal, N);
+        // 接触
+        isEnemyHitBody = true;
 
-                hitSlash->Play(nodePosition, slashScale);
+        if (normal.y > 0.8f) return;
 
-                if (enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
-                    enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
-                    enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle
-                    )
-                {
-                    if (enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack)
-                    {
-                        Model::ModelAnim modelAnim;
-                        modelAnim.index = EnemyBoss::Animation::Anim_Movie;
-                        modelAnim.currentanimationseconds = 1.0f;
-                        modelAnim.keyFrameEnd = 153.0f;
-                        // 通常
-                        enemy->GetComponent<ModelControll>()->GetModel()->PlayAnimation(modelAnim);
-                    }
-                    // 死んだとき
-                    if (enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle)
-                    {
-                        // model情報
-                        Model::ModelAnim modelAnim;
-                        modelAnim.index = EnemyBoss::Animation::Anim_Die;
-                        modelAnim.currentanimationseconds = 0.3f;
-                        modelAnim.keyFrameEnd = 55.0f;
-                        enemy->GetComponent<ModelControll>()->GetModel()->PlayAnimation(modelAnim);
-                    }
-                    // 混乱状態
-                    if (attackNumberSave >= attackNumberSaveMax && attackNumberSave <= attackNumberSaveMax &&
-                        enemy->GetComponent<EnemyBoss>()->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
-                    {
-                        enemy->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(
-                            (int)EnemyBoss::State::IdleBattle);
-                        // 攻撃連続ヒット停止
-                        attackNumberSave = 0;
-                    }
-                }
-                // 当たった時の副次的効果
-                specialAttackCharge += specialAttackChargeSlashValue;
-                // 斬撃チャージ
-                ++attackEnergyCharge;
-                // 攻撃ヒット回数
-                ++attackNumberSave;
-                return true;
-            }
-        }
+        position = outPositon;
+        transformId->SetPosition(position);
+        return;
     }
-    return false;
+    // 非接触
+    isEnemyHitBody = false;
 }
-
-// Collision 全パーツと当たり判定
-bool Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
+// 切りつけ
+bool Player::CollisionNodeVsEnemies()
 {
     // 安全チェック
     auto sharedId = GetActor();
     if (!sharedId)
         return false;
     // 移動コンポーネント
-    std::shared_ptr modelId = sharedId->GetComponent<Model>();
+    std::shared_ptr<ModelControll> modelId = sharedId->GetComponent<ModelControll>();
+    std::shared_ptr<Collision> collisionId = sharedId->GetComponent<Collision>();
 
-    // 右腕ボーン名
-    Model::Node* rightName = model->FindNode(nodeName);
-    DirectX::XMFLOAT3 playerRightWeponPos = modelId->ConvertLocalToWorld(rightName);
-
-    // エネミー呼ぶ奴
+    // マネージャー取得
     EnemyManager& enemyManager = EnemyManager::Instance();
+
     int enemyCount = enemyManager.GetEnemyCount();
 
     if (enemyCount <= 0) return false;
-
+    // 安全チェック
     std::shared_ptr<Actor> enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
     if (!enemyShader) return false;
 
     std::shared_ptr<EnemyBoss> enemyBoss = enemyShader->GetComponent<EnemyBoss>();
     std::shared_ptr<HP> enemyHp = enemyShader->GetComponent<HP>();
-    std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
+    std::shared_ptr<ModelControll> enemyModelId = enemyShader->GetComponent<ModelControll>();
 
-    // パーツごとの当たり判定
-    if (!CheckAllPartsCollision(playerRightWeponPos, nodeRadius)) return false;
+    // ノード取得
+    Model::Node* node = model->FindNode("mixamorig:LeftHand");
+    // ノード位置取得
+    DirectX::XMFLOAT3 nodePosition;
+    nodePosition = modelId->GetModel()->ConvertLocalToWorld(node);
 
-    // ダメージ判定
+    //// 衝突処理
+    DirectX::XMFLOAT3 outPositon;
+    if (!CheckAllPartsCollision(nodePosition, leftHandRadius)) return false;
+
     if (!enemyHp->ApplyDamage(applyDamageNormal, 0.5f)) return false;
 
     // 斬撃se再生
     PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
-    // エフェクト再生斬撃
-    hitSlash->Play(playerRightWeponPos, slashScale);
 
-    // 指定アニメーションだったら
+    // 当たり判定
+    hitSlash->Play(nodePosition, slashScale);
+
     if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
         enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
-        enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
+        enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle
+        )
     {
-        // ダメージモーション
         if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack)
         {
             Model::ModelAnim modelAnim;
@@ -3233,7 +2668,7 @@ bool Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
             modelAnim.currentanimationseconds = 1.0f;
             modelAnim.keyFrameEnd = 153.0f;
             // 通常
-            enemyModel->GetModel()->PlayAnimation(modelAnim);
+            enemyModelId->GetModel()->PlayAnimation(modelAnim);
         }
         // 死んだとき
         if (enemyBoss->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle)
@@ -3243,10 +2678,10 @@ bool Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
             modelAnim.index = EnemyBoss::Animation::Anim_Die;
             modelAnim.currentanimationseconds = 0.3f;
             modelAnim.keyFrameEnd = 55.0f;
-            enemyModel->GetModel()->PlayAnimation(modelAnim);
+            enemyModelId->GetModel()->PlayAnimation(modelAnim);
         }
         // 混乱状態
-        if (attackNumberSave == attackNumberSaveMax &&
+        if (attackNumberSave >= attackNumberSaveMax && attackNumberSave <= attackNumberSaveMax &&
             enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
         {
             enemyBoss->GetStateMachine()->ChangeState(
@@ -3261,9 +2696,9 @@ bool Player::CollisionNodeVsEnemies(const char* nodeName, float nodeRadius)
     ++attackEnergyCharge;
     // 攻撃ヒット回数
     ++attackNumberSave;
-
     return true;
 }
+
 // 後変更Collision
 // カウンター用
 void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius)
@@ -3426,7 +2861,8 @@ void Player::PinchMode(float elapsedTime)
         if (UpdateElapsedTime(timeElapsedHintMax, elapsedTime))
         {
             // Se再生
-            PlayPintchSe();
+            PlaySe("Data/Audio/SE/HP危険.wav");
+
             hintDrawCheck = hintDrawCheck ? false : true;
             UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->
                 GetComponent<Ui>()->SetDrawCheck(hintDrawCheck);
@@ -3788,54 +3224,7 @@ bool Player::InputMagick()
     StartMagicUiFire();
     return false;
 }
-// 後変更メニュー
-// メニュー開くボタン
-bool Player::InputMenue()
-{
-    GamePad& gamePad = Input::Instance().GetGamePad();
 
-    if (gamePad.GetButtonDown() & GamePad::BTN_START)
-    {
-        return true;
-    }
-    return false;
-}
-// 後変更デバッグ距離
-// デバッグ敵との距離を測る
-void Player::DebugLength()
-{
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // 移動コンポーネント
-    std::shared_ptr transformId = sharedId->GetComponent<Transform>();
-
-
-    EnemyManager& enemyManager = EnemyManager::Instance();
-    int enemyCount = enemyManager.GetEnemyCount();
-
-    DirectX::XMFLOAT2 playerPos = { transformId->GetPosition().x
-        ,transformId->GetPosition().z};
-    DirectX::XMVECTOR playerPositionXZ = DirectX::XMLoadFloat2(&playerPos);
-    DirectX::XMFLOAT2 enemyPosXZ;
-    DirectX::XMVECTOR VectorXZ;
-    DirectX::XMVECTOR LengthSqDebug;
-
-    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
-    {
-        enemyPosXZ.x = enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition().x;
-        enemyPosXZ.y = enemyManager.GetEnemy(i)->GetComponent<Transform>()->GetPosition().z;
-        DirectX::XMVECTOR enemyPositionXZ = DirectX::XMLoadFloat2(&enemyPosXZ);
-
-        VectorXZ = DirectX::XMVectorSubtract(enemyPositionXZ, playerPositionXZ);
-
-        LengthSqDebug = DirectX::XMVector2Length(VectorXZ);
-
-
-        DirectX::XMStoreFloat(&debugLength, LengthSqDebug);
-    }
-}
 // 魔法火発射
 bool Player::InputMagicframe()
 {
@@ -4510,50 +3899,54 @@ void Player::SpecialApplyDamageInRadius()
     // 移動コンポーネント
     std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
 
-
+    // 敵について
     EnemyManager& enemyManager = EnemyManager::Instance();
-    int enemyCount = enemyManager.GetEnemyCount();
-    // 指定のノードと全ての敵を総当たりで衝突処理
-    for (int i = 0; i < enemyCount; ++i)
-    {
-        std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
-        DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-        float enemyRudius = enemy.lock()->GetComponent<Collision>()->GetRadius();
-        float enemyHeight = enemy.lock()->GetComponent<Collision>()->GetHeight();
-        ProjectileManager& projectileManager = ProjectileManager::Instance();
-        for (int ii = 0; ii < projectileManager.GetProjectileCount(); ++ii)
-        {
-            std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(ii);
-            if (!projectile.lock()->GetComponent<ProjectileTornade>()) return;
-            // 魔法位置
-            DirectX::XMFLOAT3 magicPosition = projectile.lock()->GetComponent<Transform>()->GetPosition();
-            float magicRadius = projectile.lock()->GetComponent<Collision>()->GetRadius();
-            float magicHeight = projectile.lock()->GetComponent<Collision>()->GetHeight();
-            //// 衝突処理
-            DirectX::XMFLOAT3 outPositon;
-            // 下半身
-            // 円柱と円
-            if (collisionId->IntersectCylinderVsCylinder(
-                magicPosition,
-                magicRadius,
-                magicHeight,
-                enemyPosition,
-                enemyRudius,
-                enemyHeight,
-                outPositon))
 
-            {
-            // ダメージが通ったら消える。TRUEになるから
-                if (enemy.lock()->GetComponent<HP>()->ApplyDamage(applyDamageSpecial, 0.5f))
-                {
-                    // ヒットエフェクト再生
-                    {
-                        hitEffect->Play(enemyPosition);
-                        hitFire->Play(enemyPosition);
-                    }
-                }
-            }
-        }
+    int enemyCount = enemyManager.GetEnemyCount();
+
+    if (enemyCount <= 0) return;
+
+    std::shared_ptr<Actor> enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
+    if (!enemyShader) return;
+
+    std::shared_ptr<EnemyBoss> enemyBoss = enemyShader->GetComponent<EnemyBoss>();
+    std::shared_ptr<Transform> enemyTransform = enemyShader->GetComponent<Transform>();
+    std::shared_ptr<Collision> enemyCollision = enemyShader->GetComponent<Collision>();
+    std::shared_ptr<HP> enemyHp = enemyShader->GetComponent<HP>();
+    std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
+
+    DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
+    float enemyRudius = enemyCollision->GetRadius();
+    float enemyHeight = enemyCollision->GetHeight();
+    ProjectileManager& projectileManager = ProjectileManager::Instance();
+    for (int i = 0; i < projectileManager.GetProjectileCount(); ++i)
+    {
+        std::shared_ptr<Actor> projectile = projectileManager.GetProjectile(i);
+        if (!projectile->GetComponent<ProjectileTornade>()) return;
+        // 魔法位置
+        DirectX::XMFLOAT3 magicPosition = projectile->GetComponent<Transform>()->GetPosition();
+        float magicRadius = projectile->GetComponent<Collision>()->GetRadius();
+        float magicHeight = projectile->GetComponent<Collision>()->GetHeight();
+        //// 衝突処理
+        DirectX::XMFLOAT3 outPositon;
+        // 下半身
+        // 円柱と円
+        if (!collisionId->IntersectCylinderVsCylinder(
+            magicPosition,
+            magicRadius,
+            magicHeight,
+            enemyPosition,
+            enemyRudius,
+            enemyHeight,
+            outPositon)) return;
+
+
+        // ダメージが通ったら消える。TRUEになるから
+        if (!enemyHp->ApplyDamage(applyDamageSpecial, 0.5f)) return;
+        // ヒットエフェクト再生
+        hitEffect->Play(enemyPosition);
+        hitFire->Play(enemyPosition);
+
     }
 }
 // 地面に立っているか

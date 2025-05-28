@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Actor.h"
+#include "Ui.h"
 #include <set>
 
 
@@ -26,6 +27,9 @@ public:
         return instance;
     }
 
+    // 更新処理
+    void Update(float elapsedTime);
+
     // ui登録
     void Register(std::shared_ptr<Actor> ui);
 
@@ -40,6 +44,9 @@ public:
 
     // ui削除
     void Remove(std::shared_ptr<Actor> ui);
+
+    // UIコマンド処理　記録
+
 public:
     enum class UiCount
     {

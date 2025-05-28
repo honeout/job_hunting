@@ -431,9 +431,6 @@ private:
 
 	// 描画
 	int isPlayerDrawCheck;
-
-	// アニメーションのループ再生
-	bool isLoopAnim = true;
 };
 
 // ジャンプステートオブジェクト
@@ -947,9 +944,6 @@ private:
 	Model::ModelAnim modelAnim;
 
 	bool button = false;
-
-	// ロックオンモード
-	bool rockCheck = true;
 
 	float				turnSpeed = DirectX::XMConvertToRadians(720);
 

@@ -17,12 +17,10 @@ void Ui::Start()
 
 void Ui::Update(float elapsedTime)
 {
-    UiTimeUpdate();
 }
 
 void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
 {
-
     // ïœä∑çsóÒ
     DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
     DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);

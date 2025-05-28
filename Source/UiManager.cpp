@@ -1,5 +1,16 @@
 #include "UiManager.h"
 
+void UiManager::Update(float elapsedTime)
+{
+    //for (auto ui : uies)
+    //{
+    //    if (ui->GetComponent<Ui>())
+    //    {
+
+    //    }
+    //}
+}
+
 void UiManager::Register(std::shared_ptr<Actor> ui)
 {
     uies.emplace_back(ui);

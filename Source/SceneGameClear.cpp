@@ -749,17 +749,17 @@ void SceneGameClear::SelectScene()
 		}
 
 		int playerCount = PlayerManager::Instance().GetPlayerCount();
-		for (int i = 0; i < playerCount; ++i)
+
+		if (playerCount < 0) return;
+
+		auto playerId = PlayerManager::Instance().GetPlayer((int)PlayerManager::PlayerType::Main);
+		std::shared_ptr<Player> playerIdMain = playerId->GetComponent<Player>();
+
+		if (playerIdMain->GetEndState())
 		{
-			std::weak_ptr<Player> playerId = PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>();
-
-			if (playerId.lock()->GetEndState())
-			{
-				//　シーン変更
-				SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
-			}
+			//　シーン変更
+			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
 		}
-
 		break;
 	}
 	}

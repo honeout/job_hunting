@@ -404,7 +404,8 @@ void JumpState::Execute(float elapsedTime)
 	{
 		bool blurCheck = true;
 		enemyid->SetBlurCheck(blurCheck);
-		enemyid->CollisionPlayerWithRushEnemy();
+		// 当たり判定各パーツ事
+		enemyid->DetectHitByBodyAllPart(applyDamageJumpStart);
 		moveid->JumpVelocity(jumpSpeed);
 		jumpStart = true;
 		smorker->Play(bossLeftFootPosition, scaleEffect);
@@ -989,7 +990,7 @@ void PlayerMovestate::Enter()
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	// se足音再生
-	playerid->PlayLoopSe("Data/Audio/SE/足音.wav", isLoopAnim);
+	playerid->PlayLoopSe("Data/Audio/SE/足音.wav");
 
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Anim_Running;
@@ -1396,8 +1397,8 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 			// ホーミング一回のみ再生
 			if (isHomingStartCheck)
 			{
-				// Se再生
-				playerid->PlayTellePortSe();
+				// Seテレポート再生
+				playerid->PlaySe("Data/Audio/SE/telleport.wav");
 				// エフェクト
 				tellePort->Play(transformid->GetPosition());
 				// ホーミング一回のみのため
@@ -1476,7 +1477,8 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 		return;
 	}
 	// 斬撃の当たり判定
-	playerid->CollisionNodeVsEnemies("mixamorig:LeftHand",playerid->GetLeftHandRadius());
+	playerid->CollisionNodeVsEnemies();
+	//playerid->CollisionNodeVsEnemies("mixamorig:LeftHand",playerid->GetLeftHandRadius());
 }
 
 void PlayerQuickJabState::Exit()
@@ -1642,7 +1644,7 @@ void PlayerSideCutState::Execute(float elapsedTime)
 		return;
 	}
 	// 攻撃当たり判定
-	playerid->CollisionNodeVsEnemies("mixamorig:LeftHand", playerid->GetLeftHandRadius());
+	playerid->CollisionNodeVsEnemies();
 }
 
 void PlayerSideCutState::Exit()
@@ -1804,7 +1806,7 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 		return;
 	}
 	// 当たり判定
-	playerid->CollisionNodeVsEnemies("mixamorig:LeftHand",playerid->GetLeftHandRadius());
+	playerid->CollisionNodeVsEnemies();
 }
 
 void PlayerCycloneStrikeState::Exit()
@@ -2139,7 +2141,7 @@ void PlayerSpecialAttackState::Exit()
 
 
 }
-// 特殊技火魔法
+// 火魔法
 void PlayerMagicState::Enter()
 {
 	// 安全チェック
@@ -2166,7 +2168,7 @@ void PlayerMagicState::Enter()
 		case ((int)Player::CommandMagic::Heale):
 		{
 			modelAnim.index = Player::Animation::Anim_MagicSeconde;
-			modelAnim.keyFrameEnd = 0.0f;
+			modelAnim.currentanimationseconds = 0.5f;
 			// アニメーション再生
 			model->PlayAnimation(modelAnim);
 			// エフェクト回復
@@ -2314,8 +2316,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 		magicStart = true;
 	}
 
-	if (!magicStart) return;
-
 	// アニメーション終わったら通る
 	DirectX::XMVECTOR vectorXM;
 	DirectX::XMVECTOR lengthSqXM;
@@ -2333,22 +2333,23 @@ void PlayerMagicState::Execute(float elapsedTime)
 	}
 
 	// 相手の方を向く
-	// 回転
+// 回転
 	if (isRotate)
 	{
 		// 距離
 		if (moveid->TurnCheck(
-				vector, angleRange, elapsedTime) &&
+			vector, angleRange, elapsedTime) &&
 			playerid->GetRockCheck())
 		{
 			// 正面
-			moveid->Turn(vector,turnSpeed,elapsedTime);
-		}
-		else
-		{
-			isRotate = false;
+			moveid->Turn(vector, turnSpeed, elapsedTime);
 		}
 	}
+
+	if (!magicStart) return;
+
+
+
 
 	// UI処理の初期化
 	playerid->StartMagicUiFire();
@@ -2433,25 +2434,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 		// 時間
 		if (animationTime <= 0.5f)return;
 
-		// 角度下に
-		if (angle.x > angleMax)
-			isAngleAddX = false;
-
-		// 角度上に
-		if (angle.x < angleMin)
-			isAngleAddX = true;
-
-		// 角度下に
-		if (!isAngleAddX)
-		{
-			angle.x -= rotationSpeed * angleAddX;
-		}
-		// 角度上に
-		else
-		{
-			angle.x += rotationSpeed * angleAddX;
-		}
-
 
 		// se氷再生
 		playerid->PlaySe("Data/Audio/SE/氷発射.wav");
@@ -2503,6 +2485,9 @@ void PlayerMagicState::Execute(float elapsedTime)
 	default:
 		break;
 	}
+
+	//	回転終了
+	isRotate = false;
 }
 
 void PlayerMagicState::Exit()

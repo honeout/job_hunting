@@ -283,13 +283,12 @@ void EnemyBoss::CollisionImpactVsPlayer()
     if (!sharedId)
         return;
     std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
-
     PlayerManager& playerManager = PlayerManager::Instance();
 
     ProjectileManager& projectileManager = ProjectileManager::Instance();
 
     // 全ての敵と総当たりで衝突処理
-    int playerCount = PlayerManager::Instance().GetPlayerCount();//todo 外
+    int playerCount = playerManager.GetPlayerCount();//todo 外
     int projectileCount = projectileManager.GetProjectileCount();
 
     // player所持無し
@@ -322,14 +321,12 @@ void EnemyBoss::CollisionImpactVsPlayer()
         float height = 1.0f;
         projectile.lock()->GetComponent<Collision>()->SetHeight(height);
         float projectileHeight = projectile.lock()->GetComponent<Collision>()->GetHeight();
-
         float projectileRadiusOutLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
         float projectileRadiusInLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusInSide();
-
-
-
         // 衝突処理
         DirectX::XMFLOAT3 outPositon;
+
+        // インパクトの疑似的判定
         // 円柱と円
         if (collisionId->IntersectSphereVsCylinder(
             projectilePosition,
@@ -345,8 +342,8 @@ void EnemyBoss::CollisionImpactVsPlayer()
                 playerRadius,
                 playerHeight,
                 outPositon))
-
         {
+
             // 高さが一定以下なら通る
             if (projectilePosition.y + projectileHeight < playerPosition.y) return;
             // ダメージを与える。
@@ -387,101 +384,8 @@ void EnemyBoss::CollisionImpactVsPlayer()
 
             // 振動
             StartDamageShake();
-
         }
     }
-}
-
-// 後変更Collision
-// ジャンプ処理
-bool EnemyBoss::CollisionPlayerWithRushEnemy()
-{
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return false;
-
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
-
-    PlayerManager& playerManager = PlayerManager::Instance();
-
-    // 全ての敵と総当たりで衝突処理
-    int playerCount = playerManager.GetPlayerCount();
-
-    // player所持無し
-    if (playerCount <= 0) return false;
-
-    // 安全チェック
-    std::shared_ptr<Actor> player = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
-    if (!player)
-        return false;
-    // player関係
-    std::shared_ptr<Player> playerMain = player->GetComponent<Player>();
-    std::shared_ptr<Transform> playerTransform = player->GetComponent<Transform>();
-    std::shared_ptr<Movement> playerMovement = player->GetComponent<Movement>();
-    std::shared_ptr<Collision> playerCollision = player->GetComponent<Collision>();
-    std::shared_ptr<HP> playerHp = player->GetComponent<HP>();
-    // 位置、半径、高さ
-    DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
-    float playerRadius = playerCollision->GetRadius();
-    float playerHeight = playerCollision->GetHeight();
-    // 衝突処理
-    DirectX::XMFLOAT3 outPositon;
-    // 球と球
-    if (collisionId->IntersectCylinderVsCylinder(
-        position,
-        attackRange,
-        height,
-        {
-        playerPosition.x,
-        playerPosition.y,
-        playerPosition.z,
-        },
-        playerRadius,
-        playerHeight,
-        outPositon))
-
-    {
-        // ダメージを与える。
-        if (!playerHp->ApplyDamage(applyDamageJamp, jampInvincibleTime)) return false;
-
-        // 振動
-        StartDamageShake();
-        DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
-        DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
-        DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
-        DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
-        DirectX::XMFLOAT3 normal;
-        DirectX::XMStoreFloat3(&normal, N);
-        float jumpSpeed = 5.0f;
-        // 衝撃
-        const float power = 10.0f;
-        DirectX::XMFLOAT3 impulse;
-        impulse.y = power * 0.5f;
-        playerMovement->JumpVelocity(jumpSpeed);
-        //// 吹き飛ばす
-        {
-            // 衝動
-            DirectX::XMFLOAT3 impulse;
-            // 衝撃
-            const float power = 20.0f;
-            float vx = playerPosition.x - position.x;
-            float vz = playerPosition.z - position.z;
-            float lengthXZ = sqrtf(vx * vx + vz * vz);
-            vx /= lengthXZ;
-            vz /= lengthXZ;
-            impulse.x = vx * power;
-            impulse.y = power * 0.5f;
-            impulse.z = vz * power;
-            playerMovement->AddImpulse(impulse);
-            // ヒットエフェクト再生
-            playerPosition.y += playerHeight * 0.5f;
-            playerMain->GetStateMachine()->ChangeState((int)Player::State::Damage);
-            // UI揺れ
-            playerMain->SetShakeMode(shakeStart);
-        }
-    }
-    return false;
 }
 
 // 後変更Collision

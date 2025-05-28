@@ -109,7 +109,7 @@ void HP::AddHealth(int health)
         this->health = maxHealth;
     }
 }
-// ダメージ量を取得
+// ダメージ食らった直後を取得
 bool HP::OnDamaged()
 {
     return onDamage;

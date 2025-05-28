@@ -49,9 +49,6 @@ public:
     // 当たり判定衝撃波
     void CollisionImpactVsPlayer();
 
-    // 当たり判定ボスとプレイヤー
-    bool CollisionPlayerWithRushEnemy();
-
     // 衝撃波判定
     void CollisionInpact();
 
