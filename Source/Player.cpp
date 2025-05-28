@@ -33,11 +33,24 @@ void Player::Start()
     if (!sharedId)
         return;
     // コンポーネントを使えるように
-    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
-    std::shared_ptr hpId = sharedId->GetComponent<HP>();
-    std::shared_ptr transformId = sharedId->GetComponent<Transform>();
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
+    movement = sharedId->GetComponent<Movement>();
+    hp = sharedId->GetComponent<HP>();
+    transform = sharedId->GetComponent<Transform>();
+    modelControll = sharedId->GetComponent<ModelControll>();
+    collision = sharedId->GetComponent<Collision>();
+    mp = sharedId->GetComponent<Mp>();
+
+    // Lockとして実体を使う
+    auto movementId = movement.lock();
+    auto hpId = hp.lock();
+    auto transformId = transform.lock();
+    auto collisionId = collision.lock();
+    auto mpId = mp.lock();
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!movementId || !hpId || !transformId || !collisionId || !mpId || !modelControllId)
+        return;
 
     // 落下停止
     bool stopFall = false;
@@ -135,16 +148,15 @@ void Player::Start()
 // elapsedTime(経過時間)
 void Player::Update(float elapsedTime)
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // コンポーネントを使えるように
-    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
-    std::shared_ptr hpId = sharedId->GetComponent<HP>();
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
-    std::shared_ptr transformId = sharedId->GetComponent<Transform>();
+    // Lockとして実体を使う
+    auto movementId = movement.lock();
+    auto hpId = hp.lock();
+    auto transformId = transform.lock();
+    auto collisionId = collision.lock();
+    auto mpId = mp.lock();
 
+    // 有効性チェック
+    if (!movementId || !hpId || !transformId || !collisionId || !mpId) return;
     GamePad& gamePad = Input::Instance().GetGamePad();
     //// ステート毎の処理
     stateMachine->Update(elapsedTime);
@@ -560,12 +572,12 @@ void Player::DrawDebugPrimitive()
 #ifdef _DEBUG
 void Player::OnGUI()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
 
-    std::shared_ptr transformId = sharedId->GetComponent<Transform>();
+    // 有効性チェック
+    if (!transformId)
+        return;
     if (ImGui::Button("debugCamera"))
     {
         debugCameraTime = !debugCameraTime;
@@ -2486,13 +2498,12 @@ void Player::CollisionMagicIce()
 // プレイヤーとエネミーとの衝突処理
 void Player::CollisionPlayerVsEnemies()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // 移動コンポーネント
-    std::shared_ptr transformId = sharedId->GetComponent<Transform>();
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+    auto collisionId = collision.lock();
+
+    // 有効性チェック
+    if (!transformId || !collisionId) return;
 
     EnemyManager& enemyManager = EnemyManager::Instance();
 
@@ -2543,14 +2554,12 @@ void Player::CollisionPlayerVsEnemies()
 // 敵の範囲内に入らないように 腰以上
 void Player::CollisionBornVsProjectile(const char* bornname)
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // 移動コンポーネント
-    std::shared_ptr transformId = sharedId->GetComponent<Transform>();
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+    auto collisionId = collision.lock();
 
+    // 有効性チェック
+    if (!transformId || !collisionId) return;
 
     EnemyManager& enemyManager = EnemyManager::Instance();
 
@@ -2616,13 +2625,13 @@ void Player::CollisionBornVsProjectile(const char* bornname)
 // 切りつけ
 bool Player::CollisionNodeVsEnemies()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return false;
-    // 移動コンポーネント
-    std::shared_ptr<ModelControll> modelId = sharedId->GetComponent<ModelControll>();
-    std::shared_ptr<Collision> collisionId = sharedId->GetComponent<Collision>();
+    // Lockとして実体を使う
+    auto modelControllId = modelControll.lock();
+    auto collisionId = collision.lock();
+
+
+    // 有効性チェック
+    if (!collisionId || !modelControllId) return false;
 
     // マネージャー取得
     EnemyManager& enemyManager = EnemyManager::Instance();
@@ -2642,7 +2651,7 @@ bool Player::CollisionNodeVsEnemies()
     Model::Node* node = model->FindNode("mixamorig:LeftHand");
     // ノード位置取得
     DirectX::XMFLOAT3 nodePosition;
-    nodePosition = modelId->GetModel()->ConvertLocalToWorld(node);
+    nodePosition = modelControllId->GetModel()->ConvertLocalToWorld(node);
 
     //// 衝突処理
     DirectX::XMFLOAT3 outPositon;
@@ -2703,13 +2712,12 @@ bool Player::CollisionNodeVsEnemies()
 // カウンター用
 void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius)
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
+    // Lockとして実体を使う
+    auto collisionId = collision.lock();
 
-    // 移動コンポーネント
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+    // 有効性チェック
+    if (!collisionId)
+        return;
 
     // ノード取得
     Model::Node* node = model->FindNode(nodeName);
@@ -2847,12 +2855,12 @@ void Player::UpdateSwordeTraile()
 // hpのピンチ　ui描画も
 void Player::PinchMode(float elapsedTime)
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto hpId = hp.lock();
+
+    // 有効性チェック
+    if (!hpId)
         return;
-    // 移動コンポーネント
-    std::shared_ptr hpId = sharedId->GetComponent<HP>();
 
     // hp が一定以下なら
     if (hpId->HealthPinch() && !hpId->GetDead())
@@ -2930,12 +2938,12 @@ void Player::PinchMode(float elapsedTime)
 // ジャンプ
 bool Player::InputJump()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto movementId = movement.lock();
+
+    // 有効性チェック
+    if (!movementId)
         return false;
-    // 移動コンポーネント
-    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
 
     // ボタンで入力でジャンプ（ジャンプ回数制限つき）
     GamePad& gamePad = Input::Instance().GetGamePad();
@@ -2991,12 +2999,12 @@ bool Player::InputAttack()
 // 魔法発射
 bool Player::InputMagick()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!mpId)
         return false;
-    // コンポーネントを使えるように
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
 
     GamePad& gamePad = Input::Instance().GetGamePad();
 
@@ -3228,12 +3236,12 @@ bool Player::InputMagick()
 // 魔法火発射
 bool Player::InputMagicframe()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!mpId)
         return false;
-    // 移動コンポーネント
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
 
     GamePad& gamePad = Input::Instance().GetGamePad();
         // mp消費
@@ -3312,12 +3320,12 @@ bool Player::InputMagicframe()
 // 魔法氷発射
 bool Player::InputMagicIce()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!mpId)
         return false;
-    // 移動コンポーネント
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
 
 
     GamePad& gamePad = Input::Instance().GetGamePad();
@@ -3400,12 +3408,12 @@ bool Player::InputMagicIce()
 // 魔法雷発射
 bool Player::InputMagicLightning()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!mpId)
         return false;
-    // 移動コンポーネント
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
 
     // mp消費
     mpId->ApplyConsumption(magicConsumption);
@@ -3481,13 +3489,13 @@ bool Player::InputMagicLightning()
 // 回復魔法開始
 bool Player::InputMagicHealing()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto hpId = hp.lock();
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!hpId || !mpId)
         return false;
-    // 移動コンポーネント
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
-    std::shared_ptr hpId = sharedId->GetComponent<HP>();
 
     // mp消費
     mpId->ApplyConsumption(mpId->GetMaxMagic());
@@ -3498,12 +3506,12 @@ bool Player::InputMagicHealing()
 // 連射用
 void Player::PushMagicFrame(DirectX::XMFLOAT3 angle)
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!mpId)
         return;
-    // 移動コンポーネント
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
 
     GamePad& gamePad = Input::Instance().GetGamePad();
     // mp消費
@@ -3586,12 +3594,12 @@ void Player::PushMagicFrame(DirectX::XMFLOAT3 angle)
 // 連射用
 void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!mpId)
         return;
-    // 移動コンポーネント
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
 
 
     GamePad& gamePad = Input::Instance().GetGamePad();
@@ -3726,12 +3734,12 @@ void Player::InputSpecialMagicframe()
 // 距離でUIを変えるロックオン中
 void Player::AttackCheckUI()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto collisionId = collision.lock();
+
+    // 有効性チェック
+    if (!collisionId)
         return;
-    // 移動コンポーネント
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
 
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
@@ -3838,13 +3846,13 @@ void Player::DmageInvalidJudment(bool invalidJudgment)
 // 後変更UI動作
 void Player::UiControlleGauge(float elapsedTime)
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto hpId = hp.lock();
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!hpId || !mpId)
         return;
-    // 移動コンポーネント
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
-    std::shared_ptr hpId = sharedId->GetComponent<HP>();
 
 
     int uiCount = UiManager::Instance().GetUiesCount();
@@ -3892,12 +3900,12 @@ void Player::UiControlleGauge(float elapsedTime)
 // 特殊攻撃ダメージ判定
 void Player::SpecialApplyDamageInRadius()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto collisionId = collision.lock();
+
+    // 有効性チェック
+    if (!collisionId)
         return;
-    // 移動コンポーネント
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
 
     // 敵について
     EnemyManager& enemyManager = EnemyManager::Instance();
@@ -3952,12 +3960,12 @@ void Player::SpecialApplyDamageInRadius()
 // 地面に立っているか
 bool Player::Ground()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto movementId = movement.lock();
+
+    // 有効性チェック
+    if (!movementId)
         return false;
-    // 移動コンポーネント
-    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
 
     // 地面の立つ
     if (movementId->GetOnLadius())
@@ -3989,12 +3997,12 @@ bool Player::UpdateElapsedTime(float timeMax, float elapsedTime)
 // Ui魔法チャージ動作開始
 void Player::StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax)
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockとして実体を使う
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!mpId)
         return;
-    // 移動コンポーネント
-    std::shared_ptr mpId = sharedId->GetComponent<Mp>();
 
     // mp切れ
     if (mpId->GetMpEmpth())

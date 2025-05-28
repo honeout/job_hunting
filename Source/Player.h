@@ -418,11 +418,12 @@ private:
     };
 
 private:
-    //std::weak_ptr<Movement>	movement;
-    //std::weak_ptr<HP> hp;
-    //std::weak_ptr<Collision> collision;
-    //std::weak_ptr<Mp> mp;
-    //std::weak_ptr<Transform> transform;
+    std::weak_ptr<Movement>	movement;
+    std::weak_ptr<HP> hp;
+    std::weak_ptr<Collision> collision;
+    std::weak_ptr<Mp> mp;
+    std::weak_ptr<Transform> transform;
+    std::weak_ptr<ModelControll> modelControll;
 
     DirectX::XMFLOAT3 velocity = { 0,0,0 };
 
