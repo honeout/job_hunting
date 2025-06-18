@@ -23,8 +23,6 @@
 // 定数定義
 namespace PlayerConfig
 {
-    // ボーン名
-
     // 上半身スタート再生開始場所
     constexpr const char* bornUpStartPoint = "mixamorig:Hips";
     // 上半身エンド再生停止場所
@@ -33,7 +31,6 @@ namespace PlayerConfig
     constexpr const char* bornDownerStartPoint = "mixamorig:LeftUpLeg";
     // 下半身エンド再生停止場所
     constexpr const char* bornDownerEndPoint = "mixamorig:RightToe_End";
-
 
     // 身長
     constexpr float height = 1.0f;
@@ -47,6 +44,15 @@ namespace PlayerConfig
     // 歩く速度
     constexpr float   moveSpeed = 5.0f;
 
+    // ジャンプ速度
+    constexpr float   jumpSpeed = 13.0f;
+
+    // ジャンプの最大回数
+    constexpr int     jumpLimit = 2;
+
+    // 回転速度
+    constexpr float   turnSpeed = DirectX::XMConvertToRadians(720);
+
     // 重力
     constexpr float gravity = -0.5f;
 
@@ -55,6 +61,9 @@ namespace PlayerConfig
 
     // Mp
     constexpr int magicPoint = 50;
+
+    // コマンド余白文
+    constexpr float offset = 20.0f;
 
     // 連続攻撃回数
     constexpr int attackNumberSaveMax = 4;
@@ -551,14 +560,6 @@ private:
 
     float          moveSpeed = 0.0f;
 
-    float          turnSpeed = DirectX::XMConvertToRadians(720);
-
-    // 回転速度　攻撃時
-    float          turnSpeedAttack = DirectX::XMConvertToRadians(2600);
-
-    float          jumpSpeed = 13.0f;
-
-    int                     jumpLimit = 2;
 
     ProjectileManager projectileManager;
 
@@ -691,10 +692,7 @@ private:
 
     int specialAttackNum = 0;
 
-    // 特殊攻撃をためる奴
-    //std::stack<int> specialAttack;
-    //std::vector<int> specialAttack;
-    //bool specialAttack[specialAttackNumMax];
+    // 特殊攻撃　所持
     std::vector<SpecialAttack> specialAttack;
 
     bool isSkillHave = false;

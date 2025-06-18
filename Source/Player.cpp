@@ -2136,8 +2136,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         std::shared_ptr<Ui> uiIdSpecialButton = sharedUiButtonId->GetComponent<Ui>();
         std::shared_ptr<TransForm2D> uiIdSpecialButtonTransForm2D= sharedUiButtonId->GetComponent<TransForm2D>();
         
-        float offset = 20.0f;
-        float pos = uiIdSpecialAttackTransForm2D->GetPosition().y + offset;
+        float pos = uiIdSpecialAttackTransForm2D->GetPosition().y + PlayerConfig::offset;
 
         // 必殺技コマンド切りつけ
         uiIdSpecialButton->SetDrawCheck(isDrawUi);
@@ -2164,9 +2163,8 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
 
         std::shared_ptr<Ui> uiIdSpecialButton = sharedUiButtonId->GetComponent<Ui>();
         std::shared_ptr<TransForm2D> uiIdSpecialButtonTransForm2D = sharedUiButtonId->GetComponent<TransForm2D>();
-
-        float offset = 20.0f;
-        float pos = uiIdSpecialFireTransForm2D->GetPosition().y + offset;
+        
+        float pos = uiIdSpecialFireTransForm2D->GetPosition().y + PlayerConfig::offset;
 
         // 必殺技コマンド火
         uiIdSpecialButton->SetDrawCheck(isDrawUi);
@@ -2258,7 +2256,7 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float elapsedTime)
     if (vec.x != isInputEmpty || vec.y != isInputEmpty || vec.z != isInputEmpty)
     {
         movementId->Move(vec,moveSpeed, elapsedTime);
-        movementId->Turn( vec ,turnSpeed, elapsedTime);
+        movementId->Turn( vec , PlayerConfig::turnSpeed, elapsedTime);
     }
     return vec;
 }
@@ -3083,8 +3081,8 @@ bool Player::InputJump()
     if (gamePad.GetButtonDown() & GamePad::BTN_A)
     {
         // 値を小さくする
-        if (movementId->GetJumpCount() < jumpLimit) {
-            movementId->JumpVelocity(jumpSpeed);
+        if (movementId->GetJumpCount() < PlayerConfig::jumpLimit) {
+            movementId->JumpVelocity(PlayerConfig::jumpSpeed);
             // ジャンプ入力した
            return true;
         }
