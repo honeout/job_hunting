@@ -20,6 +20,66 @@
 #include "EnemyBoss.h"
 #include <stack>
 
+// 定数定義
+namespace PlayerConfig
+{
+    // ボーン名
+
+    // 上半身スタート再生開始場所
+    constexpr const char* bornUpStartPoint = "mixamorig:Hips";
+    // 上半身エンド再生停止場所
+    constexpr const char* bornUpEndPoint = "mixamorig:LeftUpLeg";
+    // 下半身スタート再生開始場所
+    constexpr const char* bornDownerStartPoint = "mixamorig:LeftUpLeg";
+    // 下半身エンド再生停止場所
+    constexpr const char* bornDownerEndPoint = "mixamorig:RightToe_End";
+
+
+    // 身長
+    constexpr float height = 1.0f;
+
+    // 当たり判定半径
+    constexpr float radius = 1.0f;
+
+    // Hp
+    constexpr int health = 50;
+
+    // 歩く速度
+    constexpr float   moveSpeed = 5.0f;
+
+    // 重力
+    constexpr float gravity = -0.5f;
+
+    // 最大HP
+    constexpr int maxHealth = 50;
+
+    // Mp
+    constexpr int magicPoint = 50;
+
+    // 連続攻撃回数
+    constexpr int attackNumberSaveMax = 4;
+
+    // 空中移動制限限界
+    constexpr int areAttackStateEnd = 0;
+
+    // 空中移動限界最大
+    constexpr int areAttackStateMax = 3;
+
+    // 特殊技チャージゲージ　斬撃
+    constexpr float specialAttackChargeSlashValue = 0.1f;
+    // 特殊技チャージゲージ　魔法
+    constexpr float specialAttackChargeMagicValue = 0.2f;
+    // 特殊技チャージゲージ　初期値
+    constexpr float specialAttackChargeMin = 0.0f;
+    // 特殊技チャージゲージ　最大値　共有
+    constexpr float specialAttackChargeMax = 1.5f;
+
+    // 特殊技最大値 それぞれの技のチャージ最大値
+    constexpr int energyChargeMax = 4;
+    // 特殊技最大値 それぞれの技のチャージ初期化
+    constexpr int energyChargeMin = 0;
+};
+
 // プレイヤー
 class Player : public Component
 {
@@ -387,6 +447,7 @@ public:
     // 回転確認
     void SetAngleCheck(bool angleCheck) { this->angleCheck = angleCheck; }
 
+    // 重力を使えるように
     float GetGravity() const { return gravity; }
 
     void SetLockOnState(CameraState lockonState) { this->lockonState = lockonState; }
@@ -440,13 +501,15 @@ public:
     // デバッグ用
     bool GetDebugCameraTime() { return debugCameraTime; }
 private:
+
+
+
     // 構造体
     struct SpecialAttack
     {
         int id;
         bool hasSkill;
     };
-
 private:
     std::weak_ptr<Movement>	movement;
     std::weak_ptr<HP> hp;
@@ -462,14 +525,6 @@ private:
 
     // 空中行動許可間隔
     int areAttackState = 0;
-    int areAttackStateEnd = 0;
-    int areAttackStateMax = 3;
-
-    // 空中行動間隔時間
-    int areAttackTimeEnd = 0;
-    int areAttackTimeMax = 3;
-    int areAttackTimeValue = 1;
-    int areAttackTime;
 
     // 経過時間を測る
     float timeElapsed = 0.0f;
@@ -485,13 +540,16 @@ private:
     DirectX::XMFLOAT3 angle = {};
     DirectX::XMFLOAT3 scale = {};
 
-    // 身長
-    float height = 1.0f;
 
     // 斬撃エフェクト　スケール
     float slashScale = 0.4f;
 
-    float          moveSpeed = 5.0f;
+    // 当たり判定半径
+    float radius;
+    // 当たり判定高さ
+    float height;
+
+    float          moveSpeed = 0.0f;
 
     float          turnSpeed = DirectX::XMConvertToRadians(720);
 
@@ -536,7 +594,7 @@ private:
     DirectX::XMFLOAT3 randomPosMin = {1.0f,0.1f,1.0f};
 
     // 重力
-    float gravity = -0.5f;
+    float gravity = -0.0f;
 
     // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
     float jumpfliptime = gravity * 5;
@@ -556,30 +614,6 @@ private:
     DirectX::XMFLOAT3 moveVec = { 0.0f,0.0f,0.0f };
 
     DirectX::XMFLOAT3 frontVec = { 0 ,0,0 };
-
-    // 上半身スタート再生開始場所
-    char* bornUpStartPoint = "";
-
-    // 上半身エンド再生停止場所
-    char* bornUpEndPoint = "";
-
-    // 下半身スタート再生開始場所
-    char* bornDownerStartPoint = "";
-
-    // 下半身エンド再生停止場所
-    char* bornDownerEndPoint = "";
-
-    // 当たり判定半径
-    float radius = 1.0f;
-
-    // Hp
-    int health = 50;
-
-    // 最大HP
-    int maxHealth = 50;
-
-    // Mp
-    int magicPoint = 50;
 
     // アニメーションの時間 
     float currentANimationSeconds = 0.0f;
@@ -612,24 +646,24 @@ private:
 
     // 特殊攻撃出るまで
     float specialAttackCharge = 0.0f;
-    float specialAttackChargeSlashValue = 0.1f;
-    float specialAttackChargeMagicValue = 0.2f;
+    // 特殊技チャージゲージ　初期値
     float specialAttackChargeMin = 0.0f;
-    float specialAttackChargeMax = 1.5f;
-    float specialShotCharge = 0.0f;
+    // 特殊技チャージゲージ　魔法
+    float specialAttackChargeMagicValue = 0.0f;
+
 
     // 攻撃ヒット回数
     int attackNumberSave;
-    int attackNumberSaveMax = 4;
+    int attackNumberSaveMax;
 
     // 特殊技のチャージ
     int attackEnergyCharge = 0;
-    int attackEnergyChargeMin = 0;
     int fireEnergyCharge = 0;
-    int fireEnergyChargeMin = 0;
-    int ThanderEnergyCharge = 0;
+    int thanderEnergyCharge = 0;
     int iceEnergyCharge = 0;
-    int energyChargeMax = 4;
+    int energyChargeMax = 0;
+    int energyChargeMin = 0;
+
 
     // 特殊技のチャージ完了
     bool isSpecialChargeComplete = false;

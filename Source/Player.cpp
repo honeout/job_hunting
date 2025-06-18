@@ -39,15 +39,6 @@ void Player::Start()
 
     // UIコマンド初期化
     InitCommands();
-    
-     // 上半身スタート再生開始場所
-    bornUpStartPoint = "mixamorig:Hips";
-    // 上半身エンド再生停止場所
-    bornUpEndPoint = "mixamorig:LeftUpLeg";
-    // 下半身スタート再生開始場所
-    bornDownerStartPoint = "mixamorig:LeftUpLeg";
-    // 下半身エンド再生停止場所
-    bornDownerEndPoint = "mixamorig:RightToe_End";
 }
 
 // 更新処理
@@ -178,13 +169,23 @@ void Player::InitStats()
     position = transformId->GetPosition();
     angle = transformId->GetAngle();
     scale = transformId->GetScale();
+
     // 重力設定
+    gravity = PlayerConfig::gravity;
     movementId->SetGravity(gravity);
+
+    // 歩く速度
+    moveSpeed = PlayerConfig::moveSpeed;
+
+    int health = PlayerConfig::health;
+    int magicPoint = PlayerConfig::magicPoint;
+    radius = PlayerConfig::radius;
+    height = PlayerConfig::height;
 
     // hp設定
     hpId->SetHealth(health);
     // hp最大値の設定
-    hpId->SetMaxHealth(maxHealth);
+    hpId->SetMaxHealth(health);
     // mp設定
     mpId->SetMagic(magicPoint);
     // mp最大値
@@ -197,8 +198,19 @@ void Player::InitStats()
     // 揺れモード
     shakeMode = false;
 
+    // 特殊技チャージゲージ　初期値
+    specialAttackChargeMin = PlayerConfig::specialAttackChargeMin;
+    // 特殊技チャージゲージ　魔法
+    specialAttackChargeMagicValue = PlayerConfig::specialAttackChargeMagicValue;
+
+    // 特殊技チャージMax それぞれの
+    energyChargeMax = PlayerConfig::energyChargeMax;
+    // 特殊技チャージMin それぞれの
+    energyChargeMin = PlayerConfig::energyChargeMin;
+
     // 攻撃ヒット回数初期化
     attackNumberSave = 0;
+    attackNumberSaveMax = PlayerConfig::attackNumberSaveMax;
 
     // _後変更 ゲームオーバーに行く
     // 遷移変更 
@@ -206,9 +218,6 @@ void Player::InitStats()
 
     // 経過時間測る用
     timeElapsed = 0.0f;
-
-    // 空中行動制限
-    areAttackTime = areAttackTimeMax;
 
     // エネミー接触判定
     isEnemyHit = false;
@@ -365,7 +374,7 @@ void Player::UpdateStatus(float elapsedTime)
     }
 
     // 空中行動回数制限
-    if (areAttackState <= areAttackStateEnd && !isAreAttack)
+    if (areAttackState <= PlayerConfig::areAttackStateEnd && !isAreAttack)
     {
         // 攻撃禁止
         isAreAttack = true;
@@ -377,7 +386,7 @@ void Player::UpdateStatus(float elapsedTime)
         // 攻撃許可
         isAreAttack = false;
         // 攻撃回数
-        areAttackState = areAttackStateMax;
+        areAttackState = PlayerConfig::areAttackStateMax;
     }
 
     position = transformId->GetPosition();
@@ -441,9 +450,10 @@ void Player::UpdateAnimation(float elapsedTime)
     // 部分再生
     case UpAnim::Doble:
     {
+        
         // モデル部分アニメーション更新処理
-        modelControllId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, bornUpEndPoint, true);
-        modelControllId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, bornDownerStartPoint, bornDownerEndPoint, true);
+        modelControllId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, PlayerConfig::bornUpStartPoint, PlayerConfig::bornUpEndPoint, true);
+        modelControllId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, PlayerConfig::bornDownerStartPoint, PlayerConfig::bornDownerEndPoint, true);
         break;
     }
     // 複数ブレンド再生
@@ -771,7 +781,6 @@ void Player::OnGUI()
     ImGui::InputInt("isPlayerDrawCheck", &isPlayerDrawCheck);
     ImGui::InputInt("selectMagicCheck", &selectMagicCheck);
     ImGui::SliderFloat("specialAttackCharge", &specialAttackCharge,0,1.5f);
-    ImGui::SliderFloat("specialShotCharge", &specialShotCharge,0,1.5f);
     ImGui::SliderFloat("dot", &dotfake, 0, 1);
     ImGui::SliderFloat("blend", &moveSpeedAnimation, 0.0f, 1.0f);
     if (ImGui::Button("RockCamera"))
@@ -855,14 +864,14 @@ void Player::OnGUI()
     if (ImGui::Button("ChargeSlashSpeciale"))
     {
         // 一度発動すると初期化
-        specialAttackCharge = specialAttackChargeMax;
+        specialAttackCharge = PlayerConfig::specialAttackChargeMax;
         // 斬撃必殺技チャージ解消
         attackEnergyCharge = energyChargeMax;
     }
     if (ImGui::Button("ChargeFireSpeciale"))
     {
         // 一度発動すると初期化
-        specialAttackCharge = specialAttackChargeMax;
+        specialAttackCharge = PlayerConfig::specialAttackChargeMax;
         // 火必殺技チャージ解消
         fireEnergyCharge = energyChargeMax;
     }
@@ -1820,7 +1829,7 @@ bool Player::InputSpecialAttackCharge()
     // ui無かったら
     if (uiCount <= uiCountMax) return false;
     // 必殺技チャージ
-    if (specialAttackCharge >= specialAttackChargeMax)
+    if (specialAttackCharge >= PlayerConfig::specialAttackChargeMax)
     {
         // 安全チェック
         auto sharedUiSpecialChargeFurstId = UiManager::Instance().GetUies(
@@ -1854,7 +1863,7 @@ bool Player::InputSpecialAttackCharge()
             // 一度発動すると初期化
             specialAttackCharge = specialAttackChargeMin;
             // 斬撃必殺技チャージ解消
-            attackEnergyCharge = attackEnergyChargeMin;
+            attackEnergyCharge = energyChargeMin;
         }
         // 炎魔法を一定以上溜めたら
         if (fireEnergyCharge >= energyChargeMax)
@@ -1865,7 +1874,7 @@ bool Player::InputSpecialAttackCharge()
             // 一度発動すると初期化
             specialAttackCharge = specialAttackChargeMin;
             // 火必殺技チャージ解消
-            fireEnergyCharge = fireEnergyChargeMin;
+            fireEnergyCharge = energyChargeMin;
         }
     }
 
@@ -2517,7 +2526,7 @@ void Player::CollisionMagicSunder()
             return;
 
         // 雷関係
-        ++ThanderEnergyCharge;
+        ++thanderEnergyCharge;
         hitThander->Play(projectilePosition);
         // 共通ダメエフェ
         hitEffect->Play(projectilePosition);
@@ -2584,7 +2593,6 @@ void Player::CollisionMagicIce()
         // ダメージを与える。
         if (!enemyHp->ApplyDamage(applyDamageMagic, magicAttackInvincibleTime))
             return;
-
         // 氷関係
         ++iceEnergyCharge;
         hitIce->Play(projectilePosition);
@@ -2813,7 +2821,7 @@ bool Player::CollisionNodeVsEnemies()
         }
     }
     // 当たった時の副次的効果
-    specialAttackCharge += specialAttackChargeSlashValue;
+    specialAttackCharge += PlayerConfig::specialAttackChargeSlashValue;
     // 斬撃チャージ
     ++attackEnergyCharge;
     // 攻撃ヒット回数
