@@ -28,60 +28,18 @@ Player::~Player()
 
 void Player::Start()
 {
-    // 安全チェック
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // コンポーネントを使えるように
-    movement = sharedId->GetComponent<Movement>();
-    hp = sharedId->GetComponent<HP>();
-    transform = sharedId->GetComponent<Transform>();
-    modelControll = sharedId->GetComponent<ModelControll>();
-    collision = sharedId->GetComponent<Collision>();
-    mp = sharedId->GetComponent<Mp>();
+    // 初期化コンポーネント
+    InitComponents();
 
-    // Lockとして実体を使う
-    auto movementId = movement.lock();
-    auto hpId = hp.lock();
-    auto transformId = transform.lock();
-    auto collisionId = collision.lock();
-    auto mpId = mp.lock();
-    auto modelControllId = modelControll.lock();
+    // 初期化エフェクト
+    InitEffects();
 
-    // 有効性チェック
-    if (!movementId || !hpId || !transformId || !collisionId || !mpId || !modelControllId)
-        return;
+    // 初期化ステータス
+    InitStats();
 
-    // 落下停止
-    bool stopFall = false;
-    movementId->SetStopFall(stopFall);
-    // 移動の停止
-    bool stopMove = false;
-    movementId->SetStopMove(stopMove);
-    // 位置等
-    position = transformId->GetPosition();
-    angle = transformId->GetAngle();
-    scale = transformId->GetScale();
-    // 重力設定
-    movementId->SetGravity(gravity);
-    // モデルデータを入れる。
-    model = sharedId->GetComponent<ModelControll>()->GetModel();
-    // ヒットエフェクト読込 
-    hitEffect = std::make_unique<Effect>("Data/Effect/Hit.efk");
-    ImpactEffect = std::make_unique<Effect>("Data/Effect/rehleckte.efk");
-    desEffect = std::make_unique<Effect>("Data/Effect/F.efk");
-    // エフェクト読み込み
-    float effectScale = 1.0f;
-    // 斬撃
-    hitSlash = std::make_unique<Effect>("Data/Effect/slashHit.efk");
-    hitFire = std::make_unique<Effect>("Data/Effect/hit fire.efk");
-    hitThander = std::make_unique<Effect>("Data/Effect/HitThunder.efk");
-    hitIce = std::make_unique<Effect>("Data/Effect/hit Ice.efk");
-    lightningAttack = std::make_unique<Effect>("Data/Effect/sunder.efk");
-    // エフェクト竜巻
-    areWork = std::make_unique<Effect>("Data/Effect/tornade.efk");
-    // エフェクト２D注目
-    effectFocus2D = std::make_unique<Effect>("Data/Effect/effectFocus2D.efk");
+    // UIコマンド初期化
+    InitCommands();
+    
      // 上半身スタート再生開始場所
     bornUpStartPoint = "mixamorig:Hips";
     // 上半身エンド再生停止場所
@@ -90,58 +48,6 @@ void Player::Start()
     bornDownerStartPoint = "mixamorig:LeftUpLeg";
     // 下半身エンド再生停止場所
     bornDownerEndPoint = "mixamorig:RightToe_End";
-    // hp設定
-    hpId->SetHealth(health);
-    // hp最大値の設定
-    hpId->SetMaxHealth(maxHealth);
-    // mp設定
-    mpId->SetMagic(magicPoint);
-    // mp最大値
-    mpId->SetMaxMagic(magicPoint);
-    // 半径
-    collisionId->SetRadius(radius);
-    // 身長
-    collisionId->SetHeight(height);
-    // コマンド操作用
-    selectCheck = (int)CommandAttack::Attack;
-    // 魔法選択用
-    selectMagicCheck = (int)CommandMagic::Normal;
-    // 特殊攻撃ため初期値
-    specialAttackCharge = 0.0f;
-    // アニメーションルール
-    updateanim = UpAnim::Normal;
-    moveSpeedAnimation = 0.0f;
-    // 特殊アクション発動不
-    specialAttackTime = false;
-    // 必殺技初期化斬撃
-    SpecialAttack specialAttackInitialize;
-    specialAttackInitialize.id = (int)SpecialAttackType::Attack;
-    specialAttackInitialize.hasSkill = isSkillHave;
-    specialAttack.push_back(specialAttackInitialize);
-    // 必殺技初期化魔法火
-    specialAttackInitialize.id = (int)SpecialAttackType::MagicFire;
-    specialAttackInitialize.hasSkill = isSkillHave;
-    specialAttack.push_back(specialAttackInitialize);
-    // 揺れモード
-    shakeMode = false;
-    // 回転確認
-    angleCheck = false;
-    // 曲がる速度
-    turnSpeedAdd = 0;
-    // 攻撃ヒット回数初期化
-    attackNumberSave = 0;
-    // 遷移変更
-    endState = false;
-    // エネミーロックオン用ステート確認
-    stateEnemyIndex = 0;
-    // 経過時間測る用
-    timeElapsed = 0.0f;
-    // 空中行動制限
-    areAttackTime = areAttackTimeMax;
-    // エネミー接触判定
-    isEnemyHit = false;
-    // エネミー接触判定上半身
-    isEnemyHitBody = false;
 }
 
 // 更新処理
@@ -154,6 +60,7 @@ void Player::Update(float elapsedTime)
     auto transformId = transform.lock();
     auto collisionId = collision.lock();
     auto mpId = mp.lock();
+    auto modelControllId = modelControll.lock();
 
     // 有効性チェック
     if (!movementId || !hpId || !transformId || !collisionId || !mpId) return;
@@ -308,38 +215,44 @@ void Player::Update(float elapsedTime)
     case UpAnim::Normal:
     {
         // アニメーション再生
-        model->UpdateAnimation(elapsedTime, true);
+        modelControllId->GetModel()->UpdateAnimation(elapsedTime, true);
         break;
     }
     // 部分再生
     case UpAnim::Doble:
     {
         // モデル部分アニメーション更新処理
-        model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, bornUpEndPoint, true);
-        model->UpdateLowerBodyAnimation(elapsedTime, bornDownerStartPoint, bornDownerEndPoint, true);
+        modelControllId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, bornUpEndPoint, true);
+        modelControllId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, bornDownerStartPoint, bornDownerEndPoint, true);
         break;
     }
     // 複数ブレンド再生
     case UpAnim::Blend:
     {
         // モデル複数ブレンドアニメーション更新処理
-        model->Update_blend_animations(elapsedTime, true);
+        modelControllId->GetModel()->Update_blend_animations(elapsedTime, true);
         break;
     }
     // 逆再生
     case UpAnim::Reverseplayback:
     {
         // モデル逆再生アニメーション更新処理
-        model->ReverseplaybackAnimation(elapsedTime, true);
+        modelControllId->GetModel()->ReverseplaybackAnimation(elapsedTime, true);
         break;
     }
     }
     // 位置更新
-    model->UpdateTransform(transformId->GetTransform());
+    modelControllId->GetModel()->UpdateTransform(transformId->GetTransform());
 }
 
 void Player::Render(RenderContext& rc, ModelShader& shader)
 {
+
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!modelControllId) return;
+
     RockOnUI(rc.deviceContext,rc.view,rc.projection);
     rc.colorGradingData = colorGradingData;
     // スペキュラー無効化
@@ -348,21 +261,161 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
     rc.isRimRightning = isRimRightning;
     // modelオンオフ
     rc.StencilRef = StencilRef;
+
     if (isPlayerDrawCheck == skipDraw) return;
     Graphics& graphics = Graphics::Instance();
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
-    shader.Draw(rc, model);
+    shader.Draw(rc, modelControllId->GetModel());
     shader.End(rc);
 }
 
 // シャドウマップ
 void Player::RenderShadowmap(RenderContext& rc)
 {
+
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!modelControllId) return;
+
     Graphics& graphics = Graphics::Instance();
     ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
     shader->Begin(rc);// シェーダーにカメラの情報を渡す
-    shader->Draw(rc, model);
+    shader->Draw(rc, modelControllId->GetModel());
     shader->End(rc);
+}
+
+// コンポーネント初期化
+void Player::InitComponents()
+{
+    
+
+    // コンポーネントを使えるように
+    movement = GetActor()->GetComponent<Movement>();
+    hp = GetActor()->GetComponent<HP>();
+    transform = GetActor()->GetComponent<Transform>();
+    collision = GetActor()->GetComponent<Collision>();
+    mp = GetActor()->GetComponent<Mp>();
+    modelControll = GetActor()->GetComponent<ModelControll>();
+
+    // Lockとして実体を使う
+    auto movementId = movement.lock();
+    auto hpId = hp.lock();
+    auto transformId = transform.lock();
+    auto collisionId = collision.lock();
+    auto mpId = mp.lock();
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!movementId || !hpId || !transformId || !collisionId || !mpId || !modelControllId)
+        return;
+}
+
+void Player::InitEffects()
+{
+    // ヒットエフェクト読込 
+    hitEffect = std::make_unique<Effect>("Data/Effect/Hit.efk");
+    ImpactEffect = std::make_unique<Effect>("Data/Effect/rehleckte.efk");
+    desEffect = std::make_unique<Effect>("Data/Effect/F.efk");
+    // エフェクト読み込み
+    float effectScale = 1.0f;
+    // 斬撃
+    hitSlash = std::make_unique<Effect>("Data/Effect/slashHit.efk");
+    hitFire = std::make_unique<Effect>("Data/Effect/hit fire.efk");
+    hitThander = std::make_unique<Effect>("Data/Effect/HitThunder.efk");
+    hitIce = std::make_unique<Effect>("Data/Effect/hit Ice.efk");
+    lightningAttack = std::make_unique<Effect>("Data/Effect/sunder.efk");
+    // エフェクト竜巻
+    areWork = std::make_unique<Effect>("Data/Effect/tornade.efk");
+    // エフェクト２D注目
+    effectFocus2D = std::make_unique<Effect>("Data/Effect/effectFocus2D.efk");
+}
+
+void Player::InitStats()
+{
+    // Lockとして実体を使う
+    auto movementId = movement.lock();
+    auto hpId = hp.lock();
+    auto transformId = transform.lock();
+    auto collisionId = collision.lock();
+    auto mpId = mp.lock();
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!movementId || !hpId || !transformId || !collisionId || !mpId || !modelControllId)
+        return;
+
+    // 落下停止
+    bool stopFall = false;
+    movementId->SetStopFall(stopFall);
+    // 移動の停止
+    bool stopMove = false;
+    movementId->SetStopMove(stopMove);
+    // 位置等
+    position = transformId->GetPosition();
+    angle = transformId->GetAngle();
+    scale = transformId->GetScale();
+    // 重力設定
+    movementId->SetGravity(gravity);
+
+    // hp設定
+    hpId->SetHealth(health);
+    // hp最大値の設定
+    hpId->SetMaxHealth(maxHealth);
+    // mp設定
+    mpId->SetMagic(magicPoint);
+    // mp最大値
+    mpId->SetMaxMagic(magicPoint);
+    // 半径
+    collisionId->SetRadius(radius);
+    // 身長
+    collisionId->SetHeight(height);
+
+    // 揺れモード
+    shakeMode = false;
+
+    // 攻撃ヒット回数初期化
+    attackNumberSave = 0;
+
+    // _後変更 ゲームオーバーに行く
+    // 遷移変更 
+    endState = false;
+
+    // 経過時間測る用
+    timeElapsed = 0.0f;
+
+    // 空中行動制限
+    areAttackTime = areAttackTimeMax;
+
+    // エネミー接触判定
+    isEnemyHit = false;
+
+    // エネミー接触判定上半身
+    isEnemyHitBody = false;
+}
+
+void Player::InitCommands()
+{
+    // コマンド操作用
+    selectCheck = (int)CommandAttack::Attack;
+    // 魔法選択用
+    selectMagicCheck = (int)CommandMagic::Normal;
+    // 特殊攻撃ため初期値
+    specialAttackCharge = 0.0f;
+    // アニメーションルール
+    updateanim = UpAnim::Normal;
+    moveSpeedAnimation = 0.0f;
+    // 特殊アクション発動不
+    specialAttackTime = false;
+    // 必殺技初期化斬撃
+    SpecialAttack specialAttackInitialize;
+    specialAttackInitialize.id = (int)SpecialAttackType::Attack;
+    specialAttackInitialize.hasSkill = isSkillHave;
+    specialAttack.push_back(specialAttackInitialize);
+    // 必殺技初期化魔法火
+    specialAttackInitialize.id = (int)SpecialAttackType::MagicFire;
+    specialAttackInitialize.hasSkill = isSkillHave;
+    specialAttack.push_back(specialAttackInitialize);
 }
 
 // Se再生
@@ -401,6 +454,12 @@ void Player::StopSe(const std::string& filename)
 // カメラのステート管理
 void Player::UpdateCameraState(float elapsedTime)
 {
+
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!modelControllId) return;
+
     CameraState oldLockonState = lockonState;
     DirectX::XMFLOAT3 oldLockonCharacter = lockonCharactor;
     lockonState = CameraState::NotLockOn;
@@ -409,7 +468,7 @@ void Player::UpdateCameraState(float elapsedTime)
     // 通常カメラなら足元を送る。
     if (!rockCheck)
     {
-        Model::Node* PRock = model->FindNode("mixamorig:Spine1");
+        Model::Node* PRock = modelControllId->GetModel()->FindNode("mixamorig:Spine1");
         DirectX::XMFLOAT3 pPosition =
         {
                     PRock->worldTransform._41,
@@ -434,7 +493,7 @@ void Player::UpdateCameraState(float elapsedTime)
     std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
 
     // ロックオンモード
-    Model::Node* PRock = model->FindNode("mixamorig:Spine1");
+    Model::Node* PRock = modelControllId->GetModel()->FindNode("mixamorig:Spine1");
     DirectX::XMFLOAT3 pPosition;
     pPosition = enemyModel->GetModel()->ConvertLocalToWorld(PRock);
     pPosition.z *= 1.1f;
@@ -549,6 +608,12 @@ void Player::UpdateCameraState(float elapsedTime)
 // デバッグプリミティブ描画
 void Player::DrawDebugPrimitive()
 {
+
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!modelControllId) return;
+
     // もし立法体等ほしいなら自分で追加
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
     //// 衝突判定用のデバッグ球を描画
@@ -559,7 +624,7 @@ void Player::DrawDebugPrimitive()
     if (attackCollisionFlag)
     {
         // 攻撃衝突用の左手ノードデバッグ球を描画
-        Model::Node* leftHandBone = model->FindNode("mixamorig:LeftHand");
+        Model::Node* leftHandBone = modelControllId->GetModel()->FindNode("mixamorig:LeftHand");
         debugRenderer->DrawSphere(DirectX::XMFLOAT3(
             leftHandBone->worldTransform._41,
             leftHandBone->worldTransform._42,
@@ -572,11 +637,13 @@ void Player::DrawDebugPrimitive()
 #ifdef _DEBUG
 void Player::OnGUI()
 {
-    // Lockとして実体を使う
+
+    // 安全☑
     auto transformId = transform.lock();
+    auto modelControllId = modelControll.lock();
 
     // 有効性チェック
-    if (!transformId)
+    if (!transformId&& !modelControllId)
         return;
     if (ImGui::Button("debugCamera"))
     {
@@ -701,12 +768,12 @@ void Player::OnGUI()
         Model::ModelAnim modelAnim;
         modelAnim.index = Player::Animation::Anim_SpecialAttack;
         // アニメーション再生
-        model->PlayAnimation(modelAnim);
+        modelControllId->GetModel()->PlayAnimation(modelAnim);
         angleCameraCheck = true;
     }
     if (angleCameraCheck)
     {
-        Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
+        Model::Node* pHPosiiton = modelControllId->GetModel()->FindNode("mixamorig:LeftHand");
         DirectX::XMFLOAT3 pPosition =
         {
                     pHPosiiton->worldTransform._41,
@@ -714,7 +781,7 @@ void Player::OnGUI()
                     pHPosiiton->worldTransform._43
         };
         // 任意のアニメーション再生区間でのみ衝突判定処理をする
-        float animationTime = model->GetCurrentANimationSeconds();
+        float animationTime = modelControllId->GetModel()->GetCurrentANimationSeconds();
         if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON)
         {
             hitCheck = true;
@@ -2648,7 +2715,7 @@ bool Player::CollisionNodeVsEnemies()
     std::shared_ptr<ModelControll> enemyModelId = enemyShader->GetComponent<ModelControll>();
 
     // ノード取得
-    Model::Node* node = model->FindNode("mixamorig:LeftHand");
+    Model::Node* node = modelControllId->GetModel()->FindNode("mixamorig:LeftHand");
     // ノード位置取得
     DirectX::XMFLOAT3 nodePosition;
     nodePosition = modelControllId->GetModel()->ConvertLocalToWorld(node);
@@ -2712,15 +2779,17 @@ bool Player::CollisionNodeVsEnemies()
 // カウンター用
 void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius)
 {
+
     // Lockとして実体を使う
     auto collisionId = collision.lock();
+    auto modelControllId = modelControll.lock();
 
     // 有効性チェック
-    if (!collisionId)
+    if (!collisionId && !modelControllId)
         return;
 
     // ノード取得
-    Model::Node* node = model->FindNode(nodeName);
+    Model::Node* node = modelControllId->GetModel()->FindNode(nodeName);
     // ノード位置取得
     DirectX::XMFLOAT3 nodePosition;
     nodePosition = {
@@ -2816,13 +2885,19 @@ void Player::Destroy()
 // ソードトレイル用
 void Player::UpdateSwordeTraile()
 {
+
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!modelControllId) return;
+
     // 剣の原点から根本と先端までのオフセット値
     DirectX::XMVECTOR RootOffset = DirectX::XMVectorSet(0, 0, 0.5f, 0);
     DirectX::XMVECTOR TipOffset = DirectX::XMVectorSet(0, 0, 2.3f, 0);
-    Model::Node* SwordeRootName = model->FindNode("mixamorig:RightHand");
+    Model::Node* SwordeRootName = modelControllId->GetModel()->FindNode("mixamorig:RightHand");
     // 剣の手元
     DirectX::XMFLOAT3 swordeRootPosition;
-    swordeRootPosition = model->ConvertLocalToWorld(SwordeRootName);
+    swordeRootPosition = modelControllId->GetModel()->ConvertLocalToWorld(SwordeRootName);
     // 前
     DirectX::XMFLOAT3 dir;
     dir.x = sinf(swordeRootPosition.y);// 三角を斜めにして位置を変えた
@@ -3001,16 +3076,17 @@ bool Player::InputMagick()
 {
     // Lockとして実体を使う
     auto mpId = mp.lock();
+    auto modelControllId = modelControll.lock();
 
     // 有効性チェック
-    if (!mpId)
+    if (!mpId && !modelControllId)
         return false;
 
     GamePad& gamePad = Input::Instance().GetGamePad();
 
     if (GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
-        model->GetCurrentAnimationIndex() == Anim_Magic&&
-        model->GetCurrentAnimationIndex() == Anim_MagicSeconde)
+        modelControllId->GetModel()->GetCurrentAnimationIndex() == Anim_Magic&&
+        modelControllId->GetModel()->GetCurrentAnimationIndex() == Anim_MagicSeconde)
         return false;
 
     // 魔法コマンド選択中では無かったら

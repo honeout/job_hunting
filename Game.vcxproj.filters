@@ -303,18 +303,6 @@
     <ClInclude Include="Source\StateMachine.h">
       <Filter>Source\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Source\BaseUiCommand.h">
-      <Filter>Source\Ui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UiCommand.h">
-      <Filter>Source\Ui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UiHpGauge.h">
-      <Filter>Source\Ui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UiMpGauge.h">
-      <Filter>Source\Ui</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -538,18 +526,6 @@
     </ClCompile>
     <ClCompile Include="Source\ProjectileFullHoming.cpp">
       <Filter>Source\Projectile</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BaseUiCommand.cpp">
-      <Filter>Source\Ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UiCommand.cpp">
-      <Filter>Source\Ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UiHpGauge.cpp">
-      <Filter>Source\Ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UiMpGauge.cpp">
-      <Filter>Source\Ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -43,6 +43,18 @@ public:
     void Render(RenderContext& rc, ModelShader& shader) override;
     // シャドウマップ処理
     void RenderShadowmap(RenderContext& rc) override;
+
+    // コンポーネント初期化
+    void InitComponents();
+
+    // エフェクト初期化
+    void InitEffects();
+
+    // ステータス初期化
+    void InitStats();
+
+    // コマンド初期化
+    void InitCommands();
  
     // SE再生
     void InputSe(AudioParam param);
@@ -449,8 +461,6 @@ private:
     // UI処理を出すかチェック
     bool             uiControlleCheck = false;
 
-    Model* model = nullptr;
-
     GamePad        gamePad;
 
     DirectX::XMFLOAT3 position = {};
@@ -466,8 +476,6 @@ private:
     float          moveSpeed = 5.0f;
 
     float          turnSpeed = DirectX::XMConvertToRadians(720);
-
-    float          turnSpeedAdd = 0.0f;
 
     // 回転速度　攻撃時
     float          turnSpeedAttack = DirectX::XMConvertToRadians(2600);

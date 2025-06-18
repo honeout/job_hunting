@@ -1306,7 +1306,7 @@ Model::Node* Model::FindNode(const char* name)
 	{
 		// char“¯m‚ª“¯‚¶‚È‚ç
 		// stdÈ—ª::
-		if (::strcmp(name , node.name) == 0)
+		if (std::strcmp(name , node.name) == 0)
 		{
 			node.now = bonenowsize;
 			return &node;
