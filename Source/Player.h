@@ -55,6 +55,24 @@ public:
 
     // コマンド初期化
     void InitCommands();
+
+    // ステート更新まとめ
+    void UpdateStateMachine(float elapsedTime);
+
+    // 入力受付と行動への変換
+    void HandleInput(float elapsedTime);
+
+    // プレイヤー状態制御
+    void UpdateStatus(float elapsedTime);
+
+    // ヒットエフェクト等の移動更新用
+    void UpdateEffects(float elapsedTime);
+
+    // 当たり判定処理
+    void HandleCollisions();
+
+    // アニメーションの再生や状態切り替え
+    void UpdateAnimation(float elapsedTime);
  
     // SE再生
     void InputSe(AudioParam param);

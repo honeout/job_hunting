@@ -54,195 +54,18 @@ void Player::Start()
 // elapsedTime(経過時間)
 void Player::Update(float elapsedTime)
 {
-    // Lockとして実体を使う
-    auto movementId = movement.lock();
-    auto hpId = hp.lock();
-    auto transformId = transform.lock();
-    auto collisionId = collision.lock();
-    auto mpId = mp.lock();
-    auto modelControllId = modelControll.lock();
-
-    // 有効性チェック
-    if (!movementId || !hpId || !transformId || !collisionId || !mpId) return;
-    GamePad& gamePad = Input::Instance().GetGamePad();
     //// ステート毎の処理
     stateMachine->Update(elapsedTime);
-    // エフェクト位置更新
-    if (areWork->GetEfeHandle())
-    {
-        areWork->SetPosition(areWork->GetEfeHandle(), position);
-    }
-
-    // 空中行動回数制限
-    if (areAttackState <= areAttackStateEnd && !isAreAttack)
-    {
-        // 攻撃禁止
-        isAreAttack = true;
-    }
-
-    // 地上
-    if (movementId->GetOnLadius())
-    {
-        // 攻撃許可
-        isAreAttack = false;
-        // 攻撃回数
-        areAttackState = areAttackStateMax;
-    }
-    
-    // コマンド操作
-    if (uiControlleCheck &&
-        stateMachine->GetStateSize() > stateSize)
-    {
-        // 行動選択
-        InputSelectCheck();
-        // 魔法選択
-        InputSelectMagicCheck();
-        // 魔法選択ショートカットキー
-        InputShortCutkeyMagic();
-        // ポストエフェクトｈｐの一定以下
-        PinchMode(elapsedTime);
-
-        // 着地時にエフェクト切る
-        if (movementId->GetOnLadius() || GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
-        {
-            areWork->Stop(areWork->GetEfeHandle());
-        }
-
-        // 攻撃の時にステートを変更
-        if (InputAttack() && GetSelectCheck() ==
-            (int)Player::CommandAttack::Attack &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::SideCut)&&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::CycloneStrike)&&
-                GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) && 
-                    GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) &&
-                        !isAreAttack 
-            )
-        {
-            // 空中行動回数
-            --areAttackState;
-
-            // ステート遷移
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
-            // 音再生
-            PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
-            // もし地面なら何もしない
-            bool noStart = false;
-            // エフェクト再生
-            areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
-            areWork->Play(position);
-        }
-
-        //　魔法入力処理
-        if (InputMagick() && GetSelectCheck() == (int)Player::CommandAttack::Magic &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Magic) && 
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) && 
-            !gamePad.GetButtonDownCountinue()
-                )
-        {
-            // デバッグ
-            debugInt++;
-
-            // mpが０だったら
-            if (mpId->GetMpEmpth())
-            {
-                // se再生
-                seParam.filename = "Data/Audio/SE/魔法打てない.wav";
-                seParam.volume = 1.0f;
-                InputSe(seParam);
-                magicAction = false;
-                selectCheck = (int)CommandAttack::Attack;
-                return;
-            }
-            // 魔法ステートに
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
-
-            // もし地面なら何もしない
-            bool noStart = false;
-
-            // エフェクト再生
-            areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
-
-            areWork->Play(position);
-        }
-        if(GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
-        // 特殊攻撃
-        InputSpecialAttackCharge();
-        // 特殊技変更
-        InputSpecialAttackChange();
-        // UI必殺技演出
-        SpecialPlayUlEffect(elapsedTime);
-        // 攻撃範囲内なのでUI描画
-        AttackCheckUI();
-        // ゲージ管理
-        UiControlleGauge(elapsedTime);
-    }
-    position = transformId->GetPosition();
-    angle = transformId->GetAngle();
-    scale = transformId->GetScale();
-    // 無敵時間
-    hpId->UpdateInbincibleTimer(elapsedTime);
-    // マジック回復
-    mpId->MpCharge(elapsedTime);
-    //// ロックオン
-    InputRockOn();
-    // 与ダメエフェ
-    hitEffect->SetScale(hitEffect->GetEfeHandle(),{ 1,1,1 });
-    // 加速度等
-    movementId->UpdateVelocity(elapsedTime);
-    
-    // プレイヤーと敵との衝突処理
-    CollisionBornVsProjectile("body2");
-    CollisionPlayerVsEnemies();
-    // 弾丸当たり判定
-    CollisionMagicFire();
-    CollisionMagicSunder();
-    CollisionMagicIce();
-
-    // 位置更新
-    transformId->UpdateTransform();
-    // モーション更新処理
-    switch (updateanim)
-    {
-    case UpAnim::Stop:
-    {
-        break;
-    }
-    // 通常アニメーション
-    case UpAnim::Normal:
-    {
-        // アニメーション再生
-        modelControllId->GetModel()->UpdateAnimation(elapsedTime, true);
-        break;
-    }
-    // 部分再生
-    case UpAnim::Doble:
-    {
-        // モデル部分アニメーション更新処理
-        modelControllId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, bornUpEndPoint, true);
-        modelControllId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, bornDownerStartPoint, bornDownerEndPoint, true);
-        break;
-    }
-    // 複数ブレンド再生
-    case UpAnim::Blend:
-    {
-        // モデル複数ブレンドアニメーション更新処理
-        modelControllId->GetModel()->Update_blend_animations(elapsedTime, true);
-        break;
-    }
-    // 逆再生
-    case UpAnim::Reverseplayback:
-    {
-        // モデル逆再生アニメーション更新処理
-        modelControllId->GetModel()->ReverseplaybackAnimation(elapsedTime, true);
-        break;
-    }
-    }
-    // 位置更新
-    modelControllId->GetModel()->UpdateTransform(transformId->GetTransform());
+    // 入力処理　コマンド等
+    HandleInput(elapsedTime);
+    // playerの動的状態
+    UpdateStatus(elapsedTime);
+    // エフェクトの常位置更新
+    UpdateEffects(elapsedTime);
+    // 当たり判定
+    HandleCollisions();
+    // アニメーション
+    UpdateAnimation(elapsedTime);
 }
 
 void Player::Render(RenderContext& rc, ModelShader& shader)
@@ -417,6 +240,230 @@ void Player::InitCommands()
     specialAttackInitialize.hasSkill = isSkillHave;
     specialAttack.push_back(specialAttackInitialize);
 }
+// ステート更新まとめ
+void Player::UpdateStateMachine(float elapsedTime)
+{
+}
+// 入力受付と行動への変換
+void Player::HandleInput(float elapsedTime)
+{
+    // Lockとして実体を使う
+    auto movementId = movement.lock();
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!movementId || !mpId) return;
+
+    // コマンド操作
+    if (uiControlleCheck &&
+        stateMachine->GetStateSize() > stateSize)
+    {
+        // 行動選択
+        InputSelectCheck();
+        // 魔法選択
+        InputSelectMagicCheck();
+        // 魔法選択ショートカットキー
+        InputShortCutkeyMagic();
+        // ポストエフェクトｈｐの一定以下
+        PinchMode(elapsedTime);
+
+        // 着地時にエフェクト切る
+        if (movementId->GetOnLadius() || GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
+        {
+            areWork->Stop(areWork->GetEfeHandle());
+        }
+
+        // 攻撃の時にステートを変更
+        if (InputAttack() && GetSelectCheck() ==
+            (int)Player::CommandAttack::Attack &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::SideCut) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::CycloneStrike) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) &&
+            !isAreAttack
+            )
+        {
+            // 空中行動回数
+            --areAttackState;
+
+            // ステート遷移
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
+            // 音再生
+            PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
+            // もし地面なら何もしない
+            bool noStart = false;
+            // エフェクト再生
+            areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
+            areWork->Play(position);
+        }
+
+        //　魔法入力処理
+        if (InputMagick() && GetSelectCheck() == (int)Player::CommandAttack::Magic &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Magic) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) &&
+            !gamePad.GetButtonDownCountinue()
+            )
+        {
+            // デバッグ
+            debugInt++;
+
+            // mpが０だったら
+            if (mpId->GetMpEmpth())
+            {
+                // se再生
+                seParam.filename = "Data/Audio/SE/魔法打てない.wav";
+                seParam.volume = 1.0f;
+                InputSe(seParam);
+                magicAction = false;
+                selectCheck = (int)CommandAttack::Attack;
+                return;
+            }
+            // 魔法ステートに
+            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
+
+            // もし地面なら何もしない
+            bool noStart = false;
+
+            // エフェクト再生
+            areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
+
+            areWork->Play(position);
+        }
+        if (GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
+            // 特殊攻撃
+            InputSpecialAttackCharge();
+        // 特殊技変更
+        InputSpecialAttackChange();
+        // UI必殺技演出
+        SpecialPlayUlEffect(elapsedTime);
+        // 攻撃範囲内なのでUI描画
+        AttackCheckUI();
+        // ゲージ管理
+        UiControlleGauge(elapsedTime);
+    }
+}
+// プレイヤー状態制御
+void Player::UpdateStatus(float elapsedTime)
+{
+    // Lockとして実体を使う
+    auto movementId = movement.lock();
+    auto hpId = hp.lock();
+    auto transformId = transform.lock();
+    auto mpId = mp.lock();
+
+    // 有効性チェック
+    if (!movementId || !hpId || !transformId || !mpId) return;
+
+    // エフェクト位置更新
+    if (areWork->GetEfeHandle())
+    {
+        areWork->SetPosition(areWork->GetEfeHandle(), position);
+    }
+
+    // 空中行動回数制限
+    if (areAttackState <= areAttackStateEnd && !isAreAttack)
+    {
+        // 攻撃禁止
+        isAreAttack = true;
+    }
+
+    // 地上
+    if (movementId->GetOnLadius())
+    {
+        // 攻撃許可
+        isAreAttack = false;
+        // 攻撃回数
+        areAttackState = areAttackStateMax;
+    }
+
+    position = transformId->GetPosition();
+    angle = transformId->GetAngle();
+    scale = transformId->GetScale();
+    // 無敵時間
+    hpId->UpdateInbincibleTimer(elapsedTime);
+    // マジック回復
+    mpId->MpCharge(elapsedTime);
+    //// ロックオン
+    InputRockOn();
+
+    // 加速度等
+    movementId->UpdateVelocity(elapsedTime);
+
+}
+// ヒットエフェクト等の移動更新用
+void Player::UpdateEffects(float elapsedTime)
+{
+    // 与ダメエフェ
+    hitEffect->SetScale(hitEffect->GetEfeHandle(), { 1,1,1 });
+}
+// 当たり判定処理
+void Player::HandleCollisions()
+{
+    // プレイヤーと敵との衝突処理
+    CollisionBornVsProjectile("body2");
+    CollisionPlayerVsEnemies();
+    // 弾丸当たり判定
+    CollisionMagicFire();
+    CollisionMagicSunder();
+    CollisionMagicIce();
+}
+// アニメーションの再生や状態切り替え
+void Player::UpdateAnimation(float elapsedTime)
+{
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!transformId || !modelControllId) return;
+    GamePad& gamePad = Input::Instance().GetGamePad();
+
+    // 位置更新
+    transformId->UpdateTransform();
+    // モーション更新処理
+    switch (updateanim)
+    {
+    case UpAnim::Stop:
+    {
+        break;
+    }
+    // 通常アニメーション
+    case UpAnim::Normal:
+    {
+        // アニメーション再生
+        modelControllId->GetModel()->UpdateAnimation(elapsedTime, true);
+        break;
+    }
+    // 部分再生
+    case UpAnim::Doble:
+    {
+        // モデル部分アニメーション更新処理
+        modelControllId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, bornUpEndPoint, true);
+        modelControllId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, bornDownerStartPoint, bornDownerEndPoint, true);
+        break;
+    }
+    // 複数ブレンド再生
+    case UpAnim::Blend:
+    {
+        // モデル複数ブレンドアニメーション更新処理
+        modelControllId->GetModel()->Update_blend_animations(elapsedTime, true);
+        break;
+    }
+    // 逆再生
+    case UpAnim::Reverseplayback:
+    {
+        // モデル逆再生アニメーション更新処理
+        modelControllId->GetModel()->ReverseplaybackAnimation(elapsedTime, true);
+        break;
+    }
+    }
+    // 位置更新
+    modelControllId->GetModel()->UpdateTransform(transformId->GetTransform());
+}
 
 // Se再生
 void Player::InputSe(AudioParam param)
@@ -454,7 +501,6 @@ void Player::StopSe(const std::string& filename)
 // カメラのステート管理
 void Player::UpdateCameraState(float elapsedTime)
 {
-
     auto modelControllId = modelControll.lock();
 
     // 有効性チェック
