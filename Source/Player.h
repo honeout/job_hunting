@@ -456,9 +456,6 @@ public:
     // 回転確認
     void SetAngleCheck(bool angleCheck) { this->angleCheck = angleCheck; }
 
-    // 重力を使えるように
-    float GetGravity() const { return gravity; }
-
     void SetLockOnState(CameraState lockonState) { this->lockonState = lockonState; }
 
     CameraState GetLockOnState() const { return lockonState; }
@@ -594,12 +591,6 @@ private:
     DirectX::XMFLOAT3 randomPosMax = {1.5f,3.0f,1.5f};
     DirectX::XMFLOAT3 randomPosMin = {1.0f,0.1f,1.0f};
 
-    // 重力
-    float gravity = -0.0f;
-
-    // 着地場所までの距離　 十分な速度で落とす重力の５倍２、３秒後に着地モーションをする。
-    float jumpfliptime = gravity * 5;
-
     float            leftHandRadius = 1.8f;
 
     bool             attackCollisionFlag = false;
@@ -664,10 +655,6 @@ private:
     int iceEnergyCharge = 0;
     int energyChargeMax = 0;
     int energyChargeMin = 0;
-
-
-    // 特殊技のチャージ完了
-    bool isSpecialChargeComplete = false;
 
     // 特殊攻撃をためる奴
     std::stack<int> chargedSpecialMoves;

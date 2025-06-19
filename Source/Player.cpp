@@ -4,7 +4,7 @@
 #include "Camera.h"
 #include "Graphics/Graphics.h"
 #include "Collision.h"
-#include "Audio\Audio.h"
+#include "Audio/Audio.h"
 #include "ProjectileStraight.h"
 #include "ProjectileHoming.h"
 #include "ProjectileFullHoming.h"
@@ -18,7 +18,7 @@
 #include "BulletFiring.h"
 #include "UiManager.h"
 #include "Ui.h"
-#include "Graphics\PrimitiveRenderer.h"
+#include "Graphics/PrimitiveRenderer.h"
 
 // デストラクタ
 Player::~Player()
@@ -171,8 +171,7 @@ void Player::InitStats()
     scale = transformId->GetScale();
 
     // 重力設定
-    gravity = PlayerConfig::gravity;
-    movementId->SetGravity(gravity);
+    movementId->SetGravity(PlayerConfig::gravity);
 
     // 歩く速度
     moveSpeed = PlayerConfig::moveSpeed;
@@ -3076,7 +3075,7 @@ bool Player::InputJump()
     GamePad& gamePad = Input::Instance().GetGamePad();
 
     // 魔法コマンドを使っていたら
-    if (magicAction) return false;
+    if (specialAction) return false;
 
     if (gamePad.GetButtonDown() & GamePad::BTN_A)
     {
@@ -3096,7 +3095,7 @@ bool Player::InputAvoidance()
     GamePad& gamePad = Input::Instance().GetGamePad();
 
     // 魔法コマンドを使っていたら
-    if (magicAction) return false;
+    if (specialAction) return false;
 
     if (gamePad.GetButtonDown() & GamePad::BTN_X)
     {
@@ -3232,6 +3231,8 @@ bool Player::InputMagick()
         }
 
     }
+
+    if (!specialAction) return false;
     //// 続けて押せない
     //if ()return false;
     switch (selectMagicCheck)

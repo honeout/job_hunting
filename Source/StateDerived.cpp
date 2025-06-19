@@ -1492,8 +1492,8 @@ void PlayerQuickJabState::Exit()
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	// ˆÚ“®‚Ì’âŽ~
 	moveid->SetGravity(
-		playerid->GetGravity());
-
+		PlayerConfig::gravity);
+	    
 	// •à‚«‹–‰Â
 	bool stopMove = false;
 	moveid->SetStopMove(stopMove);
@@ -1658,7 +1658,7 @@ void PlayerSideCutState::Exit()
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	// ˆÚ“®‚Ì’âŽ~
 	moveid->SetGravity(
-		playerid->GetGravity());
+		PlayerConfig::gravity);
 	// •à‚«‹–‰Â
 	bool stopMove = false;
 	moveid->SetStopMove(stopMove);
@@ -1821,7 +1821,7 @@ void PlayerCycloneStrikeState::Exit()
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	// ˆÚ“®‚Ì’âŽ~
 	moveid->SetGravity(
-		playerid->GetGravity());
+		PlayerConfig::gravity);
 	// •à‚«‹–‰Â
 	bool stopMove = false;
 	moveid->SetStopMove(stopMove);
