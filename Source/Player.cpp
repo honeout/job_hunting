@@ -223,6 +223,9 @@ void Player::InitStats()
 
     // エネミー接触判定上半身
     isEnemyHitBody = false;
+
+    // 経過時間関数最大値
+    timeElapsedHintMax = PlayerConfig::timeElapsedHintMax;
 }
 
 void Player::InitCommands()
@@ -2064,11 +2067,11 @@ void Player::InputSpecialAttackChange()
     }
 
     // 最低値まで行ったら戻す
-    if (specialAttackNum <= spCmdMoveLimitMin)
-        specialAttackNum = spCmdMoveLimitMin;
+    if (specialAttackNum <= PlayerConfig::spCmdMoveLimitMin)
+        specialAttackNum = PlayerConfig::spCmdMoveLimitMin;
     // 最大値まで行ったら戻す
-    if (specialAttackNum >= spCmdMoveLimitMax)
-        specialAttackNum = spCmdMoveLimitMax;
+    if (specialAttackNum >= PlayerConfig::spCmdMoveLimitMax)
+        specialAttackNum = PlayerConfig::spCmdMoveLimitMax;
 }
 // UI必殺技演出
 void Player::SpecialPlayUlEffect(float elapsedTime)
@@ -4116,7 +4119,7 @@ bool Player::UpdateElapsedTime(float timeMax, float elapsedTime)
 {
     if (timeElapsed >= timeMax)
     {
-        timeElapsed = timeElapsedMin;
+        timeElapsed = PlayerConfig::timeElapsedMin;
         return true;
     }
     timeElapsed += elapsedTime;
@@ -4141,7 +4144,7 @@ void Player::StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax)
     }
 
     // ゲージ溜め
-    playerCommandPushUiChargeTime += commandChargeAddMin;
+    playerCommandPushUiChargeTime += PlayerConfig::commandChargeAdd;
 
     // 後変更UIコマンド見にくい
     // 描画

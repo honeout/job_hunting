@@ -62,6 +62,9 @@ namespace PlayerConfig
     // Mp
     constexpr int magicPoint = 50;
 
+    // 魔法チャージ加算
+    constexpr float commandChargeAdd = 0.065f;
+
     // コマンド余白文
     constexpr float offset = 20.0f;
 
@@ -73,6 +76,12 @@ namespace PlayerConfig
 
     // 空中移動限界最大
     constexpr int areAttackStateMax = 3;
+
+    // 経過時間関数の最低値
+    constexpr float timeElapsedMin = 0.0f;
+
+    // 経過時間関数の最大値
+    constexpr float timeElapsedHintMax = 1.0f;
 
     // 特殊技チャージゲージ　斬撃
     constexpr float specialAttackChargeSlashValue = 0.1f;
@@ -87,6 +96,11 @@ namespace PlayerConfig
     constexpr int energyChargeMax = 4;
     // 特殊技最大値 それぞれの技のチャージ初期化
     constexpr int energyChargeMin = 0;
+
+    // コマンド特殊技選択最低値　
+    constexpr int spCmdMoveLimitMin = 0;
+    // コマンド特殊技選択最大値
+    constexpr int spCmdMoveLimitMax = 1;
 };
 
 // プレイヤー
@@ -524,6 +538,14 @@ private:
     std::weak_ptr<Transform> transform;
     std::weak_ptr<ModelControll> modelControll;
 
+    // 位置
+    DirectX::XMFLOAT3 position = {};
+    // 角度
+    DirectX::XMFLOAT3 angle = {};
+    // 大きさ
+    DirectX::XMFLOAT3 scale = {};
+
+    // 速度
     DirectX::XMFLOAT3 velocity = { 0,0,0 };
 
     // 空中行動許可
@@ -534,18 +556,11 @@ private:
 
     // 経過時間を測る
     float timeElapsed = 0.0f;
-    float timeElapsedMin = 0.0f;
-    float timeElapsedHintMax = 1.0f;
+    float timeElapsedHintMax = 0.0f;
 
+    
     // UI処理を出すかチェック
     bool             uiControlleCheck = false;
-
-    GamePad        gamePad;
-
-    DirectX::XMFLOAT3 position = {};
-    DirectX::XMFLOAT3 angle = {};
-    DirectX::XMFLOAT3 scale = {};
-
 
     // 斬撃エフェクト　スケール
     float slashScale = 0.4f;
@@ -555,11 +570,13 @@ private:
     // 当たり判定高さ
     float height;
 
+    // 移動速度
     float          moveSpeed = 0.0f;
 
-
+    // 弾丸マネージャー
     ProjectileManager projectileManager;
 
+    // エフェクト
     std::unique_ptr<Effect> hitEffect;
     std::unique_ptr<Effect> magicFireHitEffect;
     std::unique_ptr<Effect> magicThenderHitEffect;
@@ -656,11 +673,7 @@ private:
     int energyChargeMax = 0;
     int energyChargeMin = 0;
 
-    // 特殊攻撃をためる奴
-    std::stack<int> chargedSpecialMoves;
 
-    // seの音の大きさ
-    float seVolume = 0.8f;
 
     // ステートマシン用
     std::unique_ptr<StateMachine> stateMachine;
@@ -683,9 +696,6 @@ private:
     std::vector<SpecialAttack> specialAttack;
 
     bool isSkillHave = false;
-
-    int spCmdMoveLimitMin = 0;
-    int spCmdMoveLimitMax = 1;
 
     // 特殊攻撃のサイズが最低値ならやめる。
     int specialAttackNumMin = 0;
@@ -846,12 +856,6 @@ private:
     // UI操作用
     float playerCommandPushUiChargeTime = 0.0f;
 
-    // 魔法チャージ加算
-    float commandChargeAddMin = 0.065f;
-
-    // se再生情報
-    AudioParam seParam;
-
     // エネミー接触判定
     bool isEnemyHit;
     // エネミー接触判定上半身
@@ -861,8 +865,17 @@ private:
     bool debugShaderFlashSeconde = false;
     bool debugCameraTime = false;
 
+    /////////////////////// SE 再生関係
+    
+    // se再生情報
+    AudioParam seParam;
+    
     // アニメーションのループ再生
     bool isLoopAnim = true;
+
+    // seの音の大きさ
+    float seVolume = 0.8f;
+    /////////////////////// 
 };
 
 // プレイヤーマネージャー
