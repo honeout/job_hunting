@@ -148,6 +148,9 @@ public:
     // プレイヤー状態制御
     void UpdateStatus(float elapsedTime);
 
+    // 物理挙動
+    void UpdatePhysics(float elapsedTime);
+
     // ヒットエフェクト等の移動更新用
     void UpdateEffects(float elapsedTime);
 
@@ -833,16 +836,15 @@ private:
     bool isLoopSe = true;
     bool isLoopDisabled = false;
 
-
+    // ピンチの状態のポストエフェクト
     DirectX::XMFLOAT4 vignettePinchColor = { 1,0,0,1 };
     float vignettePinchSmoothness = 3.0f;
     float vignettePinchIntensity = 0.8f;
 
-
+    // ノーマル
     DirectX::XMFLOAT4 vignetteNormalColor = { 0,0,0,1 };
     float vignetteNormalSmoothness = 0.0f;
     float vignetteNormalIntensity = 0.0f;
-
 
     // 氷連射一時停止
     bool iceMagicMoveCheck = false;
@@ -861,6 +863,7 @@ private:
     // エネミー接触判定上半身
     bool isEnemyHitBody;
 
+    // デバッグ関係
     bool debugShaderFlash = false;
     bool debugShaderFlashSeconde = false;
     bool debugCameraTime = false;

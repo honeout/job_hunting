@@ -12,6 +12,13 @@
 #include "StageMain.h"
 #include "Effect.h"
 
+// 定数定義
+namespace EnemyConfig
+{
+    // 音data　衝撃波
+    constexpr const char* bornUpStartPoint = "mixamorig:Hips";
+};
+
 // 宝石ボス
 class EnemyBoss : public Component
 {
@@ -37,6 +44,30 @@ public:
 
     // デバッグプリミティブ描画　デバッグ用
     void DrawDebugPrimitive();
+
+    // コンポーネント初期化
+    void InitComponents();
+
+    // エフェクト初期化
+    void InitEffects();
+
+    // ステータス初期化
+    void InitStats();
+
+    // ステート更新まとめ
+    void UpdateStateMachine(float elapsedTime);
+
+    // プレイヤー状態制御
+    void UpdateStatus(float elapsedTime);
+
+    // 物理挙動
+    void UpdatePhysics(float elapsedTime);
+
+    // 当たり判定処理
+    void HandleCollisions(float elapsedTime);
+
+    // アニメーションの再生や状態切り替え
+    void UpdateAnimation(float elapsedTime);
 
     // SE再生
     void InputSe(AudioParam param);
@@ -258,19 +289,17 @@ public:
         return bornPart;
     }
 
-private:
-    // モデル情報を確保
-    Model* model = nullptr;
-    
+private: 
     DirectX::XMFLOAT3 position = {};
     DirectX::XMFLOAT3 angle = {};
     DirectX::XMFLOAT3 scale = {};
 
     // 後変更
-    //std::weak_ptr<Movement>	movement;
-    //std::weak_ptr<HP>	hp;
-    //std::weak_ptr<Collision> collision;
-    //std::weak_ptr<Transform>	transform;
+    std::weak_ptr<Movement>	movement;
+    std::weak_ptr<HP>	hp;
+    std::weak_ptr<Collision> collision;
+    std::weak_ptr<Transform>	transform;
+    std::weak_ptr<ModelControll> model;
 
     // 覚醒有無
     bool isEnemyAwakened = false;
@@ -455,6 +484,17 @@ private:
 
     bool isPlayerStopMove;
     bool isPlayerStopFall;
+
+    // デバッグ用
+    const float kDebugCylinderHeight = 1.0f;
+    const float kDebugSphereLargeRadius = 10.0f;
+    const float kDebugSphereSmallRadius = 3.0f;
+
+    const DirectX::XMFLOAT4 kColorGreen = { 0, 1, 0, 1 };
+    const DirectX::XMFLOAT4 kColorRed = { 1, 0, 0, 1 };
+    const DirectX::XMFLOAT4 kColorMagenta = { 1, 0, 1, 1 };
+    const DirectX::XMFLOAT4 kColorYellow = { 1, 1, 0, 1 };
+    const DirectX::XMFLOAT4 kColorBlue = { 0, 0, 1, 1 };
 };
 
 // エネミーマネージャー

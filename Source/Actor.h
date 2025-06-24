@@ -30,7 +30,6 @@ public:
 
 	// XVˆ—
 	virtual void Update(float elapsedTime);
-
 	// •`‰æ
 	virtual void Render(RenderContext rc, ModelShader* shader);
 	virtual void Render(RenderContext rc, SpriteShader* shader);

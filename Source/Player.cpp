@@ -47,14 +47,22 @@ void Player::Update(float elapsedTime)
 {
     //// ステート毎の処理
     stateMachine->Update(elapsedTime);
+
     // 入力処理　コマンド等
     HandleInput(elapsedTime);
+
     // playerの動的状態
     UpdateStatus(elapsedTime);
+
+    // 物理挙動
+    UpdatePhysics(elapsedTime);
+
     // エフェクトの常位置更新
     UpdateEffects(elapsedTime);
+
     // 当たり判定
     HandleCollisions();
+
     // アニメーション
     UpdateAnimation(elapsedTime);
 }
@@ -102,8 +110,6 @@ void Player::RenderShadowmap(RenderContext& rc)
 // コンポーネント初期化
 void Player::InitComponents()
 {
-    
-
     // コンポーネントを使えるように
     movement = GetActor()->GetComponent<Movement>();
     hp = GetActor()->GetComponent<HP>();
@@ -258,6 +264,9 @@ void Player::UpdateStateMachine(float elapsedTime)
 // 入力受付と行動への変換
 void Player::HandleInput(float elapsedTime)
 {
+    // 入力情報
+    GamePad& gamePad = Input::Instance().GetGamePad();
+
     // Lockとして実体を使う
     auto movementId = movement.lock();
     auto mpId = mp.lock();
@@ -340,7 +349,6 @@ void Player::HandleInput(float elapsedTime)
 
             // エフェクト再生
             areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
-
             areWork->Play(position);
         }
         if (GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
@@ -361,13 +369,11 @@ void Player::HandleInput(float elapsedTime)
 void Player::UpdateStatus(float elapsedTime)
 {
     // Lockとして実体を使う
-    auto movementId = movement.lock();
     auto hpId = hp.lock();
-    auto transformId = transform.lock();
     auto mpId = mp.lock();
 
     // 有効性チェック
-    if (!movementId || !hpId || !transformId || !mpId) return;
+    if ( !hpId || !mpId) return;
 
     // エフェクト位置更新
     if (areWork->GetEfeHandle())
@@ -382,6 +388,27 @@ void Player::UpdateStatus(float elapsedTime)
         isAreAttack = true;
     }
 
+
+    // 無敵時間
+    hpId->UpdateInbincibleTimer(elapsedTime);
+    // マジック回復
+    mpId->MpCharge(elapsedTime);
+    //// ロックオン
+    InputRockOn();
+
+}
+
+// 物理挙動
+void Player::UpdatePhysics(float elapsedTime)
+{
+    // Lockとして実体を使う
+    auto movementId = movement.lock();
+    auto transformId = transform.lock();
+
+
+    // 有効性チェック
+    if (!movementId || !transformId) return;
+
     // 地上
     if (movementId->GetOnLadius())
     {
@@ -394,12 +421,6 @@ void Player::UpdateStatus(float elapsedTime)
     position = transformId->GetPosition();
     angle = transformId->GetAngle();
     scale = transformId->GetScale();
-    // 無敵時間
-    hpId->UpdateInbincibleTimer(elapsedTime);
-    // マジック回復
-    mpId->MpCharge(elapsedTime);
-    //// ロックオン
-    InputRockOn();
 
     // 加速度等
     movementId->UpdateVelocity(elapsedTime);
@@ -637,8 +658,10 @@ void Player::UpdateCameraState(float elapsedTime)
 
         // 敵位置
         lockonCharactor = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
+
         // 敵ステート
         stateEnemyIndex = enemyBoss->GetStateMachine()->GetStateIndex();
+
         // 特定の行動以外なら通常ロックオンに
         if (stateEnemyIndex != (int)EnemyBoss::State::Jump &&
             stateEnemyIndex != (int)EnemyBoss::State::Attack)
@@ -3133,7 +3156,7 @@ bool Player::InputMagick()
     auto modelControllId = modelControll.lock();
 
     // 有効性チェック
-    if (!mpId && !modelControllId)
+    if (!mpId && !modelControllId && !specialAction)
         return false;
 
     GamePad& gamePad = Input::Instance().GetGamePad();
@@ -3235,7 +3258,7 @@ bool Player::InputMagick()
 
     }
 
-    if (!specialAction) return false;
+
     //// 続けて押せない
     //if ()return false;
     switch (selectMagicCheck)
@@ -4192,7 +4215,7 @@ void Player::StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax)
         float gaugeWidth = gaugeSizeMax * playerCommandPushUiChargeTime * 0.08f;
 
         transform2DPushNow.lock()->SetScale(
-            { gaugeWidth,transform2DPushNow.lock()->GetScale().y });
+            { gaugeWidth,transform2DPushNow.lock()->GetScale().y});
     }
 }
 

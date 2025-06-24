@@ -1,4 +1,4 @@
-#include <imgui.h>
+ï»¿#include <imgui.h>
 #include "EnemyBoss.h"
 #include "Graphics/Graphics.h"
 #include "Mathf.h"
@@ -12,184 +12,66 @@
 
 //
 
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 EnemyBoss::~EnemyBoss()
 {
-   
 }
 
+// åˆæœŸåŒ–
 void EnemyBoss::Start()
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-
-    // ƒRƒ“ƒ|[ƒlƒ“ƒg‚ğg‚¦‚é‚æ‚¤‚É
-    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
-    std::shared_ptr hpId = sharedId->GetComponent<HP>();
-    std::shared_ptr transformId = sharedId->GetComponent<Transform>();
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
-
-    // ƒ‚ƒfƒ‹ƒf[ƒ^‚ğ“ü‚ê‚éB
-    model = GetActor()->GetComponent<ModelControll>()->GetModel();
-    hpId->SetHealth(health);
-    hpId->SetMaxHealth(maxHealth);
-    collisionId->SetRadius(radius);
-    collisionId->SetPartRadius(partRadius);
-    collisionId->SetHeight(height);
-    collisionId->SetSecondesHeight(confusionHeight);
-
-    // ƒGƒtƒFƒNƒg
-    moveAttackEffect = std::make_unique<Effect>("Data/Effect/enemyMoveAttackHit.efk");
-    awakeEffect = std::make_unique<Effect>("Data/Effect/awake.efk");
-    inpactEffect = std::make_unique<Effect>("Data/Effect/hit fire.efk");
-
-    // ƒAƒjƒ[ƒVƒ‡ƒ“ƒ‹[ƒ‹
-    updateanim = UpAnim::Normal;
-    // ã”¼gƒXƒ^[ƒgÄ¶ŠJnêŠ
-    bornUpStartPoint = "body3";
-    // ã”¼gƒGƒ“ƒhÄ¶’â~êŠ
-    bornUpEndPoint = "body2";
-    // ‰º”¼gƒXƒ^[ƒgÄ¶ŠJnêŠ
-    bornDownerStartPoint = "body2";
-    // ‰º”¼gƒGƒ“ƒhÄ¶’â~êŠ
-    bornDownerEndPoint = "boss_left_eye";
-
-    // “–‚½‚è”»’è–³Œø”»’è
-    invalidJudgment = true;
-
-    // playerƒJƒEƒ“ƒ^[—p
-    counterJudgment = false;
-
-    // UŒ‚‰E‘«‚·‚é‚©‚Ç‚¤‚©
-    attackRightFootRange = 1.5f;
-
-    // “®ìƒ`ƒFƒbƒN
-    moveCheck = true;
-
-    // ÕŒ‚”g‹N‚±‚é”ÍˆÍŠO‘¤
-    radiusInpactOutSide = 0.3f;
-
-    // ÕŒ‚”g‹N‚±‚é”ÍˆÍ“à‘¤
-    radiusInpactInSide = 0.3f;
-
-    // ÕŒ‚”g‚‚³
-    radiusInpactHeight = 0.3f;
+    // ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆåˆæœŸåŒ–
+    InitComponents();
+    // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
+    InitEffects();
+    // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹åˆæœŸåŒ–
+    InitStats();
 }
 
-// XVˆ—
+// æ›´æ–°å‡¦ç†
 void EnemyBoss::Update(float elapsedTime)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-
-    // ƒRƒ“ƒ|[ƒlƒ“ƒg‚ğg‚¦‚é‚æ‚¤‚É
-    std::shared_ptr transformId = sharedId->GetComponent<Transform>();
-    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
-    std::shared_ptr hpId = sharedId->GetComponent<HP>();
-
-    // “®ì‚·‚é‚©‚Ç‚¤‚©
-    if (moveCheck)
-    // ƒXƒe[ƒg–ˆ‚Ìˆ—
-    stateMachine->Update(elapsedTime);
-
-    // “GŠoÁŠÇ—
-    ManageAwakeTime(elapsedTime);
-
-    // ˆÊ’u
-    position = transformId->GetPosition();
-    // Œü‚«
-    angle = transformId->GetAngle();
-    // ‘å‚«‚³
-    scale = transformId->GetScale();
-
-    // ‘¬—Íˆ—XV
-    movementId->UpdateVelocity(elapsedTime);
-
-    // –³“GŠÔXV
-    hpId->UpdateInbincibleTimer(elapsedTime);
-
-    // “–‚½‚è”»’èÕŒ‚”g‚ÆƒvƒŒƒCƒ„[
-    CollisionImpactVsPlayer();
-
-    // íœ
-    ProjectileManager::Instance().DeleteUpdate(elapsedTime);//todo ‚¢‚é‚ÌH
-
-    // ƒ[ƒ‹ƒhˆÊ’u
-    transformId->UpdateTransform();
-
-    // ƒ_ƒ[ƒW“_–Å
-    OnHit(elapsedTime);
-
-    // “®ì‚·‚é‚©‚Ç‚¤‚©
-    if (moveCheck)
-    // ƒ‚[ƒVƒ‡ƒ“XVˆ—
-    switch (updateanim)
-    {
-            // ’ÊíƒAƒjƒ[ƒVƒ‡ƒ“
-        case UpAnim::Normal:
-        {
-            // ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
-            model->UpdateAnimation(elapsedTime, true);
-            break;
-        }
-        // •”•ªÄ¶
-        case UpAnim::Doble:
-        {
-            // ƒ‚ƒfƒ‹•”•ªƒAƒjƒ[ƒVƒ‡ƒ“XVˆ—
-            model->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, bornUpEndPoint, true);
-            model->UpdateLowerBodyAnimation(elapsedTime, bornDownerStartPoint, bornDownerEndPoint, true);
-            break;
-        }
-        // •¡”ƒuƒŒƒ“ƒhÄ¶
-        case UpAnim::Blend:
-        {
-            // ƒ‚ƒfƒ‹•¡”ƒuƒŒƒ“ƒhƒAƒjƒ[ƒVƒ‡ƒ“XVˆ—
-            model->Update_blend_animations(elapsedTime, true);
-            break;
-        }
-        // ‹tÄ¶
-        case UpAnim::Reverseplayback:
-        {
-            model->ReverseplaybackAnimation(elapsedTime, true);
-            break;
-        }
-    }
-
-    // p¨
-    model->UpdateTransform(transformId->GetTransform());
-    
-    // ƒQ[ƒWŠÇ—
-    UiControlle(elapsedTime);
+    // ã‚¹ãƒ†ãƒ¼ãƒˆ
+    UpdateStateMachine(elapsedTime);
+    // çŠ¶æ…‹
+    UpdateStatus(elapsedTime);
+    // ç‰©ç†æŒ™å‹•  
+    UpdatePhysics(elapsedTime);
+    // å½“ãŸã‚Šåˆ¤å®š
+    HandleCollisions(elapsedTime);
+    // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°
+    UpdateAnimation(elapsedTime);
 }
 
 void EnemyBoss::Render(RenderContext& rc, ModelShader& shader)
 {
-        Graphics& graphics = Graphics::Instance();
-        // ÔF
-        rc.color = colorGB;
-        // ƒXƒyƒLƒ…ƒ‰[–³Œø‰»
-        rc.isSpecular = isSpecular;
-        // ‰eƒIƒ“ƒIƒt
-        rc.isRimRightning = isRimRightning;
-        // •`‰æƒIƒ“ƒIƒt
-        rc.StencilRef = StencilRef;
-        shader.Begin(rc);// ƒVƒF[ƒ_[‚ÉƒJƒƒ‰‚Ìî•ñ‚ğ“n‚·
-        shader.Draw(rc, model);
-        shader.End(rc);
+    // Lockã¨ã—ã¦å®Ÿä½“ã‚’ä½¿ã†
+    auto modelId = model.lock();
+
+
+    // æœ‰åŠ¹æ€§ãƒã‚§ãƒƒã‚¯
+    if (!modelId)
+        return;
+
+    Graphics& graphics = Graphics::Instance();
+    // èµ¤è‰²
+    rc.color = colorGB;
+    // ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ¼ç„¡åŠ¹åŒ–
+    rc.isSpecular = isSpecular;
+    // å½±ã‚ªãƒ³ã‚ªãƒ•
+    rc.isRimRightning = isRimRightning;
+    // æç”»ã‚ªãƒ³ã‚ªãƒ•
+    rc.StencilRef = StencilRef;
+    shader.Begin(rc);// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«ã‚«ãƒ¡ãƒ©ã®æƒ…å ±ã‚’æ¸¡ã™
+    shader.Draw(rc, modelId->GetModel());
+    shader.End(rc);
 }
 #ifdef _DEBUG
 void EnemyBoss::OnGUI()
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-
-    std::shared_ptr hpId = sharedId->GetComponent<HP>();
+    auto hpId = hp.lock();
+    // å®‰å…¨â˜‘
+    if (!hpId) return;
 
     if(ImGui::Button("drawtrue"))
     {
@@ -203,7 +85,7 @@ void EnemyBoss::OnGUI()
     {
         ResetAwakeTime();
         bool check = isEnemyAwakened ? true : false;
-        // ‘Ï‹v—Í’Ç‰Á
+        // è€ä¹…åŠ›è¿½åŠ 
         hpId->SetIsBonusHpActive(check);
     }
     if (ImGui::Button("StartAwake"))
@@ -217,41 +99,243 @@ void EnemyBoss::OnGUI()
 }
 #endif // _DEBUG
 
-// ƒfƒoƒbƒOƒvƒŠƒ~ƒeƒBƒu•`‰æ
+// ãƒ‡ãƒãƒƒã‚°ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»
 void EnemyBoss::DrawDebugPrimitive()
 {
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
 
-    // “ê’£‚è”ÍˆÍ‚ğƒfƒoƒbƒO‰~’Œ•`‰æ
-    debugRenderer->DrawCylinder(territoryOrigin, territoryRange, 1.0f,
-        DirectX::XMFLOAT4(0, 1, 0, 1));
+    // ç¸„å¼µã‚Šç¯„å›²ã‚’ãƒ‡ãƒãƒƒã‚°å††æŸ±æç”»
+    debugRenderer->DrawCylinder(territoryOrigin, territoryRange, kDebugCylinderHeight,
+        kColorGreen);
 
     debugRenderer->DrawCylinder(
         {
             position.x,
             position.y + height / 2,
             position.z,
-        }, radius, height / 2, DirectX::XMFLOAT4(1, 0, 0, 1));
+        }, radius, height / 2, kColorRed);
 
-    // ƒ^[ƒQƒbƒgˆÊ’u‚ğƒfƒoƒbƒO‹…•`‰æ
-    debugRenderer->DrawSphere(targetPosition, radius, DirectX::XMFLOAT4(1, 1, 0, 1));
+    // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆä½ç½®ã‚’ãƒ‡ãƒãƒƒã‚°çƒæç”»
+    debugRenderer->DrawSphere(targetPosition, radius, kColorYellow);
     
-    // UŒ‚‰E‘«‚·‚é‚©‚Ç‚¤‚©
-    debugRenderer->DrawSphere(position, attackRightFootRange, DirectX::XMFLOAT4(1, 0, 1, 1));
+    // æ”»æ’ƒå³è¶³ã™ã‚‹ã‹ã©ã†ã‹
+    debugRenderer->DrawSphere(position, attackRightFootRange, kColorMagenta);
     
-    // õ“G”ÍˆÍ‚ğƒfƒoƒbƒO‰~’Œ•`‰æ
-    debugRenderer->DrawCylinder(position, searchRange, 1.0f, DirectX::XMFLOAT4(0, 0, 1, 1));
+    // ç´¢æ•µç¯„å›²ã‚’ãƒ‡ãƒãƒƒã‚°å††æŸ±æç”»
+    debugRenderer->DrawCylinder(position, searchRange, kDebugCylinderHeight, kColorBlue);
 
-    // UŒ‚”ÍˆÍ‚ğƒfƒoƒbƒO‰~’Œ•`‰æ
-    debugRenderer->DrawCylinder(position, attackRange, 1.0f, DirectX::XMFLOAT4(1, 0, 0, 1));
+    // æ”»æ’ƒç¯„å›²ã‚’ãƒ‡ãƒãƒƒã‚°å††æŸ±æç”»
+    debugRenderer->DrawCylinder(position, attackRange, kDebugCylinderHeight, kColorRed);
 
-    debugRenderer->DrawSphere(position, 10, DirectX::XMFLOAT4(0, 1, 0, 1));
+    debugRenderer->DrawSphere(position, kDebugSphereLargeRadius, kColorGreen);
 
-    debugRenderer->DrawSphere(position, 3, DirectX::XMFLOAT4(0, 1, 0, 1));
+    debugRenderer->DrawSphere(position, kDebugSphereSmallRadius, kColorGreen);
 
-    debugRenderer->DrawCylinder(targetPosition, radius, height, DirectX::XMFLOAT4(1, 1, 0, 1));
+    debugRenderer->DrawCylinder(targetPosition, radius, height, kColorYellow);
 }
-// seÄ¶
+
+// ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆåˆæœŸåŒ–
+void EnemyBoss::InitComponents()
+{
+    // ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’ä½¿ãˆã‚‹ã‚ˆã†ã«
+    movement = GetActor()->GetComponent<Movement>();
+    hp = GetActor()->GetComponent<HP>();
+    transform = GetActor()->GetComponent<Transform>();
+    collision = GetActor()->GetComponent<Collision>();
+    model = GetActor()->GetComponent<ModelControll>();
+
+    // Lockã¨ã—ã¦å®Ÿä½“ã‚’ä½¿ã†
+    auto movementId = movement.lock();
+    auto hpId = hp.lock();
+    auto transformId = transform.lock();
+    auto collisionId = collision.lock();
+    auto modelId = model.lock();
+
+
+    // æœ‰åŠ¹æ€§ãƒã‚§ãƒƒã‚¯
+    if (!movementId || !hpId || !transformId || !collisionId || !modelId)
+        return;
+}
+
+// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
+void EnemyBoss::InitEffects()
+{
+    // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+    moveAttackEffect = std::make_unique<Effect>("Data/Effect/enemyMoveAttackHit.efk");
+    awakeEffect = std::make_unique<Effect>("Data/Effect/awake.efk");
+    inpactEffect = std::make_unique<Effect>("Data/Effect/hit fire.efk");
+}
+
+// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹åˆæœŸåŒ–
+void EnemyBoss::InitStats()
+{
+    // Lockã¨ã—ã¦å®Ÿä½“ã‚’ä½¿ã†
+    auto hpId = hp.lock();
+    auto collisionId = collision.lock();
+
+    // æœ‰åŠ¹æ€§ãƒã‚§ãƒƒã‚¯
+    if (!hpId || !collisionId)
+        return;
+
+    hpId->SetHealth(health);
+    hpId->SetMaxHealth(maxHealth);
+    collisionId->SetRadius(radius);
+    collisionId->SetPartRadius(partRadius);
+    collisionId->SetHeight(height);
+    collisionId->SetSecondesHeight(confusionHeight);
+
+    // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ«ãƒ¼ãƒ«
+    updateanim = UpAnim::Normal;
+    // ä¸ŠåŠèº«ã‚¹ã‚¿ãƒ¼ãƒˆå†ç”Ÿé–‹å§‹å ´æ‰€
+    bornUpStartPoint = "body3";
+    // ä¸ŠåŠèº«ã‚¨ãƒ³ãƒ‰å†ç”Ÿåœæ­¢å ´æ‰€
+    bornUpEndPoint = "body2";
+    // ä¸‹åŠèº«ã‚¹ã‚¿ãƒ¼ãƒˆå†ç”Ÿé–‹å§‹å ´æ‰€
+    bornDownerStartPoint = "body2";
+    // ä¸‹åŠèº«ã‚¨ãƒ³ãƒ‰å†ç”Ÿåœæ­¢å ´æ‰€
+    bornDownerEndPoint = "boss_left_eye";
+
+    // å½“ãŸã‚Šåˆ¤å®šç„¡åŠ¹åˆ¤å®š
+    invalidJudgment = true;
+
+    // playerã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ç”¨
+    counterJudgment = false;
+
+    // æ”»æ’ƒå³è¶³ã™ã‚‹ã‹ã©ã†ã‹
+    attackRightFootRange = 1.5f;
+
+    // å‹•ä½œãƒã‚§ãƒƒã‚¯
+    moveCheck = true;
+
+    // è¡æ’ƒæ³¢èµ·ã“ã‚‹ç¯„å›²å¤–å´
+    radiusInpactOutSide = 0.3f;
+
+    // è¡æ’ƒæ³¢èµ·ã“ã‚‹ç¯„å›²å†…å´
+    radiusInpactInSide = 0.3f;
+
+    // è¡æ’ƒæ³¢é«˜ã•
+    radiusInpactHeight = 0.3f;
+}
+
+// ã‚¹ãƒ†ãƒ¼ãƒˆæ›´æ–°ã¾ã¨ã‚
+void EnemyBoss::UpdateStateMachine(float elapsedTime)
+{
+    // å‹•ä½œã™ã‚‹ã‹ã©ã†ã‹
+    if (moveCheck)
+        // ã‚¹ãƒ†ãƒ¼ãƒˆæ¯ã®å‡¦ç†
+        stateMachine->Update(elapsedTime);
+
+    // æ•µè¦šé†’ç®¡ç†
+    ManageAwakeTime(elapsedTime);
+}
+
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼çŠ¶æ…‹åˆ¶å¾¡
+void EnemyBoss::UpdateStatus(float elapsedTime)
+{
+    // Lockã¨ã—ã¦å®Ÿä½“ã‚’ä½¿ã†
+    auto hpId = hp.lock();
+
+    // æœ‰åŠ¹æ€§ãƒã‚§ãƒƒã‚¯
+    if (!hpId)
+        return;
+
+    // ç„¡æ•µæ™‚é–“æ›´æ–°
+    hpId->UpdateInbincibleTimer(elapsedTime);
+
+    // å‰Šé™¤
+    ProjectileManager::Instance().DeleteUpdate(elapsedTime);//todo ã„ã‚‹ã®ï¼Ÿ
+
+    // ã‚²ãƒ¼ã‚¸ç®¡ç†
+    UiControlle(elapsedTime);
+}
+
+// ç‰©ç†æŒ™å‹•
+void EnemyBoss::UpdatePhysics(float elapsedTime)
+{
+    // Lockã¨ã—ã¦å®Ÿä½“ã‚’ä½¿ã†
+    auto movementId = movement.lock();
+    auto transformId = transform.lock();
+
+    // æœ‰åŠ¹æ€§ãƒã‚§ãƒƒã‚¯
+    if (!movementId || !transformId)
+        return;
+
+    // ä½ç½®
+    position = transformId->GetPosition();
+    // å‘ã
+    angle = transformId->GetAngle();
+    // å¤§ãã•
+    scale = transformId->GetScale();
+
+    // é€ŸåŠ›å‡¦ç†æ›´æ–°
+    movementId->UpdateVelocity(elapsedTime);
+}
+
+// å½“ãŸã‚Šåˆ¤å®šå‡¦ç†
+void EnemyBoss::HandleCollisions(float elapsedTime)
+{
+    // å½“ãŸã‚Šåˆ¤å®šè¡æ’ƒæ³¢ã¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
+    CollisionImpactVsPlayer();
+
+    // ãƒ€ãƒ¡ãƒ¼ã‚¸ç‚¹æ»…
+    OnHit(elapsedTime);
+}
+
+// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å†ç”Ÿã‚„çŠ¶æ…‹åˆ‡ã‚Šæ›¿ãˆ
+void EnemyBoss::UpdateAnimation(float elapsedTime)
+{
+    // Lockã¨ã—ã¦å®Ÿä½“ã‚’ä½¿ã†
+    auto movementId = movement.lock();
+    auto transformId = transform.lock();
+    auto modelId = model.lock();
+
+    // æœ‰åŠ¹æ€§ãƒã‚§ãƒƒã‚¯
+    if (!movementId || !transformId || !modelId)
+        return;
+
+    // ãƒ¯ãƒ¼ãƒ«ãƒ‰ä½ç½®
+    transformId->UpdateTransform();
+
+    // å‹•ä½œã™ã‚‹ã‹ã©ã†ã‹
+    if (moveCheck)
+        // ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°å‡¦ç†
+        switch (updateanim)
+        {
+            // é€šå¸¸ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
+        case UpAnim::Normal:
+        {
+            // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
+            modelId->GetModel()->UpdateAnimation(elapsedTime, true);
+            break;
+        }
+        // éƒ¨åˆ†å†ç”Ÿ
+        case UpAnim::Doble:
+        {
+            // ãƒ¢ãƒ‡ãƒ«éƒ¨åˆ†ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°å‡¦ç†
+            modelId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, bornUpEndPoint, true);
+            modelId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, bornDownerStartPoint, bornDownerEndPoint, true);
+            break;
+        }
+        // è¤‡æ•°ãƒ–ãƒ¬ãƒ³ãƒ‰å†ç”Ÿ
+        case UpAnim::Blend:
+        {
+            // ãƒ¢ãƒ‡ãƒ«è¤‡æ•°ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°å‡¦ç†
+            modelId->GetModel()->Update_blend_animations(elapsedTime, true);
+            break;
+        }
+        // é€†å†ç”Ÿ
+        case UpAnim::Reverseplayback:
+        {
+            modelId->GetModel()->ReverseplaybackAnimation(elapsedTime, true);
+            break;
+        }
+        }
+
+    // å§¿å‹¢
+    modelId->GetModel()->UpdateTransform(transformId->GetTransform());
+}
+
+// seå†ç”Ÿ
 void EnemyBoss::InputSe(AudioParam param)
 {
     Audio& Se = Audio::Instance();
@@ -266,45 +350,44 @@ void EnemyBoss::PlaySe(const std::string& filename)
     audioParam.volume = seVolume;
     Se.Play(audioParam);
 }
-// se’â~
+// seåœæ­¢
 void EnemyBoss::StopSe(const std::string& filename)
 {
     Audio& Se = Audio::Instance();
-    // í—Ş’â~
+
+    // ç¨®é¡åœæ­¢
     Se.Stop(filename);
 }
 
-// Œã•ÏXCollision
-// ‘«“¥‚İ(ÕŒ‚”g)‚Ì“–‚½‚è”»’è
+// å¾Œå¤‰æ›´Collision
+// è¶³è¸ã¿(è¡æ’ƒæ³¢)ã®å½“ãŸã‚Šåˆ¤å®š
 void EnemyBoss::CollisionImpactVsPlayer()
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+    auto collisionId = collision.lock();
+    // å®‰å…¨â˜‘
+    if (!collisionId) return;
     PlayerManager& playerManager = PlayerManager::Instance();
 
     ProjectileManager& projectileManager = ProjectileManager::Instance();
 
-    // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
-    int playerCount = playerManager.GetPlayerCount();//todo ŠO
+    // å…¨ã¦ã®æ•µã¨ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
+    int playerCount = playerManager.GetPlayerCount();//todo å¤–
     int projectileCount = projectileManager.GetProjectileCount();
 
-    // playerŠ–³‚µ
+    // playeræ‰€æŒç„¡ã—
     if (playerCount <= 0) return;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    std::shared_ptr<Actor> player = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
-    if (!player)
-        return;
-    // playerŠÖŒW
-    std::shared_ptr<Player> playerMain = player->GetComponent<Player>();
-    std::shared_ptr<Transform> playerTransform = player->GetComponent<Transform>();
-    std::shared_ptr<Movement> playerMovement = player->GetComponent<Movement>();
-    std::shared_ptr<Collision> playerCollision = player->GetComponent<Collision>();
-    std::shared_ptr<HP> playerHp = player->GetComponent<HP>();
-    // ˆÊ’uA”¼ŒaA‚‚³
+    auto playerId = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
+    // å®‰å…¨â˜‘
+    if (!playerId) return;
+
+    // playeré–¢ä¿‚
+    auto playerMain = playerId->GetComponent<Player>();
+    auto playerTransform = playerId->GetComponent<Transform>();
+    auto playerMovement = playerId->GetComponent<Movement>();
+    auto playerCollision = playerId->GetComponent<Collision>();
+    auto playerHp = playerId->GetComponent<HP>();
+    // ä½ç½®ã€åŠå¾„ã€é«˜ã•
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
     float playerRadius = playerCollision->GetRadius();
     float playerHeight = playerCollision->GetHeight();
@@ -317,17 +400,17 @@ void EnemyBoss::CollisionImpactVsPlayer()
         DirectX::XMFLOAT3 projectilePosition =
             projectile.lock()->GetComponent<Transform>()->GetPosition();
 
-        // g’·
+        // èº«é•·
         float height = 1.0f;
         projectile.lock()->GetComponent<Collision>()->SetHeight(height);
         float projectileHeight = projectile.lock()->GetComponent<Collision>()->GetHeight();
         float projectileRadiusOutLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
         float projectileRadiusInLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusInSide();
-        // Õ“Ëˆ—
+        // è¡çªå‡¦ç†
         DirectX::XMFLOAT3 outPositon;
 
-        // ƒCƒ“ƒpƒNƒg‚Ì‹^—“I”»’è
-        // ‰~’Œ‚Æ‰~
+        // ã‚¤ãƒ³ãƒ‘ã‚¯ãƒˆã®ç–‘ä¼¼çš„åˆ¤å®š
+        // å††æŸ±ã¨å††
         if (collisionId->IntersectSphereVsCylinder(
             projectilePosition,
             projectileRadiusOutLine,
@@ -344,21 +427,21 @@ void EnemyBoss::CollisionImpactVsPlayer()
                 outPositon))
         {
 
-            // ‚‚³‚ªˆê’èˆÈ‰º‚È‚ç’Ê‚é
+            // é«˜ã•ãŒä¸€å®šä»¥ä¸‹ãªã‚‰é€šã‚‹
             if (projectilePosition.y + projectileHeight < playerPosition.y) return;
-            // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+            // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
             if (!playerHp->ApplyDamage(applyDamageImpact, impactInvincibleTime)) return;
 
             playerMain->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
 
-            // ÕŒ‚”g‰¹
-            PlaySe("Data/Audio/SE/ÕŒ‚”gƒqƒbƒg.wav");
+            // è¡æ’ƒæ³¢éŸ³
+            PlaySe("Data/Audio/SE/è¡æ’ƒæ³¢ãƒ’ãƒƒãƒˆ.wav");
 
-            // ‚«”ò‚Î‚·
+            // å¹ãé£›ã°ã™
             {
-                // Õ“®
+                // è¡å‹•
                 DirectX::XMFLOAT3 impulse;
-                // ÕŒ‚
+                // è¡æ’ƒ
                 const float power = 10.0f;
 
                 float vx = playerPosition.x - projectilePosition.x;
@@ -373,80 +456,81 @@ void EnemyBoss::CollisionImpactVsPlayer()
 
                 playerMovement->AddImpulse(impulse);
             }
-            // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+            // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
             {
                 playerPosition.y += playerHeight * 0.5f;
 
                 bool loopSe = false;
             }
-            // UI—h‚ê
+            // UIæºã‚Œ
             playerMain->SetShakeMode(true);
 
-            // U“®
+            // æŒ¯å‹•
             StartDamageShake();
         }
     }
 }
 
-// Œã•ÏXCollision
-// ÕŒ‚”g
+// å¾Œå¤‰æ›´Collision
+// è¡æ’ƒæ³¢
 void EnemyBoss::CollisionInpact()
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
+    // Lockã¨ã—ã¦å®Ÿä½“ã‚’ä½¿ã†
+    auto collisionId = collision.lock();
+    auto modelId = model.lock();
+
+    // æœ‰åŠ¹æ€§ãƒã‚§ãƒƒã‚¯
+    if (!collisionId || !modelId)
         return;
 
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
-
-    // ÕŒ‚”g‚Ì—L–³
+    // è¡æ’ƒæ³¢ã®æœ‰ç„¡
     if (!IsInpact) return;
 
     ProjectileManager& projectileManager = ProjectileManager::Instance();
-    // ¶‘«‚Ìƒ{[ƒ“–¼
-    Model::Node* bossLeftFoot = model->FindNode("boss_left_foot1");
-    // ƒm[ƒhˆÊ’uæ“¾
-    // ¶‘«
+    // å·¦è¶³ã®ãƒœãƒ¼ãƒ³å
+    Model::Node* bossLeftFoot = modelId->GetModel()->FindNode("boss_left_foot1");
+    // ãƒãƒ¼ãƒ‰ä½ç½®å–å¾—
+    // å·¦è¶³
     DirectX::XMFLOAT3 bossLeftFootPosition;
-    bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
+    bossLeftFootPosition = modelId->GetModel()->ConvertLocalToWorld(bossLeftFoot);
 
     DetectHitByBodyPart(bossLeftFootPosition, applyDamageStamp);
 
-    // “–‚½‚è”»’è‘‘å
+    // å½“ãŸã‚Šåˆ¤å®šå¢—å¤§
     radiusInpactInSide += 0.3f;
 
-    // “–‚½‚è”»’è‘‘å
+    // å½“ãŸã‚Šåˆ¤å®šå¢—å¤§
     radiusInpactOutSide += 0.3f;
 
-    // “–‚½‚è”»’è‘‘å‚‚³
+    // å½“ãŸã‚Šåˆ¤å®šå¢—å¤§é«˜ã•
     radiusInpactHeight += 0.3f;
 
     PlayerManager& playerManager = PlayerManager::Instance();
 
-    // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // å…¨ã¦ã®æ•µã¨ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     int playerCount = playerManager.GetPlayerCount();
 
-    // playerŠ–³‚µ
+    // playeræ‰€æŒç„¡ã—
     if (playerCount <= 0) return;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    std::shared_ptr<Actor> player = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
-    if (!player)
-        return;
-    // playerŠÖŒW
-    std::shared_ptr<Player> playerMain = player->GetComponent<Player>();
-    std::shared_ptr<Transform> playerTransform = player->GetComponent<Transform>();
-    std::shared_ptr<Movement> playerMovement = player->GetComponent<Movement>();
-    std::shared_ptr<Collision> playerCollision = player->GetComponent<Collision>();
-    std::shared_ptr<HP> playerHp = player->GetComponent<HP>();
-    // ˆÊ’uA”¼ŒaA‚‚³
+    auto playerId = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
+    // å®‰å…¨â˜‘
+    if (!playerId) return;
+
+    // playeré–¢ä¿‚
+    auto playerMain = playerId->GetComponent<Player>();
+    auto playerTransform = playerId->GetComponent<Transform>();
+    auto playerMovement = playerId->GetComponent<Movement>();
+    auto playerCollision = playerId->GetComponent<Collision>();
+    auto playerHp = playerId->GetComponent<HP>();
+    // ä½ç½®ã€åŠå¾„ã€é«˜ã•
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
     float playerRadius = playerCollision->GetRadius();
     float playerHeight = playerCollision->GetHeight();
 
-    // Õ“Ëˆ—
+    // è¡çªå‡¦ç†
     DirectX::XMFLOAT3 outPositon;
-    // ‰~’Œ‚Æ‰~
+    // å††æŸ±ã¨å††
     if (collisionId->IntersectSphereVsCylinder(
         bossLeftFootPosition,
         radiusInpactOutSide,
@@ -463,18 +547,18 @@ void EnemyBoss::CollisionInpact()
             outPositon))
 
     {
-        // ‚‚³‚ªˆê’èˆÈ‰º‚È‚ç’Ê‚é
+        // é«˜ã•ãŒä¸€å®šä»¥ä¸‹ãªã‚‰é€šã‚‹
         if (bossLeftFootPosition.y + radiusInpactHeight < playerPosition.y) return;
-        // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+        // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
         if (!playerHp->ApplyDamage(applyDamageImpact, impactInvincibleTime)) return;
 
         playerMain->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
 
-        // ‚«”ò‚Î‚·
+        // å¹ãé£›ã°ã™
         {
-            // Õ“®
+            // è¡å‹•
             DirectX::XMFLOAT3 impulse;
-            // ÕŒ‚
+            // è¡æ’ƒ
             const float power = 10.0f;
             float vx = playerPosition.x - bossLeftFootPosition.x;
             float vz = playerPosition.z - bossLeftFootPosition.z;
@@ -486,80 +570,78 @@ void EnemyBoss::CollisionInpact()
             impulse.z = vz * power;
             playerMovement->AddImpulse(impulse);
         }
-        // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+        // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
         {
             playerPosition.y += playerHeight * 0.5f;
         }
     }
 }
 
-// Œã•ÏX‚¢‚é‚©‚Ç‚¤‚©
-// “GŠoÁŠÇ—
+// å¾Œå¤‰æ›´ã„ã‚‹ã‹ã©ã†ã‹
+// æ•µè¦šé†’ç®¡ç†
 void EnemyBoss::ManageAwakeTime(float elapsedTime)
 {
-    // ŠoÁ’†
+    // è¦šé†’ä¸­
     if (enemyAwakeningDuration >= enemyAwakeningDurationEnd)
     {
         enemyAwakeningDuration -= elapsedTime;
-        // –\‘–ó‘Ô
+        // æš´èµ°çŠ¶æ…‹
         isEnemyAwakened = true;
     }
-    // ŠoÁI—¹
+    // è¦šé†’çµ‚äº†
     else
     {
-        // –\‘–ó‘Ô
+        // æš´èµ°çŠ¶æ…‹
         isEnemyAwakened = false;
     }
-    // ŠoÁƒGƒtƒFƒNƒgˆÊ’uXV
+    // è¦šé†’ã‚¨ãƒ•ã‚§ã‚¯ãƒˆä½ç½®æ›´æ–°
     if (awakeEffect->GetEfeHandle())
     {
         awakeEffect->SetPosition(awakeEffect->GetEfeHandle(), position);
     }
 }
 
-// Œã•ÏX‚¢‚é‚©‚Ç‚¤‚©
-// “GŠoÁŠÔ‰Šú‰»
+// å¾Œå¤‰æ›´ã„ã‚‹ã‹ã©ã†ã‹
+// æ•µè¦šé†’æ™‚é–“åˆæœŸåŒ–
 void EnemyBoss::ResetAwakeTime()
 {
-    // ŠÔ‰Šú‰»
+    // æ™‚é–“åˆæœŸåŒ–
     enemyAwakeningDuration = enemyAwakeningDurationMax;
-    // ŠoÁ’†‚ÌƒGƒtƒFƒNƒg
+    // è¦šé†’ä¸­ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
     awakeEffect->Play(position);
 }
 
-// Œã•ÏXCollision
-// ƒp[ƒc‚²‚Æ‚Ì“–‚½‚è”»’è
+// å¾Œå¤‰æ›´Collision
+// ãƒ‘ãƒ¼ãƒ„ã”ã¨ã®å½“ãŸã‚Šåˆ¤å®š
 void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int applyDamage)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    auto collisionId = collision.lock();
+    if (!collisionId) return;
 
     PlayerManager& playerManager = PlayerManager::Instance();
 
-    // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // å…¨ã¦ã®æ•µã¨ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     int playerCount = playerManager.GetPlayerCount();
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    std::shared_ptr<Actor> player = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
-    if (!player)
-        return;
-    // playerŠÖŒW
-    std::shared_ptr<Player> playerMain = player->GetComponent<Player>();
-    std::shared_ptr<Transform> playerTransform = player->GetComponent<Transform>();
-    std::shared_ptr<Movement> playerMovement = player->GetComponent<Movement>();
-    std::shared_ptr<Collision> playerCollision = player->GetComponent<Collision>();
-    std::shared_ptr<HP> playerHp = player->GetComponent<HP>();
-    // ˆÊ’uA”¼ŒaA‚‚³
+    auto playerId = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
+    // å®‰å…¨â˜‘
+    if (!playerId) return;
+
+    // playeré–¢ä¿‚
+    auto playerMain = playerId->GetComponent<Player>();
+    auto playerTransform = playerId->GetComponent<Transform>();
+    auto playerMovement = playerId->GetComponent<Movement>();
+    auto playerCollision = playerId->GetComponent<Collision>();
+    auto playerHp = playerId->GetComponent<HP>();
+
+    // ä½ç½®ã€åŠå¾„ã€é«˜ã•
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
     float playerRadius = playerCollision->GetRadius();
     float playerHeight = playerCollision->GetHeight();
-    // Õ“Ëˆ—
+    // è¡çªå‡¦ç†
     DirectX::XMFLOAT3 outPositon;
-    // ‹…‚Æ‹…
+    // çƒã¨çƒ
     if (collisionId->IntersectSphereVsCylinder(
         partBodyPosition,
         attackRightFootRange,
@@ -568,15 +650,15 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
         playerHeight,
         outPositon))
     {
-        // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+        // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
         if (!playerHp->ApplyDamage(applyDamage, nuckleInvincibleTime)) return;
 
-        // aŒ‚‰¹
-        PlaySe("Data/Audio/SE/ƒXƒ‰ƒbƒVƒ…‚Q‰ñ–Ú.wav");
+        // æ–¬æ’ƒéŸ³
+        PlaySe("Data/Audio/SE/ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ï¼’å›ç›®.wav");
 
-        // seÄ¶
+        // seå†ç”Ÿ
         AudioParam audioParam;
-        audioParam.filename = "Data/Audio/SE/ƒXƒ‰ƒbƒVƒ…‚Q‰ñ–Ú.wav";
+        audioParam.filename = "Data/Audio/SE/ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ï¼’å›ç›®.wav";
         audioParam.loop = isLoopDisabled;
         audioParam.volume = seVolume;
         InputSe(audioParam);
@@ -589,11 +671,11 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
         DirectX::XMFLOAT3 normal;
         DirectX::XMStoreFloat3(&normal, N);
         float jumpSpeed = 5.0f;
-        //// ‚«”ò‚Î‚·
+        //// å¹ãé£›ã°ã™
         {
-            // Õ“®
+            // è¡å‹•
             DirectX::XMFLOAT3 impulse;
-            // ÕŒ‚
+            // è¡æ’ƒ
             const float power = 10.0f;
             float vx = outPositon.x - playerPosition.x;
             float vz = outPositon.z - playerPosition.z;
@@ -605,67 +687,69 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
             impulse.z = vz * power;
             playerMain->GetStateMachine()->ChangeState((int)Player::State::Damage);
             playerMovement->AddImpulse(impulse);
-            // ƒGƒtƒFƒNƒg”­¶ˆÊ’u
+            // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç™ºç”Ÿä½ç½®
             DirectX::XMFLOAT3 efcPos = playerPosition;
             efcPos.y += playerCollision->GetHeight();
-            // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+            // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
             moveAttackEffect->Play(playerPosition);
             //SE
             bool loopSe = false;
-            // UI—h‚ê
+            // UIæºã‚Œ
             playerMain->SetShakeMode(true);
-            // U“®
+            // æŒ¯å‹•
             StartDamageShake();
         }
     }
 }
 
+// éƒ¨ä½ã”ã¨ã®å½“ãŸã‚Šåˆ¤å®š
 void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-
-    std::shared_ptr collisionId = sharedId->GetComponent<Collision>();
-    std::shared_ptr modelId = sharedId->GetComponent<ModelControll>();
+    auto collisionId = collision.lock();
+    auto modelId = model.lock();
+    // å®‰å…¨â˜‘
+    if (!collisionId || !modelId) return;
 
     PlayerManager& playerManager = PlayerManager::Instance();
 
-    // ‘S‚Ä‚Ì“G‚Æ‘“–‚½‚è‚ÅÕ“Ëˆ—
+    // å…¨ã¦ã®æ•µã¨ç·å½“ãŸã‚Šã§è¡çªå‡¦ç†
     int playerCount = playerManager.GetPlayerCount();
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    std::shared_ptr<Actor> player = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
-    if (!player)
-        return;
-    // playerŠÖŒW
-    std::shared_ptr<Player> playerMain = player->GetComponent<Player>();
-    std::shared_ptr<Transform> playerTransform = player->GetComponent<Transform>();
-    std::shared_ptr<Movement> playerMovement = player->GetComponent<Movement>();
-    std::shared_ptr<Collision> playerCollision = player->GetComponent<Collision>();
-    std::shared_ptr<HP> playerHp = player->GetComponent<HP>();
-    // ˆÊ’uA”¼ŒaA‚‚³
+    auto playerId = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
+    // å®‰å…¨â˜‘
+    if (!playerId) return;
+
+    // playeré–¢ä¿‚
+    auto playerMain = playerId->GetComponent<Player>();
+    auto playerTransform = playerId->GetComponent<Transform>();
+    auto playerMovement = playerId->GetComponent<Movement>();
+    auto playerCollision = playerId->GetComponent<Collision>();
+    auto playerHp = playerId->GetComponent<HP>();
+
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    if (!playerMain || !playerTransform || !playerMovement || !playerCollision || !playerHp) return;
+
+    // ä½ç½®ã€åŠå¾„ã€é«˜ã•
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
     float playerRadius = playerCollision->GetRadius();
     float playerHeight = playerCollision->GetHeight();
 
-    // ƒp[ƒc‚Ìí—Ş
+    // ãƒ‘ãƒ¼ãƒ„ã®ç¨®é¡
     Model::Node* nodePart;
 
-    // ƒp[ƒc‘SŠm”F
+    // ãƒ‘ãƒ¼ãƒ„å…¨ç¢ºèª
     for (auto& part : hitSizes)
     {
-        // ƒp[ƒc‚Ìí—Ş
+        // ãƒ‘ãƒ¼ãƒ„ã®ç¨®é¡
         nodePart = modelId->GetModel()->FindNode(bornPart.at(part.first));
 
-        // ˆÊ’u
+        // ä½ç½®
         DirectX::XMFLOAT3 nodePosition;
         nodePosition = modelId->GetModel()->ConvertLocalToWorld(nodePart);
 
-        // Õ“Ëˆ—
+        // è¡çªå‡¦ç†
         DirectX::XMFLOAT3 outPositon;
-        // ‹…‚Æ‹…
+        // çƒã¨çƒ
         if (!collisionId->IntersectSphereVsCylinder(
             nodePosition,
             hitSizes.at(part.first),
@@ -674,11 +758,11 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
             playerHeight,
             outPositon)) return;
 
-        // ƒ_ƒ[ƒW‚ğ—^‚¦‚éB
+        // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹ã€‚
         if (!playerHp->ApplyDamage(applyDamage, nuckleInvincibleTime)) return;
 
-        // aŒ‚‰¹
-        PlaySe("Data/Audio/SE/ƒXƒ‰ƒbƒVƒ…‚Q‰ñ–Ú.wav");
+        // æ–¬æ’ƒéŸ³
+        PlaySe("Data/Audio/SE/ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ï¼’å›ç›®.wav");
         DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
         DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
         DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
@@ -686,11 +770,11 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
         DirectX::XMFLOAT3 normal;
         DirectX::XMStoreFloat3(&normal, N);
         float jumpSpeed = 5.0f;
-        //// ‚«”ò‚Î‚·
+        //// å¹ãé£›ã°ã™
         {
-            // Õ“®
+            // è¡å‹•
             DirectX::XMFLOAT3 impulse;
-            // ÕŒ‚
+            // è¡æ’ƒ
             const float power = 10.0f;
             float vx = outPositon.x - playerPosition.x;
             float vz = outPositon.z - playerPosition.z;
@@ -702,26 +786,26 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
             impulse.z = vz * power;
             playerMain->GetStateMachine()->ChangeState((int)Player::State::Damage);
             playerMovement->AddImpulse(impulse);
-            // ƒGƒtƒFƒNƒg”­¶ˆÊ’u
+            // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç™ºç”Ÿä½ç½®
             DirectX::XMFLOAT3 efcPos = playerPosition;
             efcPos.y += playerCollision->GetHeight();
-            // ƒqƒbƒgƒGƒtƒFƒNƒgÄ¶
+            // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆå†ç”Ÿ
             moveAttackEffect->Play(playerPosition);
             //SE
             bool loopSe = false;
-            // UI—h‚ê
+            // UIæºã‚Œ
             playerMain->SetShakeMode(true);
-            // U“®
+            // æŒ¯å‹•
             StartDamageShake();
         }
     }
 }
 
-// Œã•ÏXÕŒ‚”g”ò‚Î‚·
-// ÕŒ‚”g”­Ë
+// å¾Œå¤‰æ›´è¡æ’ƒæ³¢é£›ã°ã™
+// è¡æ’ƒæ³¢ç™ºå°„
 void EnemyBoss::InputImpact(DirectX::XMFLOAT3 pos)
 {
-    // ’eŠÛ‰Šú‰»
+    // å¼¾ä¸¸åˆæœŸåŒ–
     const char* filename = "Data/Model/SpikeBall/SpikeBall.mdl";
     std::weak_ptr<Actor> actor = ActorManager::Instance().Create();
     actor.lock()->AddComponent<ModelControll>();
@@ -735,36 +819,34 @@ void EnemyBoss::InputImpact(DirectX::XMFLOAT3 pos)
     actor.lock()->AddComponent<ProjectileImpact>();
     const char* effectFilename = "Data/Effect/inpact.efk";
     actor.lock()->GetComponent<ProjectileImpact>()->SetEffectProgress(effectFilename);
-    // ¶‘¶ŠÔ
+    // ç”Ÿå­˜æ™‚é–“
     float lifeTimer = 50.0f;
     actor.lock()->GetComponent<ProjectileImpact>()->SetLifeTimer(lifeTimer);
-    // ‚±‚ê‚ª‚QD‚©‚ÌŠm”F
+    // ã“ã‚ŒãŒï¼’Dã‹ã®ç¢ºèª
     bool check2d = false;
     actor.lock()->SetCheck2d(check2d);
     ProjectileManager::Instance().Register(actor.lock());
 }
 
-// Œã•ÏX “ê’£‚èİ’è
-// “ê’£‚èİ’è
+// å¾Œå¤‰æ›´ ç¸„å¼µã‚Šè¨­å®š
+// ç¸„å¼µã‚Šè¨­å®š
 void EnemyBoss::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
 {
     territoryOrigin = origin;
     territoryRange = range;
 }
 
-// Œã•ÏX UIControlle
-// “GHP‚ÌUI
+// å¾Œå¤‰æ›´ UIControlle
+// æ•µHPã®UI
 void EnemyBoss::UiControlle(float elapsedTime)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // ƒRƒ“ƒ|[ƒlƒ“ƒg‚ğg‚¦‚é‚æ‚¤‚É
-    std::shared_ptr hpId = sharedId->GetComponent<HP>();
+    auto hpId = hp.lock();
+
+    if (!hpId) return;
 
     if (UiManager::Instance().GetUiesCount() <= uiCountMax)return;
     float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.12f;
+
     std::weak_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp.lock()->GetScale().y };
     uiHp.lock()->SetScale(scale);
@@ -788,18 +870,16 @@ void EnemyBoss::UiControlle(float elapsedTime)
     }
 }
 
-// Œã•ÏX ƒGƒlƒ~[“_–Å
-// ƒGƒlƒ~[“_–Å
+// å¾Œå¤‰æ›´ ã‚¨ãƒãƒŸãƒ¼ç‚¹æ»…
+// ã‚¨ãƒãƒŸãƒ¼ç‚¹æ»…
 void EnemyBoss::OnHit(float elapsedTime)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // ƒRƒ“ƒ|[ƒlƒ“ƒg‚ğg‚¦‚é‚æ‚¤‚É
-    std::shared_ptr hpId = sharedId->GetComponent<HP>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    auto hpId = hp.lock();
 
-    // “_–ÅŠÔ
+    if (!hpId) return;
+
+    // ç‚¹æ»…æ™‚é–“
     if (hpId->FlashTime(elapsedTime))
     {
         ++damageStateTime;
@@ -808,7 +888,7 @@ void EnemyBoss::OnHit(float elapsedTime)
             damageStateCheck = damageStateCheck ? false : true;
             damageStateTime = 0;
         }
-        // ’ÊíF
+        // é€šå¸¸è‰²
         if (damageStateCheck)
         {
             bool onHit = false;
@@ -816,7 +896,7 @@ void EnemyBoss::OnHit(float elapsedTime)
             colorGB.x += 0.1f;
             colorGB.y += 0.1f;
         }
-        // Ô
+        // èµ¤
         else
         {
             bool onHit = true;
@@ -834,7 +914,7 @@ void EnemyBoss::OnHit(float elapsedTime)
     }
 }
 
-// ˆÚ“®ˆÊ’u
+// ç§»å‹•ä½ç½®
 void EnemyBoss::SetRandomTargetPosition()
 {
     float theta = Mathf::RandomRange(-DirectX::XM_PI, DirectX::XM_PI);
@@ -844,39 +924,35 @@ void EnemyBoss::SetRandomTargetPosition()
     targetPosition.z = territoryOrigin.z + cosf(theta) * range;
 }
 
-// Œã•ÏX@ƒ^[ƒQƒbƒgˆÊ’u‚Ü‚ÅˆÚ“®
-// ƒ^[ƒQƒbƒgˆÊ’u‚Ü‚Å‚ÌˆÚ“®
+// å¾Œå¤‰æ›´ã€€ã‚¿ãƒ¼ã‚²ãƒƒãƒˆä½ç½®ã¾ã§ç§»å‹•
+// ã‚¿ãƒ¼ã‚²ãƒƒãƒˆä½ç½®ã¾ã§ã®ç§»å‹•
 void EnemyBoss::MoveToTarget(float elapsedTime, float speedRate)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // ƒRƒ“ƒ|[ƒlƒ“ƒg‚ğg‚¦‚é‚æ‚¤‚É
-    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    auto movementId = movement.lock();
 
-    // ƒ^[ƒQƒbƒg•ûŒü‚Ö‚ÌisƒxƒNƒgƒ‹‚ğZo
+    if (!movementId) return;
+
+    // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆæ–¹å‘ã¸ã®é€²è¡Œãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡º
     float vx = targetPosition.x - position.x;
     float vy = 0.0f;
     float vz = targetPosition.z - position.z;
     float dist = sqrtf(vx * vx + vz * vz);
     vx /= dist;
     vz /= dist;
-    // ˆÚ“®ˆ—
+    // ç§»å‹•å‡¦ç†
     movementId->Move({ vx,vy ,vz }, moveSpeed * speedRate, elapsedTime);
     movementId->Turn({ vx,vy ,vz } ,turnSpeed,elapsedTime);
 }
 
-// Œã•ÏX@‰ñ“]
-// –Ú“I•ûŒü‚Ö‚Ì‰ñ“]
+// å¾Œå¤‰æ›´ã€€å›è»¢
+// ç›®çš„æ–¹å‘ã¸ã®å›è»¢
 void EnemyBoss::TurnToTarget(float elapsedTime, float speedRate)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // ƒRƒ“ƒ|[ƒlƒ“ƒg‚ğg‚¦‚é‚æ‚¤‚É
-    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    auto movementId = movement.lock();
+    if (!movementId) return;
+
 
     float vx = targetPosition.x - position.x;
     float vy = 0.0f;
@@ -884,21 +960,18 @@ void EnemyBoss::TurnToTarget(float elapsedTime, float speedRate)
     float dist = sqrtf(vx * vx + vz * vz);
     vx /= dist;
     vz /= dist;
-    // ‰ñ“]
+    // å›è»¢
     movementId->Turn({ vx,vy ,vz }, turnSpeed, elapsedTime);
 }
 
-// ƒWƒƒƒ“ƒv
+// ã‚¸ãƒ£ãƒ³ãƒ—
 void EnemyBoss::InputJump()
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
-    auto sharedId = GetActor();
-    if (!sharedId)
-        return;
-    // ƒRƒ“ƒ|[ƒlƒ“ƒg‚ğg‚¦‚é‚æ‚¤‚É
-    std::shared_ptr movementId = sharedId->GetComponent<Movement>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    auto movementId = movement.lock();
+    if (!movementId) return;
 
-    // ‹­§’â~
+    // å¼·åˆ¶åœæ­¢
     if (position.y >= jumpLimit)
     {
         jumpSpeed = 0;
@@ -911,33 +984,33 @@ void EnemyBoss::InputJump()
     }
 }
 
-// ƒvƒŒƒCƒ„[‚ÌˆÊ’u‚ğ’T‚·B
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã‚’æ¢ã™ã€‚
 bool EnemyBoss::SearchPlayer()
 {
-    // ƒvƒŒƒCƒ„[æ“¾
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å–å¾—
     std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
-    //@ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€•ª‰ğ
+    //ã€€ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ åˆ†è§£
     DirectX::XMFLOAT3 playerPosition = playerid.lock()->GetComponent<Transform>()->GetPosition();
     float playerRadius = playerid.lock()->GetComponent<Collision>()->GetRadius();
     float playerHeight = playerid.lock()->GetComponent<Collision>()->GetRadius();
     float vx = playerPosition.x - position.x;
     float vy = playerPosition.y - position.y;
     float vz = playerPosition.z - position.z;
-    // ƒ‹[ƒg
+    // ãƒ«ãƒ¼ãƒˆ
     float dist = sqrtf(vx * vx + vz * vz);
     if (dist < searchRange)
     {
         float distXZ = sqrtf(vx * vx + vz * vz);
-        // ’PˆÊƒxƒNƒgƒ‹‰»
+        // å˜ä½ãƒ™ã‚¯ãƒˆãƒ«åŒ–
         vx /= distXZ;
         vz /= distXZ;
-        // ‘O•ûƒxƒNƒgƒ‹
+        // å‰æ–¹ãƒ™ã‚¯ãƒˆãƒ«
         float frontX = sinf(angle.y);
         float frontZ = cosf(angle.y);
-        // ‚Q‚Â‚ÌƒxƒNƒgƒ‹‚Ì“àÏ’l‚Å‘OŒã”»’è
+        // ï¼’ã¤ã®ãƒ™ã‚¯ãƒˆãƒ«ã®å†…ç©å€¤ã§å‰å¾Œåˆ¤å®š
         float dot = (frontX * vx) + (frontZ * vz);
-        //0.070G90“x
-        //0.0fG”¼•ªˆÈã
+        //0.070ï¼›90åº¦
+        //0.0fï¼›åŠåˆ†ä»¥ä¸Š
         if (dot > 0.0f)
         {
             return true;
@@ -946,16 +1019,16 @@ bool EnemyBoss::SearchPlayer()
     return false;
 }
 
-// ƒGƒlƒ~[íœ
+// ã‚¨ãƒãƒŸãƒ¼å‰Šé™¤
 void EnemyBoss::Destroy()
 {
     EnemyManager::Instance().Remove(GetActor());
 }
 
-// ‰æ–Ê‚ğ—h‚ç‚·
+// ç”»é¢ã‚’æºã‚‰ã™
 void EnemyBoss::StartDamageShake()
 {
-    // ƒVƒFƒCƒNŠÔ ƒpƒ[
+    // ã‚·ã‚§ã‚¤ã‚¯æ™‚é–“ ãƒ‘ãƒ¯ãƒ¼
     MessageData::CAMERASHAKEDATA p;
     p.shakePower = shakePower;
     p.shakeTimer = shakeTimer;
@@ -966,43 +1039,43 @@ void EnemyBoss::StartDamageShake()
     postprocessingRenderer.SetRadialBlurMaxData(damageDistortion);
 }
 
-// íœXV
+// å‰Šé™¤æ›´æ–°
 void EnemyManager::DeleteUpdate(float elapsedTime)
 {
-    // ”jŠüˆ— –ˆƒtƒŒ[ƒ€‚±‚±‚Åˆê‹C‚ÉÁ‚·B
-    for (std::shared_ptr<Actor> enemy : removes)// ƒŠƒXƒg‚ğÁ‚·
+    // ç ´æ£„å‡¦ç† æ¯ãƒ•ãƒ¬ãƒ¼ãƒ ã“ã“ã§ä¸€æ°—ã«æ¶ˆã™ã€‚
+    for (std::shared_ptr<Actor> enemy : removes)// ãƒªã‚¹ãƒˆã‚’æ¶ˆã™
     {
         std::vector<std::shared_ptr<Actor>>::iterator it = std::find(enemies.begin(), enemies.end(),
             enemy);
         if (it != enemies.end())
         {
-            enemies.erase(it);// íœ
+            enemies.erase(it);// å‰Šé™¤
         }
     }
-    // ”jŠüƒŠƒXƒg‚ğƒNƒŠƒA
+    // ç ´æ£„ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
     removes.clear();
 }
 
-// ƒGƒlƒ~[ì¬
+// ã‚¨ãƒãƒŸãƒ¼ä½œæˆ
 void EnemyManager::Register(std::shared_ptr<Actor> actor)
 {
     enemies.emplace_back(actor);
 }
 
-// ‘Síœ
+// å…¨å‰Šé™¤
 void EnemyManager::Clear()
 {
     for (std::shared_ptr<Actor>& actor : enemies)
     {
-        // À‘Ì‚ğÁ‚µ‚½ŠÇ—‚µ‚Ä‚¢‚é”‚Í‚»‚Ì‚Ü‚Ü
+        // å®Ÿä½“ã‚’æ¶ˆã—ãŸç®¡ç†ã—ã¦ã„ã‚‹æ•°ã¯ãã®ã¾ã¾
         actor.reset();
     }
     enemies.clear();
 }
 
-// íœ“o˜^
+// å‰Šé™¤ç™»éŒ²
 void EnemyManager::Remove(std::shared_ptr<Actor> actor)
 {
-    // íœ“o˜^
+    // å‰Šé™¤ç™»éŒ²
     removes.insert(actor);
 }

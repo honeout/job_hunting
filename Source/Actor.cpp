@@ -22,6 +22,7 @@ void Actor::Update(float elapsedTime)
 		component->Update(elapsedTime);
 	}
 }
+
 // ‚RD•`‰æ
 void Actor::Render(RenderContext rc, ModelShader* shader)
 {

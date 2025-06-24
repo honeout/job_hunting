@@ -849,7 +849,7 @@ void SceneGameOver::StartBgm()
 {
 	Audio& Se = Audio::Instance();
 	AudioParam audioParam;
-	audioParam.filename = "Data/Audio/BGM/maou_bgm_fantasy06.wav";
+	audioParam.filename = "Data/Audio/BGM/maou_bgm_healing14b.wav";
 	audioParam.loop = false;
 	audioParam.volume = bgmVolume;
 	Se.Play(audioParam);
