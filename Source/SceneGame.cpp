@@ -43,9 +43,7 @@ void SceneGame::Initialize()
 		maxPos.z = 30;
 	}
 
-		// カメラ初期化
-	//cameraControlle = nullptr;
-	//cameraControlle = new CameraController();
+	// カメラ初期化
 	cameraControlle = std::make_unique<CameraController>();
 
 	// コンポネント登録
@@ -107,7 +105,6 @@ void SceneGame::Initialize()
 	// 新しい描画ターゲットの生成
 	{
 		Graphics& graphics = Graphics::Instance();
-		//renderTarget = new RenderTarget(static_cast<UINT>(graphics.GetScreenWidth())
 		renderTarget = std::make_unique<RenderTarget>(static_cast<UINT>(graphics.GetScreenWidth())
 			, static_cast<UINT>(graphics.GetScreenHeight())
 			, DXGI_FORMAT_R8G8B8A8_UNORM);
@@ -141,12 +138,6 @@ void SceneGame::Finalize()
 	ProjectileManager::Instance().Clear();
 	Audio::Instance().AllStop();
 	Audio::Instance().AllClear();
-
-	//if (cameraControlle != nullptr)
-	//{
-	//	delete cameraControlle;
-	//	cameraControlle = nullptr;
-	//}
 }
 
 // 更新処理
@@ -157,9 +148,6 @@ void SceneGame::Update(float elapsedTime)
 	{
 		isMenue = isMenue ? isMenueOf : isMenueOn;
 	}
-
-	// メニュー停止
-	//if (isMenue)return;
 
 	float dlayTime = dlayTimeCheck ?  elapsedTime / 2 : elapsedTime;
 
@@ -851,7 +839,6 @@ void SceneGame::InitializeComponent()
 	{
 		
 		const char* filename = "Data/Model/Boss/BossAnim8.mdl";
-		//const char* filename = "Data/Model/Slime/Slime.mdl";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
@@ -985,43 +972,6 @@ void SceneGame::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
-	//// UI SpecialBox
-	//{
-	//	const char* filename = "Data/Sprite/必殺技入れ物.png";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->SetName("SpecialBox");
-	//	actor->AddComponent<SpriteControll>();
-	//	actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-	//	actor->AddComponent<TransForm2D>();
-	//	// 位置　角度　スケール情報
-	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-	//	//DirectX::XMFLOAT2 pos = { 490, 604 };
-	//	//DirectX::XMFLOAT2 pos = { 740, 604 };
-	//	DirectX::XMFLOAT2 pos = { 0, 0 };
-	//	transform2D->SetPosition(pos);
-	//	// 元の位置
-	//	DirectX::XMFLOAT2 texPos = { 0, 0 };
-	//	transform2D->SetTexPosition(texPos);
-
-	//	float angle = 0;
-	//	transform2D->SetAngle(angle);
-	//	DirectX::XMFLOAT2 scale = { 400,230 };
-	//	transform2D->SetScale(scale);
-	//	// 元の大きさ
-	//	DirectX::XMFLOAT2 texScale = { 0,0 };
-	//	transform2D->SetTexScale(texScale);
-
-	//	actor->AddComponent<Ui>();
-	//	// 描画チェック
-	//	std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-	//	ui->SetDrawCheck(DrawUi);
-
-	//	// これが２Dかの確認
-	//	bool check2d = true;
-	//	actor->SetCheck2d(check2d);
-
-	//	UiManager::Instance().Register(actor);
-	//}
 
 	// UI PlayerCommandAttack
 	{
@@ -1182,7 +1132,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 0, 390 };
 
 		DirectX::XMFLOAT2 pos = { 28, 620 };
 		transform2D->SetPosition(pos);
@@ -1219,7 +1168,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 0, 390 };
 
 		DirectX::XMFLOAT2 pos = { 28, 620 };
 		transform2D->SetPosition(pos);
@@ -1301,7 +1249,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 358,310 };
 		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -1330,7 +1277,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 290 };
 		DirectX::XMFLOAT2 pos = { 179, 345 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1339,7 +1285,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 358,310 };
 		DirectX::XMFLOAT2 scale = { 206,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -1367,7 +1312,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 375 };
 		DirectX::XMFLOAT2 pos = { 179, 430 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1376,7 +1320,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 358,310 };
 		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -1405,7 +1348,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 375 };
 		DirectX::XMFLOAT2 pos = { 179, 430 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1414,7 +1356,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 358,310 };
 		DirectX::XMFLOAT2 scale = { 201,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -1443,7 +1384,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 460 };
 		DirectX::XMFLOAT2 pos = { 179, 520 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1452,7 +1392,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 358,310 };
 		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -1481,7 +1420,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 460 };
 		DirectX::XMFLOAT2 pos = { 179, 520 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1490,7 +1428,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 358,310 };
 		DirectX::XMFLOAT2 scale = { 201,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -1519,8 +1456,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 200, 525 };
-		//DirectX::XMFLOAT2 pos = { 200, 615 };
 		DirectX::XMFLOAT2 pos = { 179, 611 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1529,7 +1464,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 312,111 };
 		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -1594,7 +1528,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 10, 280 };
 		DirectX::XMFLOAT2 pos = { 10, 235 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1603,7 +1536,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 382,161 };
 		DirectX::XMFLOAT2 scale = { 410,111 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -1632,7 +1564,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 158, 286 };
 		DirectX::XMFLOAT2 pos = { 158, 241 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1741,8 +1672,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 38, 25 };
-		//DirectX::XMFLOAT2 pos = { 38, 57 };
 		DirectX::XMFLOAT2 pos = { 179, 520 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1779,8 +1708,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 38, 98 };
-		//DirectX::XMFLOAT2 pos = { 38, 130 };
 		DirectX::XMFLOAT2 pos = { 179, 611 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1789,7 +1716,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 160,170 };
 		DirectX::XMFLOAT2 scale = { 160,89 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -1826,7 +1752,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 160,170 };
 		DirectX::XMFLOAT2 scale = { 150,70 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -1863,7 +1788,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 160,170 };
 		DirectX::XMFLOAT2 scale = { 0.1f,0.1f };
 		transform2D->SetScale(scale);
 		// 元の大きさ
@@ -2141,7 +2065,6 @@ void SceneGame::InitializeComponent()
 
 		// 位置
 		DirectX::XMFLOAT2 pos = { 100, 31 };
-		//DirectX::XMFLOAT2 pos = { 32, 31 };
 		transform2D->SetPosition(pos);
 
 		// 元の位置
@@ -2352,8 +2275,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 340 };
-		//DirectX::XMFLOAT2 pos = { 179, 265 };
 		DirectX::XMFLOAT2 pos = { 179, 345 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2390,8 +2311,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 440 };
-		//DirectX::XMFLOAT2 pos = { 179, 350 };
 		DirectX::XMFLOAT2 pos = { 179, 430 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2428,8 +2347,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 540 };
-		//DirectX::XMFLOAT2 pos = { 179, 440 };
 		DirectX::XMFLOAT2 pos = { 179, 520 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2466,8 +2383,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 640};
-		//DirectX::XMFLOAT2 pos = { 179, 530 };
 		DirectX::XMFLOAT2 pos = { 179, 611 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2587,8 +2502,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 640};
-		//DirectX::XMFLOAT2 pos = { 179, 530 };
 		DirectX::XMFLOAT2 pos = { 179, 611 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2636,8 +2549,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 640};
-		//DirectX::XMFLOAT2 pos = { 179, 530 };
 		DirectX::XMFLOAT2 pos = { 179, 611 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2685,8 +2596,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 640};
-		//DirectX::XMFLOAT2 pos = { 179, 530 };
 		DirectX::XMFLOAT2 pos = { 179, 611 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2724,57 +2633,6 @@ void SceneGame::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-
-	//// UI PlayerCommandChargeFire
-	//{
-	//	const char* filename = "Data/Sprite/長押し文字.png";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->SetName("PlayerCommandChargeFire");
-	//	actor->AddComponent<SpriteControll>();
-	//	actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-	//	actor->AddComponent<TransForm2D>();
-	//	// 位置　角度　スケール情報
-	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-	//	//DirectX::XMFLOAT2 pos = { 179, 640};
-	//	//DirectX::XMFLOAT2 pos = { 179, 530 };
-	//	DirectX::XMFLOAT2 pos = { 179, 611 };
-	//	transform2D->SetPosition(pos);
-	//	// 元の位置
-	//	DirectX::XMFLOAT2 texPos = { 0, 0 };
-	//	transform2D->SetTexPosition(texPos);
-
-	//	float angle = 0;
-	//	transform2D->SetAngle(angle);
-	//	DirectX::XMFLOAT2 scale = { 181,104 };
-	//	transform2D->SetScale(scale);
-	//	// 元の大きさ
-	//	DirectX::XMFLOAT2 texScale = { 0,0 };
-	//	transform2D->SetTexScale(texScale);
-
-	//	// UI揺らす範囲を指定揺らす場合
-	//	int max = (int)pos.y + 3;
-	//	int min = (int)pos.y - 3;
-
-	//	transform2D->SetUiMax(max);
-	//	transform2D->SetUiMin(min);
-	//	// UI揺らす時間
-	//	int MaxTime = 30;
-
-	//	transform2D->SetShakeTimeMax(MaxTime);
-
-	//	actor->AddComponent<Ui>();
-	//	// 描画チェック
-	//	std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-	//	ui->SetDrawCheck(DrawUiEmpth);
-
-	//	// これが２Dかの確認
-	//	bool check2d = true;
-	//	actor->SetCheck2d(check2d);
-
-	//	UiManager::Instance().Register(actor);
-	//}
-	
-
 	// UI ShortCut
 	{
 		const char* filename = "Data/Sprite/ショートカット.png";
@@ -2785,7 +2643,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 285 };
 		DirectX::XMFLOAT2 pos = { 140, 0 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2858,7 +2715,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 160, 604 };
 		DirectX::XMFLOAT2 pos = { 494, 604 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2895,8 +2751,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 490, 604 };
-		//DirectX::XMFLOAT2 pos = { 740, 604 };
 		DirectX::XMFLOAT2 pos = { 894, 604 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2970,7 +2824,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 285 };
 		DirectX::XMFLOAT2 pos = { 179, 520 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -3007,7 +2860,6 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 285 };
 		DirectX::XMFLOAT2 pos = { 179, 611 };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -3033,41 +2885,6 @@ void SceneGame::InitializeComponent()
 
 		UiManager::Instance().Register(actor);
 	}
-	//// UI OperationInstructionsRBLB 
-	//{
-	//	const char* filename = "Data/Sprite/RBLB.png";
-	//	std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-	//	actor->SetName("OperationInstructionsRBLB");
-	//	actor->AddComponent<SpriteControll>();
-	//	actor->GetComponent<Sprite>()->LoadSprite(filename);
-	//	actor->AddComponent<TransForm2D>();
-	//	// 位置　角度　スケール情報
-	//	std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-	//	DirectX::XMFLOAT2 pos = { 835, 604 };
-	//	transform2D->SetPosition(pos);
-	//	// 元の位置
-	//	DirectX::XMFLOAT2 texPos = { 0, 0 };
-	//	transform2D->SetTexPosition(texPos);
-
-	//	float angle = 0;
-	//	transform2D->SetAngle(angle);
-	//	DirectX::XMFLOAT2 scale = { 360,126 };
-	//	transform2D->SetScale(scale);
-	//	// 元の大きさ
-	//	DirectX::XMFLOAT2 texScale = { 0,0 };
-	//	transform2D->SetTexScale(texScale);
-
-	//	actor->AddComponent<Ui>();
-	//	// 描画チェック
-	//	std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
-	//	ui->SetDrawCheck(false);
-
-	//	// これが２Dかの確認
-	//	bool check2d = true;
-	//	actor->SetCheck2d(check2d);
-
-	//	UiManager::Instance().Register(actor);
-	//}
 }
 
 void SceneGame::StartBgm()

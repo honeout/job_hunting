@@ -2548,8 +2548,9 @@ void Player::CollisionMagicSunder()
         if (!enemyHp->ApplyDamage(applyDamageMagic, magicAttackInvincibleTime))
             return;
 
-        // 雷関係
-        ++thanderEnergyCharge;
+        // 剣の必殺技チャージ
+        ++attackEnergyCharge;
+
         hitThander->Play(projectilePosition);
         // 共通ダメエフェ
         hitEffect->Play(projectilePosition);
@@ -2616,8 +2617,11 @@ void Player::CollisionMagicIce()
         // ダメージを与える。
         if (!enemyHp->ApplyDamage(applyDamageMagic, magicAttackInvincibleTime))
             return;
-        // 氷関係
-        ++iceEnergyCharge;
+
+        // 炎の必殺技チャージ
+        // 炎関係
+        ++fireEnergyCharge;
+
         hitIce->Play(projectilePosition);
         // 共通ダメエフェ
         hitEffect->Play(projectilePosition);

@@ -100,7 +100,8 @@ void Framework::CalculateFrameStats()
 		float mspf = 1000.0f / fps;
 		std::ostringstream outs;
 		outs.precision(6);
-		outs << "FPS : " << fps << " / " << "Frame Time : " << mspf << " (ms)";
+		//outs << "FPS : " << fps << " / " << "Frame Time : " << mspf << " (ms)";
+		outs << "Game";
 		SetWindowTextA(hWnd, outs.str().c_str());
 
 		// Reset for next average.

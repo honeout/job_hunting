@@ -15,8 +15,50 @@
 // 定数定義
 namespace EnemyConfig
 {
+    // -----衝突判定・サイズ-----
+    constexpr float kBaseBodyRadius = 1.2f;
+    constexpr float kHitPartRadius = 0.8f;
+    constexpr float kUpperBodyRadius = 1.0f;
+
+    // ------衝撃波判定----------
+    constexpr float kImpactOuterRadius = 2.5f;
+    constexpr float kImpactInnerRadius = 1.0f;
+    constexpr float kImpactHeight = 1.5f;
+
+    // ------ジャンプ設定---------
+    constexpr float kMinJumpSpeed = 15.0f;
+    constexpr int kMaxJumpCount = 2;
+
+    // ------デバッグ描画---------
+    constexpr DirectX::XMFLOAT4 kColorMain = { 1,0,0,1 };// 赤
+    constexpr DirectX::XMFLOAT4 kColorRange = { 0,1,0,1 };// 緑
+    constexpr float             kDebugHeight = 1.0f;
+
+    // ------音ファイル-----------
+    constexpr const char* kSeSlash = "Data/Audio/SE/slash.wav";
+    constexpr const char* kSeCharge = "Data/Audio/SE/charge.wav";
+
     // 音data　衝撃波
     constexpr const char* bornUpStartPoint = "mixamorig:Hips";
+
+    constexpr const float kSpeed = 20.0f;
+    constexpr const float kImpactSpeed = 5.0f;
+    constexpr const float kMinSpeed = 0.0f;
+    constexpr const int kLimit = 1;
+
+    // 高さ
+    float kHeight = 5.5f;
+    // 混乱状態高さ
+    float kConFusionHeight = 3.0f;
+};
+
+// ジャンプの値
+// ジャンプ
+struct JumpParams
+{
+    float speed = 0.0f;
+    static constexpr float kMinSpeed = 20.0f;
+    static constexpr int kLimit = 1;
 };
 
 // 宝石ボス
@@ -169,6 +211,9 @@ public:
         ExitJamp,
         Confusion
     };
+
+
+
 public:
     // ステートタイマー設定
     void SetStateTimer(float timer) {
@@ -368,15 +413,6 @@ private:
     // 回転速度
     float turnSpeed = DirectX::XMConvertToRadians(360);
 
-    // ジャンプの値
-    float jumpSpeed = 0;
-
-    // ジャンプのプラス分
-    float jumpSpeedMin = 20.0f;
-
-    // ジャンプの最大値
-    int jumpLimit = 1;
-
     // 追跡時間
     float stateTimer = 0.0f;
 
@@ -397,12 +433,6 @@ private:
     float partRadius = 2.8f;
     float radiusUpper = 1.8f;
 
-    // 高さ
-    float height = 5.5f;
-    // 混乱状態高さ
-    float confusionHeight = 3.0f;
-
-    float territoryarea = 10.0f;
 
     // スペキュラー無効
     int isSpecular = 0;

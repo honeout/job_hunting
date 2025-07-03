@@ -671,8 +671,6 @@ private:
     // “Áê‹Z‚Ìƒ`ƒƒ[ƒW
     int attackEnergyCharge = 0;
     int fireEnergyCharge = 0;
-    int thanderEnergyCharge = 0;
-    int iceEnergyCharge = 0;
     int energyChargeMax = 0;
     int energyChargeMin = 0;
 

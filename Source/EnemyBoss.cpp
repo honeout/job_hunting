@@ -670,8 +670,8 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
         DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
         DirectX::XMFLOAT3 normal;
         DirectX::XMStoreFloat3(&normal, N);
-        float jumpSpeed = 5.0f;
-        //// 吹き飛ばす
+
+        // 吹き飛ばす
         {
             // 衝動
             DirectX::XMFLOAT3 impulse;
@@ -769,7 +769,7 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
         DirectX::XMVECTOR N = DirectX::XMVector3Normalize(V);
         DirectX::XMFLOAT3 normal;
         DirectX::XMStoreFloat3(&normal, N);
-        float jumpSpeed = 5.0f;
+
         //// 吹き飛ばす
         {
             // 衝動
@@ -972,15 +972,15 @@ void EnemyBoss::InputJump()
     if (!movementId) return;
 
     // 強制停止
-    if (position.y >= jumpLimit)
+    if (position.y >= EnemyConfig::kLimit)
     {
-        jumpSpeed = 0;
-        movementId->JumpVelocity(jumpSpeed);
+        
+        movementId->JumpVelocity(EnemyConfig::kMinSpeed);
     }
 
     if (movementId->GetOnLadius())
     {
-        movementId->JumpVelocity(jumpSpeedMin);
+        movementId->JumpVelocity(EnemyConfig::kSpeed);
     }
 }
 
