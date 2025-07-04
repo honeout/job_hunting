@@ -1,5 +1,6 @@
 #include "ProjectileTornade.h"
 #include "Graphics/Graphics.h"
+#include "MagicConfig.h"
 
 // コンストラクタ
 ProjectileTornade::ProjectileTornade()
@@ -35,7 +36,7 @@ void ProjectileTornade::Start()
     // 当たり判定を共有
     //GetActor()->GetComponent<Transform>()->SetRadius(radius);
     // 当たり判定を共有
-    radius = GetActor()->GetComponent<Collision>()->GetRadius();
+    radius = MagicConfig::kRadius;
 
     // 銃移動のコンポーネント
     bulletFiring = GetActor()->GetComponent<BulletFiring>();
@@ -79,7 +80,7 @@ void ProjectileTornade::DrawDebugPrimitive()
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
     // 今は何も表示しない
         //// 衝突判定用のデバッグ球を描画
-    debugRenderer->DrawCylinder(transform->GetPosition(), radius, collision.lock()->GetHeight(), DirectX::XMFLOAT4(0, 0, 1, 1));
+    debugRenderer->DrawCylinder(transform->GetPosition(), radius, MagicConfig::kHeight, DirectX::XMFLOAT4(0, 0, 1, 1));
 }
 
 void ProjectileTornade::EffectProgressPlay()

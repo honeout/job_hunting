@@ -9,6 +9,7 @@
 #include "ProjectileImpact.h"
 #include "UiManager.h"
 #include "Ui.h"
+#include "MagicConfig.h"
 
 //
 
@@ -178,17 +179,13 @@ void EnemyBoss::InitStats()
     auto collisionId = collision.lock();
 
     // 有効性チェック
-    if (!hpId || !collisionId)
+    if (!hpId)
         return;
 
     int health = EnemyConfig::kHealth;
 
     hpId->SetHealth(health);
     hpId->SetMaxHealth(health);
-    collisionId->SetRadius(EnemyConfig::kBaseBodyRadius);
-    collisionId->SetPartRadius(EnemyConfig::kHitPartRadius);
-    collisionId->SetHeight(EnemyConfig::kHeight);
-    collisionId->SetSecondesHeight(EnemyConfig::kConFusionHeight);
 
     // アニメーションルール
     updateanim = UpAnim::Normal;
@@ -260,8 +257,10 @@ void EnemyBoss::UpdatePhysics(float elapsedTime)
 
     // 位置
     position = transformId->GetPosition();
+
     // 向き
     angle = transformId->GetAngle();
+
     // 大きさ
     scale = transformId->GetScale();
 
@@ -392,8 +391,8 @@ void EnemyBoss::CollisionImpactVsPlayer()
 
     // 位置、半径、高さ
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
-    float playerRadius = playerCollision->GetRadius();
-    float playerHeight = playerCollision->GetHeight();
+    float playerRadius = PlayerConfig::radius;
+    float playerHeight = PlayerConfig::height;
 
     for (int i = 0; i < projectileCount; ++i)
     {
@@ -405,8 +404,7 @@ void EnemyBoss::CollisionImpactVsPlayer()
 
         // 身長
         float height = 1.0f;
-        projectile.lock()->GetComponent<Collision>()->SetHeight(height);
-        float projectileHeight = projectile.lock()->GetComponent<Collision>()->GetHeight();
+        float projectileHeight = MagicConfig::kHeight;
         float projectileRadiusOutLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
         float projectileRadiusInLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusInSide();
         // 衝突処理
@@ -534,8 +532,8 @@ void EnemyBoss::CollisionInpact()
 
     // 位置、半径、高さ
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
-    float playerRadius = playerCollision->GetRadius();
-    float playerHeight = playerCollision->GetHeight();
+    float playerRadius = PlayerConfig::radius;
+    float playerHeight = PlayerConfig::height;
 
     // 衝突処理
     DirectX::XMFLOAT3 outPositon;
@@ -650,8 +648,8 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
 
     // 位置、半径、高さ
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
-    float playerRadius = playerCollision->GetRadius();
-    float playerHeight = playerCollision->GetHeight();
+    float playerRadius = PlayerConfig::radius;
+    float playerHeight = PlayerConfig::height;
     // 衝突処理
     DirectX::XMFLOAT3 outPositon;
     // 球と球
@@ -700,7 +698,7 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
             playerMovement->AddImpulse(impulse);
             // エフェクト発生位置
             DirectX::XMFLOAT3 efcPos = playerPosition;
-            efcPos.y += playerCollision->GetHeight();
+            efcPos.y += PlayerConfig::height;
             // ヒットエフェクト再生
             moveAttackEffect->Play(playerPosition);
             //SE
@@ -742,8 +740,8 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
 
     // 位置、半径、高さ
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
-    float playerRadius = playerCollision->GetRadius();
-    float playerHeight = playerCollision->GetHeight();
+    float playerRadius = PlayerConfig::radius;
+    float playerHeight = PlayerConfig::height;
 
     // パーツの種類
     Model::Node* nodePart;
@@ -799,7 +797,7 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
             playerMovement->AddImpulse(impulse);
             // エフェクト発生位置
             DirectX::XMFLOAT3 efcPos = playerPosition;
-            efcPos.y += playerCollision->GetHeight();
+            efcPos.y += PlayerConfig::height;
             // ヒットエフェクト再生
             moveAttackEffect->Play(playerPosition);
             //SE
@@ -964,7 +962,6 @@ void EnemyBoss::TurnToTarget(float elapsedTime, float speedRate)
     auto movementId = movement.lock();
     if (!movementId) return;
 
-
     float vx = targetPosition.x - position.x;
     float vy = 0.0f;
     float vz = targetPosition.z - position.z;
@@ -1002,8 +999,6 @@ bool EnemyBoss::SearchPlayer()
     std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
     //　トランスフォーム分解
     DirectX::XMFLOAT3 playerPosition = playerid.lock()->GetComponent<Transform>()->GetPosition();
-    float playerRadius = playerid.lock()->GetComponent<Collision>()->GetRadius();
-    float playerHeight = playerid.lock()->GetComponent<Collision>()->GetRadius();
     float vx = playerPosition.x - position.x;
     float vy = playerPosition.y - position.y;
     float vz = playerPosition.z - position.z;

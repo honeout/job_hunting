@@ -1,5 +1,7 @@
 #include "ProjectileSunder.h"
 #include "Graphics/Graphics.h"
+#include "MagicConfig.h"
+
 // コンストラクタ
 ProjectileSunder::ProjectileSunder()
 {
@@ -33,7 +35,7 @@ void ProjectileSunder::Start()
     // GetActor()->GetComponent<Transform>()->SetRadius(radius);
 
     // 当たり判定を共有
-    radius = GetActor()->GetComponent<Collision>()->GetRadius();
+    radius = MagicConfig::kRadius;
 
     // 銃移動のコンポーネント
     bulletFiring = GetActor()->GetComponent<BulletFiring>();

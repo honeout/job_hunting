@@ -19,6 +19,7 @@
 #include "UiManager.h"
 #include "Ui.h"
 #include "Graphics/PrimitiveRenderer.h"
+#include "MagicConfig.h"
 
 // デストラクタ
 Player::~Player()
@@ -195,10 +196,6 @@ void Player::InitStats()
     mpId->SetMagic(magicPoint);
     // mp最大値
     mpId->SetMaxMagic(magicPoint);
-    // 半径
-    collisionId->SetRadius(radius);
-    // 身長
-    collisionId->SetHeight(height);
 
     // 揺れモード
     shakeMode = false;
@@ -2465,7 +2462,7 @@ void Player::CollisionMagicFire()
             return;
         // 魔法位置
         DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
-        float projectileRadius = projectile->GetComponent<Collision>()->GetRadius();
+        float projectileRadius = MagicConfig::kRadius;
         // 衝突処理
         if (!CheckAllPartsCollision(projectilePosition, leftHandRadius)) return;
 
@@ -2533,7 +2530,7 @@ void Player::CollisionMagicSunder()
             return;
         // 魔法位置
         DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
-        float projectileRadius = projectile->GetComponent<Collision>()->GetRadius();
+        float projectileRadius = MagicConfig::kRadius;
         // 衝突処理
         if (!CheckAllPartsCollision(projectilePosition, leftHandRadius)) return;
 
@@ -2602,7 +2599,7 @@ void Player::CollisionMagicIce()
             return;
         // 魔法位置
         DirectX::XMFLOAT3 projectilePosition = projectile->GetComponent<Transform>()->GetPosition();
-        float projectileRadius = projectile->GetComponent<Collision>()->GetRadius();
+        float projectileRadius = MagicConfig::kRadius;
         // 衝突処理
         if (!CheckAllPartsCollision(projectilePosition, leftHandRadius)) 
             return;
@@ -2670,10 +2667,10 @@ void Player::CollisionPlayerVsEnemies()
     //// 衝突処理
     DirectX::XMFLOAT3 outPositon;
     DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
-    float enemyRadius = enemyCollision->GetRadius();
+    float enemyRadius = EnemyConfig::kBaseBodyRadius;
     // もし高さが一緒なら
     float enemyHeight = enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle ?
-        enemyCollision->GetHeight() : enemyCollision->GetSecondesHeight();
+        EnemyConfig::kHeight : EnemyConfig::kConFusionHeight;
     // エネミーとプレイヤーの当たり判定はじき
     if (collisionId->IntersectCylinderVsCylinder(
         enemyPosition,
@@ -2739,7 +2736,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
     float enemyRadius = EnemyConfig::kUpperBodyRadius;
     // もし高さが一緒なら
     float enemyHeight = enemyBoss->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle ?
-        enemyCollision->GetHeight() : enemyCollision->GetSecondesHeight();
+        EnemyConfig::kHeight : EnemyConfig::kConFusionHeight;
     // 当たり判定腰から上
     if (collisionId->IntersectCylinderVsCylinder(
         {
@@ -2895,7 +2892,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
             DirectX::XMFLOAT3 projectilePosition = projectille.lock()->GetComponent<Transform>()->GetPosition();
             float projectileInRudius = projectille.lock()->GetComponent<ProjectileImpact>()->GetRadiusInSide();
             float projectileOutRudius = projectille.lock()->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
-            float projectileHeight = projectille.lock()->GetComponent<Collision>()->GetHeight();
+            float projectileHeight = MagicConfig::kHeight;
             //// 衝突処理
             DirectX::XMFLOAT3 outPositon;
             std::weak_ptr<EnemyBoss> enemyBoss = enemy.lock()->GetComponent<EnemyBoss>();
@@ -3441,7 +3438,7 @@ bool Player::InputMagicframe()
                 // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
                 dist = d;
                 target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
-                target.y += enemy.lock()->GetComponent<Collision>()->GetHeight() * 0.5f;// 位置に身長分
+                target.y += EnemyConfig::kHeight * 0.5f;// 位置に身長分
             }
         }
         // 弾丸初期化
@@ -3456,7 +3453,6 @@ bool Player::InputMagicframe()
             actor.lock()->GetComponent<Transform>()->SetAngle(angle);
             actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
             actor.lock()->AddComponent<Collision>();
-            actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
             actor.lock()->AddComponent<BulletFiring>();
             actor.lock()->AddComponent<ProjectileHoming>();
             const char* effectFilename = "Data/Effect/fire.efk";
@@ -3528,7 +3524,7 @@ bool Player::InputMagicIce()
             // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
             dist = d;
             target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
-            target.y += enemy.lock()->GetComponent<Collision>()->GetHeight() * 0.5f;// 位置に身長分
+            target.y += EnemyConfig::kHeight * 0.5f;// 位置に身長分
         }
     }
     // 弾丸初期化
@@ -3543,7 +3539,6 @@ bool Player::InputMagicIce()
         actor.lock()->GetComponent<Transform>()->SetAngle(angle);
         actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
         actor.lock()->AddComponent<Collision>();
-        actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
         actor.lock()->AddComponent<BulletFiring>();
         actor.lock()->AddComponent<ProjectileStraight>();
         const char* effectFilename = "Data/Effect/brezerd.efk";
@@ -3612,7 +3607,7 @@ bool Player::InputMagicLightning()
             // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
             dist = d;
             target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
-            target.y += enemy.lock()->GetComponent<Collision>()->GetHeight() * 0.5f;// 位置に身長分
+            target.y += EnemyConfig::kHeight * 0.5f;// 位置に身長分
         }
     }
     // 弾丸初期化
@@ -3627,7 +3622,6 @@ bool Player::InputMagicLightning()
         actor.lock()->GetComponent<Transform>()->SetAngle(angle);
         actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
         actor.lock()->AddComponent<Collision>();
-        actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
         actor.lock()->AddComponent<BulletFiring>();
         actor.lock()->AddComponent<ProjectileSunder>();
         const char* effectFilename = "Data/Effect/lightningStrike.efk";
@@ -3714,7 +3708,7 @@ void Player::PushMagicFrame(DirectX::XMFLOAT3 angle)
             // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
             dist = d;
             target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
-            target.y += enemy.lock()->GetComponent<Collision>()->GetHeight() * 0.5f;// 位置に身長分
+            target.y += EnemyConfig::kHeight * 0.5f;// 位置に身長分
         }
     }
     // 初期化
@@ -3729,7 +3723,6 @@ void Player::PushMagicFrame(DirectX::XMFLOAT3 angle)
         actor.lock()->GetComponent<Transform>()->SetAngle(angle);
         actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
         actor.lock()->AddComponent<Collision>();
-        actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
         actor.lock()->AddComponent<BulletFiring>();
         actor.lock()->AddComponent<ProjectileFullHoming>();
         const char* effectFilename = "Data/Effect/fire.efk";
@@ -3802,7 +3795,7 @@ void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
         // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
         dist = d;
         target = enemy.lock()->GetComponent<Transform>()->GetPosition();// 位置を入れる
-        target.y += enemy.lock()->GetComponent<Collision>()->GetHeight() * 0.5f;// 位置に身長分
+        target.y += EnemyConfig::kHeight * 0.5f;// 位置に身長分
 
     }
     // 弾丸初期化
@@ -3818,7 +3811,6 @@ void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
     actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
     pos = actor.lock()->GetComponent<Transform>()->GetPosition();
     actor.lock()->AddComponent<Collision>();
-    actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
     actor.lock()->AddComponent<BulletFiring>();
     actor.lock()->AddComponent<ProjectileStraight>();
     const char* effectFilename = "Data/Effect/brezerd.efk";
@@ -3827,14 +3819,6 @@ void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
 
     effectFilename = "Data/Effect/flozeTime.efk";
     actor.lock()->GetComponent<ProjectileStraight>()->SetEffectSpawned(effectFilename);
-    //int magicNumber = (int)ProjectileStraight::MagicNumber::Ice;
-    //actor.lock()->GetComponent<ProjectileFullHoming>()->SetMagicNumber(magicNumber);
-    //// 回転速度変更
-    //float migicIceTurnSpeed = DirectX::XMConvertToRadians(200);
-    //actor.lock()->GetComponent<ProjectileFullHoming>()->SetTurnSpeed(migicIceTurnSpeed);
-
-    //// 一時停止
-    //actor.lock()->GetComponent<ProjectileFullHoming>()->SetMovementCheck(iceMagicMoveCheck);
 
     // これが２Dかの確認
     bool check2d = false;
@@ -3845,7 +3829,6 @@ void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
     float   lifeTimer = 4.0f;
     // 発射
     projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
-   // projectile.lock()->GetComponent<ProjectileFullHoming>()->SetTarget(target);
 }
 // 後変更必殺技炎
 // 連射用
@@ -3875,7 +3858,6 @@ void Player::InputSpecialMagicframe()
     actor.lock()->GetComponent<Transform>()->SetAngle(angle);
     actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
     actor.lock()->AddComponent<Collision>();
-    actor.lock()->GetComponent<Collision>()->SetRadius(0.3f);
     actor.lock()->AddComponent<BulletFiring>();
     actor.lock()->AddComponent<ProjectileTornade>();
     const char* effectFilename = "Data/Effect/fireTornade.efk";
@@ -3913,8 +3895,8 @@ void Player::AttackCheckUI()
         {
             std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
             DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-            float enemyRudius = enemy.lock()->GetComponent<Collision>()->GetRadius() + 1;
-            float enemyHeight = enemy.lock()->GetComponent<Collision>()->GetHeight();
+            float enemyRudius = EnemyConfig::kBaseBodyRadius + 1;
+            float enemyHeight = EnemyConfig::kHeight;
             //// 衝突処理
             DirectX::XMFLOAT3 outPositon;
             // 円柱と円
@@ -4083,8 +4065,8 @@ void Player::SpecialApplyDamageInRadius()
     std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
 
     DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
-    float enemyRudius = enemyCollision->GetRadius();
-    float enemyHeight = enemyCollision->GetHeight();
+    float enemyRudius = EnemyConfig::kBaseBodyRadius;
+    float enemyHeight = EnemyConfig::kHeight;
     ProjectileManager& projectileManager = ProjectileManager::Instance();
     for (int i = 0; i < projectileManager.GetProjectileCount(); ++i)
     {
@@ -4092,8 +4074,8 @@ void Player::SpecialApplyDamageInRadius()
         if (!projectile->GetComponent<ProjectileTornade>()) return;
         // 魔法位置
         DirectX::XMFLOAT3 magicPosition = projectile->GetComponent<Transform>()->GetPosition();
-        float magicRadius = projectile->GetComponent<Collision>()->GetRadius();
-        float magicHeight = projectile->GetComponent<Collision>()->GetHeight();
+        float magicRadius = MagicConfig::kRadius;
+        float magicHeight = MagicConfig::kHeight;
         //// 衝突処理
         DirectX::XMFLOAT3 outPositon;
         // 下半身

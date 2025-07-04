@@ -158,6 +158,7 @@
     <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\LightManager.h" />
     <ClInclude Include="Source\Logger.h" />
+    <ClInclude Include="Source\MagicConfig.h" />
     <ClInclude Include="Source\Mathf.h" />
     <ClInclude Include="Source\MessageData.h" />
     <ClInclude Include="Source\Messenger.h" />

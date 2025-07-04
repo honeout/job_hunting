@@ -1,6 +1,8 @@
 #include "ProjectileImpact.h"
 #include "ProjectileManager.h"
 #include "Graphics/Graphics.h"
+#include "MagicConfig.h"
+
 // コンストラクタ
 ProjectileImpact::ProjectileImpact()
 {
@@ -94,7 +96,7 @@ void ProjectileImpact::DrawDebugPrimitive()
     debugRenderer->DrawSphere(transform->GetPosition(), radiusInSide, DirectX::XMFLOAT4(0, 0, 1, 1));
     debugRenderer->DrawSphere(transform->GetPosition(), radiusOutSide, DirectX::XMFLOAT4(0, 1, 0, 1));
 
-    debugRenderer->DrawCylinder(transform->GetPosition(), 15, collision.lock()->GetHeight(), DirectX::XMFLOAT4(0, 1, 1, 1));
+    debugRenderer->DrawCylinder(transform->GetPosition(), 15, MagicConfig::kHeight, DirectX::XMFLOAT4(0, 1, 1, 1));
 }
 
 void ProjectileImpact::Destoroy()
