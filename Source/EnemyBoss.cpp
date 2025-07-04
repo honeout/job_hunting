@@ -48,7 +48,6 @@ void EnemyBoss::Render(RenderContext& rc, ModelShader& shader)
     // Lockとして実体を使う
     auto modelId = model.lock();
 
-
     // 有効性チェック
     if (!modelId)
         return;
@@ -102,36 +101,41 @@ void EnemyBoss::OnGUI()
 // デバッグプリミティブ描画
 void EnemyBoss::DrawDebugPrimitive()
 {
+    // デバッグ用当たり判定半径
+    const float kRadius = EnemyConfig::kBaseBodyRadius;
+    const float kHeight = EnemyConfig::kHeight;
+
+
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
 
     // 縄張り範囲をデバッグ円柱描画
-    debugRenderer->DrawCylinder(territoryOrigin, territoryRange, kDebugCylinderHeight,
-        kColorGreen);
+    debugRenderer->DrawCylinder(territoryOrigin, territoryRange, EnemyConfig::kDebugCylinderHeight,
+        EnemyConfig::kColorGreen);
 
     debugRenderer->DrawCylinder(
         {
             position.x,
-            position.y + height / 2,
+            position.y + kHeight / 2,
             position.z,
-        }, radius, height / 2, kColorRed);
+        }, kRadius, kHeight / 2, EnemyConfig::kColorRed);
 
     // ターゲット位置をデバッグ球描画
-    debugRenderer->DrawSphere(targetPosition, radius, kColorYellow);
+    debugRenderer->DrawSphere(targetPosition, kRadius, EnemyConfig::kColorYellow);
     
     // 攻撃右足するかどうか
-    debugRenderer->DrawSphere(position, attackRightFootRange, kColorMagenta);
+    debugRenderer->DrawSphere(position, attackRightFootRange, EnemyConfig::kColorMagenta);
     
     // 索敵範囲をデバッグ円柱描画
-    debugRenderer->DrawCylinder(position, searchRange, kDebugCylinderHeight, kColorBlue);
+    debugRenderer->DrawCylinder(position, searchRange, EnemyConfig::kDebugCylinderHeight, EnemyConfig::kColorBlue);
 
     // 攻撃範囲をデバッグ円柱描画
-    debugRenderer->DrawCylinder(position, attackRange, kDebugCylinderHeight, kColorRed);
+    debugRenderer->DrawCylinder(position, attackRange, EnemyConfig::kDebugCylinderHeight, EnemyConfig::kColorRed);
 
-    debugRenderer->DrawSphere(position, kDebugSphereLargeRadius, kColorGreen);
+    debugRenderer->DrawSphere(position, EnemyConfig::kDebugSphereLargeRadius, EnemyConfig::kColorGreen);
 
-    debugRenderer->DrawSphere(position, kDebugSphereSmallRadius, kColorGreen);
+    debugRenderer->DrawSphere(position, EnemyConfig::kDebugSphereSmallRadius, EnemyConfig::kColorGreen);
 
-    debugRenderer->DrawCylinder(targetPosition, radius, height, kColorYellow);
+    debugRenderer->DrawCylinder(targetPosition, kRadius, EnemyConfig::kHeight, EnemyConfig::kColorYellow);
 }
 
 // コンポーネント初期化
@@ -177,23 +181,17 @@ void EnemyBoss::InitStats()
     if (!hpId || !collisionId)
         return;
 
+    int health = EnemyConfig::kHealth;
+
     hpId->SetHealth(health);
-    hpId->SetMaxHealth(maxHealth);
-    collisionId->SetRadius(radius);
-    collisionId->SetPartRadius(partRadius);
-    collisionId->SetHeight(height);
-    collisionId->SetSecondesHeight(confusionHeight);
+    hpId->SetMaxHealth(health);
+    collisionId->SetRadius(EnemyConfig::kBaseBodyRadius);
+    collisionId->SetPartRadius(EnemyConfig::kHitPartRadius);
+    collisionId->SetHeight(EnemyConfig::kHeight);
+    collisionId->SetSecondesHeight(EnemyConfig::kConFusionHeight);
 
     // アニメーションルール
     updateanim = UpAnim::Normal;
-    // 上半身スタート再生開始場所
-    bornUpStartPoint = "body3";
-    // 上半身エンド再生停止場所
-    bornUpEndPoint = "body2";
-    // 下半身スタート再生開始場所
-    bornDownerStartPoint = "body2";
-    // 下半身エンド再生停止場所
-    bornDownerEndPoint = "boss_left_eye";
 
     // 当たり判定無効判定
     invalidJudgment = true;
@@ -312,8 +310,8 @@ void EnemyBoss::UpdateAnimation(float elapsedTime)
         case UpAnim::Doble:
         {
             // モデル部分アニメーション更新処理
-            modelId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, bornUpStartPoint, bornUpEndPoint, true);
-            modelId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, bornDownerStartPoint, bornDownerEndPoint, true);
+            modelId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, EnemyConfig::kBornUpStartPoint, EnemyConfig::kBornUpEndPoint, true);
+            modelId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, EnemyConfig::kBornDownerStartPoint, EnemyConfig::kBornDownerEndPoint, true);
             break;
         }
         // 複数ブレンド再生
@@ -387,6 +385,11 @@ void EnemyBoss::CollisionImpactVsPlayer()
     auto playerMovement = playerId->GetComponent<Movement>();
     auto playerCollision = playerId->GetComponent<Collision>();
     auto playerHp = playerId->GetComponent<HP>();
+
+    // 安全チェック
+    if (!playerMain || !playerTransform || !playerMovement || !playerCollision || !playerHp)
+        return;
+
     // 位置、半径、高さ
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
     float playerRadius = playerCollision->GetRadius();
@@ -430,7 +433,7 @@ void EnemyBoss::CollisionImpactVsPlayer()
             // 高さが一定以下なら通る
             if (projectilePosition.y + projectileHeight < playerPosition.y) return;
             // ダメージを与える。
-            if (!playerHp->ApplyDamage(applyDamageImpact, impactInvincibleTime)) return;
+            if (!playerHp->ApplyDamage(EnemyConfig::kApplyDamageStamp, EnemyConfig::kImpactInvincibleTime)) return;
 
             playerMain->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
 
@@ -494,7 +497,8 @@ void EnemyBoss::CollisionInpact()
     DirectX::XMFLOAT3 bossLeftFootPosition;
     bossLeftFootPosition = modelId->GetModel()->ConvertLocalToWorld(bossLeftFoot);
 
-    DetectHitByBodyPart(bossLeftFootPosition, applyDamageStamp);
+    // 体の一部とplayerの当たり判定
+    DetectHitByBodyPart(bossLeftFootPosition, EnemyConfig::kApplyDamageStamp);
 
     // 当たり判定増大
     radiusInpactInSide += 0.3f;
@@ -523,6 +527,11 @@ void EnemyBoss::CollisionInpact()
     auto playerMovement = playerId->GetComponent<Movement>();
     auto playerCollision = playerId->GetComponent<Collision>();
     auto playerHp = playerId->GetComponent<HP>();
+
+    // 安全チェック
+    if (!playerMain || !playerTransform || !playerMovement || !playerCollision || !playerHp)
+        return;
+
     // 位置、半径、高さ
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
     float playerRadius = playerCollision->GetRadius();
@@ -550,7 +559,7 @@ void EnemyBoss::CollisionInpact()
         // 高さが一定以下なら通る
         if (bossLeftFootPosition.y + radiusInpactHeight < playerPosition.y) return;
         // ダメージを与える。
-        if (!playerHp->ApplyDamage(applyDamageImpact, impactInvincibleTime)) return;
+        if (!playerHp->ApplyDamage(EnemyConfig::kApplyDamageImpact, EnemyConfig::kImpactInvincibleTime)) return;
 
         playerMain->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
 
@@ -635,6 +644,10 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
     auto playerCollision = playerId->GetComponent<Collision>();
     auto playerHp = playerId->GetComponent<HP>();
 
+    // 安全チェック
+    if (!playerMain || !playerTransform || !playerMovement || !playerCollision || !playerHp) 
+        return;
+
     // 位置、半径、高さ
     DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
     float playerRadius = playerCollision->GetRadius();
@@ -651,11 +664,9 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
         outPositon))
     {
         // ダメージを与える。
-        if (!playerHp->ApplyDamage(applyDamage, nuckleInvincibleTime)) return;
+        if (!playerHp->ApplyDamage(applyDamage, EnemyConfig::kNuckleInvincibleTime)) return;
 
         // 斬撃音
-        PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
-
         // se再生
         AudioParam audioParam;
         audioParam.filename = "Data/Audio/SE/スラッシュ２回目.wav";
@@ -759,7 +770,7 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
             outPositon)) return;
 
         // ダメージを与える。
-        if (!playerHp->ApplyDamage(applyDamage, nuckleInvincibleTime)) return;
+        if (!playerHp->ApplyDamage(applyDamage, EnemyConfig::kNuckleInvincibleTime)) return;
 
         // 斬撃音
         PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
@@ -974,10 +985,10 @@ void EnemyBoss::InputJump()
     // 強制停止
     if (position.y >= EnemyConfig::kLimit)
     {
-        
         movementId->JumpVelocity(EnemyConfig::kMinSpeed);
     }
 
+    // ジャンプ
     if (movementId->GetOnLadius())
     {
         movementId->JumpVelocity(EnemyConfig::kSpeed);

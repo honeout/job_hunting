@@ -2736,7 +2736,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
     //// 衝突処理
     DirectX::XMFLOAT3 outPositon;
     DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
-    float enemyRadius = enemyBoss->GetUpperRadius();
+    float enemyRadius = EnemyConfig::kUpperBodyRadius;
     // もし高さが一緒なら
     float enemyHeight = enemyBoss->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle ?
         enemyCollision->GetHeight() : enemyCollision->GetSecondesHeight();

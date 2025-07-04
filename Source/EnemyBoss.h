@@ -20,11 +20,6 @@ namespace EnemyConfig
     constexpr float kHitPartRadius = 0.8f;
     constexpr float kUpperBodyRadius = 1.0f;
 
-    // ------衝撃波判定----------
-    constexpr float kImpactOuterRadius = 2.5f;
-    constexpr float kImpactInnerRadius = 1.0f;
-    constexpr float kImpactHeight = 1.5f;
-
     // ------ジャンプ設定---------
     constexpr float kMinJumpSpeed = 15.0f;
     constexpr int kMaxJumpCount = 2;
@@ -39,26 +34,50 @@ namespace EnemyConfig
     constexpr const char* kSeCharge = "Data/Audio/SE/charge.wav";
 
     // 音data　衝撃波
-    constexpr const char* bornUpStartPoint = "mixamorig:Hips";
+    // 上半身スタート再生開始場所
+    constexpr const char* kBornUpStartPoint = "body3";
+
+    // 上半身エンド再生停止場所
+    constexpr const char* kBornUpEndPoint = "body2";
+
+    // 下半身スタート再生開始場所
+    constexpr const char* kBornDownerStartPoint = "body2";
+
+    // 下半身エンド再生停止場所
+    constexpr const char* kBornDownerEndPoint = "boss_left_eye";
+
+    // ------HP設定--------------
+    constexpr const int kHealth = 50;
 
     constexpr const float kSpeed = 20.0f;
     constexpr const float kImpactSpeed = 5.0f;
     constexpr const float kMinSpeed = 0.0f;
     constexpr const int kLimit = 1;
 
-    // 高さ
-    float kHeight = 5.5f;
-    // 混乱状態高さ
-    float kConFusionHeight = 3.0f;
-};
+    // -----ダメージ--------------
+    constexpr const int kApplyDamageStamp = 6;
+    constexpr const int kApplyDamageImpact = 5;
 
-// ジャンプの値
-// ジャンプ
-struct JumpParams
-{
-    float speed = 0.0f;
-    static constexpr float kMinSpeed = 20.0f;
-    static constexpr int kLimit = 1;
+    // -----無敵時間--------------
+    constexpr float kNuckleInvincibleTime = 0.5f;
+    constexpr float kImpactInvincibleTime = 0.5f;
+
+
+    // -----デバッグ用------------
+    constexpr const float kDebugCylinderHeight = 1.0f;
+    constexpr const float kDebugSphereLargeRadius = 10.0f;
+    constexpr const float kDebugSphereSmallRadius = 3.0f;
+
+    constexpr const DirectX::XMFLOAT4 kColorGreen = { 0, 1, 0, 1 };
+    constexpr const DirectX::XMFLOAT4 kColorRed = { 1, 0, 0, 1 };
+    constexpr const DirectX::XMFLOAT4 kColorMagenta = { 1, 0, 1, 1 };
+    constexpr const DirectX::XMFLOAT4 kColorYellow = { 1, 1, 0, 1 };
+    constexpr const DirectX::XMFLOAT4 kColorBlue = { 0, 0, 1, 1 };
+
+    // 高さ
+    constexpr float kHeight = 5.5f;
+    // 混乱状態高さ
+    constexpr float kConFusionHeight = 3.0f;
 };
 
 // 宝石ボス
@@ -259,10 +278,6 @@ public:
     // ポジション取得
     DirectX::XMFLOAT3 GetPosition() { return position; }
 
-    // 半径
-    float GetRadius() { return radius; }
-    float GetUpperRadius() { return radiusUpper; }
-
     // 近距離攻撃時の当たり判定
     void SetAttackRightFootRange(float attackRightFootRange) { this->attackRightFootRange = attackRightFootRange; }
 
@@ -393,23 +408,13 @@ private:
     // アップデート再生上半身下半身別
     UpAnim  updateanim = UpAnim::Normal;
 
-    // 上半身スタート再生開始場所
-    char* bornUpStartPoint = "";
-
-    // 上半身エンド再生停止場所
-    char* bornUpEndPoint = "";
-
-    // 下半身スタート再生開始場所
-    char* bornDownerStartPoint = "";
-
-    // 下半身エンド再生停止場所
-    char* bornDownerEndPoint = "";
-
     // 縄張り半径
     float territoryRange = 10.0f;
     float territoryRangeMin = 0.0f;
+
     // 動く速度
     float moveSpeed = 3.0f;
+
     // 回転速度
     float turnSpeed = DirectX::XMConvertToRadians(360);
 
@@ -418,26 +423,16 @@ private:
 
     // 探す半径
     float searchRange = 5.0f;
+
     // 攻撃半径
     float attackRange = 5.5f;
 
-    // Hp
-    int health = 50;
-
-    // 最大HP
-    int maxHealth = 50;
-
-    // 半径
-    float radius = 2.0f;
-    // パーツ事
-    float partRadius = 2.8f;
-    float radiusUpper = 1.8f;
-
-
     // スペキュラー無効
     int isSpecular = 0;
+
     // 影オンオフ
     int isRimRightning = 0;
+
     // modelオンオフ
     int StencilRef = 0;
 
@@ -492,16 +487,6 @@ private:
     // uiCount最大値
     int uiCountMax = 5;
 
-    // ダメージ
-    int applyDamageSlash = 5;
-    int applyDamageJamp = 4;
-    int applyDamageStamp = 6;
-    int applyDamageImpact = 5;
-    int applyDamageDush = 7;
-    float nuckleInvincibleTime = 0.5f;
-    float jampInvincibleTime = 1.0f;
-    float impactInvincibleTime = 0.5f;
-
     // シェイクダメージ演出
     float shakePower = 0.6f;
     float shakeTimer = 0.2f;
@@ -515,16 +500,7 @@ private:
     bool isPlayerStopMove;
     bool isPlayerStopFall;
 
-    // デバッグ用
-    const float kDebugCylinderHeight = 1.0f;
-    const float kDebugSphereLargeRadius = 10.0f;
-    const float kDebugSphereSmallRadius = 3.0f;
 
-    const DirectX::XMFLOAT4 kColorGreen = { 0, 1, 0, 1 };
-    const DirectX::XMFLOAT4 kColorRed = { 1, 0, 0, 1 };
-    const DirectX::XMFLOAT4 kColorMagenta = { 1, 0, 1, 1 };
-    const DirectX::XMFLOAT4 kColorYellow = { 1, 1, 0, 1 };
-    const DirectX::XMFLOAT4 kColorBlue = { 0, 0, 1, 1 };
 };
 
 // エネミーマネージャー
