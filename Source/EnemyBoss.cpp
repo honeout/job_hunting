@@ -11,8 +11,6 @@
 #include "Ui.h"
 #include "MagicConfig.h"
 
-//
-
 // デストラクタ
 EnemyBoss::~EnemyBoss()
 {
@@ -614,6 +612,7 @@ void EnemyBoss::ResetAwakeTime()
 {
     // 時間初期化
     enemyAwakeningDuration = enemyAwakeningDurationMax;
+
     // 覚醒中のエフェクト
     awakeEffect->Play(position);
 }

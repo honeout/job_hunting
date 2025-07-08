@@ -203,7 +203,6 @@ void CameraController::FreeCamera(float elapsedTime)
 void CameraController::LockonCamera(float elapsedTime)
 {
 	//	Œã•ûŽÎ‚ÉˆÚ“®‚³‚¹‚é
-	
 	DirectX::XMVECTOR	t0 = DirectX::XMVectorSet(targetWork[0].x, targetWork[0].y, targetWork[0].z, 0);
 	DirectX::XMVECTOR	t0XZ = DirectX::XMVectorSet(targetWork[0].x, targetWork[0].z,0,0);
 	DirectX::XMVECTOR	t1 = DirectX::XMVectorSet(targetWork[1].x, targetWork[1].y, targetWork[1].z, 0);

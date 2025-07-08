@@ -84,7 +84,6 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     return false;
 }
 
-
 // ‘Ï‹v’Ç‰Á
 void HP::SetIsBonusHpActive(bool isBonusHpActive)
 {
@@ -181,6 +180,7 @@ bool HP::CheckDamageThresholdWithinTime(float elapsedTime,  float damageThreshol
     }
     return false;
 }
+
 // ”íƒ_ƒ‰ğ•ú
 void HP::ResetOnDamageThresholdTime()
 {

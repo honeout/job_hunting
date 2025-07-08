@@ -38,12 +38,20 @@ void SceneTitle::Initialize()
 	// •½sŒõŒ¹‚ð’Ç‰Á
 	{
 		mainDirectionalLight = new Light(LightType::Directional);
-		mainDirectionalLight->SetDirection({ 1,-3,-1 });
+		mainDirectionalLight->SetDirection({ 1,-1,-1 });
 		LightManager::Instanes().Register(mainDirectionalLight);
 	}
 
 	// “_ŒõŒ¹‚ð’Ç‰Á
 	{
+		//Light* light = new Light(LightType::Spot);
+		//light->SetPosition(DirectX::XMFLOAT3(-30, 0, 0));
+		//light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+		//light->SetDirection(DirectX::XMFLOAT3(+1, -0.2f, 0));
+		//light->SetRange(1000.0f);
+		//LightManager::Instanes().Register(light);
+
+
 		Light* light = new Light(LightType::Point);
 		light->SetPosition(DirectX::XMFLOAT3(-40.000, -3, 1));
 		light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
@@ -93,13 +101,11 @@ void SceneTitle::Initialize()
 		srvData.width = renderTarget->GetWidth();
 		srvData.height = renderTarget->GetHeight();
 		postprocessingRenderer.SetSceneData(srvData);
+		bloomData.luminanceExtractionData.threshold = 0.18f;
+		bloomData.luminanceExtractionData.intensity = 0.128f;
 
-		bloomData.luminanceExtractionData.threshold = 0.41f;
-		bloomData.luminanceExtractionData.intensity = 1.6f;
-
-		bloomData.gaussianFilterData.kernelSize = 15;
-		bloomData.gaussianFilterData.deviation = 8.3f;
-
+		bloomData.gaussianFilterData.kernelSize = 8;
+		bloomData.gaussianFilterData.deviation = 10.3f;
 		postprocessingRenderer.SetBloomData(bloomData);
 
 		colorGradingData.hueShift = 3;
@@ -208,6 +214,7 @@ void SceneTitle::Render()
 	RenderShadowmap();
 	// model•`‰æ
 	Render3DScene();
+	postprocessingRenderer.SetBloomData(bloomData);
 
 	// GUI
 	ActorManager::Instance().RenderGui();

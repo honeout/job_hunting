@@ -40,7 +40,7 @@ public:
     // 一気にいくつかを変える。
     // ブルームデータ
     void SetBloomData(BloomData bloomDataMax) {
-        this->bloomDataMax = bloomDataMax;
+        this->bloomData = bloomDataMax;
       
     }
     // 色調補正データ

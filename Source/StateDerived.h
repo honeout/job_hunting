@@ -303,7 +303,7 @@ private:
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 	// クリア確認
-	bool clearCheck = true;
+	bool IsClear = true;
 };
 
 // 覚醒ステートオブジェクト
@@ -353,7 +353,7 @@ private:
 	bool loopSe = false;
 	float				stateTimer = 0.0f;
 	// クリア確認
-	bool clearCheck = true;
+	bool IsClear = true;
 	// カメラ距離
 	float distance = 3.0f;
 };
@@ -561,9 +561,6 @@ private:
 	DirectX::XMFLOAT2 playerPosXZ;
 	DirectX::XMFLOAT2 enemyPosXZ;
 	DirectX::XMFLOAT3 enemyPos;
-
-	// 攻撃サポート範囲
-	float attackCheckRange = 10.0f;
 
 	float attackCheckRangeMin = 3.0f;
 

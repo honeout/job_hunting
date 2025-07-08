@@ -29,14 +29,19 @@ ProjectileImpact::~ProjectileImpact()
 
 void ProjectileImpact::Start()
 {
-    // モデル一様
-    model = GetActor()->GetComponent<ModelControll>()->GetModel();
-
-    // トランスフォーム取得
+    // コンポーネントを使えるように
     transform = GetActor()->GetComponent<Transform>();
-
-    // コリジョン取得
+    modelControll = GetActor()->GetComponent<ModelControll>();
     collision = GetActor()->GetComponent<Collision>();
+
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+    auto modelControllId = modelControll.lock();
+    auto collisionControllId = collision.lock();
+
+    // 有効性チェック
+    if (!transformId || !modelControllId || !collisionControllId)
+        return;
     
     // 円の当たり判定内側
     radiusInSide = 0.1f;
@@ -54,49 +59,79 @@ void ProjectileImpact::Start()
     effectProgress->SetScale(effectProgress->GetEfeHandle(), { scale,scale,scale });
    
     if (effectProgress)
-        effectProgress->Play(transform->GetPosition(), scale);
+        effectProgress->Play(transformId->GetPosition(), scale);
 }
 
 // 更新処理
 void ProjectileImpact::Update(float elapsedTime)
 {
+    // コンポーネントを使えるように
+    transform = GetActor()->GetComponent<Transform>();
+    modelControll = GetActor()->GetComponent<ModelControll>();
+
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!transformId || !modelControllId)
+        return;
+
     if (lifeTimer <= 0)
     {
         Destoroy();
     }   
     ImpactUpdate();
-    transform->UpdateTransformProjectile();
-    model->UpdateTransform(transform->GetTransform());
+    transformId->UpdateTransformProjectile();
+    modelControllId->GetModel()->UpdateTransform(transformId->GetTransform());
     if (effectProgress)
-        effectProgress->SetPosition(effectProgress->GetEfeHandle(), transform->GetPosition());
+        effectProgress->SetPosition(effectProgress->GetEfeHandle(), transformId->GetPosition());
 
     if (effectHit)
-        effectHit->SetPosition(effectHit->GetEfeHandle(), transform->GetPosition());
+        effectHit->SetPosition(effectHit->GetEfeHandle(), transformId->GetPosition());
     --lifeTimer;
 }
 
 // 描画処理
 void ProjectileImpact::Render(RenderContext& rc, ModelShader& shader)
 {
+    // コンポーネントを使えるように
+    modelControll = GetActor()->GetComponent<ModelControll>();
+
+    // Lockとして実体を使う
+    auto modelControllId = modelControll.lock();
+
+    // 有効性チェック
+    if (!modelControllId)
+        return;
+
     Graphics& graphics = Graphics::Instance();
-    //Shader* shader = graphics.GetShader();
-    //ModelShader* shader = graphics.GetShader(ModelShaderId::Lanbert);
     shader = *graphics.GetShader(ModelShaderId::Lanbert);
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
-    shader.Draw(rc, model);
+    shader.Draw(rc, modelControllId->GetModel());
     shader.End(rc);
 }
 
 void ProjectileImpact::DrawDebugPrimitive()
 {
+    // コンポーネントを使えるように
+    transform = GetActor()->GetComponent<Transform>();
+
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+
+    // 有効性チェック
+    if (!transformId)
+        return;
+
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
 
     // 今は何も表示しない
         //// 衝突判定用のデバッグ球を描画
-    debugRenderer->DrawSphere(transform->GetPosition(), radiusInSide, DirectX::XMFLOAT4(0, 0, 1, 1));
-    debugRenderer->DrawSphere(transform->GetPosition(), radiusOutSide, DirectX::XMFLOAT4(0, 1, 0, 1));
+    debugRenderer->DrawSphere(transformId->GetPosition(), radiusInSide, DirectX::XMFLOAT4(0, 0, 1, 1));
+    debugRenderer->DrawSphere(transformId->GetPosition(), radiusOutSide, DirectX::XMFLOAT4(0, 1, 0, 1));
 
-    debugRenderer->DrawCylinder(transform->GetPosition(), 15, MagicConfig::kHeight, DirectX::XMFLOAT4(0, 1, 1, 1));
+    debugRenderer->DrawCylinder(transformId->GetPosition(), 15, MagicConfig::kHeight, DirectX::XMFLOAT4(0, 1, 1, 1));
 }
 
 void ProjectileImpact::Destoroy()
@@ -116,22 +151,62 @@ void ProjectileImpact::ImpactUpdate()
 
 void ProjectileImpact::EffectProgressPlay()
 {
-    effectProgress->Play(transform->GetPosition(), scale);
+    // コンポーネントを使えるように
+    transform = GetActor()->GetComponent<Transform>();
+
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+
+    // 有効性チェック
+    if (!transformId)
+        return;
+
+    effectProgress->Play(transformId->GetPosition(), scale);
 }
 
 void ProjectileImpact::EffectHitPlay(float elapsedTime)
 {
-    effectHit->Play(transform->GetPosition(), scale);
+    // コンポーネントを使えるように
+    transform = GetActor()->GetComponent<Transform>();
+
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+
+    // 有効性チェック
+    if (!transformId)
+        return;
+
+    effectHit->Play(transformId->GetPosition(), scale);
 }
 
 void ProjectileImpact::EffectProgressUpdate(float elapsedTime)
 {
+    // コンポーネントを使えるように
+    transform = GetActor()->GetComponent<Transform>();
+
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+
+    // 有効性チェック
+    if (!transformId)
+        return;
+
     effectProgress->SetPosition(effectProgress->GetEfeHandle(),
-        transform->GetPosition());
+        transformId->GetPosition());
 }
 
 void ProjectileImpact::EffectHitUpdate(float elapsedTime)
 {
+    // コンポーネントを使えるように
+    transform = GetActor()->GetComponent<Transform>();
+
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+
+    // 有効性チェック
+    if (!transformId)
+        return;
+
     effectHit->SetPosition(effectHit->GetEfeHandle(),
-        transform->GetPosition());
+        transformId->GetPosition());
 }

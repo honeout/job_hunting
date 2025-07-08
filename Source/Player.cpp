@@ -20,6 +20,7 @@
 #include "Ui.h"
 #include "Graphics/PrimitiveRenderer.h"
 #include "MagicConfig.h"
+#include "SceneManager.h"
 
 // デストラクタ
 Player::~Player()
@@ -46,7 +47,7 @@ void Player::Start()
 // elapsedTime(経過時間)
 void Player::Update(float elapsedTime)
 {
-    //// ステート毎の処理
+    // ステート毎の処理
     stateMachine->Update(elapsedTime);
 
     // 入力処理　コマンド等
@@ -95,7 +96,6 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
 // シャドウマップ
 void Player::RenderShadowmap(RenderContext& rc)
 {
-
     auto modelControllId = modelControll.lock();
 
     // 有効性チェック
@@ -169,9 +169,11 @@ void Player::InitStats()
     // 落下停止
     bool stopFall = false;
     movementId->SetStopFall(stopFall);
+
     // 移動の停止
     bool stopMove = false;
     movementId->SetStopMove(stopMove);
+
     // 位置等
     position = transformId->GetPosition();
     angle = transformId->GetAngle();
@@ -183,17 +185,20 @@ void Player::InitStats()
     // 歩く速度
     moveSpeed = PlayerConfig::moveSpeed;
 
-    int health = PlayerConfig::health;
-    int magicPoint = PlayerConfig::magicPoint;
+    const int health = PlayerConfig::health;
+    const int magicPoint = PlayerConfig::magicPoint;
     radius = PlayerConfig::radius;
     height = PlayerConfig::height;
 
     // hp設定
     hpId->SetHealth(health);
+
     // hp最大値の設定
     hpId->SetMaxHealth(health);
+
     // mp設定
     mpId->SetMagic(magicPoint);
+
     // mp最大値
     mpId->SetMaxMagic(magicPoint);
 
@@ -202,11 +207,13 @@ void Player::InitStats()
 
     // 特殊技チャージゲージ　初期値
     specialAttackChargeMin = PlayerConfig::specialAttackChargeMin;
+
     // 特殊技チャージゲージ　魔法
     specialAttackChargeMagicValue = PlayerConfig::specialAttackChargeMagicValue;
 
     // 特殊技チャージMax それぞれの
     energyChargeMax = PlayerConfig::energyChargeMax;
+
     // 特殊技チャージMin それぞれの
     energyChargeMin = PlayerConfig::energyChargeMin;
 
@@ -254,10 +261,7 @@ void Player::InitCommands()
     specialAttackInitialize.hasSkill = isSkillHave;
     specialAttack.push_back(specialAttackInitialize);
 }
-// ステート更新まとめ
-void Player::UpdateStateMachine(float elapsedTime)
-{
-}
+
 // 入力受付と行動への変換
 void Player::HandleInput(float elapsedTime)
 {
@@ -338,6 +342,7 @@ void Player::HandleInput(float elapsedTime)
                 selectCheck = (int)CommandAttack::Attack;
                 return;
             }
+
             // 魔法ステートに
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
 
@@ -348,6 +353,7 @@ void Player::HandleInput(float elapsedTime)
             areWork->GetEfeHandle() ? areWork->Stop(areWork->GetEfeHandle()) : noStart;
             areWork->Play(position);
         }
+        // 必殺技
         if (GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
             // 特殊攻撃
@@ -362,6 +368,7 @@ void Player::HandleInput(float elapsedTime)
         UiControlleGauge(elapsedTime);
     }
 }
+
 // プレイヤー状態制御
 void Player::UpdateStatus(float elapsedTime)
 {
@@ -385,14 +392,14 @@ void Player::UpdateStatus(float elapsedTime)
         isAreAttack = true;
     }
 
-
     // 無敵時間
     hpId->UpdateInbincibleTimer(elapsedTime);
+
     // マジック回復
     mpId->MpCharge(elapsedTime);
-    //// ロックオン
-    InputRockOn();
 
+    // ロックオン
+    InputRockOn();
 }
 
 // 物理挙動
@@ -401,7 +408,6 @@ void Player::UpdatePhysics(float elapsedTime)
     // Lockとして実体を使う
     auto movementId = movement.lock();
     auto transformId = transform.lock();
-
 
     // 有効性チェック
     if (!movementId || !transformId) return;
@@ -421,7 +427,6 @@ void Player::UpdatePhysics(float elapsedTime)
 
     // 加速度等
     movementId->UpdateVelocity(elapsedTime);
-
 }
 // ヒットエフェクト等の移動更新用
 void Player::UpdateEffects(float elapsedTime)
@@ -491,6 +496,7 @@ void Player::UpdateAnimation(float elapsedTime)
         break;
     }
     }
+
     // 位置更新
     modelControllId->GetModel()->UpdateTransform(transformId->GetTransform());
 }
@@ -501,6 +507,7 @@ void Player::InputSe(AudioParam param)
     Audio& Se = Audio::Instance();
     Se.Play(param);
 }
+
 // 音再生
 void Player::PlaySe(const std::string& filename)
 {
@@ -511,6 +518,7 @@ void Player::PlaySe(const std::string& filename)
     audioParam.volume = seVolume;
     Se.Play(audioParam);
 }
+
 // 音ループ再生
 void Player::PlayLoopSe(const std::string& filename)
 {
@@ -521,6 +529,7 @@ void Player::PlayLoopSe(const std::string& filename)
     audioParam.volume = seVolume;
     Se.Play(audioParam);
 }
+
 // se停止
 void Player::StopSe(const std::string& filename)
 {
@@ -528,6 +537,7 @@ void Player::StopSe(const std::string& filename)
     // 種類停止
     Se.Stop(filename);
 }
+
 // カメラのステート管理
 void Player::UpdateCameraState(float elapsedTime)
 {
@@ -762,6 +772,7 @@ void Player::OnGUI()
 
         //Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
     }
+
     if (ImGui::Button("debugShader"))
     {
         debugShaderFlash = !debugShaderFlash;
@@ -776,6 +787,8 @@ void Player::OnGUI()
         ColorGradingData debugColorGradingData;
         colorGradingData.brigthness = 5.5f;
         postprocessingRenderer.SetColorGradingMaxData(colorGradingData);
+
+
     }
     if (debugShaderFlashSeconde)
     {
@@ -1004,7 +1017,7 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
 
     // ワールドからスクリーン
     DirectX::XMVECTOR enemyPositionVe = DirectX::XMLoadFloat3(&enemyPosition);
-    // ゲージ描画 // ワールドからスクリーン
+    // ゲージ描画 // ワールドからスクリーン座標に
     DirectX::XMVECTOR screenPositionVe = DirectX::XMVector3Project(
         enemyPositionVe,
         viewport.TopLeftX,
@@ -1836,6 +1849,7 @@ bool Player::InputShortCutkeyMagic()
     }
     return false;
 }
+
 // 魔法選択UI解除
 void Player::RemoveUIMagic()
 {
@@ -1843,6 +1857,7 @@ void Player::RemoveUIMagic()
     selectCheck = (int)CommandAttack::Attack;
     magicAction = false;
 }
+
 // 特殊攻撃選択
 bool Player::InputSpecialAttackCharge()
 {
@@ -2071,6 +2086,7 @@ bool Player::InputSpecialAttackCharge()
     }
     return false;
 }
+
 // 特殊技順番交代
 void Player::InputSpecialAttackChange()
 {
@@ -3872,6 +3888,7 @@ void Player::InputSpecialMagicframe()
     projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, target, lifeTimer);
     projectile.lock()->GetComponent<ProjectileTornade>()->SetTarget(target);
 }
+
 // 距離でUIを変えるロックオン中
 void Player::AttackCheckUI()
 {
@@ -3887,31 +3904,25 @@ void Player::AttackCheckUI()
     if (uiCount <= uiCountMax || !rockCheck || specialRockOff) return;
     EnemyManager& enemyManager = EnemyManager::Instance();
     int enemyCount = enemyManager.GetEnemyCount();
-    switch (selectCheck)
+    for (int i = 0; i < enemyCount; ++i)
     {
-    case (int)CommandAttack::Attack:
-    {
-        for (int i = 0; i < enemyCount; ++i)
+        std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
+        DirectX::XMVECTOR playerPosition =
+            DirectX::XMLoadFloat3(&position);
+        DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
+        DirectX::XMVECTOR enemyPositionXM =
+            DirectX::XMLoadFloat3(&enemyPosition);
+        DirectX::XMVECTOR LengthSq =
+            DirectX::XMVectorSubtract(playerPosition, enemyPositionXM);
+        LengthSq = DirectX::XMVector3LengthSq(LengthSq);
+        float lengthSq;
+        DirectX::XMStoreFloat(&lengthSq, LengthSq);
+        switch (selectCheck)
         {
-            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
-            DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-            float enemyRudius = EnemyConfig::kBaseBodyRadius + 1;
-            float enemyHeight = EnemyConfig::kHeight;
-            //// 衝突処理
-            DirectX::XMFLOAT3 outPositon;
-            // 円柱と円
-            if (collisionId->IntersectSphereVsCylinder(
-                position,
-                radius,
-                {
-                enemyPosition.x,
-                enemyPosition.y,
-                enemyPosition.z
-                },
-                enemyRudius,
-                enemyHeight,
-                outPositon))
-
+        case (int)CommandAttack::Attack:
+        {
+            // 当たり判定距離
+            if (lengthSq < PlayerConfig::attackCheckRange)
             {
                 std::weak_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
                 bool drawCheck = true;
@@ -3923,24 +3934,13 @@ void Player::AttackCheckUI()
                 bool drawCheck = false;
                 uiSightAttackCheck.lock()->SetDrawCheck(drawCheck);
             }
+
+            break;
         }
-        break;
-    }
-    case (int)CommandAttack::Magic:
-    {
-        for (int i = 0; i < enemyCount; ++i)
+        case (int)CommandAttack::Magic:
         {
-            std::weak_ptr<Actor> enemy = enemyManager.GetEnemy(i);
-            DirectX::XMVECTOR playerPosition =
-                DirectX::XMLoadFloat3(&position);
-            DirectX::XMFLOAT3 enemyPosition = enemy.lock()->GetComponent<Transform>()->GetPosition();
-            DirectX::XMVECTOR enemyPositionXM =
-                DirectX::XMLoadFloat3(&enemyPosition);
-            DirectX::XMVECTOR LengthSq =
-                DirectX::XMVectorSubtract(playerPosition,enemyPositionXM);
-            LengthSq = DirectX::XMVector3LengthSq(LengthSq);
-            float lengthSq;
-            DirectX::XMStoreFloat(&lengthSq, LengthSq);
+
+
             if (lengthSq < magicRangeLength)
             {
                 std::weak_ptr<Ui> uiSightAttackCheck = UiManager::Instance().GetUies((int)UiManager::UiCount::SightCheck)->GetComponent<Ui>();
@@ -3953,11 +3953,12 @@ void Player::AttackCheckUI()
                 bool drawCheck = false;
                 uiSightAttackCheck.lock()->SetDrawCheck(drawCheck);
             }
+
+            break;
         }
-        break;
-    }
-    default:
-        break;
+        default:
+            break;
+        }
     }
 }
 
@@ -4098,6 +4099,7 @@ void Player::SpecialApplyDamageInRadius()
 
     }
 }
+
 // 地面に立っているか
 bool Player::Ground()
 {

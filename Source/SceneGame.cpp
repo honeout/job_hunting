@@ -202,7 +202,7 @@ void SceneGame::Update(float elapsedTime)
 				hp->SetHealth(hp->GetMaxHealth());
 			}
 			// クリア
-			if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetClearCheck())
+			if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetIsSecenChange())
 			{
 				SceneManager::Instance().ChangeScene(new SceneGameClear);
 			}
@@ -519,13 +519,13 @@ void SceneGame::PostProcessingRendererInitialize()
 	srvData.height = renderTarget->GetHeight();
 	postprocessingRenderer.SetSceneData(srvData);
 
-	bloomData.luminanceExtractionData.threshold = 0.41f;
-	bloomData.luminanceExtractionData.intensity = 1.6f;
+	bloomData.luminanceExtractionData.threshold = 0.18f;
+	bloomData.luminanceExtractionData.intensity = 2.358f;
 
-	bloomData.gaussianFilterData.kernelSize = 15;
-	bloomData.gaussianFilterData.deviation = 8.3f;
+	bloomData.gaussianFilterData.kernelSize = 8;
+	bloomData.gaussianFilterData.deviation = 10.3f;
 
-	postprocessingRenderer.SetBloomMaxData(bloomData);
+	postprocessingRenderer.SetBloomData(bloomData);
 
 	// ポストエフェクト
 	// 画面白ボケ

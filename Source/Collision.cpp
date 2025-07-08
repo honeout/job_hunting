@@ -115,6 +115,7 @@ bool Collision::IntersectSphereVsCylinder(
 
      return true;
  }
+
  // レイとモデルの交差判定
 bool Collision::IntersectRayVsModel(
     // レイの発射点

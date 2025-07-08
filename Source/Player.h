@@ -101,6 +101,9 @@ namespace PlayerConfig
     constexpr int spCmdMoveLimitMin = 0;
     // コマンド特殊技選択最大値
     constexpr int spCmdMoveLimitMax = 1;
+
+    // 攻撃サポート範囲
+    constexpr float attackCheckRange = 10.0f;
 };
 
 // プレイヤー
@@ -138,9 +141,6 @@ public:
 
     // コマンド初期化
     void InitCommands();
-
-    // ステート更新まとめ
-    void UpdateStateMachine(float elapsedTime);
 
     // 入力受付と行動への変換
     void HandleInput(float elapsedTime);
@@ -419,7 +419,6 @@ public:
         Blend,
         Reverseplayback,
     };
-
 
     enum class CommandAttack
     {
@@ -877,6 +876,7 @@ private:
     // seの音の大きさ
     float seVolume = 0.8f;
     /////////////////////// 
+    
 };
 
 // プレイヤーマネージャー

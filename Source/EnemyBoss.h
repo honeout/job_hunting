@@ -297,8 +297,8 @@ public:
     void SetModelDrawCheck(bool modelDrawCheck) {this->modelDrawCheck = modelDrawCheck;}
     
     // クリア確認
-    bool GetClearCheck() { return clearCheck; }
-    void SetClearCheck(bool clearCheck) { this->clearCheck = clearCheck; }
+    bool GetIsSecenChange() { return isSecenChange; }
+    void SetIsSecenChange(bool isClear) { this->isSecenChange = isClear; }
 
     void SetMoveCheck(bool moveCheck) 
     { this->moveCheck = moveCheck; }
@@ -471,7 +471,7 @@ private:
     bool damageStateCheck = false;
 
     // クリア確認
-    bool clearCheck = false;
+    bool isSecenChange = false;
 
     DirectX::XMFLOAT2 colorGB = { 1,1 };
 

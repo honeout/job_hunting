@@ -51,6 +51,8 @@ void PostprocessingRenderer::Render(RenderContext rc)
         rc.bloomData.gaussianFilterData = bloomData.gaussianFilterData;
         rc.bloomData.luminanceExtractionData = bloomData.luminanceExtractionData;
         rc.gaussianFilterData.textureSize = bloomData.gaussianFilterData.textureSize;
+        rc.gaussianFilterData = bloomData.gaussianFilterData;
+        rc.luminanceExtractionData = bloomData.luminanceExtractionData;
         rc.colorGradingData = colorGradingData;
         rc.radialBlurData = radialBlurData;
         rc.vignetteData = vignetteData;
@@ -158,6 +160,24 @@ void PostprocessingRenderer::DrawDebugGUI()
 
 void PostprocessingRenderer::MoveTowards()
 {
+    if (isIncreasingBloom)
+    {
+        bloomData.luminanceExtractionData.intensity += (bloomDataMax.luminanceExtractionData.intensity - bloomData.luminanceExtractionData.intensity);
+        bloomData.luminanceExtractionData.threshold += (bloomDataMax.luminanceExtractionData.threshold - bloomData.luminanceExtractionData.threshold);
+
+        bloomData.gaussianFilterData.kernelSize += (bloomDataMax.gaussianFilterData.kernelSize - bloomData.gaussianFilterData.kernelSize);
+        bloomData.gaussianFilterData.deviation += (bloomDataMax.gaussianFilterData.deviation - bloomData.gaussianFilterData.deviation);
+    }
+    else
+    {
+        bloomData.luminanceExtractionData.intensity -= (bloomDataMin.luminanceExtractionData.intensity - bloomData.luminanceExtractionData.intensity);
+        bloomData.luminanceExtractionData.threshold -= (bloomDataMin.luminanceExtractionData.threshold - bloomData.luminanceExtractionData.threshold);
+
+        bloomData.gaussianFilterData.kernelSize -= (bloomDataMin.gaussianFilterData.kernelSize - bloomData.gaussianFilterData.kernelSize);
+        bloomData.gaussianFilterData.deviation -= (bloomDataMin.gaussianFilterData.deviation - bloomData.gaussianFilterData.deviation);
+    }
+
+
     // ílè„è∏
     if (isIncreasingColorGrading)
     {

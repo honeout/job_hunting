@@ -52,7 +52,10 @@ public:
     void OnGUI() override;
 #endif // _DEBUG
 private:
-    Model* model = nullptr;
+    std::weak_ptr<BulletFiring> bulletFiring;
+    std::weak_ptr<Transform> transform;
+    std::weak_ptr<ModelControll> modelControll;
+
     Effect* effectProgress = nullptr;
     // エフェクト発生時
     Effect* effectSpawned = nullptr;
@@ -62,9 +65,6 @@ private:
     float   lifeTimer = 3.0f;
 
     float stepOffset = 1.0f;
-
-    std::shared_ptr<BulletFiring> bulletFiring;
-    std::shared_ptr<Transform> transform;
 
     float radius = 0.3f;
 

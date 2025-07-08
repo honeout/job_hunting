@@ -22,6 +22,7 @@ void BulletFiring::Move(float speed,float elapsedTime)
     position.z += bulletspeed * direction.z;
     GetActor()->GetComponent<Transform>()->SetPosition(position);
 }
+
 // 回転
 bool BulletFiring::Turn(float turnspeed,const DirectX::XMFLOAT3 &target, float elapedTime)
 {
@@ -82,6 +83,7 @@ bool BulletFiring::Turn(float turnspeed,const DirectX::XMFLOAT3 &target, float e
     }
     return false;
 }
+
 // ｙ無し
 bool BulletFiring::Turn2D(float speed, DirectX::XMFLOAT3& direction, float elapedTime)
 {
@@ -132,6 +134,7 @@ bool BulletFiring::Turn2D(float speed, DirectX::XMFLOAT3& direction, float elape
     }
     return false;
 }
+
 // 尾弾
 void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime)
 {
@@ -201,6 +204,7 @@ void BulletFiring::MoveHoming(float speed, float turnSpeed, DirectX::XMFLOAT3 ta
     transformid.lock()->SetDirection(direction);
     transformid.lock()->SetPosition(position);
 }
+
 // 通常ホーミング
 void BulletFiring::MoveFullHoming(
     float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime)
@@ -276,6 +280,7 @@ void BulletFiring::MoveFullHoming(
     transformid.lock()->SetDirection(direction);
     transformid.lock()->SetPosition(position);
 }
+
 // ルビー下から飛び出し
 void BulletFiring::JumpOut(float speed, float turnSpeed, DirectX::XMFLOAT3 target, float elapsedTime)
 {
@@ -413,6 +418,7 @@ void BulletFiring::Throwing(float speed, float turnSpeed, DirectX::XMFLOAT3 targ
     position.z += bulletspeed * direction.z;
     transformid.lock()->SetPosition(position);
 }
+
 // 初期値
 void BulletFiring::Lanch(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& position, float   lifeTimer)
 {
@@ -432,6 +438,7 @@ void BulletFiring::Destroy()
     ProjectileManager::Instance().Remove(GetActor());
    
 }
+
 #ifdef _DEBUG
 void BulletFiring::OnGUI()
 {

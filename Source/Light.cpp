@@ -72,7 +72,7 @@ void Light::DrawDebugGUI()
         {
         case LightType::Directional:
             {
-                if (ImGui::SliderFloat3("direction", &direction.x, -1.0f, 1.0f))
+                if (ImGui::SliderFloat3("direction", &direction.x, -100.0f, 100.0f))
                 {
                     // ‹——£‚ð‘ª‚é
                     float l = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);

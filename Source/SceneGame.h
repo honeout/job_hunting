@@ -123,7 +123,7 @@ private:
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源
 	//std::unique_ptr <Light> mainDirectionalLight; // シャドウマップを生成する平行光源
 	std::unique_ptr<DepthStencil> shadowmapDepthStencil; // シャドウマップ用深度ステンシルバッファ
-	float shadowDrawRect = 500.0f;// シャドウマップに描画する範囲
+	float shadowDrawRect = 59.0f;// シャドウマップに描画する範囲
 	DirectX::XMFLOAT4X4 lightViewProjeciton = {
 	0.0f,0.0f,0.0f,0.0f, 
 	0.0f,0.0f,0.0f,0.0f, 

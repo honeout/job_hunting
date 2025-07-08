@@ -77,9 +77,12 @@ public:
     };
 
 private:
-    Model* model = nullptr;
     Effect* effectProgress = nullptr;
     Effect* effectHit = nullptr;
+
+    std::weak_ptr<BulletFiring> bulletFiring;
+    std::weak_ptr<Transform> transform;
+    std::weak_ptr<ModelControll> modelControll;
 
     DirectX::XMFLOAT3 target = { 0,0,0 };
     // íeä€ê∂ñΩéûä‘
@@ -90,8 +93,6 @@ private:
     //float         turnSpeed = DirectX::XMConvertToRadians(1);// 
     float         turnSpeed = DirectX::XMConvertToRadians(180);// 
 
-    std::shared_ptr<BulletFiring> bulletFiring;
-    std::shared_ptr<Transform> transform;
 
     float radius = 0.3f;
 

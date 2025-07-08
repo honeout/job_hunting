@@ -663,6 +663,7 @@ void DamageState::Execute(float elapsedTime)
 void DamageState::Exit()
 {
 }
+
 // 混乱開始
 void ConfusionState::Enter()
 {
@@ -687,6 +688,7 @@ void ConfusionState::Enter()
 	// 攻撃種類
 	randamAttack = rand() % 2;
 }
+
 // 混乱更新
 void ConfusionState::Execute(float elapsedTime)
 {
@@ -717,10 +719,12 @@ void ConfusionState::Execute(float elapsedTime)
 		break;
 	}
 }
+
 // 混乱終了
 void ConfusionState::Exit()
 {
 }
+
 // 倒れる
 void DeathState::Enter()
 {
@@ -768,7 +772,7 @@ void DeathState::Execute(float elapsedTime)
 	Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 	if (stateTimer < 0)
 	{
-		enemyid->SetClearCheck(clearCheck);
+		enemyid->SetIsSecenChange(IsClear);
 	}
 }
 
@@ -883,13 +887,14 @@ void ClearState::Execute(float elapsedTime)
 		GamePad::BTN_B;
 	if (!model->IsPlayAnimation() )// ロードの次ゲームという書き方
 	{
-		enemyid->SetClearCheck(clearCheck);
+		enemyid->SetIsSecenChange(IsClear);
 	}
 }
 
 void ClearState::Exit()
 {
 }
+
 // クリア復活して
 void ClearReviveState::Enter()
 {
@@ -1356,6 +1361,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 		DirectX::XMVECTOR enemyPosition = DirectX::XMLoadFloat3(&enemyPos);
 
 		VectorXZ = DirectX::XMVectorSubtract(enemyPositionXZ, playerPositionXZ);
+		
 		Vector = DirectX::XMVectorSubtract(enemyPosition, playerPosition);
 
 		LengthSq = DirectX::XMVector2Length(VectorXZ);
@@ -1383,13 +1389,16 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 		isEnemyHit = !playerid->GetIsEnemyHit() && !playerid->GetIsEnemyHitBody() ?
 			EnemySafe : EnemyHit;
 		// 距離
-		if (length < attackCheckRange && !isEnemyHit)
+		if (length < PlayerConfig::attackCheckRange && !isEnemyHit)
 		{
+
 			bool stop = false;
 			moveid->SetStopMove(stop);
+
 			// 消す
 			isPlayerDrawCheck = 0;
 			playerid->SetPlayeDrawCheck(isPlayerDrawCheck);
+
 			// 正面
 			moveid->Turn(vector, turnSpeed, elapsedTime);
 			moveid->Move(vector, speed, elapsedTime);
@@ -1829,6 +1838,7 @@ void PlayerCycloneStrikeState::Exit()
 	bool stopFall = false;
 	moveid->SetStopFall(stopFall);
 }
+
 // 特殊技斬撃
 void PlayerSpecialAttackState::Enter()
 {
