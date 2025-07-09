@@ -42,7 +42,7 @@ public:
     void PlayEffectsShaders(float elapsedTime);
 
 	// どのシーンに行くか
-	void SelectScene();
+	void SelectScene(float elapsedTime);
 
 	void StartBgm();
 private:
@@ -151,4 +151,9 @@ private:
 
 	// UI位置
 	DirectX::XMFLOAT2 startPos = { 543, 477 };
+
+	// 入力保持用（グローバル or クラス内に保持）
+	float stickHoldTimerY = 0.0f;
+	float stickHoldTimerYStart = 0.0f;
+	float stickHoldTime = 0.1f;
 };

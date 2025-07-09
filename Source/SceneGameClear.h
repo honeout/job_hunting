@@ -43,7 +43,7 @@ public:
 	void StartBgm();
 
 	// どのシーンに行くか
-	void SelectScene();
+	void SelectScene(float elapsedTime);
 
 private:
 	enum class Select
@@ -139,4 +139,9 @@ private:
 
 	DirectX::XMFLOAT2 startPos = { 543, 477 };
 	DirectX::XMFLOAT2 exitPos = { 543, 577 };
+
+	// 入力保持用（グローバル or クラス内に保持）
+	float stickHoldTimerY = 0.0f;
+	float stickHoldTimerYStart = 0.0f;
+	float stickHoldTime = 0.1f;
 };

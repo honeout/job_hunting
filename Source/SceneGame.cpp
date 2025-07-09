@@ -520,7 +520,7 @@ void SceneGame::PostProcessingRendererInitialize()
 	postprocessingRenderer.SetSceneData(srvData);
 
 	bloomData.luminanceExtractionData.threshold = 0.18f;
-	bloomData.luminanceExtractionData.intensity = 2.358f;
+	bloomData.luminanceExtractionData.intensity = 0.128f;
 
 	bloomData.gaussianFilterData.kernelSize = 8;
 	bloomData.gaussianFilterData.deviation = 10.3f;

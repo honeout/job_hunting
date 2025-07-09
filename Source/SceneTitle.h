@@ -62,7 +62,7 @@ public:
 
 
 	// どのシーンに行くか
-	void SelectScene();
+	void SelectScene(float elapsedTime);
 private:
 	enum class Select
 	{
@@ -102,7 +102,7 @@ private:
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源
 	std::unique_ptr<DepthStencil> shadowmapDepthStencil; // シャドウマップ用深度ステンシルバッファ
-	float shadowDrawRect = 59.0f;// シャドウマップに描画する範囲
+	float shadowDrawRect = 30.0f;// シャドウマップに描画する範囲
 	DirectX::XMFLOAT4X4 lightViewProjeciton = {
 	0.0f,0.0f,0.0f,0.0f,
 	0.0f,0.0f,0.0f,0.0f,
@@ -189,4 +189,12 @@ private:
 
 	// ボタン確認
 	bool isPush = false;
+
+	// コマンド上下反応
+	float               isInputEmpty = 0.0f;
+
+	// 入力保持用（グローバル or クラス内に保持）
+	float stickHoldTimerY = 0.0f;
+	float stickHoldTimerYStart = 0.0f;
+	float stickHoldTime = 0.1f;
 };

@@ -102,11 +102,11 @@ void SceneGameOver::Initialize()
 		postprocessingRenderer.SetSceneData(srvData);
 
 		// シェーダー値
-		bloomData.luminanceExtractionData.threshold = 0.41f;
-		bloomData.luminanceExtractionData.intensity = 1.6f;
+		bloomData.luminanceExtractionData.threshold = 0.18f;
+		bloomData.luminanceExtractionData.intensity = 0.128f;
 
-		bloomData.gaussianFilterData.kernelSize = 15;
-		bloomData.gaussianFilterData.deviation = 8.3f;
+		bloomData.gaussianFilterData.kernelSize = 8;
+		bloomData.gaussianFilterData.deviation = 10.3f;
 
 		postprocessingRenderer.SetBloomData(bloomData);
 		vignetteData.color = { 1,1,1,1 };
@@ -182,7 +182,7 @@ void SceneGameOver::Update(float elapsedTime)
 		UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
 			GetComponent<TransForm2D>()->SetPosition(PushPos);
 	}
-	SelectScene();
+	SelectScene(elapsedTime);
 }
 
 void SceneGameOver::Render()
@@ -771,7 +771,7 @@ void SceneGameOver::PlayEffectsShaders(float elapsedTime)
 {
 }
 
-void SceneGameOver::SelectScene()
+void SceneGameOver::SelectScene(float elapsedTime)
 {
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
 	const GamePadButton anyButton =
@@ -835,13 +835,35 @@ void SceneGameOver::SelectScene()
 	// ボタン確認
 	if (isPush) return;
 
-	if (gamePad.GetButtonDown() & GamePad::BTN_UP)
+	float ay = gamePad.GetAxisLY();
+	// コマンド操作スティック操作用
+	if (gamePad.GetButtonDown() & GamePad::BTN_UP || ay < 0)
 	{
-		selectPush = selectPush <= (int)Select::Title ? (int)Select::Game : (int)Select::Title;
+		stickHoldTimerY += elapsedTime;
+
+		if (gamePad.GetButtonDown() & GamePad::BTN_UP || stickHoldTimerY >= stickHoldTime)
+		{
+			stickHoldTimerY = stickHoldTimerYStart;
+			selectPush = selectPush <= (int)Select::Title ? (int)Select::Game : (int)Select::Title;
+		}
 	}
-	if (gamePad.GetButtonDown() & GamePad::BTN_DOWN)
+
+
+	if (gamePad.GetButtonDown() & GamePad::BTN_DOWN || ay > 0)
 	{
-		selectPush = selectPush >= (int)Select::Game ? (int)Select::Title : (int)Select::Game;
+		stickHoldTimerY += elapsedTime;
+
+		if (gamePad.GetButtonDown() & GamePad::BTN_DOWN || stickHoldTimerY >= stickHoldTime)
+		{
+			stickHoldTimerY = stickHoldTimerYStart;
+			selectPush = selectPush >= (int)Select::Game ? (int)Select::Title : (int)Select::Game;
+		}
+	}
+	// 入力が無かったら初期化
+	if (ay == 0.0f)
+	{
+
+		stickHoldTimerY = stickHoldTimerYStart;
 	}
 }
 

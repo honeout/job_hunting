@@ -51,6 +51,12 @@ void SceneTitle::Initialize()
 		//light->SetRange(1000.0f);
 		//LightManager::Instanes().Register(light);
 
+		//Light* light = new Light(LightType::Point);
+		//light->SetPosition(DirectX::XMFLOAT3(0.000, -30, -42));
+		//light->SetColor(DirectX::XMFLOAT4(1, 1, 1, 1));
+		//light->SetRange(lightRange);
+		//LightManager::Instanes().Register(light);
+
 
 		Light* light = new Light(LightType::Point);
 		light->SetPosition(DirectX::XMFLOAT3(-40.000, -3, 1));
@@ -201,7 +207,7 @@ void SceneTitle::Update(float elapsedTime)
 		return;
 	}
 	// UIコマンド操作
-	SelectScene();
+	SelectScene(elapsedTime);
 }
 // 描画処理
 void SceneTitle::Render()
@@ -928,12 +934,13 @@ void SceneTitle::PlayEffectsShaders(float elapsedTime)
 	}
 }
 // UIコマンド操作
-void SceneTitle::SelectScene()
+void SceneTitle::SelectScene(float elapsedTime)
 {
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
 	const GamePadButton anyButton =
 		GamePad::BTN_B;
 	GamePad& gamePad = Input::Instance().GetGamePad();
+	float ay = gamePad.GetAxisLY();
 	switch (selectPush)
 	{
 	case (int)Select::Game:
@@ -973,13 +980,38 @@ void SceneTitle::SelectScene()
 	}
 	}
 	if (isPush) return;
-	if (gamePad.GetButtonDown() & GamePad::BTN_UP)
+
+	// コマンド操作スティック操作用
+	if (gamePad.GetButtonDown() & GamePad::BTN_UP || ay < 0)
 	{
-		selectPush = selectPush <= (int)Select::Game ? (int)Select::Exit : (int)Select::Game;
+		stickHoldTimerY += elapsedTime;
+
+		if (gamePad.GetButtonDown() & GamePad::BTN_UP || stickHoldTimerY >= stickHoldTime)
+		{
+			stickHoldTimerY = stickHoldTimerYStart;
+			selectPush = selectPush <= (int)Select::Game ? (int)Select::Exit : (int)Select::Game;
+		}
 	}
-	if (gamePad.GetButtonDown() & GamePad::BTN_DOWN)
+
+
+	if (gamePad.GetButtonDown() & GamePad::BTN_DOWN || ay > 0)
 	{
-		selectPush = selectPush >= (int)Select::Exit ? (int)Select::Game : (int)Select::Exit;
+		stickHoldTimerY += elapsedTime;
+
+		if (gamePad.GetButtonDown() & GamePad::BTN_DOWN || stickHoldTimerY >= stickHoldTime)
+		{
+			stickHoldTimerY = stickHoldTimerYStart;
+			selectPush = selectPush >= (int)Select::Exit ? (int)Select::Game : (int)Select::Exit;
+		}
 	}
+	// 入力が無かったら初期化
+	if (ay == 0.0f)
+	{
+
+		stickHoldTimerY = stickHoldTimerYStart;
+
+	}
+
+
 }
 
