@@ -108,7 +108,7 @@ void WanderState::Execute(float elapsedTime)
 		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 		// ラジアルブラー
 		radialBlurData.radius = 30.0f;
-		postprocessingRenderer.SetRadialBlurData(radialBlurData);
+		postprocessingRenderer.SetRadialBlurMaxData(radialBlurData);
 	}
 
 	// 最初の速度が遅い後に通常に戻す
@@ -125,53 +125,61 @@ void WanderState::Execute(float elapsedTime)
 	// 目的地にこの半径入ったら
 	float radius = enemyid->GetAttackRightFootRange();
 	// 当たり判定
+	Model::Node* bossLeftFoot = model->FindNode("boss_left_foot1");
+	Model::Node* bossRightFoot = model->FindNode("boss_right_foot1");
+	Model::Node* bossRightHand = model->FindNode("boss_right_hand1");
+	Model::Node* bossLeftHand = model->FindNode("boss_left_hand1");
+	// ノード位置取得
+	// 左足
+	DirectX::XMFLOAT3 bossLeftFootPosition;
+	bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
+	// 右足
+	DirectX::XMFLOAT3 bossRightFootPosition;
+	bossRightFootPosition = model->ConvertLocalToWorld(bossRightFoot);
+	// 右腕
+	DirectX::XMFLOAT3 bossRightHandPosition;
+	bossRightHandPosition = model->ConvertLocalToWorld(bossRightHand);
+	// 左腕
+	DirectX::XMFLOAT3 bossLeftHandPosition;
+	bossLeftHandPosition = model->ConvertLocalToWorld(bossLeftHand);
+	// 足が地面につく
+	if (animationTime + FLT_EPSILON >= 4.0f - FLT_EPSILON &&
+		animationTime - FLT_EPSILON <= 4.1f + FLT_EPSILON)
 	{
-		Model::Node * bossLeftFoot = model->FindNode("boss_left_foot1");
-		Model::Node* bossRightFoot = model->FindNode("boss_right_foot1");
-		Model::Node* bossRightHand = model->FindNode("boss_right_hand1");
-		Model::Node* bossLeftHand = model->FindNode("boss_left_hand1");
-		// ノード位置取得
-		// 左足
-		DirectX::XMFLOAT3 bossLeftFootPosition;
-		bossLeftFootPosition = model->ConvertLocalToWorld(bossLeftFoot);
-		// 右足
-		DirectX::XMFLOAT3 bossRightFootPosition;
-		bossRightFootPosition = model->ConvertLocalToWorld(bossRightFoot);
-		// 右腕
-		DirectX::XMFLOAT3 bossRightHandPosition;
-		bossRightHandPosition = model->ConvertLocalToWorld(bossRightHand);
-		// 左腕
-		DirectX::XMFLOAT3 bossLeftHandPosition;
-		bossLeftHandPosition = model->ConvertLocalToWorld(bossLeftHand);
-		// 足が地面につく
-		if (animationTime + FLT_EPSILON >= 4.0f - FLT_EPSILON &&
-			animationTime - FLT_EPSILON <= 4.1f + FLT_EPSILON)
+		// 全身当たり判定
+		enemyid->DetectHitByBodyAllPart(applyDamage);
+		if (isLightSmorkEffect)
 		{
-			// ジャンプ音
+			// 足音
 			enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
-
 			smorker->Play(bossRightFootPosition, scaleEffect);
 
-			// 全身当たり判定
-			enemyid->DetectHitByBodyAllPart(applyDamage);
-		}
-
-		// 足が地面につく
-		if (animationTime + FLT_EPSILON >= 4.6f - FLT_EPSILON &&
-			animationTime - FLT_EPSILON <= 4.7f + FLT_EPSILON)
-		{
-			// ジャンプ音
-			enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
-			smorker->Play(bossLeftFootPosition, scaleEffect);
-			// 全身当たり判定
-			enemyid->DetectHitByBodyAllPart(applyDamage);
 		}
 	}
+
+	// 足が地面につく
+	if (animationTime + FLT_EPSILON >= 4.6f - FLT_EPSILON &&
+		animationTime - FLT_EPSILON <= 4.7f + FLT_EPSILON)
+	{
+		// 全身当たり判定
+		enemyid->DetectHitByBodyAllPart(applyDamage);
+		if (isLeftSmorkEffect)
+		{
+			// 足音
+			enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
+			smorker->Play(bossLeftFootPosition, scaleEffect);
+		}
+	}
+
 }
 
 // 徘徊ステートから出ていくときのメソッド
 void WanderState::Exit()
 {
+	// エフェクト再生許可
+	isLightSmorkEffect = true;
+	isLeftSmorkEffect = true;
+
 	auto sharedId = owner.lock();
 	if (!sharedId)
 		return;
@@ -369,6 +377,9 @@ void JumpState::Enter()
 	}
 	// 煙エフェクト
 	smorker = std::make_unique<Effect>("Data/Effect/smorkeDash.efk");
+
+	// 煙発射確認
+	isRightSmorkerEffect = true;
 }
 
 // 後変更
@@ -412,7 +423,8 @@ void JumpState::Execute(float elapsedTime)
 		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance().Instance();
 		// ラジアルブラー
 		radialBlurData.radius = 15;
-		postprocessingRenderer.SetRadialBlurData(radialBlurData);
+		postprocessingRenderer.SetRadialBlurMaxData(radialBlurData);
+
 		return;
 	}
 	else
@@ -431,19 +443,26 @@ void JumpState::Execute(float elapsedTime)
 		enemyid->InputImpact(enemyid->GetPosition());
 		enemyid->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Idle));
 		enemyid->InputJump();
-		// 煙エフェクト
-		smorker->Play(bossLeftFootPosition, scaleEffect);
+
 		PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance().Instance();
 		// ラジアルブラー
-		radialBlurData.radius = 30;
+		radialBlurData.radius = 100;
 		postprocessingRenderer.SetRadialBlurData(radialBlurData);
 		 // 左足当たり判定
 		enemyid->DetectHitByBodyPart(bossLeftFootPosition, applyDamageJumpStart);
+
+		if (isRightSmorkerEffect)
+		{
+			// 煙エフェクト
+			smorker->Play(bossLeftFootPosition, scaleEffect);
+		}
+
 	}
 }
 // 終了処理
 void JumpState::Exit()
 {
+
 }
 
 // 初期化
@@ -489,6 +508,10 @@ void AttackState::Enter()
 	smorker = std::make_unique<Effect>("Data/Effect/smorkeDash.efk");
 	charge = std::make_unique<Effect>("Data/Effect/effectCharge.efk");
 	chargeCompleate = std::make_unique<Effect>("Data/Effect/chargecompleted.efk");
+
+	// エフェクト放つ
+	isRightSmorkEffect = true;
+	isLeftSmorkEffect = true;
 }
 
 // update
@@ -579,21 +602,52 @@ void AttackState::Execute(float elapsedTime)
 		dushStart = true;
 	}
 	
+
+
+
 	// ダッシュ中
 	if (dushStart)
 	{
-		
-		// ジャンプ音
-		enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
 		charge->Stop(charge->GetEfeHandle());
-		// 煙エフェクト
-		smorker->Play(bossLeftFootPosition, scaleEffect);
+
 		moveid->Move(direction, moveSpeed, elapsedTime);
 		stateChargeCompletionTimer -= 0.01f;
 		// 右足当たり判定
 		enemyid->DetectHitByBodyPart(bossRightFootPosition, applyDamageAttack);
 		// 左足当たり判定
 		enemyid->DetectHitByBodyPart(bossLeftFootPosition, applyDamageAttack);
+
+		// ダッシュ中 左足
+		if (isLeftSmorkEffect && animationTime >= 0.4f && animationTime <= 0.7f)
+		{
+			// ジャンプ音
+			enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
+			// 煙エフェクト
+			smorker->Play(bossLeftFootPosition, scaleEffect);
+			// 左足エフェクト
+			isLeftSmorkEffect = false;
+		}
+
+		// ダッシュ中　右足
+		if (isRightSmorkEffect && animationTime >= 2.4f && animationTime <= 2.7f)
+		{
+			// ジャンプ音
+			enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
+			// 煙エフェクト
+			smorker->Play(bossRightFootPosition, scaleEffect);
+			// 右足エフェクト
+			isRightSmorkEffect = false;
+		}
+
+		// 放つ
+		if (animationTime >= 2.8f)
+		{
+			// 左足エフェクト
+			isLeftSmorkEffect = true;
+
+			// 右足エフェクト
+			isRightSmorkEffect = true;
+		}
 	}
 
 	// ダッシュ終了
@@ -3136,6 +3190,12 @@ void PlayerTitlePushState::Enter()
 	moveid->SetStopFall(stopFall);
 	// モーション切り替え
 	secondeMortion = false;
+
+	// 手元の雷
+	isLightningStart = true;
+
+	// 放つ雷
+	isLightningFire = true;
 }
 
 void PlayerTitlePushState::Execute(float elapsedTime)
@@ -3160,20 +3220,12 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 		// アニメーション
 		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON && !secondeMortion)
 		{
-			// 雷音
-			playerid->PlaySe("Data/Audio/SE/雷.wav");
+			// 手元雷
+			if (isLightningStart)
+			{
+				// 雷音
+				playerid->PlaySe("Data/Audio/SE/雷.wav");
 
-				// 再生ループ
-				bool  loop = false;
-				// 再生開始時間 
-				float currentAnimationStartSeconds = 0.0f;
-				// 再生時間加算分の値
-				float currentAnimationAddSeconds = 0.00f;
-				// アニメーションブレンド
-				float blendSeconds = 0.5f;
-				modelAnim.index = Player::Animation::Anim_SpecialAttack;
-				// アニメーション再生
-				model->PlayAnimation(modelAnim);
 				Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
 				DirectX::XMFLOAT3 pPosition =
 				{
@@ -3181,26 +3233,54 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 							pHPosiiton->worldTransform._42,
 							pHPosiiton->worldTransform._43
 				};
+				// エフェクト
 				lightningHit->Play(pPosition);
-				secondeMortion = true;
-				// ポストエフェクトインスタンスゲット
-				PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-				// ラジアルブラー
-				radialBlurData.radius = 40.0f;
-				postprocessingRenderer.SetRadialBlurData(radialBlurData);
+				// 二度目禁止
+				isLightningStart = false;
+			}
+
+			// 再生ループ
+			bool  loop = false;
+			// 再生開始時間 
+			float currentAnimationStartSeconds = 0.0f;
+			// 再生時間加算分の値
+			float currentAnimationAddSeconds = 0.00f;
+			// アニメーションブレンド
+			float blendSeconds = 0.5f;
+			modelAnim.index = Player::Animation::Anim_SpecialAttack;
+			// アニメーション再生
+			model->PlayAnimation(modelAnim);
+
+			
+			secondeMortion = true;
+			// ポストエフェクトインスタンスゲット
+			PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
+			// ラジアルブラー
+			radialBlurData.radius = 40.0f;
+			postprocessingRenderer.SetRadialBlurData(radialBlurData);
 		}
 		if (animationTime >= 1.5f - FLT_EPSILON && animationTime <= 1.6f + FLT_EPSILON && secondeMortion)
 		{
-			// seたたきつけ再生
-			playerid->PlaySe("Data/Audio/SE/必殺技雷.wav");
-			Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
-			DirectX::XMFLOAT3 pPosition =
+			// 雷放つ
+			if (isLightningFire)
 			{
-						pHPosiiton->worldTransform._41,
-						pHPosiiton->worldTransform._42,
-						pHPosiiton->worldTransform._43
-			};
-			lightningHit->Play(pPosition);
+				// seたたきつけ再生
+				playerid->PlaySe("Data/Audio/SE/必殺技雷.wav");
+
+				Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
+				DirectX::XMFLOAT3 pPosition =
+				{
+							pHPosiiton->worldTransform._41,
+							pHPosiiton->worldTransform._42,
+							pHPosiiton->worldTransform._43
+				};
+				// エフェクト
+				lightningHit->Play(pPosition);
+
+				// 二度目
+				isLightningFire = false;
+			}
+
 			// ポストエフェクトインスタンスゲット
 			PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 			// ラジアルブラー
@@ -3212,6 +3292,9 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 			// シーン終了
 			playerid->SetEndState(true);
 		}
+
+
+
 }
 
 void PlayerTitlePushState::Exit()

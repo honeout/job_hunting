@@ -554,7 +554,7 @@ void Player::UpdateCameraState(float elapsedTime)
     // 通常カメラなら足元を送る。
     if (!rockCheck)
     {
-        Model::Node* PRock = modelControllId->GetModel()->FindNode("mixamorig:Spine1");
+        Model::Node* PRock = modelControllId->GetModel()->FindNode("mixamorig:Neck");
         DirectX::XMFLOAT3 pPosition =
         {
                     PRock->worldTransform._41,
@@ -579,7 +579,7 @@ void Player::UpdateCameraState(float elapsedTime)
     std::shared_ptr<ModelControll> enemyModel = enemyShader->GetComponent<ModelControll>();
 
     // ロックオンモード
-    Model::Node* PRock = modelControllId->GetModel()->FindNode("mixamorig:Spine1");
+    Model::Node* PRock = modelControllId->GetModel()->FindNode("mixamorig:LeftFoot");
     DirectX::XMFLOAT3 pPosition;
     pPosition = enemyModel->GetModel()->ConvertLocalToWorld(PRock);
     pPosition.z *= 1.1f;

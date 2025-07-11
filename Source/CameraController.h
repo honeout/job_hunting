@@ -91,13 +91,13 @@ private:
 	// 注視点ずらす値
 	float				lookAtOffset = 0.5f;
 	// 敵との
-	float				lengthMinRock = 5.0f;
+	float				lengthMinRock = 8.0f;
 	float				lengthRock = 7.0f;
 	float				heightMaxRock = 0.0f;
 	float				heightAttackMaxRock = -1.0f;
 
 	// カメラの距離
-	float				attacklengthMinRock = 6.0f;
+	float				attacklengthMinRock = 10.0f;
 	float				attacklengthMinRockScale = 1.3f;
 
 	// ターゲットの一定以上高い

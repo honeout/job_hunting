@@ -29,7 +29,10 @@ Framework::Framework(HWND hWnd)
 	hDC = GetDC(hWnd);
 
 	// シーン初期化
+	//SceneManager::Instance().ChangeScene(new SceneGame);
 	SceneManager::Instance().ChangeScene(new SceneTitle);
+	//SceneManager::Instance().ChangeScene(new SceneGameClear);
+	//SceneManager::Instance().ChangeScene(new SceneGameOver);
 }
 
 // デストラクタ

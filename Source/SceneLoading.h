@@ -49,6 +49,12 @@ private:
     std::shared_ptr<Sprite> spriteLoading;
     std::shared_ptr<Sprite> spriteControlManual;
 
+    // ‰æ–ÊƒTƒCƒY
+    const float screenWidth = 1280;
+    const float screenHeight = 720;
+    // ‰æ–Ê‚Ì”ä—¦
+    DirectX::XMFLOAT2 scaleScreen;
+
     float angle = 0.0f;
     float angleLoading = 0.0f;
 

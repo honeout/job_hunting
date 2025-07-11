@@ -73,6 +73,13 @@ private:
 	// カメラ
 	CameraController* cameraControlle = nullptr;
 
+	// 画面サイズ
+	const float screenWidth = 1280;
+	const float screenHeight = 720;
+	// 画面の比率
+	DirectX::XMFLOAT2 scaleScreen;
+
+
 	//// BGM
 	//std::unique_ptr<AudioSource> bgm;
 	//// SE
@@ -176,8 +183,8 @@ private:
 	float debugShakePower = 0.5f;
 	float debugShakeTimer = 0.2f;
 
-	DirectX::XMFLOAT2 startPos = { 543, 477 };
-	DirectX::XMFLOAT2 exitPos = { 543, 577 };
+	DirectX::XMFLOAT2 startPos = { 603, 477 };
+	DirectX::XMFLOAT2 exitPos = { 603, 547 };
 
 	DirectX::XMFLOAT2 buttonPos = {0,0};
 

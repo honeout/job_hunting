@@ -448,6 +448,10 @@ void SceneGameOver::RenderShadowmap()
 
 void SceneGameOver::InitializeComponent()
 {
+	Graphics& graphics = Graphics::Instance();
+	// 画面の比率
+	scaleScreen = { graphics.GetScreenWidth() / screenWidth,graphics.GetScreenHeight() / screenHeight };
+
 	// 行動範囲
 	{
 		minPos.x = -30;
@@ -592,7 +596,9 @@ void SceneGameOver::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 785, 35 };
+		DirectX::XMFLOAT2 pos = { 0, 35 };
+		DirectX::XMFLOAT2 offset = { screenWidth - pos.x * scaleScreen.x, pos.y * scaleScreen.y };
+		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -632,7 +638,9 @@ void SceneGameOver::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 543, 515 };
+		//DirectX::XMFLOAT2 pos = { 543, 515 };
+		DirectX::XMFLOAT2 offset = { titlePos.x * scaleScreen.x, titlePos.y * scaleScreen.y };
+		titlePos = { offset.x,offset.y };
 		transform2D->SetPosition(titlePos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -668,7 +676,9 @@ void SceneGameOver::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 543, 515 };
+		//DirectX::XMFLOAT2 pos = { 543, 515 };
+		DirectX::XMFLOAT2 offset = { reStartPos.x * scaleScreen.x, reStartPos.y * scaleScreen.y };
+		reStartPos = { offset.x,offset.y };
 		transform2D->SetPosition(reStartPos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -704,7 +714,9 @@ void SceneGameOver::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 717, 100 };
+		DirectX::XMFLOAT2 pos = { 503, 100 };
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
+		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -741,6 +753,8 @@ void SceneGameOver::InitializeComponent()
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		DirectX::XMFLOAT2 pos = { 543, 477 };
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
+		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -809,10 +823,10 @@ void SceneGameOver::SelectScene(float elapsedTime)
 		{
 			// UI ボタンを押す
 			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Select)->
-				GetComponent<TransForm2D>()->SetPosition(startPos);
+				GetComponent<TransForm2D>()->SetPosition(reStartPos);
 
 			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((startPos.y + buttonPosYAdd));
+				GetComponent<TransForm2D>()->SetPositionY((reStartPos.y + buttonPosYAdd));
 		}
 		int playerCount = PlayerManager::Instance().GetPlayerCount();
 

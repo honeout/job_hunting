@@ -64,6 +64,10 @@ private:
 	// BGM
 	std::unique_ptr<Audio> Bgm;
 
+	// 画面サイズ
+	const float screenWidth = 1280;
+	const float screenHeight = 720;
+
 	// シェーダーをエフェクトして再生
 	float shaderPlayStateTimer = 0;
 	float shaderPlayStateTimerMax = 0.8f;

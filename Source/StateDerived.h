@@ -53,6 +53,10 @@ private:
 
 	// 最初のスローの時間
 	float slowWalkTime = 3.8f;
+	// エフェクト再生
+	bool isLightSmorkEffect = true;
+	// エフェクト再生
+	bool isLeftSmorkEffect = true;
 };
 
 // 待機ステートオブジェクト
@@ -165,6 +169,9 @@ private:
 	bool jumpStart = false;
 
 	RadialBlurData radialBlurData;
+
+	// 右足煙エフェクト発射確認
+	bool isRightSmorkerEffect = true;
 };
 
 
@@ -232,6 +239,11 @@ private:
 	DirectX::XMFLOAT3 direction;
 
 	DirectX::XMFLOAT3 directionP;
+
+	// 右足エフェクト
+	bool isRightSmorkEffect;
+	// 左足エフェクト
+	bool isLeftSmorkEffect;
 };
 
 // ダメージステートオブジェクト
@@ -1166,6 +1178,9 @@ private:
 	std::unique_ptr<Effect> lightningHit;
 
 	RadialBlurData radialBlurData;
+
+	bool isLightningStart = true;
+	bool isLightningFire = true;
 };
 
 // プレイヤークリア用待機ステートオブジェクト

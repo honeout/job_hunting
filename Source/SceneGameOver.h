@@ -54,6 +54,12 @@ private:
 private:
     CameraController* cameraControlle = nullptr;
 
+	// 画面サイズ
+	const float screenWidth = 1280;
+	const float screenHeight = 720;
+	// 画面の比率
+	DirectX::XMFLOAT2 scaleScreen;
+
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;
 
@@ -133,7 +139,7 @@ private:
 	int selectPush = 0;
 
 	DirectX::XMFLOAT2 reStartPos = { 543, 477 };
-	DirectX::XMFLOAT2 titlePos = { 543, 577 };
+	DirectX::XMFLOAT2 titlePos = { 543, 537 };
 
 	DirectX::XMFLOAT2 buttonPos = { 0,0 };
 
@@ -148,9 +154,6 @@ private:
 
 	// ボタン確認
 	bool isPush = false;
-
-	// UI位置
-	DirectX::XMFLOAT2 startPos = { 543, 477 };
 
 	// 入力保持用（グローバル or クラス内に保持）
 	float stickHoldTimerY = 0.0f;
