@@ -60,6 +60,15 @@ private:
 	// 画面の比率
 	DirectX::XMFLOAT2 scaleScreen;
 
+	// カメラ位置
+	DirectX::XMFLOAT3 cameraPosition = { 4.126, -2.989, -17.144 };
+
+	// カメラ注視点
+	DirectX::XMFLOAT3 cameraFocus = { 0,0,0 };
+
+	// カメラ上情報
+	DirectX::XMFLOAT3 cameraUp = { 0, 1, 0 };
+
 	// オフスクリーンレンダリング用描画ターゲット
 	std::unique_ptr<RenderTarget> renderTarget;
 

@@ -62,4 +62,8 @@ public:
         const Model* model,
         HitResult& result
     );
+
+    // ‰~‚Ì“à‚È‚ç
+    static bool  SphereCollider(const DirectX::XMFLOAT3& s1,const float radius1
+        , const DirectX::XMFLOAT3& s2, const float radius2);
 };

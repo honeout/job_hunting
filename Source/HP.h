@@ -87,6 +87,8 @@ public:
 private:
 	// Å‘å’lHP
 	int          maxHealth = 5;
+	// Å’á’l
+	int			minHealth = 0;
 
 	// HP
 	int          health = maxHealth;

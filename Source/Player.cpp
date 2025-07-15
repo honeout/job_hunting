@@ -21,6 +21,7 @@
 #include "Graphics/PrimitiveRenderer.h"
 #include "MagicConfig.h"
 #include "SceneManager.h"
+#include "SceneGame.h"
 
 // デストラクタ
 Player::~Player()
@@ -50,6 +51,13 @@ void Player::Update(float elapsedTime)
     // ステート毎の処理
     stateMachine->Update(elapsedTime);
 
+    // シーンゲーム以外の処理
+    if (SceneManager::Instance().GetCurrentScene()->GetSceneName() != "SceneGame")
+    {
+        // アニメーション
+        UpdateAnimation(elapsedTime);
+        return;
+    }
     // 入力処理　コマンド等
     HandleInput(elapsedTime);
 
@@ -71,7 +79,6 @@ void Player::Update(float elapsedTime)
 
 void Player::Render(RenderContext& rc, ModelShader& shader)
 {
-
     auto modelControllId = modelControll.lock();
 
     // 有効性チェック
@@ -236,6 +243,13 @@ void Player::InitStats()
 
     // 経過時間関数最大値
     timeElapsedHintMax = PlayerConfig::timeElapsedHintMax;
+
+    // 点灯時間
+    lightingTime = 0.0f;
+    isLightingTime = false;
+
+    // 不透明
+    lightingTimeAlpha = 0.0f;
 }
 
 void Player::InitCommands()
@@ -311,7 +325,7 @@ void Player::HandleInput(float elapsedTime)
             // ステート遷移
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
             // 音再生
-            PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
+            PlaySe("Data/Audio/SE/slash.wav");
             // もし地面なら何もしない
             bool noStart = false;
             // エフェクト再生
@@ -335,7 +349,7 @@ void Player::HandleInput(float elapsedTime)
             if (mpId->GetMpEmpth())
             {
                 // se再生
-                seParam.filename = "Data/Audio/SE/魔法打てない.wav";
+                seParam.filename = "Data/Audio/SE/cant magic.wav";
                 seParam.volume = 1.0f;
                 InputSe(seParam);
                 magicAction = false;
@@ -357,7 +371,7 @@ void Player::HandleInput(float elapsedTime)
         if (GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
             // 特殊攻撃
-            InputSpecialAttackCharge();
+            InputSpecialAttackCharge(elapsedTime);
         // 特殊技変更
         InputSpecialAttackChange();
         // UI必殺技演出
@@ -475,7 +489,6 @@ void Player::UpdateAnimation(float elapsedTime)
     // 部分再生
     case UpAnim::Doble:
     {
-        
         // モデル部分アニメーション更新処理
         modelControllId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, PlayerConfig::bornUpStartPoint, PlayerConfig::bornUpEndPoint, true);
         modelControllId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, PlayerConfig::bornDownerStartPoint, PlayerConfig::bornDownerEndPoint, true);
@@ -802,7 +815,7 @@ void Player::OnGUI()
         // se再生
         Audio& Se = Audio::Instance();
         AudioParam audioParam;
-        audioParam.filename = "Data/Audio/SE/必殺技雷.wav";
+        audioParam.filename = "Data/Audio/SE/Special Move Thunder.wav";
         audioParam.loop = isLoopDisabled;
         audioParam.volume = seVolume;
         Se.Play(audioParam);
@@ -1859,7 +1872,7 @@ void Player::RemoveUIMagic()
 }
 
 // 特殊攻撃選択
-bool Player::InputSpecialAttackCharge()
+bool Player::InputSpecialAttackCharge(float elapsedTime)
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
     int uiCount = UiManager::Instance().GetUiesCount();
@@ -1878,12 +1891,12 @@ bool Player::InputSpecialAttackCharge()
         if (!sharedUiSpecialChargeFurstId && !sharedUiSpecialChargeSecondId && !sharedUiSpecialChargeSerdeId)
             return false;
 
-        std::shared_ptr<Ui> uiIdSpecialChargeFurst = sharedUiSpecialChargeFurstId->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSecond = sharedUiSpecialChargeSecondId->GetComponent<Ui>();
-        std::shared_ptr<Ui> uiIdSpecialChargeSerde = sharedUiSpecialChargeSerdeId->GetComponent<Ui>();
+        auto uiIdSpecialChargeFurst = sharedUiSpecialChargeFurstId->GetComponent<Ui>();
+        auto uiIdSpecialChargeSecond = sharedUiSpecialChargeSecondId->GetComponent<Ui>();
+        auto uiIdSpecialChargeSerde = sharedUiSpecialChargeSerdeId->GetComponent<Ui>();
 
         // 必殺技たまった音
-        PlaySe("Data/Audio/SE/必殺技ため.wav");
+        PlaySe("Data/Audio/SE/For the killer move.wav");
 
         //// 一度発動すると初期化
         specialAttackCharge = 0.0f;
@@ -1933,7 +1946,7 @@ bool Player::InputSpecialAttackCharge()
             if (!specialAttack.at(specialAttackNum).hasSkill)
             {
                 // se再生
-                seParam.filename = "Data/Audio/SE/魔法打てない.wav";
+                seParam.filename = "Data/Audio/SE/cant magic.wav";
                 seParam.volume = 1.0f;
                 InputSe(seParam);
                 // 必殺技UIを解除
@@ -1971,7 +1984,7 @@ bool Player::InputSpecialAttackCharge()
             if (!specialAttack.at(specialAttackNum).hasSkill)
             {
                 // se再生
-                seParam.filename = "Data/Audio/SE/魔法打てない.wav";
+                seParam.filename = "Data/Audio/SE/cant magic.wav";
                 seParam.volume = 1.0f;
                 InputSe(seParam);
                 // 必殺技UIを解除
@@ -2046,7 +2059,7 @@ bool Player::InputSpecialAttackCharge()
 
     // チャージたまる
     // チャージを見やすく
-    if (specialAttackCharge >= 0.4f)
+    if (specialAttackCharge >= 0.4f && specialAttackCharge < 0.8f)
     {
         // 安全チェック
         auto sharedUiCommandSpeciulCharge01Id = UiManager::Instance().GetUies(
@@ -2054,12 +2067,35 @@ bool Player::InputSpecialAttackCharge()
         if (!sharedUiCommandSpeciulCharge01Id)
             return false;
 
-        std::shared_ptr<Ui> uiIdSpecialCharge = sharedUiCommandSpeciulCharge01Id->GetComponent<Ui>();
+        auto uiIdSpecialCharge = sharedUiCommandSpeciulCharge01Id->GetComponent<Ui>();
         bool drawCheck = true;
         uiIdSpecialCharge->SetDrawCheck(drawCheck);
+
+        // 点灯処理
+        if (LitMode(elapsedTime))
+            lightingTimeAlpha += lightingTimeAlpha < lightingTimeAlphaMax? 0.01f : 0.0f;
+        else
+            lightingTimeAlpha -= lightingTimeAlpha > lightingTimeAlphaMin? 0.01f : 0.0f;
+        
+        // コマンド不透明度調整
+        uiIdSpecialCharge->SetAlpha(lightingTimeAlpha);
+    }
+    // コマンド点灯　alpha100%
+    else
+    {
+        // 安全チェック
+        auto sharedUiCommandSpeciulCharge01Id = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandSpeciulCharge01);
+        if (!sharedUiCommandSpeciulCharge01Id)
+            return false;
+
+        auto uiIdSpecialCharge = sharedUiCommandSpeciulCharge01Id->GetComponent<Ui>();
+
+        // コマンド不透明度調整
+        uiIdSpecialCharge->SetAlpha(lightingTimeAlphaMax);
     }
     // チャージを見やすく
-    if (specialAttackCharge >= 0.8f)
+    if (specialAttackCharge >= 0.8f && specialAttackCharge < 1.2f)
     {
         // 安全チェック
         auto sharedUiCommandSpeciulCharge02Id = UiManager::Instance().GetUies(
@@ -2067,9 +2103,32 @@ bool Player::InputSpecialAttackCharge()
         if (!sharedUiCommandSpeciulCharge02Id)
             return false;
 
-        std::shared_ptr<Ui> uiIdSpecialChargeSecond = sharedUiCommandSpeciulCharge02Id->GetComponent<Ui>();
+        auto uiIdSpecialChargeSecond = sharedUiCommandSpeciulCharge02Id->GetComponent<Ui>();
         bool drawCheck = true;
         uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
+
+        // 点灯処理
+        if (LitMode(elapsedTime))
+            lightingTimeAlpha += lightingTimeAlpha < lightingTimeAlphaMax ? 0.01f : 0.0f;
+        else
+            lightingTimeAlpha -= lightingTimeAlpha > lightingTimeAlphaMin ? 0.01f : 0.0f;
+
+        // コマンド不透明度調整
+        uiIdSpecialChargeSecond->SetAlpha(lightingTimeAlpha);
+    }
+    // コマンド点灯　alpha100%
+    else
+    {
+        // 安全チェック
+        auto sharedUiCommandSpeciulCharge02Id = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandSpeciulCharge02);
+        if (!sharedUiCommandSpeciulCharge02Id)
+            return false;
+
+        auto uiIdSpecialChargeSecond = sharedUiCommandSpeciulCharge02Id->GetComponent<Ui>();
+
+        // コマンド不透明度調整
+        uiIdSpecialChargeSecond->SetAlpha(lightingTimeAlphaMax);
     }
     // チャージを見やすく
     if (specialAttackCharge >= 1.2f)
@@ -2080,9 +2139,32 @@ bool Player::InputSpecialAttackCharge()
         if (!sharedUiCommandSpeciulCharge03Id)
             return false;
 
-        std::shared_ptr<Ui> uiIdSpecialChargeSerde = sharedUiCommandSpeciulCharge03Id->GetComponent<Ui>();
+        auto uiIdSpecialChargeSerde = sharedUiCommandSpeciulCharge03Id->GetComponent<Ui>();
         bool drawCheck = true;
         uiIdSpecialChargeSerde->SetDrawCheck(drawCheck);
+
+        // 点灯処理
+        if (LitMode(elapsedTime))
+            lightingTimeAlpha += lightingTimeAlpha < lightingTimeAlphaMax ? 0.01f : 0.0f;
+        else
+            lightingTimeAlpha -= lightingTimeAlpha > lightingTimeAlphaMin ? 0.01f : 0.0f;
+
+        // コマンド不透明度調整
+        uiIdSpecialChargeSerde->SetAlpha(lightingTimeAlpha);
+    }
+    // コマンド点灯　alpha100%
+    else
+    {
+        // 安全チェック
+        auto sharedUiCommandSpeciulCharge03Id = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandSpeciulCharge03);
+        if (!sharedUiCommandSpeciulCharge03Id)
+            return false;
+
+        auto uiIdSpecialChargeSerde = sharedUiCommandSpeciulCharge03Id->GetComponent<Ui>();
+
+        // コマンド不透明度調整
+        uiIdSpecialChargeSerde->SetAlpha(lightingTimeAlphaMax);
     }
     return false;
 }
@@ -2711,6 +2793,34 @@ void Player::CollisionPlayerVsEnemies()
     // 非接触
     isEnemyHit = false;
 }
+void Player::CollisionPlayerMoveArea()
+{
+    // Lockとして実体を使う
+    auto transformId = transform.lock();
+    auto collisionId = collision.lock();
+
+    // 有効性チェック
+    if (!transformId || !collisionId) return;
+    StageManager& stageManager = StageManager::Instance();
+
+    int stageCount = stageManager.GetStageCount();
+
+    if (stageCount <= 0) return;
+    // 安全チェック
+    auto stageId = stageManager.GetStage(0);
+    if (!stageId) return;
+
+    auto stageMainId = stageId->GetComponent<StageMain>();
+    auto stageTransformId = stageId->GetComponent<Transform>();
+
+    if (!stageId && !stageTransformId) return;
+
+    if (collisionId->SphereCollider(stageTransformId->GetPosition(), stageMainId->GetRadiusArea(),
+        position, radius))
+    {
+
+    }
+}
 // 後変更Collision
 // 敵の範囲内に入らないように 腰以上
 void Player::CollisionBornVsProjectile(const char* bornname)
@@ -2821,7 +2931,7 @@ bool Player::CollisionNodeVsEnemies()
     if (!enemyHp->ApplyDamage(applyDamageNormal, 0.5f)) return false;
 
     // 斬撃se再生
-    PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
+    PlaySe("Data/Audio/SE/slash.wav");
 
     // 当たり判定
     hitSlash->Play(nodePosition, slashScale);
@@ -3038,7 +3148,7 @@ void Player::PinchMode(float elapsedTime)
         if (UpdateElapsedTime(timeElapsedHintMax, elapsedTime))
         {
             // Se再生
-            PlaySe("Data/Audio/SE/HP危険.wav");
+            PlaySe("Data/Audio/SE/slash.wav");
 
             hintDrawCheck = hintDrawCheck ? false : true;
             UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->
@@ -3103,6 +3213,26 @@ void Player::PinchMode(float elapsedTime)
             (int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<TransForm2D>();
         uiIdAttackCheckPos.lock()->Shake();
     }
+}
+
+// 点灯時間
+bool Player::LitMode(float elapsedTime)
+{
+    // チェンジ時間
+    if (lightingTime > lightingTimeMax)
+    {
+        isLightingTime = false;
+    }
+
+    // 最低値
+    if (lightingTime < lightingTimeMin)
+    {
+        isLightingTime = true;
+    }
+
+    lightingTime = isLightingTime ? lightingTime + elapsedTime : lightingTime - elapsedTime;
+
+    return isLightingTime;
 }
 // ジャンプ
 bool Player::InputJump()
@@ -3996,6 +4126,11 @@ void Player::UiControlleGauge(float elapsedTime)
     if (!hpId || !mpId)
         return;
 
+    // 位置補正
+    float halfWidth;
+    float offsetX;
+    DirectX::XMFLOAT2 originalPosition;
+
 
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
@@ -4011,13 +4146,30 @@ void Player::UiControlleGauge(float elapsedTime)
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
     uiHp->SetScale(scale);
     gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.1f;
+
+    if (gaugeWidth < mpId->GetMpMin())
+        gaugeWidth = 0.0f;
+
     // mpゲージ
     std::shared_ptr<TransForm2D> uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();
     std::shared_ptr<Ui> uiColor = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<Ui>();
-    
+
     // mpゲージUI　変える
     scale = { gaugeWidth, uiMp->GetScale().y };
     uiMp->SetScale(scale);
+
+    //// mpに影響が起きたとき
+    //if (mpId->GetIsConsumption())
+    //{
+    //    // 位置補正用値
+    //    halfWidth = uiMp->GetScale().x * 0.5f;
+    //    offsetX = (gaugeWidth - 1.0f) * halfWidth * 0.5f;
+
+    //    // MP位置補正値
+    //    originalPosition = uiMp->GetPosition();
+    //    uiMp->SetPosition({ originalPosition.x + offsetX, originalPosition.y });
+    //}
+    
     // mp色
    mpUiColor = { 1,1,1,1 };
     if (mpId->GetMpEmpth())

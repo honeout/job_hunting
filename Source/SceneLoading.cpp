@@ -11,6 +11,9 @@
 // 初期化
 void SceneLoading::Initialize()
 {
+    // 次のシーンの名前
+    SetSceneName("SceneLoading");
+
     // コンポーネント指向
     InitializeComponent();
 
@@ -92,10 +95,10 @@ void SceneLoading::Update(float elapsedTime)
             (int)UiLoadingManager::UiCountLoading::NowLoading)->
             GetComponent<Ui>()->SetDrawCheck(false);
 
-        // ゲームスタートの描画チェック
-        UiLoadingManager::Instance().GetUies(
-            (int)UiLoadingManager::UiCountLoading::GameStart)->
-            GetComponent<Ui>()->SetDrawCheck(true);
+        //// ゲームスタートの描画チェック
+        //UiLoadingManager::Instance().GetUies(
+        //    (int)UiLoadingManager::UiCountLoading::GameStart)->
+        //    GetComponent<Ui>()->SetDrawCheck(true);
 
         // ゲームスタートのスタート描画チェック
         UiLoadingManager::Instance().GetUies(
@@ -332,7 +335,7 @@ void SceneLoading::InitializeComponent()
 
     // UI Control
     {
-        const char* filename = "Data/Sprite/xbx操作方法.png";
+        const char* filename = "Data/Sprite/xbx operation method.png";
         std::shared_ptr<Actor> actor = ActorSceneLoadManager::Instance().Create();
         actor->SetName("Control");
         actor->AddComponent<SpriteControll>();
@@ -368,7 +371,7 @@ void SceneLoading::InitializeComponent()
 
     // UI ControlPC
     {
-        const char* filename = "Data/Sprite/キーボード操作説明.png";
+        const char* filename = "Data/Sprite/Keyboard operation explanation.png";
         std::shared_ptr<Actor> actor = ActorSceneLoadManager::Instance().Create();
         actor->SetName("ControlPC");
         actor->AddComponent<SpriteControll>();
@@ -404,7 +407,7 @@ void SceneLoading::InitializeComponent()
 
     // UI StartUI
     {
-        const char* filename = "Data/Sprite/スタートボタン.png";
+        const char* filename = "Data/Sprite/Start Button.png";
         std::shared_ptr<Actor> actor = ActorSceneLoadManager::Instance().Create();
         actor->SetName("UITitle");
         actor->AddComponent<SpriteControll>();
@@ -441,7 +444,7 @@ void SceneLoading::InitializeComponent()
 
     // UI ボタン
     {
-        const char* filename = "Data/Sprite/選択 ボタン.png";
+        const char* filename = "Data/Sprite/Select button.png";
         std::shared_ptr<Actor> actor = ActorSceneLoadManager::Instance().Create();
         actor->SetName("UI Button");
         actor->AddComponent<SpriteControll>();

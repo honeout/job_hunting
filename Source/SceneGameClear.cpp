@@ -16,23 +16,21 @@
 
 void SceneGameClear::Initialize()
 {
+	// 次のシーンの名前
+	SetSceneName("SceneGameClear");
+
 	// bgm
 	StartBgm();
     // アクター初期化
     InitializeComponent();
 
-	// カメラ初期化
-	cameraControlle = nullptr;
-	cameraControlle = new CameraController();
-
 	// カメラ初期設定 見える位置追いかけるものなど
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
 	camera.SetLookAt(
-		DirectX::XMFLOAT3(0, 10, -10),
-		DirectX::XMFLOAT3(0, 0, 0),
-		DirectX::XMFLOAT3(0, 1, 0)
-
+		cameraPosition,
+		cameraFocus,
+		cameraUp
 	);
 	// どの範囲をどれだけ見るか奥行含め
 	camera.SetPerspedtiveFov(
@@ -126,6 +124,10 @@ void SceneGameClear::Initialize()
 	}
 	
 	selectPush = (int)Select::Game;
+
+	// カメラ初期化
+	cameraControlle = nullptr;
+	cameraControlle = new CameraController();
 }
 
 void SceneGameClear::Start()
@@ -238,6 +240,9 @@ void SceneGameClear::Render()
 
 		ActorManager::Instance().Render(rc, shaderUi);
 	}
+
+	// カメラパラメータ設定
+	//cameraControlle->OnGUI();
 }
 
 void SceneGameClear::Render3DScene()
@@ -558,7 +563,7 @@ void SceneGameClear::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/タイトル戻る.png";
+		const char* filename = "Data/Sprite/game back.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UITitle");
 		actor->AddComponent<SpriteControll>();
@@ -594,7 +599,7 @@ void SceneGameClear::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/スタートボタン.png";
+		const char* filename = "Data/Sprite/Start Button.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UIGame");
 		actor->AddComponent<SpriteControll>();
@@ -627,7 +632,7 @@ void SceneGameClear::InitializeComponent()
 
 	// UI ボタン
 	{
-		const char* filename = "Data/Sprite/選択 ボタン.png";
+		const char* filename = "Data/Sprite/Select button.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UI Button");
 		actor->AddComponent<SpriteControll>();
@@ -660,7 +665,7 @@ void SceneGameClear::InitializeComponent()
 
 	// UI 選択
 	{
-		const char* filename = "Data/Sprite/選択.png";
+		const char* filename = "Data/Sprite/choice.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UI Select");
 		actor->AddComponent<SpriteControll>();

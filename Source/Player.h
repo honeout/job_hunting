@@ -194,6 +194,8 @@ public:
 
     // プレイヤーとエネミーとの衝突処理
     void CollisionPlayerVsEnemies();
+    // プレイヤーの行動範囲
+    void CollisionPlayerMoveArea();
     // ボーンと攻撃の衝突判定
     void CollisionBornVsProjectile(const char* bornname);
     // デバッグ用GUI描画
@@ -204,6 +206,8 @@ public:
     void UpdateSwordeTraile();
     // hpピンチ
     void PinchMode(float elapsedTime);
+    // 点灯
+    bool LitMode(float elapsedTime);
 public:
     // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
     DirectX::XMFLOAT3 GetMoveVec(float elapsedTime);
@@ -234,7 +238,7 @@ public:
     void RemoveUIMagic();
 
     // 特殊攻撃選択
-    bool InputSpecialAttackCharge();
+    bool InputSpecialAttackCharge(float elapsedTime);
 
     // 特殊技順番交代
     void InputSpecialAttackChange();
@@ -523,9 +527,6 @@ public:
     // デバッグ用
     bool GetDebugCameraTime() { return debugCameraTime; }
 private:
-
-
-
     // 構造体
     struct SpecialAttack
     {
@@ -673,7 +674,18 @@ private:
     int energyChargeMax = 0;
     int energyChargeMin = 0;
 
+    // 点灯時間
+    float lightingTime;
+    // 点灯時間最大値
+    float lightingTimeMax = 1.3f;
+    // 点灯時間最低値
+    float lightingTimeMin = 0.0f;
+    bool isLightingTime = false;
 
+    // 透明度点灯用
+    float lightingTimeAlpha = 0.5f;
+    float lightingTimeAlphaMax = 1.0f;
+    float lightingTimeAlphaMin = 0.1f;
 
     // ステートマシン用
     std::unique_ptr<StateMachine> stateMachine;
