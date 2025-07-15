@@ -601,9 +601,8 @@ void SceneGameOver::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 0, 35 };
-		DirectX::XMFLOAT2 offset = { screenWidth - pos.x * scaleScreen.x, pos.y * scaleScreen.y };
-		pos = { offset.x,offset.y };
+		DirectX::XMFLOAT2 pos = { screenWidth, 35 };
+
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -644,8 +643,7 @@ void SceneGameOver::InitializeComponent()
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		//DirectX::XMFLOAT2 pos = { 543, 515 };
-		DirectX::XMFLOAT2 offset = { titlePos.x * scaleScreen.x, titlePos.y * scaleScreen.y };
-		titlePos = { offset.x,offset.y };
+
 		transform2D->SetPosition(titlePos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -682,8 +680,7 @@ void SceneGameOver::InitializeComponent()
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		//DirectX::XMFLOAT2 pos = { 543, 515 };
-		DirectX::XMFLOAT2 offset = { reStartPos.x * scaleScreen.x, reStartPos.y * scaleScreen.y };
-		reStartPos = { offset.x,offset.y };
+
 		transform2D->SetPosition(reStartPos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -720,8 +717,7 @@ void SceneGameOver::InitializeComponent()
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		DirectX::XMFLOAT2 pos = { 503, 100 };
-		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
-		pos = { offset.x,offset.y };
+
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -758,8 +754,7 @@ void SceneGameOver::InitializeComponent()
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		DirectX::XMFLOAT2 pos = { 543, 477 };
-		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
-		pos = { offset.x,offset.y };
+
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
