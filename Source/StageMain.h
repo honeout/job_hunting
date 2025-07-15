@@ -39,8 +39,6 @@ public:
     // リムライト
     void SetIsRimRightning(int isRimRightning) { this->isRimRightning = isRimRightning; }
 
-    // 半径移動範囲
-    float GetRadiusArea() const { return radiusArea; }
 private:
     Model* model = nullptr;
    /* std::shared_ptr<Transform> transformid;*/
@@ -50,9 +48,6 @@ private:
     int texcoordMult = 0;
     // リムライト
     int isRimRightning = 1;
-
-    // 半径移動範囲
-    float radiusArea = 100;
 };
 
 // ステージマネージャー

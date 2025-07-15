@@ -434,7 +434,7 @@ void EnemyBoss::CollisionImpactVsPlayer()
             playerMain->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
 
             // 衝撃波音
-            PlaySe("Data/Audio/SE/shockwave hit.wav");
+            PlaySe("Data/Audio/SE/衝撃波ヒット.wav");
 
             // 吹き飛ばす
             {
@@ -666,7 +666,7 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
         // 斬撃音
         // se再生
         AudioParam audioParam;
-        audioParam.filename = "Data/Audio/SE/slash.wav";
+        audioParam.filename = "Data/Audio/SE/スラッシュ２回目.wav";
         audioParam.loop = isLoopDisabled;
         audioParam.volume = seVolume;
         InputSe(audioParam);
@@ -770,7 +770,7 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
         if (!playerHp->ApplyDamage(applyDamage, EnemyConfig::kNuckleInvincibleTime)) return;
 
         // 斬撃音
-        PlaySe("Data/Audio/SE/slash.wav");
+        PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
         DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
         DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
         DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);

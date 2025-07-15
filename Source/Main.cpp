@@ -46,8 +46,7 @@ INT WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev_instance, LPWSTR cmd_line
 
 
 	// 仮想ウィンドウ全画面
-	//DWORD windowStyle = WS_BORDER;
-	DWORD windowStyle = WS_OVERLAPPEDWINDOW;
+	DWORD windowStyle = WS_BORDER;
 	RECT rc = { 0,0,GetSystemMetrics(SM_CXSCREEN),GetSystemMetrics(SM_CYSCREEN) };
 	AdjustWindowRect(&rc, windowStyle, FALSE);
 	HWND hWnd = CreateWindow(_T("Game"), _T(""), windowStyle, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, instance, NULL);

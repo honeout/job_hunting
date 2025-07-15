@@ -41,7 +41,7 @@ bool Mp::ApplyConsumption(int mpConsumption)
     if (mpConsumption == mpValueMin) return false;
     std::weak_ptr<Actor> actor = GetActor();
       // ‚‚‚ª‚È‚¢ê‡‚Í•ÏX‚µ‚È‚¢
-    if (magic < mpMin)
+    if (magic <= mpMin)
     {
         mpEmpth = true;
         return false;

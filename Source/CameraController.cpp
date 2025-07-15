@@ -10,7 +10,6 @@ CameraController::CameraController()
 {
 	position = Camera::Instance().GetEye();
 	newPosition = Camera::Instance().GetEye();
-	target = Camera::Instance().GetEye();
 	CAMERACHANGEFREESELECTMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEFREESELECTMODE, [&](void* data) { OnFreeSelectMode(data); });
 	CAMERACHANGEFREEMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGEFREEMODE, [&](void* data) { OnFreeMode(data); });
 	CAMERACHANGELOCKONMODEKEY = Messenger::Instance().AddReceiver(MessageData::CAMERACHANGELOCKONMODE, [&](void* data) { OnLockonMode(data); });
@@ -95,7 +94,6 @@ void CameraController::OnGUI()
 	{
 		ImGui::SliderFloat3("Position", &position.x, 0.0f, 10.0f);
 		ImGui::SliderFloat3("Angle", &angle.x, 0.0f, 10.0f);
-		ImGui::SliderFloat3("Target", &target.x, 0.0f, 10.0f);
 		ImGui::SliderFloat("length", &lengthMinRock, 0.0f, 20.0f);
 		ImGui::SliderFloat("cameraRandeDebug", &cameraRandeDebug, 0.0f, 20.0f);
 		ImGui::SliderFloat("height", &heightMaxRock, -20.0f, 20.0f);
@@ -143,18 +141,18 @@ void CameraController::FreeSelectCamera(float elapsedTime)
 		angle.y -= DirectX::XM_2PI;
 	}
 
-	//// カメラ回転値を回転行列に変換
-	//DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
+	// カメラ回転値を回転行列に変換
+	DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
 
-	//// 回転行列から前方向ベクトルを取り出す
-	//DirectX::XMVECTOR Front = Transform.r[2];
-	//DirectX::XMFLOAT3 front;
-	//DirectX::XMStoreFloat3(&front, Front);
+	// 回転行列から前方向ベクトルを取り出す
+	DirectX::XMVECTOR Front = Transform.r[2];
+	DirectX::XMFLOAT3 front;
+	DirectX::XMStoreFloat3(&front, Front);
 
-	//// 注視点から後ろベクトル方向に一定距離離れたカメラ視点を求める
-	//newPosition.x = target.x - front.x * range;
-	//newPosition.y = target.y - front.y * range;
-	//newPosition.z = target.z - front.z * range;
+	// 注視点から後ろベクトル方向に一定距離離れたカメラ視点を求める
+	newPosition.x = target.x - front.x * range;
+	newPosition.y = target.y - front.y * range;
+	newPosition.z = target.z - front.z * range;
 }
 // 通常カメラ
 void CameraController::FreeCamera(float elapsedTime)

@@ -1,14 +1,5 @@
 #pragma once
 
-// 定数定義
-namespace SceneConfig
-{
-    constexpr const char* sceneTitleName = "SceneTitle";
-    constexpr const char* sceneGameName = "SceneGame";
-    constexpr const char* sceneGameOverName = "SceneGameOver";
-    constexpr const char* sceneGameClearName = "SceneGameClear";
-};
-
 // シーン
 class Scene
 {
@@ -37,13 +28,6 @@ public:
     // 準備完了設定
     void SetReady() { ready = true; }
 
-    // シーンの名前変更
-    void SetSceneName(char* sceneName) { this->sceneName = sceneName; }
-    // シーンの名前確認
-    char* GetSceneName() { return sceneName; }
-
 private:
     bool  ready = false;
-
-    char* sceneName;
 };

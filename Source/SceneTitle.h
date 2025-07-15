@@ -36,8 +36,6 @@ public:
     void Update(float elapsedTime)override;
     // 描画処理
     void Render() override;
-
-
 #ifdef _DEBUG
 	// デバッグ用
 	void DebugGui();
@@ -61,6 +59,7 @@ public:
 	void CameraInitialize();
 
 	void PlayEffectsShaders(float elapsedTime);
+
 
 	// どのシーンに行くか
 	void SelectScene(float elapsedTime);
@@ -185,7 +184,7 @@ private:
 	float debugShakeTimer = 0.2f;
 
 	DirectX::XMFLOAT2 startPos = { 603, 477 };
-	DirectX::XMFLOAT2 exitPos = { 603, 537 };
+	DirectX::XMFLOAT2 exitPos = { 603, 547 };
 
 	DirectX::XMFLOAT2 buttonPos = {0,0};
 
@@ -205,7 +204,4 @@ private:
 	float stickHoldTimerY = 0.0f;
 	float stickHoldTimerYStart = 0.0f;
 	float stickHoldTime = 0.1f;
-
-	// コマンド操作
-	bool isSelectCommand = false;
 };

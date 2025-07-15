@@ -59,6 +59,7 @@ private:
 
 	// BGM停止
 	void StopBgm();
+
 private:
 	// BGM
 	std::unique_ptr<Audio> Bgm;
@@ -164,8 +165,6 @@ private:
 	// 行動範囲
 	DirectX::XMFLOAT3 minPos = {0.0f,0.0f,0.0f};
 	DirectX::XMFLOAT3 maxPos = {0.0f,0.0f,0.0f};
-
-	
 
 	// メニューのオンオフ
 	bool isMenue = false;

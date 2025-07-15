@@ -47,11 +47,10 @@ public:
     int GetTime() const { return time; }
 
     void SetCountDown(int countDown) { this->countDown = countDown; }
-    // F
+
     void SetColor(DirectX::XMFLOAT4 color) { this->color = color; }
     DirectX::XMFLOAT4 GetColor() { return color; }
-    // “§‚©‚µ
-    void SetAlpha(float alpha) { this->color.w = alpha; }
+
 private:
     Sprite* sprite = nullptr;
 

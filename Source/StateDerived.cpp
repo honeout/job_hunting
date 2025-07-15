@@ -151,7 +151,7 @@ void WanderState::Execute(float elapsedTime)
 		if (isLightSmorkEffect)
 		{
 			// 足音
-			enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+			enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
 			smorker->Play(bossRightFootPosition, scaleEffect);
 
 		}
@@ -166,7 +166,7 @@ void WanderState::Execute(float elapsedTime)
 		if (isLeftSmorkEffect)
 		{
 			// 足音
-			enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+			enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
 			smorker->Play(bossLeftFootPosition, scaleEffect);
 		}
 	}
@@ -188,7 +188,7 @@ void WanderState::Exit()
 	// 連続攻撃
 	attackCount = attackCountMin;
 	// 斬撃音
-	enemyid->PlaySe("Data/Audio/SE/slash.wav");
+	enemyid->PlaySe("Data/Audio/SE/スラッシュ２回目.wav");
 }
 
 // 初期化
@@ -560,9 +560,9 @@ void AttackState::Execute(float elapsedTime)
 		animationTime - FLT_EPSILON <= 2.4f + FLT_EPSILON && !chargeInitilize)
 	{
 		// ジャンプ音
-		enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+		enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
 		// チャージ音
-		enemyid->PlaySe("Data/Audio/SE/charge sound enemy.wav");
+		enemyid->PlaySe("Data/Audio/SE/チャージ音敵.wav");
 		charge->Play(bossEyePosition);
 		chargeCompleate->Play(bossEyePosition);
 		// チャージ中
@@ -621,7 +621,7 @@ void AttackState::Execute(float elapsedTime)
 		if (isLeftSmorkEffect && animationTime >= 0.4f && animationTime <= 0.7f)
 		{
 			// ジャンプ音
-			enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+			enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
 			// 煙エフェクト
 			smorker->Play(bossLeftFootPosition, scaleEffect);
 			// 左足エフェクト
@@ -632,7 +632,7 @@ void AttackState::Execute(float elapsedTime)
 		if (isRightSmorkEffect && animationTime >= 2.4f && animationTime <= 2.7f)
 		{
 			// ジャンプ音
-			enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+			enemyid->PlaySe("Data/Audio/SE/Enemy着地.wav");
 			// 煙エフェクト
 			smorker->Play(bossRightFootPosition, scaleEffect);
 			// 右足エフェクト
@@ -667,7 +667,7 @@ void AttackState::Exit()
 
 	std::shared_ptr<EnemyBoss> enemyid = sharedId->GetComponent<EnemyBoss>();
 	// ダッシュ停止
-	enemyid->StopSe("Data/Audio/SE/Enemy Landing.wav");
+	enemyid->StopSe("Data/Audio/SE/Enemy着地.wav");
 	chargeInitilize = false;
 	if (charge->GetEfeHandle())
 		charge->Stop(charge->GetEfeHandle());
@@ -686,7 +686,7 @@ void DamageState::Enter()
 	std::shared_ptr<EnemyBoss> enemyid = sharedId->GetComponent<EnemyBoss>();
 
 	// 衝撃波音
-	enemyid->PlaySe("Data/Audio/SE/blow.wav");
+	enemyid->PlaySe("Data/Audio/SE/打撃.wav");
 	modelAnim.index = EnemyBoss::Animation::Anim_Die;
 	modelAnim.loop = true;
 	modelAnim.currentanimationseconds = 2.5f;
@@ -1049,7 +1049,7 @@ void PlayerMovestate::Enter()
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	// se足音再生
-	playerid->PlayLoopSe("Data/Audio/SE/footsteps.wav");
+	playerid->PlayLoopSe("Data/Audio/SE/足音.wav");
 
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Anim_Running;
@@ -1104,7 +1104,7 @@ void PlayerMovestate::Exit()
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	//se再生削除
-	playerid->StopSe("Data/Audio/SE/footsteps.wav");
+	playerid->StopSe("Data/Audio/SE/足音.wav");
 }
 
 // プレイヤージャンプ
@@ -1127,7 +1127,7 @@ void PlayerJumpState::Enter()
 	moveid->SetStopMove(false);
 
 	// ジャンプse再生
-	playerid->PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
+	playerid->PlaySe("Data/Audio/SE/Enemy歩き攻撃ヒット.wav");
 }
 
 void PlayerJumpState::Execute(float elapsedTime)
@@ -1178,7 +1178,7 @@ void PlayerJumpState::Exit()
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 
 	// ジャンプse再生
-	playerid->PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
+	playerid->PlaySe("Data/Audio/SE/Enemy歩き攻撃ヒット.wav");
 }
 // プレイヤー着地
 void PlayerLandState::Enter()
@@ -1197,7 +1197,7 @@ void PlayerLandState::Enter()
 	playerid->SetUpdateAnim(Player::UpAnim::Normal);
 
 	// ジャンプse再生
-	playerid->PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
+	playerid->PlaySe("Data/Audio/SE/Enemy歩き攻撃ヒット.wav");
 }
 
 void PlayerLandState::Execute(float elapsedTime)
@@ -1238,7 +1238,7 @@ void PlayerLandState::Exit()
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 
 	// ジャンプse再生
-	playerid->PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
+	playerid->PlaySe("Data/Audio/SE/Enemy歩き攻撃ヒット.wav");
 }
 
 // 後変更
@@ -1260,7 +1260,7 @@ void PlayerJumpFlipState::Enter()
 	playerid->SetUpdateAnim(Player::UpAnim::Normal);
 
 	// ジャンプse再生
-	playerid->PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
+	playerid->PlaySe("Data/Audio/SE/Enemy歩き攻撃ヒット.wav");
 }
 
 void PlayerJumpFlipState::Execute(float elapsedTime)
@@ -1300,7 +1300,7 @@ void PlayerJumpFlipState::Exit()
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	// seジャンプ停止
-	playerid->StopSe("Data/Audio/SE/Enemy walking attackk hit.wav");
+	playerid->StopSe("Data/Audio/SE/Enemy歩き攻撃ヒット.wav");
 }
 // プレイヤー初撃
 void PlayerQuickJabState::Enter()
@@ -1960,7 +1960,7 @@ void PlayerSpecialAttackState::Enter()
 	flashOn = true;
 
 	// 雷音
-	playerid->PlaySe("Data/Audio/SE/thunder.wav");
+	playerid->PlaySe("Data/Audio/SE/雷.wav");
 
 	// 回転許可
 	isRotate = true;
@@ -2087,7 +2087,7 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			lightning->Stop(lightning->GetEfeHandle());
 			loopSe = true;
 			// se雷停止
-			playerid->StopSe("Data/Audio/SE/thunder.wav");
+			playerid->StopSe("Data/Audio/SE/雷.wav");
 		}
 	}
 	else
@@ -2141,7 +2141,7 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			lightningAttack->Play(pPosition);
 
 			// se雷再生
-			playerid->PlaySe("Data/Audio/SE/Special Move Thunder.wav");
+			playerid->PlaySe("Data/Audio/SE/必殺技雷.wav");
 
 			if (enemyHpId->ApplyDamage(10, 0.5f)) 
 			{
@@ -2220,7 +2220,7 @@ void PlayerMagicState::Enter()
 	std::shared_ptr<Mp> mpId = sharedId->GetComponent<Mp>();
 
 	// seチャージ再生
-	playerid->PlaySe("Data/Audio/SE/charge sound enemy.wav");
+	playerid->PlaySe("Data/Audio/SE/チャージ音敵.wav");
 
 	// エフェクト
 	charge = std::make_unique<Effect>("Data/Effect/magicCharge.efk");
@@ -2330,7 +2330,7 @@ void PlayerMagicState::Execute(float elapsedTime)
 		!magicStart)
 	{
 		// チャージse停止
-		playerid->StopSe("Data/Audio/SE/charge sound enemy.wav");
+		playerid->StopSe("Data/Audio/SE/チャージ音敵.wav");
 
 		// エフェクト再生してたら停止
 		if (charge->GetEfeHandle())
@@ -2461,7 +2461,7 @@ void PlayerMagicState::Execute(float elapsedTime)
 		}
 
 		// 火音
-		playerid->PlaySe("Data/Audio/SE/flame flight.wav");
+		playerid->PlaySe("Data/Audio/SE/炎飛行時.wav");
 
 		// ため終わりまで撃つ
 		if (magicCharge <= magicChargeEnd)
@@ -2479,7 +2479,7 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 
 		// 雷音
-		playerid->PlaySe("Data/Audio/SE/thunder.wav");
+		playerid->PlaySe("Data/Audio/SE/雷.wav");
 
 		// 雷発射
 		playerid->InputMagicLightning();
@@ -2500,7 +2500,7 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 
 		// se氷再生
-		playerid->PlaySe("Data/Audio/SE/ice launch.wav");
+		playerid->PlaySe("Data/Audio/SE/氷発射.wav");
 
 		// １発
 		if (magicCharge <= magicChargeEnd)
@@ -2613,7 +2613,7 @@ void PlayerSpecialMagicState::Enter()
 				pHPosiiton->worldTransform._43
 	};
 	// 火音
-	playerid->PlaySe("Data/Audio/SE/flame flight.wav");
+	playerid->PlaySe("Data/Audio/SE/炎飛行時.wav");
 	fire->Play(pPosition);
 	// 落ちるの停止
 	bool stopFall = true;
@@ -2767,7 +2767,7 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 				InputSpecialMagicframe();
 
 			// se炎再生
-			playerid->PlaySe("Data/Audio/SE/Special Move Flame.wav");
+			playerid->PlaySe("Data/Audio/SE/必殺技炎.wav");
 		}
 	}
 	// ダメージ判定
@@ -2975,7 +2975,7 @@ void PlayerAvoidanceState::Enter()
 	moveid->SetStopFall(stopFall);
 
 	// ダッシュse再生
-	playerid->PlaySe("Data/Audio/SE/hit stop.wav");
+	playerid->PlaySe("Data/Audio/SE/ヒットストップ.wav");
 
 	// エフェクト設定
 	wind = std::make_unique<Effect>("Data/Effect/dashu.efk");
@@ -3141,8 +3141,6 @@ void PlayerTitleIdleState::Enter()
 	model->PlayAnimation(modelAnim);
 	// アニメーションルール
 	playerid->SetUpdateAnim(Player::UpAnim::Normal);
-
-	
 }
 
 void PlayerTitleIdleState::Execute(float elapsedTime)
@@ -3153,8 +3151,8 @@ void PlayerTitleIdleState::Execute(float elapsedTime)
 		return;
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
-	// ロックオン処理
-    //playerid->UpdateCameraState(elapsedTime);
+	//// ロックオン処理
+    playerid->UpdateCameraState(elapsedTime);
 	// ヒット
 	if (playerid->InputAttack())
 	{
@@ -3212,10 +3210,13 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	std::shared_ptr<Transform> transformid = sharedId->GetComponent<Transform>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
-
+	//// ロックオン処理
+	playerid->UpdateCameraState(elapsedTime);
 	std::shared_ptr<HP> enemyHpId;
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
-		float animationTime = model->GetCurrentANimationSeconds() ;
+		float animationTime = moveid->GetOnLadius() ?
+			model->GetCurrentANimationSeconds() :
+			model->GetCurrentAnimationSecondsUpeer();
 		// アニメーション
 		if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON && !secondeMortion)
 		{
@@ -3223,7 +3224,7 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 			if (isLightningStart)
 			{
 				// 雷音
-				playerid->PlaySe("Data/Audio/SE/thunder.wav");
+				playerid->PlaySe("Data/Audio/SE/雷.wav");
 
 				Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
 				DirectX::XMFLOAT3 pPosition =
@@ -3264,7 +3265,7 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 			if (isLightningFire)
 			{
 				// seたたきつけ再生
-				playerid->PlaySe("Data/Audio/SE/Special Move Thunder.wav");
+				playerid->PlaySe("Data/Audio/SE/必殺技雷.wav");
 
 				Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
 				DirectX::XMFLOAT3 pPosition =
@@ -3291,6 +3292,9 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 			// シーン終了
 			playerid->SetEndState(true);
 		}
+
+
+
 }
 
 void PlayerTitlePushState::Exit()
@@ -3325,12 +3329,12 @@ void PlayerClearIdleState::Execute(float elapsedTime)
 		return;
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
-	//Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
-	//Model::Node* PRock = model->FindNode("mixamorig:Spine1");
-	//DirectX::XMFLOAT3 pos = model->ConvertLocalToWorld(PRock);
-	//pos.x += 3.0f;
-	//MessageData::CAMERACHANGEFREEMODEDATA	p = { pos };
-	//Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
+	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
+	Model::Node* PRock = model->FindNode("mixamorig:Spine1");
+	DirectX::XMFLOAT3 pos = model->ConvertLocalToWorld(PRock);
+	pos.x += 3.0f;
+	MessageData::CAMERACHANGEFREEMODEDATA	p = { pos };
+	Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
 	// ヒット
 	if (playerid->InputAttack())
 	{
@@ -3399,7 +3403,7 @@ void PlayerOverIdleState::Execute(float elapsedTime)
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	//// ロックオン処理
-	//playerid->UpdateCameraState(elapsedTime);
+	playerid->UpdateCameraState(elapsedTime);
 	// ヒット
 	if (playerid->InputAttack())
 	{

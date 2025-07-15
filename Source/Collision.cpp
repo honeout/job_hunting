@@ -250,18 +250,3 @@ bool Collision::IntersectRayVsModel(
     }
     return hit;
 }
-// ‰~‚Ì“à‚È‚ç
-bool Collision::SphereCollider(const DirectX::XMFLOAT3& s1,const float radius1, const DirectX::XMFLOAT3& s2,const float radius2)
-{
-    // Œü‚«
-    DirectX::XMFLOAT3 vector = { s1.x - s2.x, s1.y - s2.y, s1.z - s2.z };
-    // ‹——£
-    float distance = sqrtf(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
-    //@“ñ‚Â‚Ì”¼Œa
-    float radius = radius1 + radius2;
-    // “ü‚Á‚Ä‚é
-    if (distance <= radius)
-        return true;
-    // ŠO‚ê‚½
-    return false;
-}

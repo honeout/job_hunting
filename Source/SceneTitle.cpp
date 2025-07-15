@@ -15,9 +15,6 @@
 // 初期化
 void SceneTitle::Initialize()
 {
-	// 次のシーンの名前
-	SetSceneName("SceneTitle");
-
     // スプライト初期化
 	InitializeComponent();
 
@@ -25,7 +22,7 @@ void SceneTitle::Initialize()
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
 	camera.SetLookAt(
-		DirectX::XMFLOAT3(1.126, -2.989, -17.144),
+		DirectX::XMFLOAT3(0, 10, -10),
 		DirectX::XMFLOAT3(0, 0, 0),
 		DirectX::XMFLOAT3(0, 1, 0)
 
@@ -136,6 +133,7 @@ void SceneTitle::Initialize()
 	}
 
 	// カメラ初期化
+	cameraControlle = nullptr;
 	cameraControlle = new CameraController();
 
 	StartMusic();
@@ -169,7 +167,6 @@ void SceneTitle::Update(float elapsedTime)
 	GamePad& gamePad = Input::Instance().GetGamePad();
 
 	ActorManager::Instance().Update(elapsedTime);
-
 	// 音更新
 	Audio::Instance().Update();
 
@@ -178,7 +175,6 @@ void SceneTitle::Update(float elapsedTime)
 
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
-
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
 	// 何かボタンを押したらローディングをはさんでゲームシーンへ切り替え
 	const GamePadButton anyButton =
@@ -194,10 +190,6 @@ void SceneTitle::Update(float elapsedTime)
 	// 演出開始
 	if (playerIdMain->InputAttack())
 	{
-		// 決定後操作不能
-		isSelectCommand = true;
-
-		// 曲再生中止
 		StopMusic();
 
 		// 描画許可
@@ -357,9 +349,6 @@ void SceneTitle::Render()
 				ImGui::SliderFloat("smoothness", &vignetteData.smoothness, -10, 10);
 				ImGui::TreePop();
 			}
-			ImGui::Separator();
-			//// カメラパラメータ設定
-			//cameraControlle->OnGUI();
 			ImGui::Separator();
 		}
 		LightManager::Instanes().DrawDebugGUI();
@@ -628,7 +617,7 @@ void SceneTitle::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/TitleName.png";
+		const char* filename = "Data/Sprite/タイトル画像.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UITitle");
 		actor->AddComponent<SpriteControll>();
@@ -665,7 +654,7 @@ void SceneTitle::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/Start Button.png";
+		const char* filename = "Data/Sprite/スタートボタン.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UIPush");
 		actor->AddComponent<SpriteControll>();
@@ -738,7 +727,7 @@ void SceneTitle::InitializeComponent()
 
 	// UI ボタン
 	{
-		const char* filename = "Data/Sprite/Select button.png";
+		const char* filename = "Data/Sprite/選択 ボタン.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UI Button");
 		actor->AddComponent<SpriteControll>();
@@ -775,7 +764,7 @@ void SceneTitle::InitializeComponent()
 
 	// UI 選択
 	{
-		const char* filename = "Data/Sprite/choice.png";
+		const char* filename = "Data/Sprite/選択.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UI Select");
 		actor->AddComponent<SpriteControll>();
@@ -953,9 +942,6 @@ void SceneTitle::PlayEffectsShaders(float elapsedTime)
 // UIコマンド操作
 void SceneTitle::SelectScene(float elapsedTime)
 {
-	// 決定後操作不能
-	if (isSelectCommand) return;
-
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
 	const GamePadButton anyButton =
 		GamePad::BTN_B;
@@ -1031,5 +1017,7 @@ void SceneTitle::SelectScene(float elapsedTime)
 		stickHoldTimerY = stickHoldTimerYStart;
 
 	}
+
+
 }
 
