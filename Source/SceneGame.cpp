@@ -32,17 +32,19 @@ static const UINT SHADOWMAP_SIZE = 2048;
 // 初期化
 void SceneGame::Initialize()
 {
+	// 次のシーンの名前
+	SetSceneName("SceneGame");
+
 	// 行動範囲
 	{
-		minPos.x = -30;
+		minPos.x = -60;
 		minPos.y = -3.525f;
-		minPos.z = -30;
+		minPos.z = -60;
 
-		maxPos.x = 30;
+		maxPos.x = 60;
 		maxPos.y = 3.625f;
-		maxPos.z = 30;
+		maxPos.z = 60;
 	}
-
 	// カメラ初期化
 	cameraControlle = std::make_unique<CameraController>();
 
@@ -53,7 +55,7 @@ void SceneGame::Initialize()
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
 	camera.SetLookAt(
-		DirectX::XMFLOAT3(0, 10, -10),
+		DirectX::XMFLOAT3(1.126, -2.989, -17.144),
 		DirectX::XMFLOAT3(0, 0, 0),
 		DirectX::XMFLOAT3(0, 1, 0)
 
@@ -219,7 +221,6 @@ void SceneGame::Update(float elapsedTime)
 			// ゲームオーバー
 			SceneManager::Instance().ChangeScene(new SceneGameOver);
 		}
-
 	}
 }
 
@@ -983,7 +984,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandAttack
 	{
-		const char* filename = "Data/Sprite/コマンド　非選択攻撃.png";
+		const char* filename = "Data/Sprite/Command Deselect Attack.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandAttack");
 		actor->AddComponent<SpriteControll>();
@@ -994,10 +995,10 @@ void SceneGame::InitializeComponent()
 		//DirectX::XMFLOAT2 pos = { 0, 310 };
 		//DirectX::XMFLOAT2 pos = { 0, 455 };
 		//DirectX::XMFLOAT2 pos = { 0, 375 };
-		DirectX::XMFLOAT2 pos;
+		DirectX::XMFLOAT2 pos{0,380};
 		
-		float offset = 375 * scaleScreen.y;
-		pos = { 0,offset };
+		float offset = pos.y * scaleScreen.y;
+		pos.y = offset;
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -1026,7 +1027,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandMagick
 	{
-		const char* filename = "Data/Sprite/コマンド　非選択魔法.png";
+		const char* filename = "Data/Sprite/Command Non selected magic.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandMagick");
 		actor->AddComponent<SpriteControll>();
@@ -1071,7 +1072,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandAttackCheck
 	{
-		const char* filename = "Data/Sprite/コマンド　選択攻撃.png";
+		const char* filename = "Data/Sprite/Command selection attack.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandAttackCheck");
 		actor->AddComponent<SpriteControll>();
@@ -1081,10 +1082,10 @@ void SceneGame::InitializeComponent()
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		//DirectX::XMFLOAT2 pos = { 0, 375 };
 
-		DirectX::XMFLOAT2 pos;
+		DirectX::XMFLOAT2 pos = { 0, 380 };
 	
-		float offset = 375 * scaleScreen.y;
-		pos = { 0, offset };
+		float offset = pos.y * scaleScreen.y;
+		pos.y = offset;
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -1113,7 +1114,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandMagickCheck
 	{
-		const char* filename = "Data/Sprite/コマンド　選択魔法.png";
+		const char* filename = "Data/Sprite/Command selection magic.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandMagickCheck");
 		actor->AddComponent<SpriteControll>();
@@ -1153,7 +1154,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandSpecial
 	{
-		const char* filename = "Data/Sprite/必殺技　非選択.png";
+		const char* filename = "Data/Sprite/Special Move Not Selected.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpecial");
 		actor->AddComponent<SpriteControll>();
@@ -1193,7 +1194,7 @@ void SceneGame::InitializeComponent()
 	}
 	// UI PlayerCommandSpecialUnCheck
 	{
-		const char* filename = "Data/Sprite/必殺技　点滅.png";
+		const char* filename = "Data/Sprite/Special Move Blink.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpecialUnCheck");
 		actor->AddComponent<SpriteControll>();
@@ -1233,7 +1234,7 @@ void SceneGame::InitializeComponent()
 	}
 	// UI PlayerCommandSpecialCheck
 	{
-		const char* filename = "Data/Sprite/必殺技　選択.png";
+		const char* filename = "Data/Sprite/Special Move Selection.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpecialCheck");
 		actor->AddComponent<SpriteControll>();
@@ -1274,7 +1275,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandFire
 	{
-		const char* filename = "Data/Sprite/コマンド　非選択ファイアー.png";
+		const char* filename = "Data/Sprite/Command Non selected fire.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandFire");
 		actor->AddComponent<SpriteControll>();
@@ -1284,8 +1285,8 @@ void SceneGame::InitializeComponent()
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		//DirectX::XMFLOAT2 pos = { 179, 290 };
 		//DirectX::XMFLOAT2 pos = { 179, 345 };
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 385 * scaleScreen.y };
+		DirectX::XMFLOAT2 pos = { 179, 385 };
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 
 		transform2D->SetPosition(pos);
@@ -1316,7 +1317,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandFireCheck
 	{
-		const char* filename = "Data/Sprite/コマンド　選択ファイアー.png";
+		const char* filename = "Data/Sprite/Command Select Fire.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandFireCheck");
 		actor->AddComponent<SpriteControll>();
@@ -1324,8 +1325,8 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 385 * scaleScreen.y };
+		DirectX::XMFLOAT2 pos = {179, 385};
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1335,7 +1336,7 @@ void SceneGame::InitializeComponent()
 		float angle = 0;
 		transform2D->SetAngle(angle);
 
-		DirectX::XMFLOAT2 scale = { 206,104 };
+		DirectX::XMFLOAT2 scale = { 199,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -1354,7 +1355,7 @@ void SceneGame::InitializeComponent()
 	}
 	// UI PlayerCommandRigtning
 	{
-		const char* filename = "Data/Sprite/サンダラ　押し込み.png";
+		const char* filename = "Data/Sprite/Sandara Push-in.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandRigtning");
 		actor->AddComponent<SpriteControll>();
@@ -1363,8 +1364,8 @@ void SceneGame::InitializeComponent()
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		//DirectX::XMFLOAT2 pos = { 179, 430 };
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 453 * scaleScreen.y };
+		DirectX::XMFLOAT2 pos = {179, 443};
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1373,7 +1374,7 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 185,104 };
+		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -1393,7 +1394,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandRigtningCheck
 	{
-		const char* filename = "Data/Sprite/サンダラ.png";
+		const char* filename = "Data/Sprite/Command Select Sandara.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandRigtningCheck");
 		actor->AddComponent<SpriteControll>();
@@ -1401,8 +1402,8 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 453 * scaleScreen.y };
+		DirectX::XMFLOAT2 pos = {179,443};
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1411,7 +1412,8 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 200,104 };
+
+		DirectX::XMFLOAT2 scale = { 199,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -1431,7 +1433,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandIce
 	{
-		const char* filename = "Data/Sprite/ブリザラ　押し込み.png";
+		const char* filename = "Data/Sprite/Blizzara Push.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandIce");
 		actor->AddComponent<SpriteControll>();
@@ -1439,9 +1441,9 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 179, 520 };
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 520 * scaleScreen.y };
+		DirectX::XMFLOAT2 pos = { 179, 505 };
+		
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1450,7 +1452,7 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 185,104 };
+		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -1470,7 +1472,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandIceCheck
 	{
-		const char* filename = "Data/Sprite/ブリザラ.png";
+		const char* filename = "Data/Sprite/Command Select Blizzara.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandIceCheck");
 		actor->AddComponent<SpriteControll>();
@@ -1478,8 +1480,9 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 520 * scaleScreen.y };
+		DirectX::XMFLOAT2 pos = { 179, 505 };
+
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1488,7 +1491,8 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 201,104 };
+
+		DirectX::XMFLOAT2 scale = { 199,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -1508,7 +1512,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandHeale
 	{
-		const char* filename = "Data/Sprite/コマンド　非選択ケアル.png";
+		const char* filename = "Data/Sprite/Command Non selected Cure.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandHeale");
 		actor->AddComponent<SpriteControll>();
@@ -1517,8 +1521,9 @@ void SceneGame::InitializeComponent()
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		//DirectX::XMFLOAT2 pos = { 179, 611 };
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 586 * scaleScreen.y };
+		DirectX::XMFLOAT2 pos = {179,566};
+
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1547,7 +1552,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandHealeCheck
 	{
-		const char* filename = "Data/Sprite/コマンド　選択ケアル.png";
+		const char* filename = "Data/Sprite/Command Selection Cure.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandHealeCheck");
 		actor->AddComponent<SpriteControll>();
@@ -1555,8 +1560,9 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 586 * scaleScreen.y };
+		DirectX::XMFLOAT2 pos = { 179,566 };
+
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1565,7 +1571,8 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 201,104 };
+
+		DirectX::XMFLOAT2 scale = { 199,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -1585,7 +1592,8 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerComandSpeciulChargeBox
 	{
-		const char* filename = "Data/Sprite/ゲージ.png";
+		//const char* filename = "Data/Sprite/ゲージ.png";
+		const char* filename = "Data/Sprite/comandSpecialChargeGage.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerComandSpeciulChargeBox");
 		actor->AddComponent<SpriteControll>();
@@ -1623,7 +1631,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandSpeciulCharge01
 	{
-		const char* filename = "Data/Sprite/矢印.png";
+		const char* filename = "Data/Sprite/arrow.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulCharge");
 		actor->AddComponent<SpriteControll>();
@@ -1631,8 +1639,9 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 108 * scaleScreen.x, 336 * scaleScreen.y };
+		//DirectX::XMFLOAT2 pos = {108, 336};
+		DirectX::XMFLOAT2 pos = {30, 336 };
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1661,7 +1670,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandSpeciulCharge02
 	{
-		const char* filename = "Data/Sprite/矢印.png";
+		const char* filename = "Data/Sprite/arrow.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulCharge");
 		actor->AddComponent<SpriteControll>();
@@ -1669,8 +1678,9 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 160 * scaleScreen.x, 336 * scaleScreen.y };
+		//DirectX::XMFLOAT2 pos = { 160, 336 };
+		DirectX::XMFLOAT2 pos = { 120, 336 };
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1699,7 +1709,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandSpeciulCharge03
 	{
-		const char* filename = "Data/Sprite/矢印.png";
+		const char* filename = "Data/Sprite/arrow.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulCharge");
 		actor->AddComponent<SpriteControll>();
@@ -1707,8 +1717,9 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 212 * scaleScreen.x, 336 * scaleScreen.y };
+		//DirectX::XMFLOAT2 pos = { 212, 336 };
+		DirectX::XMFLOAT2 pos = { 212, 336 };
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1737,7 +1748,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandSpeciulShurashu
 	{
-		const char* filename = "Data/Sprite/特殊技スラッシュ.png";
+		const char* filename = "Data/Sprite/Special Move Slash.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulShurashu");
 		actor->AddComponent<SpriteControll>();
@@ -1775,7 +1786,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandSpeciulFrame
 	{
-		const char* filename = "Data/Sprite/特殊技フレイム.png";
+		const char* filename = "Data/Sprite/Special Skill Flame.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulFrame");
 		actor->AddComponent<SpriteControll>();
@@ -1813,7 +1824,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandSpeciulIce
 	{
-		const char* filename = "Data/Sprite/特殊技ブリザラ.png";
+		const char* filename = "Data/Sprite/Special Move Blizzara.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulIce");
 		actor->AddComponent<SpriteControll>();
@@ -1849,7 +1860,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandSpeciulThander
 	{
-		const char* filename = "Data/Sprite/特殊技サンダラ.png";
+		const char* filename = "Data/Sprite/Special Skill Sandara.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandSpeciulFrame");
 		actor->AddComponent<SpriteControll>();
@@ -2358,7 +2369,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandShortCutFireCheck
 	{
-		const char* filename = "Data/Sprite/コマンド　非選択　ショートカットファイアー.png";
+		const char* filename = "Data/Sprite/Command Deselect Shortcut Fire.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandShortCutFireCheck");
 		actor->AddComponent<SpriteControll>();
@@ -2396,7 +2407,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandShortCutSunderCheck
 	{
-		const char* filename = "Data/Sprite/コマンド　非選択　ショートカットサンダラ.png";
+		const char* filename = "Data/Sprite/Commands Non select Shortcuts Sandara.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandShortCutSunderCheck");
 		actor->AddComponent<SpriteControll>();
@@ -2404,8 +2415,8 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 453 * scaleScreen.y };
+		DirectX::XMFLOAT2 pos = { 179,447 };
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2434,7 +2445,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandShortCutBrezerdCheck
 	{
-		const char* filename = "Data/Sprite/コマンド　非選択　ショートカットブリザラ.png";
+		const char* filename = "Data/Sprite/Commands Non-select Shortcut Blizzara.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandBrezerdCheck");
 		actor->AddComponent<SpriteControll>();
@@ -2443,7 +2454,7 @@ void SceneGame::InitializeComponent()
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 520 * scaleScreen.y };
+		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 505 * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2472,7 +2483,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandShortCutKeuleCheck
 	{
-		const char* filename = "Data/Sprite/コマンド　非選択　ショートカットケアル.png";
+		const char* filename = "Data/Sprite/Command Non select Shortcut Cur.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandShortCutKeuleCheck");
 		actor->AddComponent<SpriteControll>();
@@ -2480,8 +2491,8 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos;
-		DirectX::XMFLOAT2 offset = { 179 * scaleScreen.x, 586 * scaleScreen.y };
+		DirectX::XMFLOAT2 pos = {179, 566};
+		DirectX::XMFLOAT2 offset = { pos.x * scaleScreen.x, pos.y * scaleScreen.y };
 		pos = { offset.x,offset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2521,7 +2532,7 @@ void SceneGame::InitializeComponent()
 
 	// UI Push
 	{
-		const char* filename = "Data/Sprite/選択.png";
+		const char* filename = "Data/Sprite/choice.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("Push");
 		actor->AddComponent<SpriteControll>();
@@ -2557,7 +2568,7 @@ void SceneGame::InitializeComponent()
 
 	// UI Push2
 	{
-		const char* filename = "Data/Sprite/選択.png";
+		const char* filename = "Data/Sprite/choice.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("Push2");
 		actor->AddComponent<SpriteControll>();
@@ -2593,7 +2604,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandPush
 	{
-		const char* filename = "Data/Sprite/長押し中.png";
+		const char* filename = "Data/Sprite/Long press.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandPush");
 		actor->AddComponent<SpriteControll>();
@@ -2640,7 +2651,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandPushNow
 	{
-		const char* filename = "Data/Sprite/チャージ用.png";
+		const char* filename = "Data/Sprite/For charging.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandPushNow");
 		actor->AddComponent<SpriteControll>();
@@ -2687,7 +2698,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PlayerCommandCharge
 	{
-		const char* filename = "Data/Sprite/長押し文字.png";
+		const char* filename = "Data/Sprite/long press character.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PlayerCommandCharge");
 		actor->AddComponent<SpriteControll>();
@@ -2734,7 +2745,7 @@ void SceneGame::InitializeComponent()
 
 	// UI ShortCut
 	{
-		const char* filename = "Data/Sprite/ショートカット.png";
+		const char* filename = "Data/Sprite/shortcut.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("ShortCut");
 		actor->AddComponent<SpriteControll>();
@@ -2770,7 +2781,7 @@ void SceneGame::InitializeComponent()
 
 	// UI PushShort
 	{
-		const char* filename = "Data/Sprite/選択.png";
+		const char* filename = "Data/Sprite/choice.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("PushShort");
 		actor->AddComponent<SpriteControll>();
@@ -2806,7 +2817,7 @@ void SceneGame::InitializeComponent()
 
 	// UI OperationInstructionsSelect 
 	{
-		const char* filename = "Data/Sprite/操作説明.png";
+		const char* filename = "Data/Sprite/Operation instructions.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("OperationInstructionsSelect");
 		actor->AddComponent<SpriteControll>();
@@ -2844,7 +2855,7 @@ void SceneGame::InitializeComponent()
 
 	// UI OperationInstructionsButton 
 	{
-		const char* filename = "Data/Sprite/操作説明ボタン.png";
+		const char* filename = "Data/Sprite/Operation instructionsButton.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("OperationInstructionsButton");
 		actor->AddComponent<SpriteControll>();
@@ -2882,7 +2893,7 @@ void SceneGame::InitializeComponent()
 
 	// UI ボタン
 	{
-		const char* filename = "Data/Sprite/選択 ボタン.png";
+		const char* filename = "Data/Sprite/Select button.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UI ButtonY");
 		actor->AddComponent<SpriteControll>();
@@ -2920,7 +2931,7 @@ void SceneGame::InitializeComponent()
 
 	// UI CommandDisabled01
 	{
-		const char* filename = "Data/Sprite/選択.png";
+		const char* filename = "Data/Sprite/choice.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("CommandDisabled01");
 		actor->AddComponent<SpriteControll>();
@@ -2958,7 +2969,7 @@ void SceneGame::InitializeComponent()
 
 	// UI CommandDisabled02
 	{
-		const char* filename = "Data/Sprite/選択.png";
+		const char* filename = "Data/Sprite/choice.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("CommandDisabled02");
 		actor->AddComponent<SpriteControll>();
@@ -2999,7 +3010,7 @@ void SceneGame::StartBgm()
 {
 	Audio& bgm = Audio::Instance();
 	AudioParam audioParam;
-	audioParam.filename = "Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav";
+	audioParam.filename = "Data/Audio/BGM/in battle.wav";
 	audioParam.loop = true;
 	audioParam.volume = bgmVolume;
 	bgm.Play(audioParam);
@@ -3009,7 +3020,7 @@ void SceneGame::StopBgm()
 {
 	Audio& bgm = Audio::Instance();
 	AudioParam audioParam;
-	audioParam.filename = "Data/Audio/BGM/戦闘中 (online-audio-converter.com).wav";
+	audioParam.filename = "Data/Audio/BGM/in battle.wav";
 	bgm.Stop(audioParam);
 }
 

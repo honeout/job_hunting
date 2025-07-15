@@ -33,9 +33,9 @@ void UiTime::Update(float elapsedTime)
 
 void UiTime::Render2D(RenderContext& rc, SpriteShader& shader)
 {
-    // ïœä∑çsóÒ
-    DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
-    DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
+    //// ïœä∑çsóÒ
+    //DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
+    //DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
 
     float    add = 0;
     // 2D

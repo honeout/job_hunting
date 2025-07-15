@@ -39,6 +39,9 @@ public:
 	// Å‘åHP‚ğ“Ë‚Á‚Ş
 	void SetMaxMagic(int maxMagic) { this->maxMagic = maxMagic; }
 
+	// Å’ámp—Ê
+	int GetMpMin() const { return mpMin; }
+
 	// €–S‚µ‚½‚ÉŒÄ‚Î‚ê‚é
 	bool OnDead();
 
@@ -49,8 +52,10 @@ public:
 	// mpÁ”ï‚µ‚½‚©
 	bool GetIsConsumption() const { return isConsumption; }
 private:
-	// Å‘å’lHP
+	// Å‘å’lMP
 	int          maxMagic = 5;
+	// Å’á’lMP
+	int     mpMin = 0;
 
 	// Mp
 	int          magic = maxMagic;
@@ -62,7 +67,7 @@ private:
 	float   imvincibleTimerMax = 0.3f;
 
 	int     mpValueMin = 0;
-	int     mpMin = 0;
+
 
 	int     mpValue = 1;
 

@@ -6,7 +6,7 @@ float Mathf::Lerp(float a, float b, float t)
 {
     return a * (1.0f - t) + (b * t);
 }
-
+// 範囲指定
 float Mathf::RandomRange(float min, float max)
 {
     // 0.0~1.0の間までのランダム値
@@ -16,6 +16,9 @@ float Mathf::RandomRange(float min, float max)
     // 0~1までをminでそこさげする。
     return min + (max - min) * value;
 }
+
+// 円の範囲指定
+
 
 DirectX::XMFLOAT3 Mathf::Scale(DirectX::XMFLOAT3 scale, float number)
 {

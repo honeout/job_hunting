@@ -45,7 +45,7 @@ bool HP::ApplyDamage(int damage, float invincibleTime)
     // 何秒無敵
     invincibleTimer = invincibleTime;
     // 通常被ダメ
-    if(!isBonusHpActive)
+    if(!isBonusHpActive && minHealth < health)
     // ダメージ処理
     health -= damage;
     // 耐久力ダメ

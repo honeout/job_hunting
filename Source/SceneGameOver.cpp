@@ -14,6 +14,9 @@
 #include "EffectManager.h"
 void SceneGameOver::Initialize()
 {
+	// 次のシーンの名前
+	SetSceneName("SceneGameOver");
+
 	// bgm
 	StartBgm();
     // コンポーネント初期化
@@ -22,18 +25,13 @@ void SceneGameOver::Initialize()
 	// 選択の種類
 	selectPush = (int)Select::Game;
 
-    // カメラ初期化
-    cameraControlle = nullptr;
-    cameraControlle = new CameraController();
-
 	// カメラ初期設定 見える位置追いかけるものなど
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
 	camera.SetLookAt(
-		DirectX::XMFLOAT3(0, 10, -10),
-		DirectX::XMFLOAT3(0, 0, 0),
-		DirectX::XMFLOAT3(0, 1, 0)
-
+		cameraPosition,
+		cameraFocus,
+		cameraUp
 	);
 	// どの範囲をどれだけ見るか奥行含め
 	camera.SetPerspedtiveFov(
@@ -126,6 +124,10 @@ void SceneGameOver::Initialize()
 		postprocessingRenderer.SetColorGradingData(colorGradingData);
 		postprocessingRenderer.SetColorGradingMinData(colorGradingData);
 	}
+
+	// カメラ初期化
+	cameraControlle = nullptr;
+	cameraControlle = new CameraController();
 }
 
 void SceneGameOver::Start()
@@ -330,6 +332,9 @@ void SceneGameOver::Render()
 
 		}
 		ImGui::Separator();
+
+		// カメラパラメータ設定
+		cameraControlle->OnGUI();
 	}
 
 	LightManager::Instanes().DrawDebugGUI();
@@ -588,7 +593,7 @@ void SceneGameOver::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/GAME OVER (3).png";
+		const char* filename = "Data/Sprite/GAME OVER.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UIGAME OVER");
 		actor->AddComponent<SpriteControll>();
@@ -630,7 +635,7 @@ void SceneGameOver::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/タイトル戻る.png";
+		const char* filename = "Data/Sprite/Return to title.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UITitle");
 		actor->AddComponent<SpriteControll>();
@@ -668,7 +673,7 @@ void SceneGameOver::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/スタートボタン.png";
+		const char* filename = "Data/Sprite/Start Button.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UIGame");
 		actor->AddComponent<SpriteControll>();
@@ -706,7 +711,7 @@ void SceneGameOver::InitializeComponent()
 
 	// UI ボタン
 	{
-		const char* filename = "Data/Sprite/選択 ボタン.png";
+		const char* filename = "Data/Sprite/Select button.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UI Button");
 		actor->AddComponent<SpriteControll>();
@@ -744,7 +749,7 @@ void SceneGameOver::InitializeComponent()
 
 	// UI 選択
 	{
-		const char* filename = "Data/Sprite/選択.png";
+		const char* filename = "Data/Sprite/choice.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UI Select");
 		actor->AddComponent<SpriteControll>();
