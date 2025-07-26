@@ -104,6 +104,11 @@ namespace PlayerConfig
 
     // 攻撃サポート範囲
     constexpr float attackCheckRange = 10.0f;
+
+    // HPバー色変化用
+    constexpr DirectX::XMFLOAT2 hpBarGreenwTexPos = {0,00};
+    constexpr DirectX::XMFLOAT2 hpBarYerowTexPos = {0,76.5f};
+    constexpr DirectX::XMFLOAT2 hpBarRedTexPos = {0,152};
 };
 
 // プレイヤー
@@ -614,6 +619,19 @@ private:
     float            leftHandRadius = 1.8f;
 
     bool             attackCollisionFlag = false;
+
+    // 選択コマンド元画像位置
+    DirectX::XMFLOAT2 commandSelectTexPos = { .0f,86.0f };
+    // 選択コマンド元画像大きさ
+    DirectX::XMFLOAT2 commandSelectTexScale = { .0f,86.0f };
+    // 非選択コマンド基画像位置
+    DirectX::XMFLOAT2 commandUnSelectTexPos = { .0f,0.0f };
+    // 非選択コマンド基画像大きさ
+    DirectX::XMFLOAT2 commandSUnelectTexScale = { .0f,86.0f };
+
+    // 非選択状態透明度
+    float commandAlphaUnSelect = 0.5f;
+    float commandAlphaSelect = 1.0f;
 
     // 歩いている判定
     bool afterimagemove = false;

@@ -83,6 +83,9 @@ public:
 	// スクリーン高さ取得
 	float GetScreenHeight() const { return screenHeight; }
 
+	// 想定の画像の大きさ
+	DirectX::XMFLOAT2 GetBaseScreen() const { return baseScreen; }
+
 	// デバッグレンダラ取得
 	DebugRenderer* GetDebugRenderer() const { return debugRenderer.get(); }
 
@@ -116,6 +119,9 @@ private:
 
 	float	screenWidth;
 	float	screenHeight;
+
+	// 画面変更用
+	DirectX::XMFLOAT2 baseScreen = {1928.0f,1088.0f};
 
 	std::mutex mutex;
 };

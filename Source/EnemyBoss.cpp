@@ -853,7 +853,7 @@ void EnemyBoss::UiControlle(float elapsedTime)
     if (!hpId) return;
 
     if (UiManager::Instance().GetUiesCount() <= uiCountMax)return;
-    float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.12f;
+    float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.08f;
 
     std::weak_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp.lock()->GetScale().y };

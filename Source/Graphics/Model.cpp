@@ -888,6 +888,12 @@ void Model::ReverseplaybackUpeerBodyAnimation(float elapsedTime,  const char* en
 		//現在の時間がどのキーフレームの間にいるか判定する
 		const ModelResource::Keyframe& keyframe0 = keyframes.at(keyIndex);
 		const ModelResource::Keyframe& keyframe1 = keyframes.at(keyIndex1);
+
+		if (currentAnimationSecondsUpeer > keyframe0.seconds &&
+			currentAnimationSecondsUpeer <= keyframe1.seconds) {
+			continue;
+		}
+
 		if (currentAnimationSecondsUpeer >= keyframe0.seconds &&
 			currentAnimationSecondsUpeer < keyframe1.seconds)
 		{

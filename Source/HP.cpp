@@ -120,6 +120,15 @@ bool HP::OnDead()
     return true;
 }
 
+// HP‚ª”¼•ª
+bool HP::HealthHalf()
+{
+    if (health <= (maxHealth / 2) && health > (maxHealth / 4))
+        return true;
+
+    return false;
+}
+
 // HP‚ª4/1‚È‚ç@ƒsƒ“ƒ`ó‘Ô
 bool HP::HealthPinch()
 {

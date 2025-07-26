@@ -457,6 +457,15 @@ void SceneGameOver::InitializeComponent()
 	// 画面の比率
 	scaleScreen = { graphics.GetScreenWidth() / screenWidth,graphics.GetScreenHeight() / screenHeight };
 
+	// 画面最大値
+	screenWidth = Graphics::Instance().GetScreenWidth();
+	screenHeight = Graphics::Instance().GetScreenHeight();
+
+	reStartPos = { screenWidth * 0.5f, screenHeight * 0.7f };
+	titlePos = { screenWidth * 0.5f, screenHeight * 0.79f };
+
+	buttonPos = { reStartPos.x + buttonPosXAdd, 0.0f };
+
 	// 行動範囲
 	{
 		minPos.x = -30;
@@ -579,7 +588,6 @@ void SceneGameOver::InitializeComponent()
 
 		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerOverIdleState(actor));
 		actor->GetComponent<Player>()->GetStateMachine()->RegisterState(new PlayerOverReviveState(actor));
-
 		// ステートセット
 		actor->GetComponent<Player>()->GetStateMachine()->SetState(static_cast<int>(Player::StateOver::Idle));
 
@@ -593,7 +601,7 @@ void SceneGameOver::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/GAME OVER.png";
+		const char* filename = "Data/Sprite/GAME OVER .png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UIGAME OVER");
 		actor->AddComponent<SpriteControll>();
@@ -601,9 +609,9 @@ void SceneGameOver::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { screenWidth, 35 };
+		//DirectX::XMFLOAT2 pos = { screenWidth, 35 };
 
-		transform2D->SetPosition(pos);
+		transform2D->SetPosition(gameOverPos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
@@ -646,21 +654,22 @@ void SceneGameOver::InitializeComponent()
 
 		transform2D->SetPosition(titlePos);
 		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
+		transform2D->SetTexPosition(commandUnSelectTexPos);
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
+		transform2D->SetTexScale(commandSUnelectTexScale);
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// 非選択状態透明度
+		ui->SetAlpha(commandAlphaUnSelect);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -683,21 +692,22 @@ void SceneGameOver::InitializeComponent()
 
 		transform2D->SetPosition(reStartPos);
 		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
+		transform2D->SetTexPosition(commandUnSelectTexPos);
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
+		transform2D->SetTexScale(commandSUnelectTexScale);
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// 非選択状態透明度
+		ui->SetAlpha(commandAlphaUnSelect);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -716,9 +726,9 @@ void SceneGameOver::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 503, 100 };
+		//DirectX::XMFLOAT2 pos = { 1077, 100 };
 
-		transform2D->SetPosition(pos);
+		transform2D->SetPosition(buttonPos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
@@ -802,12 +812,33 @@ void SceneGameOver::SelectScene(float elapsedTime)
 	{
 		// 位置
 		{
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Select)->
 				GetComponent<TransForm2D>()->SetPosition(titlePos);
 
 
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Push)->
 				GetComponent<TransForm2D>()->SetPositionY((titlePos.y + buttonPosYAdd));
+
+			// 選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaSelect);
+
+			// 選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSelectTexScale);
+
+			// 非選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaUnSelect);
+			// 非選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandUnSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSUnelectTexScale);
 		}
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
 		{
@@ -827,6 +858,28 @@ void SceneGameOver::SelectScene(float elapsedTime)
 
 			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Push)->
 				GetComponent<TransForm2D>()->SetPositionY((reStartPos.y + buttonPosYAdd));
+
+
+			// 選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaSelect);
+
+			// 選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSelectTexScale);
+
+			// 非選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaUnSelect);
+			// 非選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandUnSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSUnelectTexScale);
 		}
 		int playerCount = PlayerManager::Instance().GetPlayerCount();
 

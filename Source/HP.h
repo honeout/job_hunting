@@ -57,6 +57,9 @@ public:
 	// Žc‹@
 	int GetLife() const { return life; }
 
+	// HP‚ª”¼•ª
+	bool HealthHalf();
+
 	// HP‚ª4/1‚È‚ç
 	bool HealthPinch();
 

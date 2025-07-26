@@ -496,6 +496,10 @@ void SceneTitle::InitializeComponent()
 	// 画面の比率
 	scaleScreen = { graphics.GetScreenWidth() / screenWidth,graphics.GetScreenHeight() / screenHeight };
 
+	// 画面最大値
+	screenWidth = Graphics::Instance().GetScreenWidth();
+	screenHeight = Graphics::Instance().GetScreenHeight();
+
 	// 行動範囲
 	{
 
@@ -636,7 +640,8 @@ void SceneTitle::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { screenWidth, 35 };
+		//DirectX::XMFLOAT2 pos = { screenWidth, 35 };
+		DirectX::XMFLOAT2 pos = { screenWidth * 0.7f, screenHeight * 0.15f };
 
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -675,23 +680,27 @@ void SceneTitle::InitializeComponent()
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		//DirectX::XMFLOAT2 pos = { 543, gameUiPositionSelected };
 
+		startPos = { screenWidth * 0.5f, screenHeight * 0.7f };
+
 		transform2D->SetPosition(startPos);
 		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
+		transform2D->SetTexPosition(commandUnSelectTexPos);
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
+		transform2D->SetTexScale(commandSUnelectTexScale);
+
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// 非選択状態透明度
+		ui->SetAlpha(commandAlphaUnSelect);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -711,23 +720,26 @@ void SceneTitle::InitializeComponent()
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 
+		exitPos = { screenWidth * 0.5f, screenHeight * 0.79f };
+
 		transform2D->SetPosition(exitPos);
 		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
+		transform2D->SetTexPosition(commandUnSelectTexPos);
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
+		transform2D->SetTexScale(commandSUnelectTexScale);
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// 非選択状態透明度
+		ui->SetAlpha(commandAlphaUnSelect);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -746,7 +758,9 @@ void SceneTitle::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 717, 100 };
+		
+		//DirectX::XMFLOAT2 pos = { 1077, 100 };
+		DirectX::XMFLOAT2 pos = { screenWidth * 0.57f, 100 };
 	
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -975,6 +989,28 @@ void SceneTitle::SelectScene(float elapsedTime)
 			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
 				GetComponent<TransForm2D>()->SetPositionY((startPos.y + buttonPosYAdd));
 
+			// 選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaSelect);
+
+			// 選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSelectTexScale);
+
+
+			// 非選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaUnSelect);
+			// 非選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandUnSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSUnelectTexScale);
+
 		}
 		break;
 	}
@@ -988,6 +1024,30 @@ void SceneTitle::SelectScene(float elapsedTime)
 
 			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
 				GetComponent<TransForm2D>()->SetPositionY((exitPos.y  + buttonPosYAdd));
+
+
+			// 選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaSelect);
+
+			// 選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSelectTexScale);
+
+
+			// 非選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaUnSelect);
+			// 非選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandUnSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSUnelectTexScale);
+
 		}
 
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方

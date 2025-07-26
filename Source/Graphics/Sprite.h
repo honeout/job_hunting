@@ -50,6 +50,16 @@ public:
 		// このアニメーションの再生時間
 		float duration;
 	};
+	
+	// UV一つ
+	struct UVRect {
+		//　左上のUV
+		float u0 = 1.0f;
+		float v0 = 1.0f;
+		//　右下のUV
+		float u1 = 1.0f;
+		float v1 = 1.0f;
+	};
 
 	// アニメーションの種類
 	struct AnimClip
@@ -83,6 +93,16 @@ public:
 
 	// テクスチャ高さ取得
 	int GetTextureHeight() const { return textureHeight; }
+
+	// テクスチャの一つのUV
+	inline UVRect GetSpriteUV(int col, int row, float tileU,float tileV) {
+		UVRect uv;
+		uv.u0 = col * tileU;
+		uv.v0 = row * tileV;
+		uv.u1 = uv.u0 + tileU;
+		uv.u1 = uv.v0 + tileU;
+		return uv;
+	}
 private:
 	struct Texture
 	{

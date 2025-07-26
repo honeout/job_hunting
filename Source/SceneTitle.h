@@ -47,7 +47,6 @@ public:
 	void StartMusic();
 	void StopMusic();
 
-
 	// 3D空間の描画
 	void Render3DScene();
 
@@ -75,8 +74,8 @@ private:
 	CameraController* cameraControlle = nullptr;
 
 	// 画面サイズ
-	const float screenWidth = 1280;
-	const float screenHeight = 720;
+	float screenWidth = 1280;
+	float screenHeight = 720;
 	// 画面の比率
 	DirectX::XMFLOAT2 scaleScreen;
 
@@ -175,7 +174,18 @@ private:
 	DirectX::XMFLOAT2 exitUiScaleSelected = { 181,104 };
 	DirectX::XMFLOAT2 exitUiScaleUnselected = { 151,64 };
 
+	// 非選択状態透明度
+	float commandAlphaUnSelect = 0.5f;
+	float commandAlphaSelect = 1.0f;
 
+	// 選択コマンド元画像位置
+	DirectX::XMFLOAT2 commandSelectTexPos = {.0f,92.0f };
+	// 選択コマンド元画像大きさ
+	DirectX::XMFLOAT2 commandSelectTexScale = { .0f,92.0f };
+	// 非選択コマンド基画像位置
+	DirectX::XMFLOAT2 commandUnSelectTexPos = { .0f,0.0f};
+	// 非選択コマンド基画像大きさ
+	DirectX::XMFLOAT2 commandSUnelectTexScale = { .0f,92.0f };
 
 	// どれを選択しているかUI
 	int selectPush = 0;
@@ -184,8 +194,8 @@ private:
 	float debugShakePower = 0.5f;
 	float debugShakeTimer = 0.2f;
 
-	DirectX::XMFLOAT2 startPos = { 603, 477 };
-	DirectX::XMFLOAT2 exitPos = { 603, 537 };
+	DirectX::XMFLOAT2 startPos = { 903, 677 };
+	DirectX::XMFLOAT2 exitPos = { 903, 767 };
 
 	DirectX::XMFLOAT2 buttonPos = {0,0};
 

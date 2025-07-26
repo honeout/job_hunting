@@ -26,7 +26,7 @@ void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
     //DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
     // 2D
     if (drawCheck)
-    {
+    { 
         		// •`‰æ
         sprite->Render(rc.deviceContext,
             transForm2D->GetPosition().x,
@@ -34,8 +34,8 @@ void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
 			, transForm2D->GetScale().x
 			, transForm2D->GetScale().y,
             transForm2D->GetTexPosition().x, transForm2D->GetTexPosition().y,
-            transForm2D->GetTexScale().x > 0 ?  transForm2D->GetTexScale().x : static_cast<float> (sprite->GetTextureWidth()),
-            transForm2D->GetTexScale().y > 0 ?  transForm2D->GetTexScale().y : static_cast<float> (sprite->GetTextureHeight()),
+            transForm2D->GetTexScale().x > 0 ? transForm2D->GetTexScale().x : static_cast<float> (sprite->GetTextureWidth()),
+            transForm2D->GetTexScale().y > 0 ? transForm2D->GetTexScale().y : static_cast<float> (sprite->GetTextureHeight()),
             transForm2D->GetAngle(),
             color.x,color.y,color.z,color.w);
     }

@@ -2245,7 +2245,19 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
 
         // コマンドUI斬撃　トランスフォーム
         std::shared_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = sharedUiSpecialShurashuId->GetComponent<TransForm2D>();
-        
+        auto uiIdSpecialAttack = sharedUiSpecialShurashuId->GetComponent<Ui>();
+
+        // 必殺技炎
+        // 安全チェック
+        auto sharedUiCommandSpeciulFrameId = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandSpeciulFrame);
+        if (!sharedUiCommandSpeciulFrameId)
+            return;
+
+        // コマンドUI火　トランスフォーム
+        std::shared_ptr<TransForm2D> uiIdSpecialFireTransForm2D = sharedUiCommandSpeciulFrameId->GetComponent<TransForm2D>();
+        auto uiIdSpecialFire = sharedUiCommandSpeciulFrameId->GetComponent<Ui>();
+
         // 必殺技ボタン
         // 安全チェック
         auto sharedUiButtonId = UiManager::Instance().GetUies(
@@ -2258,9 +2270,21 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         
         float pos = uiIdSpecialAttackTransForm2D->GetPosition().y + PlayerConfig::offset;
 
-        // 必殺技コマンド切りつけ
-        uiIdSpecialButton->SetDrawCheck(isDrawUi);
-        uiIdSpecialButtonTransForm2D->SetPositionY(pos);
+        //// 必殺技コマンド切りつけ
+        //uiIdSpecialButton->SetDrawCheck(isDrawUi);
+        //uiIdSpecialButtonTransForm2D->SetPositionY(pos);
+        // 選択コマンドに変更
+        uiIdSpecialAttackTransForm2D->SetTexPosition(commandSelectTexPos);
+        uiIdSpecialAttackTransForm2D->SetTexScale(commandSelectTexScale);
+
+        // 非選択コマンドに変更 炎
+        uiIdSpecialFireTransForm2D->SetTexPosition(commandUnSelectTexPos);
+        uiIdSpecialFireTransForm2D->SetTexScale(commandSUnelectTexScale);
+
+        // 非選択状態半透明
+        uiIdSpecialFire->SetAlpha(commandAlphaUnSelect);
+        // 選択状態不透明
+        uiIdSpecialAttack->SetAlpha(commandAlphaSelect);
         break;
     }
     case (int)SpecialAttackType::MagicFire:
@@ -2274,7 +2298,19 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
 
         // コマンドUI火　トランスフォーム
         std::shared_ptr<TransForm2D> uiIdSpecialFireTransForm2D = sharedUiCommandSpeciulFrameId->GetComponent<TransForm2D>();
+        auto uiIdSpecialFire = sharedUiCommandSpeciulFrameId->GetComponent<Ui>();
         
+        // 必殺技切りつけ
+        // 安全チェック
+        auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(
+            (int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
+        if (!sharedUiSpecialShurashuId)
+            return;
+
+        // コマンドUI斬撃　トランスフォーム
+        std::shared_ptr<TransForm2D> uiIdSpecialAttackTransForm2D = sharedUiSpecialShurashuId->GetComponent<TransForm2D>();
+        auto uiIdSpecialAttack = sharedUiSpecialShurashuId->GetComponent<Ui>();
+
         // 安全チェック
         auto sharedUiButtonId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::ButtonY);
@@ -2286,9 +2322,20 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         
         float pos = uiIdSpecialFireTransForm2D->GetPosition().y + PlayerConfig::offset;
 
-        // 必殺技コマンド火
-        uiIdSpecialButton->SetDrawCheck(isDrawUi);
-        uiIdSpecialButtonTransForm2D->SetPositionY(pos);
+        //// 必殺技コマンド火
+        //uiIdSpecialButton->SetDrawCheck(isDrawUi);
+        //uiIdSpecialButtonTransForm2D->SetPositionY(pos);
+
+        // 非選択選択コマンドに変更
+        uiIdSpecialAttackTransForm2D->SetTexPosition(commandUnSelectTexPos);
+        uiIdSpecialAttackTransForm2D->SetTexScale(commandSUnelectTexScale);
+        // 選択コマンドに変更 炎
+        uiIdSpecialFireTransForm2D->SetTexPosition(commandSelectTexPos);
+        uiIdSpecialFireTransForm2D->SetTexScale(commandSelectTexScale);
+        // 選択状態不透明
+        uiIdSpecialFire->SetAlpha(commandAlphaSelect);
+        // 非選択状態半透明
+        uiIdSpecialAttack->SetAlpha(commandAlphaUnSelect);
         break;
     }
     case (int)SpecialAttackType::MagicIce:
@@ -3140,10 +3187,24 @@ void Player::PinchMode(float elapsedTime)
     // 有効性チェック
     if (!hpId)
         return;
+    // HP変化色
+    UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->
+        GetComponent<TransForm2D>()->SetTexPosition({ PlayerConfig::hpBarGreenwTexPos });
+
+    if (hpId->HealthHalf() && !hpId->GetDead())
+    {
+        // HP変化色
+        UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->
+            GetComponent<TransForm2D>()->SetTexPosition({ PlayerConfig::hpBarYerowTexPos });
+    }
 
     // hp が一定以下なら
     if (hpId->HealthPinch() && !hpId->GetDead())
     {
+        // HP変化色
+        UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->
+            GetComponent<TransForm2D>()->SetTexPosition({ PlayerConfig::hpBarRedTexPos });
+
         // 一定時間で描画
         if (UpdateElapsedTime(timeElapsedHintMax, elapsedTime))
         {
@@ -4137,7 +4198,8 @@ void Player::UiControlleGauge(float elapsedTime)
     if (uiCount <= uiCountMax) return;
 
     // hpゲージ操作用
-    float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.08f;
+    float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.088f;
+    //float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.08f;
     // hpゲージ
     std::shared_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
     std::shared_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
@@ -4145,9 +4207,10 @@ void Player::UiControlleGauge(float elapsedTime)
     // hpゲージUI　変える
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
     uiHp->SetScale(scale);
-    gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.1f;
+    gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.088f;
+    //gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.08f;
 
-    if (gaugeWidth < mpId->GetMpMin())
+    if (gaugeWidth <= mpId->GetMpMin())
         gaugeWidth = 0.0f;
 
     // mpゲージ

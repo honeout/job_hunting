@@ -361,6 +361,17 @@ void SceneGameClear::InitializeComponent()
 	// 画面の比率
 	scaleScreen = { graphics.GetScreenWidth() / screenWidth,graphics.GetScreenHeight() / screenHeight };
 
+	// 画面最大値
+	screenWidth = Graphics::Instance().GetScreenWidth();
+	screenHeight = Graphics::Instance().GetScreenHeight();
+
+	// クリア画面のポジション
+	clearPos = { screenWidth * 0.7f, screenHeight * 0.15f };
+	startPos = { screenWidth * 0.5f, screenHeight * 0.7f };
+	exitPos = { screenWidth * 0.5f, screenHeight * 0.79f };
+
+	selectButton = { screenWidth * 0.58f, clearPos.y};
+
 	// 行動範囲
 	{
 		minPos.x = -30;
@@ -536,8 +547,10 @@ void SceneGameClear::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { screenWidth, 35 };
-		transform2D->SetPosition(pos);
+		//DirectX::XMFLOAT2 pos = { screenWidth, 35 };
+		//DirectX::XMFLOAT2 pos = { screenWidth * 0.7f, screenHeight * 0.15f };
+
+		transform2D->SetPosition(clearPos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
@@ -563,7 +576,7 @@ void SceneGameClear::InitializeComponent()
 
 	// UI タイトル名前
 	{
-		const char* filename = "Data/Sprite/game back.png";
+		const char* filename = "Data/Sprite/Return to title.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
 		actor->SetName("UITitle");
 		actor->AddComponent<SpriteControll>();
@@ -574,21 +587,22 @@ void SceneGameClear::InitializeComponent()
 
 		transform2D->SetPosition(exitPos);
 		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
+		transform2D->SetTexPosition(commandUnSelectTexPos);
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
+		transform2D->SetTexScale(commandSUnelectTexScale);
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// 非選択状態透明度
+		ui->SetAlpha(commandAlphaUnSelect);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -611,19 +625,21 @@ void SceneGameClear::InitializeComponent()
 		//DirectX::XMFLOAT2 pos = { 543, 477 };
 		transform2D->SetPosition(startPos);
 		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
+		transform2D->SetTexPosition(commandUnSelectTexPos);
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 181,104 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
+		transform2D->SetTexScale(commandSUnelectTexScale);
 		actor->AddComponent<Ui>();
 		// 描画チェック
 		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
 		ui->SetDrawCheck(true);
+
+		// 非選択状態透明度
+		ui->SetAlpha(commandAlphaUnSelect);
+
 		// これが２Dかの確認
 		bool check2d = true;
 		actor->SetCheck2d(check2d);
@@ -640,9 +656,9 @@ void SceneGameClear::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 507, 100 };
+		//DirectX::XMFLOAT2 pos = { 1077, 100 };
 
-		transform2D->SetPosition(pos);
+		transform2D->SetPosition(selectButton);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
@@ -754,12 +770,34 @@ void SceneGameClear::SelectScene(float elapsedTime)
 
 		// 大きさ変わる選択
 		{
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Select)->
 				GetComponent<TransForm2D>()->SetPosition(exitPos);
 
 
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Push)->
 				GetComponent<TransForm2D>()->SetPositionY((exitPos.y + buttonPosYAdd));
+
+			// 選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaSelect);
+
+			// 選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSelectTexScale);
+
+
+			// 非選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaUnSelect);
+			// 非選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandUnSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSUnelectTexScale);
 		}
 
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
@@ -775,11 +813,33 @@ void SceneGameClear::SelectScene(float elapsedTime)
 		// 位置
 		{
 			// UI ボタンを押す
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Select)->
 				GetComponent<TransForm2D>()->SetPosition(startPos);
 
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Push)->
 				GetComponent<TransForm2D>()->SetPositionY((startPos.y + buttonPosYAdd));
+
+			// 選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaSelect);
+
+			// 選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSelectTexScale);
+
+
+			// 非選択透明度
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<Ui>()
+				->SetAlpha(commandAlphaUnSelect);
+			// 非選択
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<TransForm2D>()
+				->SetTexPosition(commandUnSelectTexPos);
+
+			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<TransForm2D>()
+				->SetTexScale(commandSUnelectTexScale);
 		}
 
 		int playerCount = PlayerManager::Instance().GetPlayerCount();

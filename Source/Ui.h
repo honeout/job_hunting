@@ -52,6 +52,28 @@ public:
     DirectX::XMFLOAT4 GetColor() { return color; }
     // 透かし
     void SetAlpha(float alpha) { this->color.w = alpha; }
+
+    // 画像枚数
+    //void SetTextureU(float textureU) { this->textureU = textureU; }
+    //void SetTextureV(float textureV) { this->textureV = textureV; }
+
+    // シート最大値
+    void SetSheet(int clos, int rows) { 
+        this->textureU = 1.0f / clos;
+        this->textureV = 1.0f / rows;
+    }
+
+    // テクスチャの一つのUV
+    void GetSpriteUV(int col, int row) {
+        Sprite::UVRect uv;
+        uv.u0 = col * textureU;
+        uv.v0 = row * textureV;
+        uv.u1 = uv.u0 + textureU;
+        uv.u1 = uv.v0 + textureV;
+
+        texPosition = {transForm2D->GetTexPosition().x + uv.u0, transForm2D->GetTexPosition().y + uv.v0 };
+        texScale = { transForm2D->GetTexScale().x + uv.u1, transForm2D->GetTexScale().y + uv.v1 };
+    }
 private:
     Sprite* sprite = nullptr;
 
@@ -73,4 +95,11 @@ private:
     DirectX::XMFLOAT4 color = { 1,1,1,1 };
 
     float alphaMax = 1.0f;
+
+    float textureU, textureV;
+
+    // 元画像の左端
+    DirectX::XMFLOAT2 texPosition = {0,0};
+    // 元画像の右端
+    DirectX::XMFLOAT2 texScale = { 0,0 };
 };

@@ -54,9 +54,22 @@ private:
 	// カメラ
 	CameraController* cameraControlle = nullptr;
 
+	// 非選択状態透明度
+	float commandAlphaUnSelect = 0.5f;
+	float commandAlphaSelect = 1.0f;
+
+	// 選択コマンド元画像位置
+	DirectX::XMFLOAT2 commandSelectTexPos = { .0f,92.0f };
+	// 選択コマンド元画像大きさ
+	DirectX::XMFLOAT2 commandSelectTexScale = { .0f,92.0f };
+	// 非選択コマンド基画像位置
+	DirectX::XMFLOAT2 commandUnSelectTexPos = { .0f,0.0f };
+	// 非選択コマンド基画像大きさ
+	DirectX::XMFLOAT2 commandSUnelectTexScale = { .0f,92.0f };
+
 	// 画面サイズ
-	const float screenWidth = 1280;
-	const float screenHeight = 720;
+	float screenWidth = 1280;
+	float screenHeight = 720;
 	// 画面の比率
 	DirectX::XMFLOAT2 scaleScreen;
 
@@ -149,10 +162,19 @@ private:
 	int selectPush = 0;
 
 	// ボタン用位置の大きさ分
+	float buttonPosXAdd = 160.0f;
 	float buttonPosYAdd = 20.0f;
 
-	DirectX::XMFLOAT2 startPos = { 543, 477 };
-	DirectX::XMFLOAT2 exitPos = { 543, 537 };
+	DirectX::XMFLOAT2 startPos = { 903, 677 };
+	DirectX::XMFLOAT2 exitPos = { 903, 767 };
+	// クリア画面のポジション
+	DirectX::XMFLOAT2 clearPos = {};
+
+	DirectX::XMFLOAT2 commandReturnTitle = {};
+
+	DirectX::XMFLOAT2 commandStartButton = {};
+
+	DirectX::XMFLOAT2 selectButton = {};
 
 	// 入力保持用（グローバル or クラス内に保持）
 	float stickHoldTimerY = 0.0f;

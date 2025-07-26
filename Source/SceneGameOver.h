@@ -54,9 +54,22 @@ private:
 private:
     CameraController* cameraControlle = nullptr;
 
+	// 非選択状態透明度
+	float commandAlphaUnSelect = 0.5f;
+	float commandAlphaSelect = 1.0f;
+
+	// 選択コマンド元画像位置
+	DirectX::XMFLOAT2 commandSelectTexPos = { .0f,92.0f };
+	// 選択コマンド元画像大きさ
+	DirectX::XMFLOAT2 commandSelectTexScale = { .0f,92.0f };
+	// 非選択コマンド基画像位置
+	DirectX::XMFLOAT2 commandUnSelectTexPos = { .0f,0.0f };
+	// 非選択コマンド基画像大きさ
+	DirectX::XMFLOAT2 commandSUnelectTexScale = { .0f,92.0f };
+
 	// 画面サイズ
-	const float screenWidth = 1280;
-	const float screenHeight = 720;
+	float screenWidth = 1280;
+	float screenHeight = 720;
 	// 画面の比率
 	DirectX::XMFLOAT2 scaleScreen;
 
@@ -115,6 +128,11 @@ private:
 	DirectX::XMFLOAT3 minPos = { 0.0f,0.0f,0.0f };
 	DirectX::XMFLOAT3 maxPos = { 0.0f,0.0f,0.0f };
 
+	// ゲームオーバー
+	DirectX::XMFLOAT2 gameOverPos = {};
+	DirectX::XMFLOAT2 selectPos = {};
+
+
 	// 光半径
 	float lightRange = 130;
 
@@ -147,12 +165,13 @@ private:
 
 	int selectPush = 0;
 
-	DirectX::XMFLOAT2 reStartPos = { 543, 477 };
-	DirectX::XMFLOAT2 titlePos = { 543, 537 };
+	DirectX::XMFLOAT2 reStartPos = { 903, 677 };
+	DirectX::XMFLOAT2 titlePos = { 903, 767 };
 
 	DirectX::XMFLOAT2 buttonPos = { 0,0 };
 
 	// ボタン用位置の大きさ分
+	float buttonPosXAdd = 160.0f;
 	float buttonPosYAdd = 20.0f;
 
 	// ボタンを押すと描画する
