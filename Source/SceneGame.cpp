@@ -695,16 +695,6 @@ void SceneGame::InitializeComponent()
 	// 画面最大値
 	screenWidth = Graphics::Instance().GetScreenWidth();
 	screenHeight = Graphics::Instance().GetScreenHeight();
-	// Playerhp 
-	playerHpBarPos = { screenWidth * 0.7f, screenHeight * 0.65f };
-	// Playermp
-	playerMpBarPos = { screenWidth * 0.7f, screenHeight * 0.8f };
-	// EnemyhP
-	enemyHpBarPos = { screenWidth * 0.6f, screenHeight * 0.1f };
-	// コマンド位置
-	commandPos = {screenWidth * 0.05f, screenHeight * 0.4f};
-	// スペシャルゲージ位置
-	SpecialGagePos = { screenWidth * 0.03f, screenHeight * 0.25f };
 
 	// ステージ初期化
 	{
@@ -2182,7 +2172,7 @@ void SceneGame::InitializeComponent()
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 
 		// 位置
-		DirectX::XMFLOAT2 pos = { screenWidth * 0.1f, screenHeight * 0.1f };
+		DirectX::XMFLOAT2 pos = { 200.0f, 100.0f };
 		//DirectX::XMFLOAT2 pos = { 100, 31 };
 		transform2D->SetPosition(pos);
 

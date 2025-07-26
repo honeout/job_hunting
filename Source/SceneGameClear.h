@@ -165,16 +165,24 @@ private:
 	float buttonPosXAdd = 160.0f;
 	float buttonPosYAdd = 20.0f;
 
-	DirectX::XMFLOAT2 startPos = { 903, 677 };
-	DirectX::XMFLOAT2 exitPos = { 903, 767 };
+
 	// クリア画面のポジション
-	DirectX::XMFLOAT2 clearPos = {};
+	DirectX::XMFLOAT2 clearPos = { 1280.0f, 100.0f };
 
-	DirectX::XMFLOAT2 commandReturnTitle = {};
+	// コマンドの大きさ
+	DirectX::XMFLOAT2 commandScale = { 181,104 };
 
-	DirectX::XMFLOAT2 commandStartButton = {};
+	// スタートコマンド位置
+	DirectX::XMFLOAT2 startPos = { 903, 677 };
+	// 終了コマンド位置
+	DirectX::XMFLOAT2 exitPos = { startPos.x, startPos.y + commandScale.y };
 
-	DirectX::XMFLOAT2 selectButton = {};
+	// ボタンの位置
+	DirectX::XMFLOAT2 buttonPos = { 0,0 };
+
+	// ボタン用位置の大きさ分
+	float buttonOffset = 20.0f;
+
 
 	// 入力保持用（グローバル or クラス内に保持）
 	float stickHoldTimerY = 0.0f;

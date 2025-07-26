@@ -43,18 +43,9 @@ void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
     // À•W
     DirectX::XMFLOAT2 pos =
     {
-        (graphics.GetScreenWidth() - scale.x) * transForm2D->GetPosition().x,
-        (graphics.GetScreenHeight() - scale.y) * transForm2D->GetPosition().y
+        transForm2D->GetPosition().x * uiScaleX,
+        transForm2D->GetPosition().y * uiScaleY
     };
-
-    //DirectX::XMFLOAT2 pos =
-    //{
-    //    transForm2D->GetPosition().x * uiScaleX,
-    //    transForm2D->GetPosition().y * uiScaleY
-    //};
-
-
-
 
     // 2D
     if (drawCheck)

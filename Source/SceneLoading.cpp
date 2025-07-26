@@ -243,20 +243,8 @@ void SceneLoading::InitializeComponent()
     screenWidth = Graphics::Instance().GetScreenWidth();
     screenHeight = Graphics::Instance().GetScreenHeight();
 
-    // ロード中アイコン
-    loadingIconPos = { screenWidth * 0.7f, screenHeight * 0.7f };
-    nomLoadingIconPos = { screenWidth * 0.4f, screenHeight * 0.83f };
-    nowLoadingIconPos = { screenWidth * 0.4f, screenHeight * 0.7f };
-
-    startCommandPos = {screenWidth * 0.45f, screenHeight * 0.89f};
-
-    operationPos = { screenWidth * 0.2f, screenHeight * 0.01f };
-    //operationKeyPos = { screenWidth * 0.2f, 0.0f };
-    operationXbxPos = { screenWidth * 0.7f, screenHeight * 0.2f };
-
-    buttonOffset = { startCommandPos.x + 150, startCommandPos.y + 20 };
-
-    selectNumbar = { screenWidth * 0.75f, screenHeight * 0.038f };
+    // ボタンの位置差
+    buttonPos = { (startCommandPos.x + commandScale.x) - buttonOffset, startCommandPos.y + buttonOffset };
 
     // UI LoadingIcon
     {
@@ -529,8 +517,7 @@ void SceneLoading::InitializeComponent()
 
         float angle = 0;
         transform2D->SetAngle(angle);
-        DirectX::XMFLOAT2 scale = { 181,104 };
-        transform2D->SetScale(scale);
+        transform2D->SetScale(commandScale);
         // 元の大きさ
         transform2D->SetTexScale(commandSelectTexScale);
 
@@ -559,15 +546,15 @@ void SceneLoading::InitializeComponent()
         actor->AddComponent<TransForm2D>();
         // 位置　角度　スケール情報
         std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-        //DirectX::XMFLOAT2 pos = { screenWidth - 280, 818 };
 
-        transform2D->SetPosition(buttonOffset);
+        transform2D->SetPosition(buttonPos);
         // 元の位置
         DirectX::XMFLOAT2 texPos = { 0, 0 };
         transform2D->SetTexPosition(texPos);
 
         float angle = 0;
         transform2D->SetAngle(angle);
+        
         DirectX::XMFLOAT2 scale = { 60,64 };
         transform2D->SetScale(scale);
         // 元の大きさ

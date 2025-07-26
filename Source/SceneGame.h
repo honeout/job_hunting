@@ -65,28 +65,36 @@ private:
 	float screenHeight = 720;
 	// コマンド位置の差
 	float commandOffset = 10.0f;
+
+	// プレイヤーHPバー位置情報
+	DirectX::XMFLOAT2 playerHpBarPos = { screenWidth + 100 , screenHeight };
+	DirectX::XMFLOAT2 enemyHpBarPos = { screenWidth + 50 , 0 };
+
+	// playerMPバー位置
+	DirectX::XMFLOAT2 playerMpBarPos = { screenWidth + 100 , screenHeight + 160 };
+
+	// 必殺技チャージ枠位置
+	DirectX::XMFLOAT2 SpecialGagePos = { 50, 300 };
+
+
+	// コマンド大きさ
+	DirectX::XMFLOAT2 commandSize = { 308,89 };
+
 	// コマンド位置
 	DirectX::XMFLOAT2 commandPos = {100, 500};
+
 	// コマンド魔法差
 	DirectX::XMFLOAT2 commandMagicOffset = { 280,79 };
+
 	float commandMagicOffsetY = 10.0f;
 	// コマンドスペシャル差
 	DirectX::XMFLOAT2 commandSpecialOffset = { 0,166 };
 	// コマンドボタン差
 	DirectX::XMFLOAT2 commandButtonOffset = {80,42};
 
-	// 必殺技チャージ枠位置
-	DirectX::XMFLOAT2 SpecialGagePos = { 50, 300 };
 	// チャージ矢印差
 	DirectX::XMFLOAT2 commandSpecialGageOffset = { 70,5 };
-	// プレイヤーHPバー位置情報
-	DirectX::XMFLOAT2 playerHpBarPos = { screenWidth + 100 , screenHeight};
-	DirectX::XMFLOAT2 enemyHpBarPos = { screenWidth + 50 , 0};
 
-	// playerMPバー位置
-	DirectX::XMFLOAT2 playerMpBarPos = { screenWidth + 100 , screenHeight + 160};
-	
-	DirectX::XMFLOAT2 commandSize = { 308,89 };
 
 	// 選択コマンド元画像位置
 	DirectX::XMFLOAT2 commandSelectTexPos = { .0f,92.0f };

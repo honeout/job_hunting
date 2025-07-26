@@ -500,6 +500,9 @@ void SceneTitle::InitializeComponent()
 	screenWidth = Graphics::Instance().GetScreenWidth();
 	screenHeight = Graphics::Instance().GetScreenHeight();
 
+	// ボタンの位置差
+	buttonPos = { (startPos.x + commandScale.x) - buttonOffset, startPos.y };
+
 	// 行動範囲
 	{
 
@@ -640,11 +643,8 @@ void SceneTitle::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { screenWidth, 35 };
-		//DirectX::XMFLOAT2 pos = { screenWidth * 0.7f, screenHeight * 0.15f };
-		DirectX::XMFLOAT2 pos = { 0.9f,0.1f  };
 
-		transform2D->SetPosition(pos);
+		transform2D->SetPosition(titlePos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
@@ -681,16 +681,13 @@ void SceneTitle::InitializeComponent()
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		//DirectX::XMFLOAT2 pos = { 543, gameUiPositionSelected };
 
-		startPos = {  0.5f,  0.7f };
-
 		transform2D->SetPosition(startPos);
 		// 元の位置
 		transform2D->SetTexPosition(commandUnSelectTexPos);
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+		transform2D->SetScale(commandScale);
 		// 元の大きさ
 		transform2D->SetTexScale(commandSUnelectTexScale);
 
@@ -714,14 +711,12 @@ void SceneTitle::InitializeComponent()
 	{
 		const char* filename = "Data/Sprite/EXIT.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->SetName("UITitle");
+		actor->SetName("UIExit");
 		actor->AddComponent<SpriteControll>();
 		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-
-		exitPos = { 0.5f, 0.79f };
 
 		transform2D->SetPosition(exitPos);
 		// 元の位置
@@ -729,8 +724,8 @@ void SceneTitle::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(commandScale);
 		// 元の大きさ
 		transform2D->SetTexScale(commandSUnelectTexScale);
 
@@ -759,11 +754,8 @@ void SceneTitle::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		
-		//DirectX::XMFLOAT2 pos = { 1077, 100 };
-		DirectX::XMFLOAT2 pos = {  0.57f,  0.7f };
 	
-		transform2D->SetPosition(pos);
+		transform2D->SetPosition(buttonPos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
@@ -798,8 +790,7 @@ void SceneTitle::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 0.57f,  0.7f };
-		transform2D->SetPosition(pos);
+		transform2D->SetPosition(startPos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
@@ -988,7 +979,7 @@ void SceneTitle::SelectScene(float elapsedTime)
 				GetComponent<TransForm2D>()->SetPosition({ startPos.x ,startPos.y  });
 
 			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((startPos.y + buttonPosYAdd));
+				GetComponent<TransForm2D>()->SetPositionY((startPos.y + buttonOffset));
 
 			// 選択透明度
 			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<Ui>()
@@ -1024,7 +1015,7 @@ void SceneTitle::SelectScene(float elapsedTime)
 
 
 			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((exitPos.y  + buttonPosYAdd));
+				GetComponent<TransForm2D>()->SetPositionY((exitPos.y  + buttonOffset));
 
 
 			// 選択透明度

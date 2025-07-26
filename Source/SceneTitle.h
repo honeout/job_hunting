@@ -194,13 +194,23 @@ private:
 	float debugShakePower = 0.5f;
 	float debugShakeTimer = 0.2f;
 
-	DirectX::XMFLOAT2 startPos = { 903, 677 };
-	DirectX::XMFLOAT2 exitPos = { 903, 767 };
+	// タイトル位置
+	DirectX::XMFLOAT2 titlePos = { 1280.0f, 100.0f };
 
+	// コマンドの大きさ
+	DirectX::XMFLOAT2 commandScale = { 181,104 };
+
+	// コマンドstart位置
+	DirectX::XMFLOAT2 startPos = { 903, 677 };
+
+	// コマンドexit位置
+	DirectX::XMFLOAT2 exitPos = { startPos.x, startPos.y + commandScale.y };
+
+	// ボタンの位置
 	DirectX::XMFLOAT2 buttonPos = {0,0};
 
 	// ボタン用位置の大きさ分
-	float buttonPosYAdd = 20.0f;
+	float buttonOffset = 20.0f;
 
 	// ボタンを押すと描画する
 	bool isDrawButton = true;

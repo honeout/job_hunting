@@ -55,8 +55,8 @@ void UiTime::Render2D(RenderContext& rc, SpriteShader& shader)
     // À•W
     DirectX::XMFLOAT2 pos =
     {
-        (graphics.GetScreenWidth() - scale.x) * transForm2D->GetPosition().x,
-        (graphics.GetScreenHeight() - scale.y) * transForm2D->GetPosition().y
+        transForm2D->GetPosition().x* uiScaleX,
+        transForm2D->GetPosition().y* uiScaleY
     };
 
 
@@ -85,7 +85,7 @@ void UiTime::Render2D(RenderContext& rc, SpriteShader& shader)
                 transForm2D->GetTexScale().y,
                 transForm2D->GetAngle(),
                 1, 1, 1, 1);
-            add += transForm2D->GetScale().x;
+            add += scale.x;
             sc /= 10;
         }
     }

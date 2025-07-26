@@ -93,19 +93,38 @@ private:
     DirectX::XMFLOAT2 commandSUnelectTexScale = { .0f,92.0f };
 
     // ロード中アイコン
-    DirectX::XMFLOAT2 loadingIconPos = { 0.0f,0.0f };
-    // ロード点
-    DirectX::XMFLOAT2 nomLoadingIconPos = { 0.0f,0.0f };
-    // ロードの位置
-    DirectX::XMFLOAT2 nowLoadingIconPos = { 0.0f,0.0f };
-    // ゲームスタートコマンド
-    DirectX::XMFLOAT2 startCommandPos = { 0.0f,0.0f };
-    // 操作説明xbx
-    DirectX::XMFLOAT2 operationXbxPos = { 0.0f,0.0f };
-    // 操作説明キーボード
-    DirectX::XMFLOAT2 operationPos = { 0.0f,0.0f };
+    DirectX::XMFLOAT2 loadingIconPos = { 1280.0f,677 };
 
-    DirectX::XMFLOAT2 buttonOffset = { 0.0f,0.0f };
+    // ロード点
+    DirectX::XMFLOAT2 nomLoadingIconPos = { 903.0f,927 };
+
+    // ロードの位置
+    DirectX::XMFLOAT2 nowLoadingIconPos = { 903.0f,927 };
+
+    // コマンドの大きさ
+    DirectX::XMFLOAT2 commandScale = { 181,104 };
+
+    // ゲームスタートコマンド
+    DirectX::XMFLOAT2 startCommandPos = { 903.0f,977 };
+
+    // 操作説明xbx
+    DirectX::XMFLOAT2 operationXbxPos = { 300.0f,0.0f };
+
+    // 操作説明キーボード
+    DirectX::XMFLOAT2 operationPos = { 300.0f,0.0f };
+
+    // ボタンの位置
+    DirectX::XMFLOAT2 buttonPos = { 0,0 };
+
+    // ボタン用位置の大きさ分
+    float buttonOffset = 20.0f;
+
+    // ページ数
+    DirectX::XMFLOAT2 selectNumbar = { 1380.0f, 30.0f };
+    // フォントの元画像位置
+    DirectX::XMFLOAT2 selectNumbarTexPosition = { 0.0f, 60.0f };
+    // フォントの元画像サイズ
+    DirectX::XMFLOAT2 selectNumbarTexScale = { 20.0f, 20.0f };
 
     float angle = 0.0f;
     float angleLoading = 0.0f;
@@ -150,12 +169,6 @@ private:
     bool draw2d = true;
     bool draw2dEmpty = false;
 
-    // ページ数
-    DirectX::XMFLOAT2 selectNumbar = {};
-    // フォントの元画像位置
-    DirectX::XMFLOAT2 selectNumbarTexPosition = {0.0f, 60.0f};
-    // フォントの元画像サイズ
-    DirectX::XMFLOAT2 selectNumbarTexScale = {20.0f, 20.0f};
 
     // ページ数の不透明度
     float numbarAlpha = 1.0f;

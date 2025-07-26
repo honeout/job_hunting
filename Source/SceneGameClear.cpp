@@ -366,11 +366,14 @@ void SceneGameClear::InitializeComponent()
 	screenHeight = Graphics::Instance().GetScreenHeight();
 
 	// クリア画面のポジション
-	clearPos = { screenWidth * 0.7f, screenHeight * 0.15f };
-	startPos = { screenWidth * 0.5f, screenHeight * 0.7f };
-	exitPos = { screenWidth * 0.5f, screenHeight * 0.79f };
+	//clearPos = { screenWidth * 0.7f, screenHeight * 0.15f };
+	//startPos = { screenWidth * 0.5f, screenHeight * 0.7f };
+	//exitPos = { screenWidth * 0.5f, screenHeight * 0.79f };
 
-	selectButton = { screenWidth * 0.58f, clearPos.y};
+	//selectButton = { screenWidth * 0.58f, clearPos.y};
+
+	// ボタンの位置差
+	buttonPos = { (startPos.x + commandScale.x) - buttonOffset, startPos.y };
 
 	// 行動範囲
 	{
@@ -591,8 +594,8 @@ void SceneGameClear::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(commandScale);
 		// 元の大きさ
 		transform2D->SetTexScale(commandSUnelectTexScale);
 
@@ -628,8 +631,8 @@ void SceneGameClear::InitializeComponent()
 		transform2D->SetTexPosition(commandUnSelectTexPos);
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(commandScale);
 		// 元の大きさ
 		transform2D->SetTexScale(commandSUnelectTexScale);
 		actor->AddComponent<Ui>();
@@ -658,7 +661,7 @@ void SceneGameClear::InitializeComponent()
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 		//DirectX::XMFLOAT2 pos = { 1077, 100 };
 
-		transform2D->SetPosition(selectButton);
+		transform2D->SetPosition(buttonPos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);

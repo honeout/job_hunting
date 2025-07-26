@@ -461,10 +461,8 @@ void SceneGameOver::InitializeComponent()
 	screenWidth = Graphics::Instance().GetScreenWidth();
 	screenHeight = Graphics::Instance().GetScreenHeight();
 
-	reStartPos = { screenWidth * 0.5f, screenHeight * 0.7f };
-	titlePos = { screenWidth * 0.5f, screenHeight * 0.79f };
-
-	buttonPos = { reStartPos.x + buttonPosXAdd, 0.0f };
+	// ボタンの位置差
+	buttonPos = { (reStartPos.x + commandScale.x) - buttonOffset, reStartPos.y };
 
 	// 行動範囲
 	{
@@ -640,7 +638,7 @@ void SceneGameOver::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-	// UI タイトル名前
+	// UI コマンドタイトルに戻る
 	{
 		const char* filename = "Data/Sprite/Return to title.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -658,8 +656,8 @@ void SceneGameOver::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(commandScale);
 		// 元の大きさ
 		transform2D->SetTexScale(commandSUnelectTexScale);
 
@@ -678,7 +676,7 @@ void SceneGameOver::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
-	// UI タイトル名前
+	// UI コマンドゲームリスタート
 	{
 		const char* filename = "Data/Sprite/Start Button.png";
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -696,8 +694,8 @@ void SceneGameOver::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(commandScale);
 		// 元の大きさ
 		transform2D->SetTexScale(commandSUnelectTexScale);
 
@@ -817,7 +815,7 @@ void SceneGameOver::SelectScene(float elapsedTime)
 
 
 			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((titlePos.y + buttonPosYAdd));
+				GetComponent<TransForm2D>()->SetPositionY((titlePos.y + buttonOffset));
 
 			// 選択透明度
 			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<Ui>()
@@ -857,7 +855,7 @@ void SceneGameOver::SelectScene(float elapsedTime)
 				GetComponent<TransForm2D>()->SetPosition(reStartPos);
 
 			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((reStartPos.y + buttonPosYAdd));
+				GetComponent<TransForm2D>()->SetPositionY((reStartPos.y + buttonOffset));
 
 
 			// 選択透明度
