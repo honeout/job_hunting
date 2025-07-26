@@ -34,9 +34,6 @@ public:
 
 	// •`‰æˆ—
 	void Render() override;
-
-
-
 private:
 	// 3D‹óŠÔ‚Ì•`‰æ
 	void Render3DScene();

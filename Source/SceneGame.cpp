@@ -695,7 +695,6 @@ void SceneGame::InitializeComponent()
 	// 画面最大値
 	screenWidth = Graphics::Instance().GetScreenWidth();
 	screenHeight = Graphics::Instance().GetScreenHeight();
-
 	// Playerhp 
 	playerHpBarPos = { screenWidth * 0.7f, screenHeight * 0.65f };
 	// Playermp

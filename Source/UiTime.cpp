@@ -37,6 +37,29 @@ void UiTime::Render2D(RenderContext& rc, SpriteShader& shader)
     //DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
     //DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
 
+    Graphics& graphics = Graphics::Instance();
+    // スケール計算用
+    float uiScale = graphics.CalcUIScale();
+
+    // 座標用
+    float uiScaleX = graphics.CalcUIScaleX();
+    float uiScaleY = graphics.CalcUIScaleY();
+
+    // サイズ
+    DirectX::XMFLOAT2 scale =
+    {
+        transForm2D->GetScale().x * uiScale,
+        transForm2D->GetScale().y * uiScale
+    };
+
+    // 座標
+    DirectX::XMFLOAT2 pos =
+    {
+        (graphics.GetScreenWidth() - scale.x) * transForm2D->GetPosition().x,
+        (graphics.GetScreenHeight() - scale.y) * transForm2D->GetPosition().y
+    };
+
+
     float    add = 0;
     // 2D
     if (drawCheck)
@@ -53,10 +76,10 @@ void UiTime::Render2D(RenderContext& rc, SpriteShader& shader)
             float texPosX = num % numberX * (float)transForm2D->GetTexScale().x;
             // 描画
             sprite->Render(rc.deviceContext,
-                transForm2D->GetPosition().x - add,
-                transForm2D->GetPosition().y
-                , transForm2D->GetScale().x
-                , transForm2D->GetScale().y,
+                pos.x - add,
+                pos.y
+                , scale.x
+                , scale.y,
                 texPosX, transForm2D->GetTexPosition().y,
                 transForm2D->GetTexScale().x,
                 transForm2D->GetTexScale().y,

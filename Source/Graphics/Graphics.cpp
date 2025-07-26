@@ -186,3 +186,23 @@ Graphics::Graphics(HWND hWnd)
 Graphics::~Graphics()
 {
 }
+
+// UIスケールを計算(最小スケールを返す)
+float Graphics::CalcUIScale()
+{
+	float scaleX = static_cast<float>(screenWidth) / baseScreen.x;
+	float scaleY = static_cast<float>(screenHeight) / baseScreen.y;
+
+	// 小さい方に合わせる。
+	return  std::min<float>(scaleX, scaleY);
+}
+// UI座標計算X
+float Graphics::CalcUIScaleX()
+{
+	return static_cast<float>(screenWidth) / baseScreen.x;
+}
+// UI座標計算Y
+float Graphics::CalcUIScaleY()
+{
+	return static_cast<float>(screenHeight) / baseScreen.y;
+}

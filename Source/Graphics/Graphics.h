@@ -3,6 +3,7 @@
 #include <memory>
 #include <d3d11.h>
 #include <wrl.h>
+#include <algorithm>
 #include "Graphics/Shader.h"
 #include "Graphics/DebugRenderer.h"
 #include "Graphics/LineRenderer.h"
@@ -97,6 +98,15 @@ public:
 
 	// ミューテックス取得 ルール決め
 	std::mutex& GetMutex() { return mutex; }
+
+	// UIスケールを計算(最小スケールを返す)
+	float CalcUIScale();
+	// UI座標計算X
+	float CalcUIScaleX();
+	// UI座標計算Y
+	float CalcUIScaleY();
+
+
 private:
 	static Graphics*								instance;
 

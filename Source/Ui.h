@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "SpriteControll.h"
 #include "TransForm2D.h"
+#include "Graphics\Graphics.h"
 
 class Ui : public Component
 {

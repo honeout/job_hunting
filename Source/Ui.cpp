@@ -24,15 +24,47 @@ void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
     //// 変換行列
     //DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
     //DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
+
+    Graphics& graphics = Graphics::Instance();
+    // スケール計算用
+    float uiScale = graphics.CalcUIScale();
+
+    // 座標用
+    float uiScaleX = graphics.CalcUIScaleX();
+    float uiScaleY = graphics.CalcUIScaleY();
+
+    // サイズ
+    DirectX::XMFLOAT2 scale =
+    {
+        transForm2D->GetScale().x * uiScale,
+        transForm2D->GetScale().y * uiScale
+    };
+
+    // 座標
+    DirectX::XMFLOAT2 pos =
+    {
+        (graphics.GetScreenWidth() - scale.x) * transForm2D->GetPosition().x,
+        (graphics.GetScreenHeight() - scale.y) * transForm2D->GetPosition().y
+    };
+
+    //DirectX::XMFLOAT2 pos =
+    //{
+    //    transForm2D->GetPosition().x * uiScaleX,
+    //    transForm2D->GetPosition().y * uiScaleY
+    //};
+
+
+
+
     // 2D
     if (drawCheck)
     { 
         		// 描画
         sprite->Render(rc.deviceContext,
-            transForm2D->GetPosition().x,
-            transForm2D->GetPosition().y
-			, transForm2D->GetScale().x
-			, transForm2D->GetScale().y,
+            pos.x,
+            pos.y,
+			scale.x,
+            scale.y,
             transForm2D->GetTexPosition().x, transForm2D->GetTexPosition().y,
             transForm2D->GetTexScale().x > 0 ? transForm2D->GetTexScale().x : static_cast<float> (sprite->GetTextureWidth()),
             transForm2D->GetTexScale().y > 0 ? transForm2D->GetTexScale().y : static_cast<float> (sprite->GetTextureHeight()),
