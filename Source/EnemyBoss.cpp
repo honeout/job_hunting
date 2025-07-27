@@ -394,17 +394,17 @@ void EnemyBoss::CollisionImpactVsPlayer()
 
     for (int i = 0; i < projectileCount; ++i)
     {
-        std::weak_ptr<Actor> projectile = projectileManager.GetProjectile(i);
-        if (!projectile.lock()->GetComponent<ProjectileImpact>()) return;
+        auto projectile = projectileManager.GetProjectile(i);
+        if (!projectile->GetComponent<ProjectileImpact>() || !projectile) return;
 
         DirectX::XMFLOAT3 projectilePosition =
-            projectile.lock()->GetComponent<Transform>()->GetPosition();
+            projectile->GetComponent<Transform>()->GetPosition();
 
         // 身長
         float height = 1.0f;
         float projectileHeight = MagicConfig::kHeight;
-        float projectileRadiusOutLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
-        float projectileRadiusInLine = projectile.lock()->GetComponent<ProjectileImpact>()->GetRadiusInSide();
+        float projectileRadiusOutLine = projectile->GetComponent<ProjectileImpact>()->GetRadiusOutSide();
+        float projectileRadiusInLine = projectile->GetComponent<ProjectileImpact>()->GetRadiusInSide();
         // 衝突処理
         DirectX::XMFLOAT3 outPositon;
 
@@ -855,22 +855,29 @@ void EnemyBoss::UiControlle(float elapsedTime)
     if (UiManager::Instance().GetUiesCount() <= uiCountMax)return;
     float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.08f;
 
-    std::weak_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
-    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp.lock()->GetScale().y };
-    uiHp.lock()->SetScale(scale);
-    std::weak_ptr<Ui> uiHpLife1 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife01)->GetComponent<Ui>();
-    std::weak_ptr<Ui> uiHpLife2 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife02)->GetComponent<Ui>();
+    auto uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
+
+    auto uiHpLife1 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife01)->GetComponent<Ui>();
+    auto uiHpLife2 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife02)->GetComponent<Ui>();
+    
+    // 安全チェック
+    if (!uiHp || !uiHpLife1 || !uiHpLife2) return;
+
+    // hpバー
+    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
+    uiHp->SetScale(scale);
+
     bool checkDraw = false;
     switch (hpId->GetLife())
     {
     case 1:
     {
-        uiHpLife2.lock()->SetDrawCheck(checkDraw);
+        uiHpLife2->SetDrawCheck(checkDraw);
         break;
     }
     case 0:
     {
-        uiHpLife1.lock()->SetDrawCheck(checkDraw);
+        uiHpLife1->SetDrawCheck(checkDraw);
         break;
     }
     default:
@@ -995,9 +1002,9 @@ void EnemyBoss::InputJump()
 bool EnemyBoss::SearchPlayer()
 {
     // プレイヤー取得
-    std::weak_ptr<Actor> playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
+    auto playerid = PlayerManager::Instance().GetPlayer(PlayerManager::Instance().GetPlayerCount()-1);
     //　トランスフォーム分解
-    DirectX::XMFLOAT3 playerPosition = playerid.lock()->GetComponent<Transform>()->GetPosition();
+    DirectX::XMFLOAT3 playerPosition = playerid->GetComponent<Transform>()->GetPosition();
     float vx = playerPosition.x - position.x;
     float vy = playerPosition.y - position.y;
     float vz = playerPosition.z - position.z;
@@ -1048,7 +1055,7 @@ void EnemyBoss::StartDamageShake()
 void EnemyManager::DeleteUpdate(float elapsedTime)
 {
     // 破棄処理 毎フレームここで一気に消す。
-    for (std::shared_ptr<Actor> enemy : removes)// リストを消す
+    for (auto enemy : removes)// リストを消す
     {
         std::vector<std::shared_ptr<Actor>>::iterator it = std::find(enemies.begin(), enemies.end(),
             enemy);

@@ -199,8 +199,7 @@ public:
 
     // プレイヤーとエネミーとの衝突処理
     void CollisionPlayerVsEnemies();
-    // プレイヤーの行動範囲
-    void CollisionPlayerMoveArea();
+
     // ボーンと攻撃の衝突判定
     void CollisionBornVsProjectile(const char* bornname);
     // デバッグ用GUI描画
@@ -528,9 +527,6 @@ public:
     void StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax);
     // Ui魔法チャージ動作発射
     void StartMagicUiFire();
-
-    // デバッグ用
-    bool GetDebugCameraTime() { return debugCameraTime; }
 private:
     // 構造体
     struct SpecialAttack
@@ -893,7 +889,6 @@ private:
     // デバッグ関係
     bool debugShaderFlash = false;
     bool debugShaderFlashSeconde = false;
-    bool debugCameraTime = false;
 
     /////////////////////// SE 再生関係
     
