@@ -38,8 +38,8 @@ public:
     // コンポネント登録
     void InitializeComponent();
 
-    // 画面エフェクト
-    void PlayEffectsShaders(float elapsedTime);
+	// スロー状態変更
+    void SetSlowState(float elapsedTime);
 
 	// どのシーンに行くか
 	void SelectScene(float elapsedTime);
@@ -91,7 +91,7 @@ private:
 	DirectX::XMFLOAT2 scaleScreen;
 
 	// カメラ位置
-	DirectX::XMFLOAT3 cameraPosition = { 4.126, -2.989, -17.144 };
+	DirectX::XMFLOAT3 cameraPosition = { 4.126f, -2.989f, -17.144f };
 
 	// カメラ注視点
 	DirectX::XMFLOAT3 cameraFocus = { 0,0,0 };

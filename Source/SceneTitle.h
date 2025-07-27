@@ -58,8 +58,8 @@ public:
 
 	// カメラの時間制御初期化
 	void CameraInitialize();
-
-	void PlayEffectsShaders(float elapsedTime);
+	// スロー状態変更
+	void SetSlowState(float elapsedTime);
 
 	// どのシーンに行くか
 	void SelectScene(float elapsedTime);

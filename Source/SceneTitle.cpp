@@ -25,10 +25,9 @@ void SceneTitle::Initialize()
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
 	camera.SetLookAt(
-		DirectX::XMFLOAT3(1.126, -2.989, -17.144),
+		DirectX::XMFLOAT3(1.126f, -2.989f, -17.144f),
 		DirectX::XMFLOAT3(0, 0, 0),
 		DirectX::XMFLOAT3(0, 1, 0)
-
 	);
 	// どの範囲をどれだけ見るか奥行含め
 	camera.SetPerspedtiveFov(
@@ -847,8 +846,8 @@ void SceneTitle::CameraInitialize()
 		Messenger::Instance().SendData(MessageData::CAMERACHANGEMOTIONMODE, &p);
 	}
 }
-
-void SceneTitle::PlayEffectsShaders(float elapsedTime)
+// スロー状態変更
+void SceneTitle::SetSlowState(float elapsedTime)
 {
 	Graphics& graphics = Graphics::Instance();
 	shaderPlayStateTimer -= elapsedTime;

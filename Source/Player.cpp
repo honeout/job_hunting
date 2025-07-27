@@ -2524,7 +2524,6 @@ bool Player::CheckAllPartsCollision(DirectX::XMFLOAT3 pos,float rudius)
         nodePart = enemyModel->GetModel()->FindNode(bornPart);
 
         // 位置
-        DirectX::XMFLOAT3 nodePosition;
         nodePosition = enemyModel->GetModel()->ConvertLocalToWorld(nodePart);
         
         if (!collisionId->IntersectSpherVsSphere(
@@ -2972,7 +2971,6 @@ bool Player::CollisionNodeVsEnemies()
     nodePosition = modelControllId->GetModel()->ConvertLocalToWorld(node);
 
     //// 衝突処理
-    DirectX::XMFLOAT3 outPositon;
     if (!CheckAllPartsCollision(nodePosition, leftHandRadius)) return false;
 
     if (!enemyHp->ApplyDamage(applyDamageNormal, 0.5f)) return false;
@@ -4187,19 +4185,12 @@ void Player::UiControlleGauge(float elapsedTime)
     if (!hpId || !mpId)
         return;
 
-    // 位置補正
-    float halfWidth;
-    float offsetX;
-    DirectX::XMFLOAT2 originalPosition;
-
-
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
     if (uiCount <= uiCountMax) return;
 
     // hpゲージ操作用
     float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.088f;
-    //float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.08f;
     // hpゲージ
     std::shared_ptr<TransForm2D> uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
     std::shared_ptr<TransForm2D> uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
@@ -4208,7 +4199,6 @@ void Player::UiControlleGauge(float elapsedTime)
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
     uiHp->SetScale(scale);
     gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.088f;
-    //gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.08f;
 
     if (gaugeWidth <= mpId->GetMpMin())
         gaugeWidth = 0.0f;
@@ -4220,18 +4210,6 @@ void Player::UiControlleGauge(float elapsedTime)
     // mpゲージUI　変える
     scale = { gaugeWidth, uiMp->GetScale().y };
     uiMp->SetScale(scale);
-
-    //// mpに影響が起きたとき
-    //if (mpId->GetIsConsumption())
-    //{
-    //    // 位置補正用値
-    //    halfWidth = uiMp->GetScale().x * 0.5f;
-    //    offsetX = (gaugeWidth - 1.0f) * halfWidth * 0.5f;
-
-    //    // MP位置補正値
-    //    originalPosition = uiMp->GetPosition();
-    //    uiMp->SetPosition({ originalPosition.x + offsetX, originalPosition.y });
-    //}
     
     // mp色
    mpUiColor = { 1,1,1,1 };

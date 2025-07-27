@@ -55,10 +55,9 @@ void SceneGame::Initialize()
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
 	camera.SetLookAt(
-		DirectX::XMFLOAT3(1.126, -2.989, -17.144),
+		DirectX::XMFLOAT3(1.126f, -2.989f, -17.144f),
 		DirectX::XMFLOAT3(0, 0, 0),
 		DirectX::XMFLOAT3(0, 1, 0)
-
 	);
 	// どの範囲をどれだけ見るか奥行含め
 	camera.SetPerspedtiveFov(
@@ -163,7 +162,7 @@ void SceneGame::Update(float elapsedTime)
 	EffectManager::Instance().Update(dlayTime);
 
 	// ポストエフェクト
-	PlayEffectsShaders(elapsedTime);
+	SetSlowState(elapsedTime);
 
 	// シーン切り替え
 	{
@@ -174,10 +173,7 @@ void SceneGame::Update(float elapsedTime)
 			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
 			{
 				PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Death));
-				vignette_smoothness = 0.0f;
-				vignette_intensity = 0.0f;
 				sceneChengeCheckDead = true;
-				colorGradingData.brigthness = 2.0f;
 			}
 			// 演出終了
 			if (!PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && sceneChengeCheckDead)
@@ -190,11 +186,7 @@ void SceneGame::Update(float elapsedTime)
 			std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
 			if (hp->GetDead())
 			{
-				vignette_smoothness = 0.0f;
-				vignette_intensity = 0.0f;
-				colorGradingData.brigthness = 3.0f;
 				hp->SetDead(false);
-				//ActorManager::Instance().Clear();
 				EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Death));
 			}
 			if (hp->GetHealth() <= 0 && hp->GetLife() >= 0)
@@ -619,7 +611,7 @@ void SceneGame::PostProcessingRendererFinalize()
 	postprocessingRenderer.SetVignetteData(vignetteData);
 }
 
-void SceneGame::PlayEffectsShaders(float elapsedTime)
+void SceneGame::SetSlowState(float elapsedTime)
 {
 	Graphics& graphics = Graphics::Instance();
 
@@ -641,37 +633,6 @@ void SceneGame::PlayEffectsShaders(float elapsedTime)
 	else
 	{
 		dlayTimeCheck = false;
-	}
-
-	// ブラーエフェクト
-	if (shaderBlurStateTimer > 0 )
-	{
-		shaderBlurStateTimer -= elapsedTime;
-
-		// 画面真ん中
-		radialBlurData.center = { 0.5f ,0.5f };
-		// 画面ブラー
-		float radislBlurRadius = 200;
-		radialBlurData.radius =
-			radialBlurData.radius > radialBlurDataRadislBlurRadiusMax ?
-			radialBlurData.radius : radialBlurData.radius + (5 + elapsedTime);
-		// 歪み具合
-		int radislBlurSamplingCount = 10;
-		radialBlurData.samplingCount = radislBlurSamplingCount;
-		// 自分が見える範囲
-		float radislBlurMaskRadius = 300;
-		radialBlurData.mask_radius = radislBlurMaskRadius;
-
-	}
-	else if(shaderPlayStateTimer < 0)
-	{
-		// ブラー範囲
-		float radislBlurRadius = 0;
-		radialBlurData.radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radialBlurData.radius - (5 + elapsedTime) : radislBlurRadius - FLT_EPSILON;
-		// ブラーのかからない範囲
-		float radislBlurMaskRadiusNormal = 600;
-		float radislBlurMaskRadiusEffectOn = 300;
-		radialBlurData.mask_radius = radislBlurRadius - FLT_EPSILON < radialBlurData.radius + FLT_EPSILON ? radislBlurMaskRadiusEffectOn : radislBlurMaskRadiusNormal;
 	}
 }
 

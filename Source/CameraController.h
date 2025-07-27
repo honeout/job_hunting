@@ -58,8 +58,8 @@ private:
 	float CalcSide(DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2);
 private:
 	Mode				mode = Mode::FreeSelectCamera;
-	DirectX::XMFLOAT3	position = { -0.026, -2.189, -17.144 };
-	DirectX::XMFLOAT3	target = { -0.024, -2.189, -10.146 };
+	DirectX::XMFLOAT3	position = { -0.026f, -2.189f, -17.144f };
+	DirectX::XMFLOAT3	target = { -0.024f, -2.189f, -10.146f };
 	DirectX::XMFLOAT3	angle = { 0, 0, 0 };
 	float				rollSpeed = DirectX::XMConvertToRadians(90);
 	float				range = 7.0f;

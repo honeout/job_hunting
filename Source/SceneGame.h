@@ -43,8 +43,8 @@ private:
 
 	void PostProcessingRendererInitialize();
 	void PostProcessingRendererFinalize();
-
-	void PlayEffectsShaders(float elapsedTime);
+	// ƒXƒ[ó‘Ô•ÏX
+	void SetSlowState(float elapsedTime);
 
 	bool InputMenue();
 

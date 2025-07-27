@@ -74,7 +74,7 @@ private:
 	DirectX::XMFLOAT2 scaleScreen;
 
 	// カメラ位置
-	DirectX::XMFLOAT3 cameraPosition = { 1.126, -2.989, -17.144 };
+	DirectX::XMFLOAT3 cameraPosition = { 1.126f, -2.989f, -17.144f };
 
 	// カメラ注視点
 	DirectX::XMFLOAT3 cameraFocus = { 0,0,0 };

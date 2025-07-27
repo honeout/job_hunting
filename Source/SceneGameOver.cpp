@@ -163,7 +163,7 @@ void SceneGameOver::Update(float elapsedTime)
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
 	if (cameraControlle->GetCameraMortionDataTime())
-		PlayEffectsShaders(elapsedTime);
+		SetSlowState(elapsedTime);
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
 
 	std::shared_ptr<Ui> uiId = UiManager::Instance().GetUies(0)->GetComponent<Ui>();
@@ -788,8 +788,8 @@ void SceneGameOver::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 }
-
-void SceneGameOver::PlayEffectsShaders(float elapsedTime)
+// スロー状態変更
+void SceneGameOver::SetSlowState(float elapsedTime)
 {
 }
 
