@@ -863,6 +863,10 @@ void EnemyBoss::UiControlle(float elapsedTime)
     // 安全チェック
     if (!uiHp || !uiHpLife1 || !uiHpLife2) return;
 
+    // hpバー最低値
+    if (gaugeWidth <= gaugeWidthMin)
+        gaugeWidth = gaugeWidthMin;
+
     // hpバー
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
     uiHp->SetScale(scale);

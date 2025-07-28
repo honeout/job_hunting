@@ -475,6 +475,10 @@ private:
 
     DirectX::XMFLOAT2 colorGB = { 1,1 };
 
+
+    // hp,mp用のゲージの最低値
+    float gaugeWidthMin = 0.0f;
+
     // 動作チェック
     bool moveCheck = true;
 
@@ -499,8 +503,6 @@ private:
 
     bool isPlayerStopMove;
     bool isPlayerStopFall;
-
-
 };
 
 // エネミーマネージャー

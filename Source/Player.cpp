@@ -748,7 +748,6 @@ void Player::OnGUI()
         return;
     if (ImGui::Button("debugCamera"))
     {
-
         MessageData::CAMERACHANGEMOTIONMODEDATA	p;
         float vx = sinf(angle.y) * 6;
         float vz = cosf(angle.y) * 6;
@@ -3300,7 +3299,7 @@ void Player::PinchMode(float elapsedTime)
 
     // HP変化色
     playerHpBarTransform2D->SetTexPosition({ PlayerConfig::hpBarGreenwTexPos });
-
+    // hp半分
     if (hpId->HealthHalf() && !hpId->GetDead())
     {
         // HP変化色
@@ -4356,19 +4355,25 @@ void Player::UiControlleGauge(float elapsedTime)
 
     // hpゲージ操作用
     float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.088f;
+
     // hpゲージ
     auto uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
     auto uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
     // 安全チェック
     if (!uiHp || !uiHpBar) return;
 
+    // hpバー最低値
+    if (gaugeWidth <= gaugeWidthMin)
+        gaugeWidth = gaugeWidthMin;
+
     // hpゲージUI　変える
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
     uiHp->SetScale(scale);
     gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.088f;
 
-    if (gaugeWidth <= mpId->GetMpMin())
-        gaugeWidth = 0.0f;
+    // mpバー最低値
+    if (gaugeWidth <= gaugeWidthMin)
+        gaugeWidth = gaugeWidthMin;
 
     // mpゲージ
     auto uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();

@@ -38,8 +38,14 @@ public:
 	// 最大HPを取り出す
 	int GetMaxHealth() const { return maxHealth; }
 
-	// 最大HPを突っ込む
+	// 最大HPを代入
 	void SetMaxHealth(int maxHealth)  { this->maxHealth = maxHealth; }
+
+	// 最低HPを取り出す
+	int GetMinHealth() const {return minHealth;}
+
+	// 最低HPを代入
+	void SetMinHealt(int minHealth) { this->minHealth = minHealth; }
 
 	// ダメージを受けた時に呼ばれる
 	bool OnDamaged();

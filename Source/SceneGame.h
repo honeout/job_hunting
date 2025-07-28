@@ -41,8 +41,9 @@ private:
 	// シャドウマップの描画
 	void RenderShadowmap();
 
+	// ポストエフェクトの初期化
 	void PostProcessingRendererInitialize();
-	void PostProcessingRendererFinalize();
+
 	// スロー状態変更
 	void SetSlowState(float elapsedTime);
 

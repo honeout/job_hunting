@@ -97,8 +97,8 @@ private:
 	float				heightAttackMaxRock = -1.0f;
 
 	// カメラの距離
-	float				attacklengthMinRock = 10.0f;
-	float				attacklengthMinRockScale = 1.3f;
+	float				attacklengthMinRock = 11.0f;
+	float				attacklengthMinRockScale = 2.1f;
 
 	// ターゲットの一定以上高い
 	float               topHeight = 2.0f;

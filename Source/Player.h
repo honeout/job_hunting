@@ -629,6 +629,9 @@ private:
     float commandAlphaUnSelect = 0.5f;
     float commandAlphaSelect = 1.0f;
 
+    // hp,mp用のゲージの最低値
+    float gaugeWidthMin = 0.0f;
+
     // 歩いている判定
     bool afterimagemove = false;
 

@@ -501,7 +501,7 @@ void SceneGame::RenderShadowmap()
 		ActorManager::Instance().Render(rc, shader);
 	}
 }
-
+// ポストエフェクトの初期化
 void SceneGame::PostProcessingRendererInitialize()
 {
 	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
@@ -540,64 +540,6 @@ void SceneGame::PostProcessingRendererInitialize()
 	radialBlurData.mask_radius = radislBlurMaskRadiusNormal;
 
 	postprocessingRenderer.SetRadialBlurMinData(radialBlurData);
-
-	// 周辺減光
-	vignetteData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-	vignetteData.center = { 0.5f, 0.5f };
-	vignetteData.intensity = 0.0f;
-	vignetteData.smoothness = 0.0f;
-	vignetteData.rounded = false;
-	vignetteData.roundness = 1.0f;
-
-	postprocessingRenderer.SetVignetteMinData(vignetteData);
-	postprocessingRenderer.SetVignetteData(vignetteData);
-}
-
-void SceneGame::PostProcessingRendererFinalize()
-{
-	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-
-	// シーンテクスチャを設定しておく
-	ShaderResourceViewData srvData;
-	srvData.srv = renderTarget->GetShaderResourceView();
-	srvData.width = renderTarget->GetWidth();
-	srvData.height = renderTarget->GetHeight();
-
-	postprocessingRenderer.SetSceneData(srvData);
-
-	bloomData.luminanceExtractionData.threshold = 0.41f;
-	bloomData.luminanceExtractionData.intensity = 1.6f;
-
-	bloomData.gaussianFilterData.kernelSize = 15;
-	bloomData.gaussianFilterData.deviation = 8.3f;
-
-	postprocessingRenderer.SetBloomMinData(bloomData);
-	postprocessingRenderer.SetBloomData(bloomData);
-
-	// ポストエフェクト
-	// 画面白ボケ
-	// カラーグラディエンス
-	float colorGradingBrigthness = 1.0f;
-	float colorGradingHueShift = 3.0f;
-	colorGradingDataMin.brigthness = colorGradingBrigthness;
-	colorGradingDataMin.hueShift = colorGradingHueShift;
-
-
-	postprocessingRenderer.SetColorGradingMinData(colorGradingDataMin);
-	postprocessingRenderer.SetColorGradingData(colorGradingDataMin);
-
-	// ブラー
-	// ブラー範囲
-	float radislBlurRadius = 0;
-	radialBlurData.radius = radislBlurRadius;
-
-
-	// ブラーのかからない範囲
-	float radislBlurMaskRadiusNormal = 600;
-	radialBlurData.mask_radius = radislBlurMaskRadiusNormal;
-
-	postprocessingRenderer.SetRadialBlurMinData(radialBlurData);
-	postprocessingRenderer.SetRadialBlurData(radialBlurData);
 
 	// 周辺減光
 	vignetteData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
