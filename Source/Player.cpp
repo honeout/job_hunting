@@ -1100,25 +1100,36 @@ bool Player::InputSelectCheck()
         if (!sharedUiComandoAttackId)
             return false;
         // コマンド　必殺技斬撃表示するか
-        std::shared_ptr<Ui> uiIdSpecialComandoAttack = sharedUiComandoAttackId->GetComponent<Ui>();
+        auto uiIdSpecialComandoAttack = sharedUiComandoAttackId->GetComponent<Ui>();
+        // 安全チェック
+        if (!uiIdSpecialComandoAttack) return false;
+
         // 安全チェック コマンド魔法炎
         auto sharedUiCommandSpecialFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
         if (!sharedUiCommandSpecialFireId)
             return false;
         // コマンド　必殺技魔法炎表示するか
-        std::shared_ptr<Ui> uiIdSpecialComandoFire = sharedUiCommandSpecialFireId->GetComponent<Ui>();
+        auto uiIdSpecialComandoFire = sharedUiCommandSpecialFireId->GetComponent<Ui>();
+        // 安全チェック
+        if (!uiIdSpecialComandoFire) return false;
 
         // 安全チェック 特殊技UI選択不可
         auto sharedUiCommandDisabled01Id = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled01);
         if (!sharedUiCommandDisabled01Id)
             return false;
         // 特殊技UI選択不可 表示するか
-        std::shared_ptr<Ui> uiIdIsCommandDisabledAttack = sharedUiCommandDisabled01Id->GetComponent<Ui>();
+        auto uiIdIsCommandDisabledAttack = sharedUiCommandDisabled01Id->GetComponent<Ui>();
+        // 安全チェック
+        if (!uiIdIsCommandDisabledAttack) return false;
+        
         // 安全チェック  特殊技UI選択不可
         auto sharedUiCommandDisabled02Id = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled02);
         if (!sharedUiCommandDisabled02Id)
             return false;
-        std::shared_ptr<Ui> uiIdIsCommandDisabledFire = sharedUiCommandDisabled02Id->GetComponent<Ui>();
+        auto uiIdIsCommandDisabledFire = sharedUiCommandDisabled02Id->GetComponent<Ui>();
+        // 安全チェック
+        if (!uiIdIsCommandDisabledFire) return false;
+
         uiIdSpecialComandoAttack->SetDrawCheck(isDrawUi);
         uiIdSpecialComandoFire->SetDrawCheck(isDrawUi);
 
@@ -1142,18 +1153,33 @@ bool Player::InputSelectCheck()
         auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
         if (!sharedUiComandoAttackId)
             return false;
-        std::shared_ptr<Ui> uiIdAttack = sharedUiComandoAttackId->GetComponent<Ui>();
+        auto uiIdAttack = sharedUiComandoAttackId->GetComponent<Ui>();
+
+        // 安全チェック
+        if (!uiIdAttack)
+            return false;
+
         // 安全チェック コマンド魔法炎
         auto sharedUiComandoFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
         if (!sharedUiComandoFireId)
             return false;
-        std::shared_ptr<Ui> uiIdAttackCheck = sharedUiComandoFireId->GetComponent<Ui>();
+        auto uiIdAttackCheck = sharedUiComandoFireId->GetComponent<Ui>();
+
+        // 安全チェック
+        if (!uiIdAttackCheck)
+            return false;
 
         // 安全チェック 特殊技UI選択不可
         auto sharedUiCommandDisabled01Id = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled01);
         if (!sharedUiCommandDisabled01Id)
             return false;
-        std::shared_ptr<Ui> uiIdIsCommandDisabledAttack = sharedUiCommandDisabled01Id->GetComponent<Ui>();
+
+        auto uiIdIsCommandDisabledAttack = sharedUiCommandDisabled01Id->GetComponent<Ui>();
+        
+        // 安全チェック
+        if (!uiIdIsCommandDisabledAttack)
+            return false;
+
         // 安全チェック 特殊技UI選択不可
         auto sharedUiCommandDisabled02Id = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled02);
         if (!sharedUiCommandDisabled02Id)
@@ -1290,6 +1316,17 @@ bool Player::InputSelectCheck()
         uiIdSpecial->SetDrawCheck(isDrawUiEmpth);
         // コマンドUI　必殺技 表示
         uiIdSpecialCheck->SetDrawCheck(isDrawUi);
+
+        // コマンド選択判断　透明度
+        float selectAlpha = commandAlphaSelect;
+
+        // 特殊技UI選択不可 斬撃
+        if (!specialAttack.at((int)SpecialAttackType::Attack).hasSkill &&
+            !specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill)
+            selectAlpha = commandAlphaUnSelect;
+
+        // 選択不可かどうか
+        uiIdSpecialCheck->SetAlpha(selectAlpha);
     }
     //  コマンドUI　非選択 必殺技
     else
@@ -2317,9 +2354,9 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
     case (int)SpecialAttackType::Attack:
     {
         // 必殺技切りつけ
-        // 安全チェック
         auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
+        // 安全チェック
         if (!sharedUiSpecialShurashuId)
             return;
 
@@ -2359,6 +2396,12 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         
         float pos = uiIdSpecialAttackTransForm2D->GetPosition().y + PlayerConfig::offset;
 
+        // コマンド選択判断　透明度
+        float selectAlpha = commandAlphaSelect;
+        // コマンド非選択判断　透明度
+        if (!specialAttack.at((int)SpecialAttackType::Attack).hasSkill)
+            selectAlpha = commandAlphaUnSelect;
+
         //// 必殺技コマンド切りつけ
         //uiIdSpecialButton->SetDrawCheck(isDrawUi);
         //uiIdSpecialButtonTransForm2D->SetPositionY(pos);
@@ -2373,15 +2416,15 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         // 非選択状態半透明
         uiIdSpecialFire->SetAlpha(commandAlphaUnSelect);
         // 選択状態不透明
-        uiIdSpecialAttack->SetAlpha(commandAlphaSelect);
+        uiIdSpecialAttack->SetAlpha(selectAlpha);
         break;
     }
     case (int)SpecialAttackType::MagicFire:
     {
         // 必殺技炎
-        // 安全チェック
         auto sharedUiCommandSpeciulFrameId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulFrame);
+        // 安全チェック
         if (!sharedUiCommandSpeciulFrameId)
             return;
 
@@ -2418,8 +2461,13 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         if (!uiIdSpecialButton || !uiIdSpecialButtonTransForm2D)
             return;
 
-
         float pos = uiIdSpecialFireTransForm2D->GetPosition().y + PlayerConfig::offset;
+
+        // コマンド選択判断　透明度
+        float selectAlpha = commandAlphaSelect;
+        // コマンド非選択判断　透明度
+        if (!specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill)
+            selectAlpha = commandAlphaUnSelect;
 
         //// 必殺技コマンド火
         //uiIdSpecialButton->SetDrawCheck(isDrawUi);
@@ -2432,7 +2480,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         uiIdSpecialFireTransForm2D->SetTexPosition(commandSelectTexPos);
         uiIdSpecialFireTransForm2D->SetTexScale(commandSelectTexScale);
         // 選択状態不透明
-        uiIdSpecialFire->SetAlpha(commandAlphaSelect);
+        uiIdSpecialFire->SetAlpha(selectAlpha);
         // 非選択状態半透明
         uiIdSpecialAttack->SetAlpha(commandAlphaUnSelect);
         break;
@@ -4378,6 +4426,7 @@ void Player::UiControlleGauge(float elapsedTime)
     // mpゲージ
     auto uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();
     auto uiColor = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<Ui>();
+
     // 安全チェック
     if (!uiMp || !uiColor) return;
 
