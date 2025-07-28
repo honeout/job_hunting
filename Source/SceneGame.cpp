@@ -406,7 +406,7 @@ void SceneGame::Render3DScene()
 		primitiveRenderer->Render(dc, rc.view, rc.projection, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 		//// グリッド描画
-		primitiveRenderer->Render(dc, rc.view, rc.projection, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		//primitiveRenderer->Render(dc, rc.view, rc.projection, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	}
 
 	// 3Dモデル描画
