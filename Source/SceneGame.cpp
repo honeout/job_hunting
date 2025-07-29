@@ -400,14 +400,6 @@ void SceneGame::Render3DScene()
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
-	// ソードトレイル
-	{
-		// ポリゴン描画
-		primitiveRenderer->Render(dc, rc.view, rc.projection, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
-		//// グリッド描画
-		//primitiveRenderer->Render(dc, rc.view, rc.projection, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	}
 
 	// 3Dモデル描画
 	{
