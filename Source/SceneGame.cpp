@@ -2293,8 +2293,8 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(commandSizeShortCut);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -2331,8 +2331,8 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(commandSizeShortCut);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -2368,8 +2368,8 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(commandSizeShortCut);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -2406,8 +2406,8 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+
+		transform2D->SetScale(commandSizeShortCut);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -2611,8 +2611,8 @@ void SceneGame::InitializeComponent()
 		actor->AddComponent<TransForm2D>();
 		// 位置　角度　スケール情報
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		DirectX::XMFLOAT2 pos = { 179, 611 };
-		transform2D->SetPosition(pos);
+
+		transform2D->SetPosition(commandChargePos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
 		transform2D->SetTexPosition(texPos);
@@ -2626,8 +2626,8 @@ void SceneGame::InitializeComponent()
 		transform2D->SetTexScale(texScale);
 
 		// UI揺らす範囲を指定揺らす場合
-		int max = (int)pos.y + 3;
-		int min = (int)pos.y - 3;
+		int max = (int)commandChargePos.y + 3;
+		int min = (int)commandChargePos.y - 3;
 
 		transform2D->SetUiMax(max);
 		transform2D->SetUiMin(min);

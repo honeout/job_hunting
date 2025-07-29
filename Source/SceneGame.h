@@ -77,9 +77,10 @@ private:
 	// 必殺技チャージ枠位置
 	DirectX::XMFLOAT2 SpecialGagePos = { 50, 300 };
 
-
-	// コマンド大きさ
+    // コマンド大きさ
 	DirectX::XMFLOAT2 commandSize = { 308,89 };
+
+	DirectX::XMFLOAT2 commandSizeShortCut = { 358, 89 };
 
 	// コマンド位置
 	DirectX::XMFLOAT2 commandPos = {100, 500};
@@ -92,6 +93,9 @@ private:
 	DirectX::XMFLOAT2 commandSpecialOffset = { 0,166 };
 	// コマンドボタン差
 	DirectX::XMFLOAT2 commandButtonOffset = {80,42};
+
+	// コマンドチャージ文字
+	DirectX::XMFLOAT2 commandChargePos = { commandPos.x + commandMagicOffset.x + 50, 611};
 
 	// チャージ矢印差
 	DirectX::XMFLOAT2 commandSpecialGageOffset = { 70,5 };

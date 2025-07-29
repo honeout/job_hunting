@@ -321,7 +321,6 @@ void Player::HandleInput(float elapsedTime)
         {
             // 空中行動回数
             --areAttackState;
-
             // ステート遷移
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
             // 音再生
@@ -356,7 +355,6 @@ void Player::HandleInput(float elapsedTime)
                 selectCheck = (int)CommandAttack::Attack;
                 return;
             }
-
             // 魔法ステートに
             GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
 
@@ -3550,8 +3548,6 @@ bool Player::InputMagick()
                 StartMagicUiCharge(pos, sizeMax);
 
                 transform2DPush->SetPosition(pos);
-                transform2DPush->SetScale(
-                    { sizeMax,transform2DPush->GetScale().y });
                 return true;
           
             break;
@@ -3572,9 +3568,6 @@ bool Player::InputMagick()
                 StartMagicUiCharge(pos, sizeMax);
 
                 transform2DPush->SetPosition(pos);
-                transform2DPush->SetScale(
-                    { sizeMax,transform2DPush->GetScale().y });
-
                 return true;
             
             break;
@@ -3595,9 +3588,6 @@ bool Player::InputMagick()
                 StartMagicUiCharge(pos, sizeMax);
 
                 transform2DPush->SetPosition(pos);
-                transform2DPush->SetScale(
-                    { sizeMax,transform2DPush->GetScale().y });
-
                 return true;
             
             break;
@@ -3630,16 +3620,20 @@ bool Player::InputMagick()
                     (int)UiManager::UiCount::PlayerCommandShortCutFire)
                 ->GetComponent<TransForm2D>();
 
+            // 一つコマンドの大きさ
+            auto transform2DScale
+                = UiManager::Instance().GetUies(
+                    (int)UiManager::UiCount::PlayerCommandFireCheck)
+                ->GetComponent<TransForm2D>();
+
             DirectX::XMFLOAT2 pos;
             pos = transform2DPush->GetPosition();
 
             float sizeMax;
-            sizeMax = transform2DPush->GetScale().x;
+            sizeMax = transform2DScale->GetScale().x;
             StartMagicUiCharge(pos, sizeMax);
 
             transform2DPush->SetPosition(pos);
-            transform2DPush->SetScale(
-                { sizeMax,transform2DPush->GetScale().y });
             return true;
         }
         // 魔法UI初期化
@@ -3662,17 +3656,20 @@ bool Player::InputMagick()
                     (int)UiManager::UiCount::PlayerCommandShortCutSunder)
                 ->GetComponent<TransForm2D>();
 
+            // 一つコマンドの大きさ
+            auto transform2DScale
+                = UiManager::Instance().GetUies(
+                    (int)UiManager::UiCount::PlayerCommandFireCheck)
+                ->GetComponent<TransForm2D>();
+
             DirectX::XMFLOAT2 pos;
             pos = transform2DPush->GetPosition();
 
             float sizeMax;
-            sizeMax = transform2DPush->GetScale().x;
+            sizeMax = transform2DScale->GetScale().x;
             StartMagicUiCharge(pos, sizeMax);
 
             transform2DPush->SetPosition(pos);
-            transform2DPush->SetScale(
-                { sizeMax,transform2DPush->GetScale().y });
-
             return true;
         }
         // 魔法UI初期化
@@ -3695,17 +3692,20 @@ bool Player::InputMagick()
                     (int)UiManager::UiCount::PlayerCommandShortCutIce)
                 ->GetComponent<TransForm2D>();
 
+            // 一つコマンドの大きさ
+            auto transform2DScale
+                = UiManager::Instance().GetUies(
+                    (int)UiManager::UiCount::PlayerCommandFireCheck)
+                ->GetComponent<TransForm2D>();
+
             DirectX::XMFLOAT2 pos;
             pos = transform2DPush->GetPosition();
 
             float sizeMax;
-            sizeMax = transform2DPush->GetScale().x;
+            sizeMax = transform2DScale->GetScale().x;
             StartMagicUiCharge(pos, sizeMax);
 
             transform2DPush->SetPosition(pos);
-            transform2DPush->SetScale(
-                { sizeMax,transform2DPush->GetScale().y });
-
             return true;
         }
         // 魔法UI初期化
@@ -4631,7 +4631,7 @@ void Player::StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax)
             = UiManager::Instance().GetUies(
                 (int)UiManager::UiCount::PlayerCommandCharge)
             ->GetComponent<TransForm2D>();
-        transform2DCharge->SetPosition(pos);
+        transform2DCharge->SetPositionY(pos.y);
         // 溜め
         float gaugeWidth = gaugeSizeMax * playerCommandPushUiChargeTime * 0.08f;
 
