@@ -239,7 +239,6 @@ void CameraController::LockonCamera(float elapsedTime)
 
 		DirectX::XMStoreFloat3(&newPosition, t0);
 		newPosition.y = heightAttackMaxRock;
-		newPosition.z *= attacklengthMinRockScale;
 		return;
 	}
 
