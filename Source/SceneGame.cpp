@@ -2055,6 +2055,54 @@ void SceneGame::InitializeComponent()
 		UiManager::Instance().Register(actor);
 	}
 
+	// UI TimeIrast
+	{
+		const char* filename = "Data/Sprite/Time.png";
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->SetName("EnemyHP");
+		actor->AddComponent<SpriteControll>();
+		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
+		actor->AddComponent<TransForm2D>();
+		// 位置　角度　スケール情報
+		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+
+		transform2D->SetPosition(timeIrastPos);
+		// 元の位置
+		DirectX::XMFLOAT2 texPos = { 0, 0 };
+		transform2D->SetTexPosition(texPos);
+
+		float angle = 0;
+		transform2D->SetAngle(angle);
+
+		transform2D->SetScale(timeIrastSize);
+		// 元の大きさ
+		DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(texScale);
+
+		// UI揺らす範囲を指定揺らす場合
+		int max = (int)timeIrastPos.y + 3;
+		int min = (int)timeIrastPos.y - 3;
+
+		transform2D->SetUiMax(max);
+		transform2D->SetUiMin(min);
+		// UI揺らす時間
+		int MaxTime = 30;
+
+		transform2D->SetShakeTimeMax(MaxTime);
+
+		actor->AddComponent<Ui>();
+		// 描画チェック
+		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		ui->SetDrawCheck(DrawUi);
+
+
+		// これが２Dかの確認
+		bool check2d = true;
+		actor->SetCheck2d(check2d);
+
+		UiManager::Instance().Register(actor);
+	}
+
 	// UI UiTime 制限時間１桁
 	{
 		const char* filename = "Data\\Font\\fonts\\font4.png";
@@ -2067,7 +2115,7 @@ void SceneGame::InitializeComponent()
 		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
 
 		// 位置
-		DirectX::XMFLOAT2 pos = { 200.0f, 100.0f };
+		DirectX::XMFLOAT2 pos = { 330.0f, 100.0f };
 		//DirectX::XMFLOAT2 pos = { 100, 31 };
 		transform2D->SetPosition(pos);
 
@@ -2078,7 +2126,7 @@ void SceneGame::InitializeComponent()
 		float angle = 0;
 		transform2D->SetAngle(angle);
 
-		DirectX::XMFLOAT2 scale = { 43,49 };
+		DirectX::XMFLOAT2 scale = { 63,69 };
 		transform2D->SetScale(scale);
 
 		DirectX::XMFLOAT2 texScale = { 20,20 };

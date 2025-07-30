@@ -81,6 +81,7 @@ public:
         EnemyHPBar,
         EnemyHPLife01,
         EnemyHPLife02,
+        TimeIrast,
         Time,
         Sight,
         SightCheck,

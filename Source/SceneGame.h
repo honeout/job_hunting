@@ -113,6 +113,9 @@ private:
 	// ”ñ‘I‘ğó‘Ô“§–¾“x
 	float commandAlphaUnSelect = 0.5f;
 
+	DirectX::XMFLOAT2 timeIrastPos = { 10.0f, 0.0f };
+	DirectX::XMFLOAT2 timeIrastSize = { 250.0f, 250.0f };
+
 	// hp‚ÌˆÊ’u‚Ì·
 	float enemyHpOffsestY = 163;
 
