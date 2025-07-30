@@ -3183,6 +3183,15 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
         }
     }
 }
+// 混乱状態
+void Player::SetForcedStunFlag()
+{
+    // 混乱強制
+    attackNumberSave = PlayerConfig::attackNumberSaveMax;
+
+    // ダメージ反応エネミーの
+    ReactToDamage();
+}
 // ダメージ反応エネミーの
 void Player::ReactToDamage()
 {
@@ -4518,8 +4527,8 @@ void Player::SpecialApplyDamageInRadius()
         hitEffect->Play(enemyPosition);
         hitFire->Play(enemyPosition);
 
-        // ダメージ反応エネミーの
-        ReactToDamage();
+        // 混乱状態
+        SetForcedStunFlag();
     }
 }
 

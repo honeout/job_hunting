@@ -2146,6 +2146,10 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			if (enemyHpId->ApplyDamage(10, 0.5f)) 
 			{
 				lightningHit->Play(pPosition);
+				
+
+				// ダメージ反応エネミーの
+				playerid->SetForcedStunFlag();
 			}
 			playerid->SetHitCheck(false);
 		}

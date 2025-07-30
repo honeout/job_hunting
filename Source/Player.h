@@ -259,6 +259,9 @@ public:
     // ノードと弾丸の衝突処理
     void CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius);
 
+    // 強制混乱状態
+    void SetForcedStunFlag();
+
     // ダメージによって反応が変わる
     void ReactToDamage();
 
