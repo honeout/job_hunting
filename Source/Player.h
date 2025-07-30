@@ -69,7 +69,7 @@ namespace PlayerConfig
     constexpr float offset = 20.0f;
 
     // 連続攻撃回数
-    constexpr int attackNumberSaveMax = 4;
+    constexpr int attackNumberSaveMax = 15;
 
     // 空中移動制限限界
     constexpr int areAttackStateEnd = 0;
@@ -258,6 +258,9 @@ public:
 
     // ノードと弾丸の衝突処理
     void CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius);
+
+    // ダメージによって反応が変わる
+    void ReactToDamage();
 
     // ジャンプ入力処理
     bool InputJump();
@@ -680,10 +683,8 @@ private:
     // 特殊技チャージゲージ　魔法
     float specialAttackChargeMagicValue = 0.0f;
 
-
     // 攻撃ヒット回数
     int attackNumberSave;
-    int attackNumberSaveMax;
 
     // 特殊技のチャージ
     int attackEnergyCharge = 0;

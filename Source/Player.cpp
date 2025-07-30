@@ -226,7 +226,6 @@ void Player::InitStats()
 
     // 攻撃ヒット回数初期化
     attackNumberSave = 0;
-    attackNumberSaveMax = PlayerConfig::attackNumberSaveMax;
 
     // _後変更 ゲームオーバーに行く
     // 遷移変更 
@@ -592,7 +591,7 @@ void Player::UpdateCameraState(float elapsedTime)
     if (!enemyBoss || !enemyModel)return;
 
     // ロックオンモード
-    Model::Node* PRock = modelControllId->GetModel()->FindNode("mixamorig:LeftFoot");
+    Model::Node* PRock = modelControllId->GetModel()->FindNode("mixamorig:Hips");
     DirectX::XMFLOAT3 pPosition;
     pPosition = enemyModel->GetModel()->ConvertLocalToWorld(PRock);
     pPosition.z *= 1.1f;
@@ -902,6 +901,8 @@ void Player::OnGUI()
     ImGui::SliderFloat("brigthness", &colorGradingData.brigthness,0.0f ,10.0f);
     ImGui::SliderFloat("hueShift", &colorGradingData.hueShift,0.0f ,10.0f);
     ImGui::SliderFloat("saturation", &colorGradingData.saturation,0.0f ,10.0f);
+    // 混乱
+    ImGui::SliderInt("confusion", &attackNumberSave, 0, 100);
 }
 #endif // _DEBUG
 
@@ -2787,16 +2788,9 @@ void Player::CollisionMagicFire()
         // 共通ダメエフェ
         hitEffect->Play(projectilePosition);
 
-        // 遷移変更
-        if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack
-            )
-        {
-            // ダメージステートへ
-            enemyBoss->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
-        }
+        // ダメージ反応エネミーの
+        ReactToDamage();
+
         // 当たった時の副次的効果
         specialAttackCharge += specialAttackChargeMagicValue;
 
@@ -2859,17 +2853,9 @@ void Player::CollisionMagicSunder()
         // 共通ダメエフェ
         hitEffect->Play(projectilePosition);
 
+        // ダメージ反応エネミーの
+        ReactToDamage();
 
-        // 遷移変更
-        if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack
-            )
-        {
-            // ダメージステートへ
-            enemyBoss->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
-        }
         // 当たった時の副次的効果
         specialAttackCharge += specialAttackChargeMagicValue;
 
@@ -2932,16 +2918,9 @@ void Player::CollisionMagicIce()
         // 共通ダメエフェ
         hitEffect->Play(projectilePosition);
 
-        // 遷移変更
-        if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack
-            )
-        {
-            // ダメージステートへ
-            enemyBoss->GetStateMachine()->ChangeState((int)EnemyBoss::State::Damage);
-        }
+        // ダメージ反応エネミーの
+        ReactToDamage();
+
         // 当たった時の副次的効果
         specialAttackCharge += specialAttackChargeMagicValue;
 
@@ -3124,46 +3103,13 @@ bool Player::CollisionNodeVsEnemies()
     // 当たり判定
     hitSlash->Play(nodePosition, slashScale);
 
-    if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
-        enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
-        enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle
-        )
-    {
-        if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack)
-        {
-            Model::ModelAnim modelAnim;
-            modelAnim.index = EnemyBoss::Animation::Anim_Movie;
-            modelAnim.currentanimationseconds = 1.0f;
-            modelAnim.keyFrameEnd = 153.0f;
-            // 通常
-            enemyModelId->GetModel()->PlayAnimation(modelAnim);
-        }
-        // 死んだとき
-        if (enemyBoss->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle)
-        {
-            // model情報
-            Model::ModelAnim modelAnim;
-            modelAnim.index = EnemyBoss::Animation::Anim_Die;
-            modelAnim.currentanimationseconds = 0.3f;
-            modelAnim.keyFrameEnd = 55.0f;
-            enemyModelId->GetModel()->PlayAnimation(modelAnim);
-        }
-        // 混乱状態
-        if (attackNumberSave >= attackNumberSaveMax && attackNumberSave <= attackNumberSaveMax &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
-        {
-            enemyBoss->GetStateMachine()->ChangeState(
-                (int)EnemyBoss::State::IdleBattle);
-            // 攻撃連続ヒット停止
-            attackNumberSave = 0;
-        }
-    }
+    // ダメージ反応エネミーの
+    ReactToDamage();
+    
     // 当たった時の副次的効果
     specialAttackCharge += PlayerConfig::specialAttackChargeSlashValue;
     // 斬撃チャージ
     ++attackEnergyCharge;
-    // 攻撃ヒット回数
-    ++attackNumberSave;
     return true;
 }
 
@@ -3234,6 +3180,62 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
                     hitCheck = true;
                 }
             }
+        }
+    }
+}
+// ダメージ反応エネミーの
+void Player::ReactToDamage()
+{
+    // マネージャー取得
+    EnemyManager& enemyManager = EnemyManager::Instance();
+
+    // 安全チェック
+    auto enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
+    if (!enemyShader) return;
+
+    int enemyCount = enemyManager.GetEnemyCount();
+
+    if (enemyCount <= 0) return;
+
+    auto enemyBoss = enemyShader->GetComponent<EnemyBoss>();
+    auto enemyHp = enemyShader->GetComponent<HP>();
+    auto enemyModelId = enemyShader->GetComponent<ModelControll>();
+
+    // 攻撃ヒット回数
+    ++attackNumberSave;
+
+    if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
+        enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
+        enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle
+        )
+    {
+        if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack)
+        {
+            Model::ModelAnim modelAnim;
+            modelAnim.index = EnemyBoss::Animation::Anim_Movie;
+            modelAnim.currentanimationseconds = 1.0f;
+            modelAnim.keyFrameEnd = 153.0f;
+            // 通常
+            enemyModelId->GetModel()->PlayAnimation(modelAnim);
+        }
+        // 死んだとき
+        if (enemyBoss->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle)
+        {
+            // model情報
+            Model::ModelAnim modelAnim;
+            modelAnim.index = EnemyBoss::Animation::Anim_Die;
+            modelAnim.currentanimationseconds = 0.3f;
+            modelAnim.keyFrameEnd = 55.0f;
+            enemyModelId->GetModel()->PlayAnimation(modelAnim);
+        }
+        // 混乱状態
+        if (attackNumberSave >= PlayerConfig::attackNumberSaveMax &&
+            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
+        {
+            enemyBoss->GetStateMachine()->ChangeState(
+                (int)EnemyBoss::State::IdleBattle);
+            // 攻撃連続ヒット停止
+            attackNumberSave = 0;
         }
     }
 }
@@ -4515,6 +4517,9 @@ void Player::SpecialApplyDamageInRadius()
         // ヒットエフェクト再生
         hitEffect->Play(enemyPosition);
         hitFire->Play(enemyPosition);
+
+        // ダメージ反応エネミーの
+        ReactToDamage();
     }
 }
 
