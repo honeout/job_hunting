@@ -102,10 +102,10 @@ private:
     DirectX::XMFLOAT2 nowLoadingIconPos = { 903.0f,927 };
 
     // コマンドの大きさ
-    DirectX::XMFLOAT2 commandScale = { 181,104 };
+    DirectX::XMFLOAT2 commandScale = { 281,154 };
 
     // ゲームスタートコマンド
-    DirectX::XMFLOAT2 startCommandPos = { 903.0f,977 };
+    DirectX::XMFLOAT2 startCommandPos = { 903.0f,900 };
 
     // 操作説明xbx
     DirectX::XMFLOAT2 operationXbxPos = { 300.0f,0.0f };
@@ -115,9 +115,10 @@ private:
 
     // ボタンの位置
     DirectX::XMFLOAT2 buttonPos = { 0,0 };
+    DirectX::XMFLOAT2 buttonScale = { 100,104 };
 
     // ボタン用位置の大きさ分
-    float buttonOffset = 20.0f;
+    float buttonOffset = 25.0f;
 
     // ページ数
     DirectX::XMFLOAT2 selectNumbar = { 1430.0f, 33.0f };

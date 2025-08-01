@@ -525,7 +525,7 @@ void SceneGameOver::InitializeComponent()
 		actor->GetComponent<Transform>()->
 			SetPosition(DirectX::XMFLOAT3(0, -17.85f, 0));
 		actor->GetComponent<Transform>()->
-			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
+			SetAngle(DirectX::XMFLOAT3(0, 1.5f, 0));
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
@@ -616,7 +616,7 @@ void SceneGameOver::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 376,329 };
+		DirectX::XMFLOAT2 scale = { 676,329 };
 		//DirectX::XMFLOAT2 scale = { 820,770 };
 		transform2D->SetScale(scale);
 		// Œ³‚Ì‘å‚«‚³
@@ -733,8 +733,7 @@ void SceneGameOver::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 60,64 };
-		transform2D->SetScale(scale);
+		transform2D->SetScale(buttonScale);
 		// Œ³‚Ì‘å‚«‚³
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -892,7 +891,6 @@ void SceneGameOver::SelectScene(float elapsedTime)
 			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
 		}
 
-
 		break;
 	}
 	}
@@ -912,7 +910,6 @@ void SceneGameOver::SelectScene(float elapsedTime)
 			selectPush = selectPush <= (int)Select::Title ? (int)Select::Game : (int)Select::Title;
 		}
 	}
-
 
 	if (gamePad.GetButtonDown() & GamePad::BTN_DOWN || ay > 0)
 	{

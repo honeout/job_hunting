@@ -85,13 +85,6 @@ private:
 	DirectX::XMFLOAT3 cameraFocus = { 0.0f, 0.0f, 0.0f };
 	// カメラ上
 	DirectX::XMFLOAT3 cameraUp = { 0.0f, 1.0f, 0.0f };
-	//DirectX::XMFLOAT3 cameraPos = { 1.126f, -2.989f, -17.144f };
-
-
-	//// BGM
-	//std::unique_ptr<AudioSource> bgm;
-	//// SE
-	//std::unique_ptr<AudioSource> se;
 
     // オフスクリーンレンダリング用描画ターゲット
     std::unique_ptr<RenderTarget> renderTarget;
@@ -112,7 +105,6 @@ private:
 	// seの大きさ
 	float bgmVolume = 1.0f;
 
-
 	// シャドウマップ用情報
 	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源
 	std::unique_ptr<DepthStencil> shadowmapDepthStencil; // シャドウマップ用深度ステンシルバッファ
@@ -125,14 +117,11 @@ private:
 	DirectX::XMFLOAT3 shadowColor = { 0.2f,0.2f,0.2f };// 影の色
 	float shadowBias = 0.001f;// 深度比較用のオフセット値
 
-	// ポストプロセス
-	//std::unique_ptr<PostprocessingRenderer> postprocessingRenderer;
-
 	// ブルーム用
 	BloomData bloomData;
 
+	// hpピンチ時 ビジネットの動的data
 	VignetteData vignetteData;
-
 
     std::unique_ptr<Sprite> sprite;
     std::unique_ptr<Sprite> spritePush;
@@ -227,7 +216,7 @@ private:
 	bool isPush = false;
 
 	// コマンド上下反応
-	float               isInputEmpty = 0.0f;
+	float isInputEmpty = 0.0f;
 
 	// 入力保持用（グローバル or クラス内に保持）
 	float stickHoldTimerY = 0.0f;

@@ -115,7 +115,7 @@ private:
 
 	// ブルーム用
 	BloomData bloomData;
-
+	// hpピンチ時 ビジネットの動的data
 	VignetteData vignetteData;
 
 	std::unique_ptr<Sprite> sprite;
@@ -167,21 +167,22 @@ private:
 
 
 	// クリア画面のポジション
-	DirectX::XMFLOAT2 clearPos = { 1280.0f, 100.0f };
+	DirectX::XMFLOAT2 clearPos = { 1100.0f, 100.0f };
 
 	// コマンドの大きさ
-	DirectX::XMFLOAT2 commandScale = { 181,104 };
+	DirectX::XMFLOAT2 commandScale = { 281,154 };
 
 	// スタートコマンド位置
-	DirectX::XMFLOAT2 startPos = { 903, 677 };
+	DirectX::XMFLOAT2 startPos = { 1253, 677 };
 	// 終了コマンド位置
 	DirectX::XMFLOAT2 exitPos = { startPos.x, startPos.y + commandScale.y };
 
 	// ボタンの位置
 	DirectX::XMFLOAT2 buttonPos = { 0,0 };
+	DirectX::XMFLOAT2 buttonScale = { 100,104 };
 
 	// ボタン用位置の大きさ分
-	float buttonOffset = 20.0f;
+	float buttonOffset = 25.0f;
 
 
 	// 入力保持用（グローバル or クラス内に保持）

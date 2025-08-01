@@ -55,10 +55,10 @@ private:
     CameraController* cameraControlle = nullptr;
 
 	// UIゲームオーバー
-	DirectX::XMFLOAT2 gameOverPos = { 1280.0f, 100.0f };
+	DirectX::XMFLOAT2 gameOverPos = { 1100.0f, 100.0f };
 
 	// コマンドの大きさ
-	DirectX::XMFLOAT2 commandScale = { 181,104 };
+	DirectX::XMFLOAT2 commandScale = { 281,154 };
 
 	// 非選択状態透明度
 	float commandAlphaUnSelect = 0.5f;
@@ -76,13 +76,16 @@ private:
 
 	int selectPush = 0;
 
-	DirectX::XMFLOAT2 reStartPos = { 903, 677 };
+	DirectX::XMFLOAT2 reStartPos = { 1253, 677 };
 	DirectX::XMFLOAT2 titlePos = { reStartPos.x, reStartPos.y + commandScale.y };
 
+	// ボタンの位置
 	DirectX::XMFLOAT2 buttonPos = { 0,0 };
+	DirectX::XMFLOAT2 buttonScale = { 100,104 }; 
+
 
 	// ボタン用位置の大きさ分
-	float buttonOffset = 20.0f;
+	float buttonOffset = 25.0f;
 
 	// 画面サイズ
 	float screenWidth = 1280;
@@ -91,7 +94,7 @@ private:
 	DirectX::XMFLOAT2 scaleScreen;
 
 	// カメラ位置
-	DirectX::XMFLOAT3 cameraPosition = { 4.126f, -2.989f, -17.144f };
+	DirectX::XMFLOAT3 cameraPosition = { 0.026f, -2.989f, -14.144f };
 
 	// カメラ注視点
 	DirectX::XMFLOAT3 cameraFocus = { 0,0,0 };

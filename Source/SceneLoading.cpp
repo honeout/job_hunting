@@ -555,8 +555,7 @@ void SceneLoading::InitializeComponent()
         float angle = 0;
         transform2D->SetAngle(angle);
         
-        DirectX::XMFLOAT2 scale = { 60,64 };
-        transform2D->SetScale(scale);
+        transform2D->SetScale(buttonScale);
         // Œ³‚Ì‘å‚«‚³
         DirectX::XMFLOAT2 texScale = { 0,0 };
         transform2D->SetTexScale(texScale);
@@ -700,9 +699,7 @@ void SceneLoading::Select(float elapsedTime)
     // “ü—Í‚ª–³‚©‚Á‚½‚ç‰Šú‰»
     if (ax == 0.0f)
     {
-
         stickHoldTimerX = stickHoldTimerXStart;
-
     }
 
     // Å‘å’l

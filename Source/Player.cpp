@@ -1112,38 +1112,8 @@ bool Player::InputSelectCheck()
         // 安全チェック
         if (!uiIdSpecialComandoFire) return false;
 
-        // 安全チェック 特殊技UI選択不可
-        auto sharedUiCommandDisabled01Id = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled01);
-        if (!sharedUiCommandDisabled01Id)
-            return false;
-        // 特殊技UI選択不可 表示するか
-        auto uiIdIsCommandDisabledAttack = sharedUiCommandDisabled01Id->GetComponent<Ui>();
-        // 安全チェック
-        if (!uiIdIsCommandDisabledAttack) return false;
-        
-        // 安全チェック  特殊技UI選択不可
-        auto sharedUiCommandDisabled02Id = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled02);
-        if (!sharedUiCommandDisabled02Id)
-            return false;
-        auto uiIdIsCommandDisabledFire = sharedUiCommandDisabled02Id->GetComponent<Ui>();
-        // 安全チェック
-        if (!uiIdIsCommandDisabledFire) return false;
-
         uiIdSpecialComandoAttack->SetDrawCheck(isDrawUi);
         uiIdSpecialComandoFire->SetDrawCheck(isDrawUi);
-
-        // 特殊技UI選択不可 斬撃
-        if (specialAttack.at((int)SpecialAttackType::Attack).hasSkill)
-            uiIdIsCommandDisabledAttack->SetDrawCheck(isDrawUiEmpth);
-        // 特殊技UI選択不可　斬撃　非表示
-        else
-            uiIdIsCommandDisabledAttack->SetDrawCheck(isDrawUi);
-        // 特殊技UI選択不可 魔法炎
-        if (specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill)
-            uiIdIsCommandDisabledFire->SetDrawCheck(isDrawUiEmpth);
-        // 特殊技UI選択不可　魔法炎　非表示
-        else
-            uiIdIsCommandDisabledFire->SetDrawCheck(isDrawUi);
     }
     // コマンド非選択 必殺技
     else
@@ -1391,21 +1361,6 @@ bool Player::InputSelectMagicCheck()
     ///////////////////////////
     // ショートカットキー
 
-    // ボタンを離したら選択解除
-    if (gamePad.GetButtonUp())
-    {
-        // 安全チェック UIコマンド選択
-        auto sharedUiPushId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::Push)->GetComponent<Ui>();
-        if (!sharedUiPushId)
-            return false;
-        auto uiIdPush = sharedUiPushId;
-        if (!uiIdPush)
-            return false;
-
-        // UIコマンド選択　非表示
-        uiIdPush->SetDrawCheck(isDrawUiEmpth);
-    }
     // ショートカットキー炎選択
     if (InputShortCutkeyMagic() &&
         gamePad.GetButtonDown() & GamePad::BTN_B )

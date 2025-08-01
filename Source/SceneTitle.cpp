@@ -357,10 +357,9 @@ void SceneTitle::Render()
 				ImGui::TreePop();
 			}
 
-			
 			ImGui::Separator();
 			// カメラパラメータ設定
-			cameraControlle->OnGUI();
+			//cameraControlle->OnGUI();
 			ImGui::Separator();
 		}
 		LightManager::Instanes().DrawDebugGUI();
