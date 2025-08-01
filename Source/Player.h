@@ -68,9 +68,6 @@ namespace PlayerConfig
     // コマンド余白文
     constexpr float offset = 20.0f;
 
-    // 連続攻撃回数
-    constexpr int attackNumberSaveMax = 15;
-
     // 空中移動制限限界
     constexpr int areAttackStateEnd = 0;
 
@@ -109,6 +106,14 @@ namespace PlayerConfig
     constexpr DirectX::XMFLOAT2 hpBarGreenwTexPos = {0,00};
     constexpr DirectX::XMFLOAT2 hpBarYerowTexPos = {0,76.5f};
     constexpr DirectX::XMFLOAT2 hpBarRedTexPos = {0,152};
+
+    // 連続攻撃回数
+    constexpr int attackNumberSaveMax = 15;
+
+    // 攻撃ヒット回数
+    constexpr int attackNumbarSlashValue = 2;
+    constexpr int attackNumbarMagicValue = 1;
+    constexpr int attackNumbarSpecialValue = 15;
 };
 
 // プレイヤー
@@ -259,11 +264,8 @@ public:
     // ノードと弾丸の衝突処理
     void CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadius);
 
-    // 強制混乱状態
-    void SetForcedStunFlag();
-
     // ダメージによって反応が変わる
-    void ReactToDamage();
+    void ReactToDamage(int attackValue);
 
     // ジャンプ入力処理
     bool InputJump();

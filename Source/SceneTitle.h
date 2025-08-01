@@ -79,6 +79,14 @@ private:
 	// 画面の比率
 	DirectX::XMFLOAT2 scaleScreen;
 
+	// カメラ位置
+	DirectX::XMFLOAT3 cameraPos = { 0.026f, -2.989f, -14.144f };
+	// カメラ向き
+	DirectX::XMFLOAT3 cameraFocus = { 0.0f, 0.0f, 0.0f };
+	// カメラ上
+	DirectX::XMFLOAT3 cameraUp = { 0.0f, 1.0f, 0.0f };
+	//DirectX::XMFLOAT3 cameraPos = { 1.126f, -2.989f, -17.144f };
+
 
 	//// BGM
 	//std::unique_ptr<AudioSource> bgm;
@@ -87,7 +95,6 @@ private:
 
     // オフスクリーンレンダリング用描画ターゲット
     std::unique_ptr<RenderTarget> renderTarget;
-
 
 	// 画面の色
 	ColorGradingData       colorGradingData;
@@ -195,22 +202,23 @@ private:
 	float debugShakeTimer = 0.2f;
 
 	// タイトル位置
-	DirectX::XMFLOAT2 titlePos = { 1280.0f, 100.0f };
+	DirectX::XMFLOAT2 titlePos = { 1100.0f, 100.0f };
 
 	// コマンドの大きさ
-	DirectX::XMFLOAT2 commandScale = { 181,104 };
+	DirectX::XMFLOAT2 commandScale = { 281,154 };
 
 	// コマンドstart位置
-	DirectX::XMFLOAT2 startPos = { 903, 677 };
+	DirectX::XMFLOAT2 startPos = { 1253, 677 };
 
 	// コマンドexit位置
 	DirectX::XMFLOAT2 exitPos = { startPos.x, startPos.y + commandScale.y };
 
 	// ボタンの位置
 	DirectX::XMFLOAT2 buttonPos = {0,0};
+	DirectX::XMFLOAT2 buttonScale = { 100,104 };
 
 	// ボタン用位置の大きさ分
-	float buttonOffset = 20.0f;
+	float buttonOffset = 25.0f;
 
 	// ボタンを押すと描画する
 	bool isDrawButton = true;

@@ -111,7 +111,7 @@ private:
     DirectX::XMFLOAT2 operationXbxPos = { 300.0f,0.0f };
 
     // 操作説明キーボード
-    DirectX::XMFLOAT2 operationPos = { 300.0f,0.0f };
+    DirectX::XMFLOAT2 operationPos = { 380.0f,0.0f };
 
     // ボタンの位置
     DirectX::XMFLOAT2 buttonPos = { 0,0 };
@@ -120,7 +120,7 @@ private:
     float buttonOffset = 20.0f;
 
     // ページ数
-    DirectX::XMFLOAT2 selectNumbar = { 1380.0f, 30.0f };
+    DirectX::XMFLOAT2 selectNumbar = { 1430.0f, 33.0f };
     // フォントの元画像位置
     DirectX::XMFLOAT2 selectNumbarTexPosition = { 0.0f, 60.0f };
     // フォントの元画像サイズ

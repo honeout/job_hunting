@@ -68,14 +68,14 @@ private:
 	float commandOffset = 10.0f;
 
 	// プレイヤーHPバー位置情報
-	DirectX::XMFLOAT2 playerHpBarPos = { screenWidth + 100 , screenHeight };
-	DirectX::XMFLOAT2 enemyHpBarPos = { screenWidth + 50 , 0 };
+	DirectX::XMFLOAT2 playerHpBarPos = { screenWidth + 200 , screenHeight + 80 };
+	DirectX::XMFLOAT2 enemyHpBarPos = { screenWidth + 130 , 0 };
 
 	// playerMPバー位置
-	DirectX::XMFLOAT2 playerMpBarPos = { screenWidth + 100 , screenHeight + 160 };
+	DirectX::XMFLOAT2 playerMpBarPos = { playerHpBarPos.x , playerHpBarPos.y + 140 };
 
 	// 必殺技チャージ枠位置
-	DirectX::XMFLOAT2 SpecialGagePos = { 50, 300 };
+	DirectX::XMFLOAT2 SpecialGagePos = { 10, 300 };
 
     // コマンド大きさ
 	DirectX::XMFLOAT2 commandSize = { 308,89 };
@@ -83,7 +83,7 @@ private:
 	DirectX::XMFLOAT2 commandSizeShortCut = { 358, 89 };
 
 	// コマンド位置
-	DirectX::XMFLOAT2 commandPos = {100, 500};
+	DirectX::XMFLOAT2 commandPos = {10, 500};
 
 	// コマンド魔法差
 	DirectX::XMFLOAT2 commandMagicOffset = { 280,79 };
@@ -115,6 +115,9 @@ private:
 
 	DirectX::XMFLOAT2 timeIrastPos = { 10.0f, 0.0f };
 	DirectX::XMFLOAT2 timeIrastSize = { 250.0f, 250.0f };
+
+	// 簡易操作説明大きさ
+	DirectX::XMFLOAT2 operationInstructionsSelect = { 460,126 };
 
 	// hpの位置の差
 	float enemyHpOffsestY = 163;

@@ -33,6 +33,13 @@ void StateMachine::RegisterState(State* state)
 	// 親ステート登録
 	statePool.emplace_back(state);
 }
+
+//// ステート登録
+//void StateMachine::RegisterState(PlayerState* playerState)
+//{
+//	// 親ステート登録
+//	statePool.emplace_back(playerState);
+//}
 // ステート番号取得
 int StateMachine::GetStateIndex()
 {

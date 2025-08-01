@@ -1416,18 +1416,6 @@ bool Player::InputSelectMagicCheck()
         // 安全チェック
         if (!selectMagicCheck)
             return false;
-
-        // 安全チェック  UIコマンド選択
-        auto sharedUiPushId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::Push);
-        if (!sharedUiPushId)
-            return false;
-        auto uiIdAttackCheck = sharedUiPushId->GetComponent<Ui>();
-        //　UIコマンド　選択中　位置
-        auto uiIdAttackCheckPos = sharedUiPushId->GetComponent<TransForm2D>();
-        // 安全チェック
-        if (!uiIdAttackCheck || !uiIdAttackCheckPos)
-            return false;
         
         // 安全チェック　コマンドショートカット　魔法炎の位置
         auto sharedUiCommandShortCutFireId = UiManager::Instance().GetUies(
@@ -1436,11 +1424,6 @@ bool Player::InputSelectMagicCheck()
             return false;
 
         auto uiIdFireShortCutCheckPos = sharedUiCommandShortCutFireId->GetComponent<TransForm2D>();
-        DirectX::XMFLOAT2 pos = uiIdFireShortCutCheckPos->GetPosition();
-        // UIコマンド 選択 表示
-        uiIdAttackCheck->SetDrawCheck(isDrawUi);
-        // UIコマンド　魔法炎の位置に選択を移動
-        uiIdAttackCheckPos->SetPosition(pos);
     }
     // ショートカットキー雷選択
     if (InputShortCutkeyMagic() &&
@@ -1448,18 +1431,6 @@ bool Player::InputSelectMagicCheck()
     {
         // 魔法の種類を雷に
         selectMagicCheck = (int)CommandMagic::Thander;
-        // 安全チェック  UIコマンド選択
-        auto sharedUiPushId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::Push);
-        if (!sharedUiPushId)
-            return false;
-
-        auto uiIdAttackCheck = sharedUiPushId->GetComponent<Ui>();
-        auto uiIdAttackCheckPos = sharedUiPushId->GetComponent<TransForm2D>();
-
-        // 安全チェック
-        if (!uiIdAttackCheck || !uiIdAttackCheckPos)
-            return false;
 
         // ショートカット魔法雷の位置
         // 安全チェック
@@ -1472,11 +1443,6 @@ bool Player::InputSelectMagicCheck()
         if (!uiIdSunderShortCutCheckPos)
             return false;
 
-        DirectX::XMFLOAT2 pos = uiIdSunderShortCutCheckPos->GetPosition();
-        // UIコマンド 選択 表示
-        uiIdAttackCheck->SetDrawCheck(isDrawUi);
-        // UIコマンド　魔法雷の位置に選択を移動
-        uiIdAttackCheckPos->SetPosition(pos);
     }
     // ショートカットキー回復選択
     if (InputShortCutkeyMagic() &&
@@ -1484,17 +1450,6 @@ bool Player::InputSelectMagicCheck()
     {
         // 魔法の種類を回復に
         selectMagicCheck = (int)CommandMagic::Heale;
-        // 安全チェック  UIコマンド選択
-        auto sharedUiPushId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::Push);
-        if (!sharedUiPushId)
-            return false;
-        auto uiIdAttackCheck = sharedUiPushId->GetComponent<Ui>();
-        auto uiIdAttackCheckPos = sharedUiPushId->GetComponent<TransForm2D>();
-
-        // 安全チェック
-        if (!uiIdAttackCheck || !uiIdAttackCheckPos)
-            return false;
 
         // ショートカット魔法回復
         auto sharedUiCommandShortCutKeuleId = UiManager::Instance().GetUies(
@@ -1503,16 +1458,6 @@ bool Player::InputSelectMagicCheck()
         if (!sharedUiCommandShortCutKeuleId)
             return false;
         auto uiIdHealeShortCutCheckPos = sharedUiCommandShortCutKeuleId->GetComponent<TransForm2D>();
-
-        // 安全チェック
-        if (!uiIdHealeShortCutCheckPos)
-            return false;
-
-        DirectX::XMFLOAT2 pos = uiIdHealeShortCutCheckPos->GetPosition();
-        // UIコマンド 選択 表示
-        uiIdAttackCheck->SetDrawCheck(isDrawUi);
-        // UIコマンド　魔法回復の位置に選択を移動
-        uiIdAttackCheckPos->SetPosition(pos);
     }
     // ショートカットキー氷選択
     if (InputShortCutkeyMagic() &&
@@ -1520,16 +1465,6 @@ bool Player::InputSelectMagicCheck()
     {
         // 魔法の種類を氷に
         selectMagicCheck = (int)CommandMagic::Ice;
-        // 安全チェック  UIコマンド選択
-        auto sharedUiPushId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::Push);
-        if (!sharedUiPushId)
-            return false;
-        auto uiIdAttackCheck = sharedUiPushId->GetComponent<Ui>();
-        auto uiIdAttackCheckPos = sharedUiPushId->GetComponent<TransForm2D>();
-        // 安全チェック
-        if (!uiIdAttackCheck || !uiIdAttackCheckPos)
-            return false;
 
        // 安全チェック ショートカット魔法氷
         auto sharedUiCommandShortCutIceId = UiManager::Instance().GetUies(
@@ -1537,15 +1472,6 @@ bool Player::InputSelectMagicCheck()
         if (!sharedUiCommandShortCutIceId)
             return false;
         auto uiIdIceShortCutCheckPos = sharedUiCommandShortCutIceId->GetComponent<TransForm2D>();
-        // 安全チェック
-        if (!uiIdIceShortCutCheckPos)
-            return false;
-
-        DirectX::XMFLOAT2 pos = uiIdIceShortCutCheckPos->GetPosition();
-        // UIコマンド 選択 表示
-        uiIdAttackCheck->SetDrawCheck(isDrawUi);
-        // UIコマンド　魔法氷の位置に選択を移動
-        uiIdAttackCheckPos->SetPosition(pos);
     }
     /////////////////////////
 
@@ -2789,7 +2715,7 @@ void Player::CollisionMagicFire()
         hitEffect->Play(projectilePosition);
 
         // ダメージ反応エネミーの
-        ReactToDamage();
+        ReactToDamage(PlayerConfig::attackNumbarMagicValue);
 
         // 当たった時の副次的効果
         specialAttackCharge += specialAttackChargeMagicValue;
@@ -2854,7 +2780,7 @@ void Player::CollisionMagicSunder()
         hitEffect->Play(projectilePosition);
 
         // ダメージ反応エネミーの
-        ReactToDamage();
+        ReactToDamage(PlayerConfig::attackNumbarMagicValue);
 
         // 当たった時の副次的効果
         specialAttackCharge += specialAttackChargeMagicValue;
@@ -2919,7 +2845,7 @@ void Player::CollisionMagicIce()
         hitEffect->Play(projectilePosition);
 
         // ダメージ反応エネミーの
-        ReactToDamage();
+        ReactToDamage(PlayerConfig::attackNumbarMagicValue);
 
         // 当たった時の副次的効果
         specialAttackCharge += specialAttackChargeMagicValue;
@@ -3104,7 +3030,7 @@ bool Player::CollisionNodeVsEnemies()
     hitSlash->Play(nodePosition, slashScale);
 
     // ダメージ反応エネミーの
-    ReactToDamage();
+    ReactToDamage(PlayerConfig::attackNumbarSlashValue);
     
     // 当たった時の副次的効果
     specialAttackCharge += PlayerConfig::specialAttackChargeSlashValue;
@@ -3183,17 +3109,8 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
         }
     }
 }
-// 混乱状態
-void Player::SetForcedStunFlag()
-{
-    // 混乱強制
-    attackNumberSave = PlayerConfig::attackNumberSaveMax;
-
-    // ダメージ反応エネミーの
-    ReactToDamage();
-}
 // ダメージ反応エネミーの
-void Player::ReactToDamage()
+void Player::ReactToDamage(int attackValue)
 {
     // マネージャー取得
     EnemyManager& enemyManager = EnemyManager::Instance();
@@ -3211,7 +3128,7 @@ void Player::ReactToDamage()
     auto enemyModelId = enemyShader->GetComponent<ModelControll>();
 
     // 攻撃ヒット回数
-    ++attackNumberSave;
+    attackNumberSave += attackValue;
 
     if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
         enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
@@ -4528,7 +4445,7 @@ void Player::SpecialApplyDamageInRadius()
         hitFire->Play(enemyPosition);
 
         // 混乱状態
-        SetForcedStunFlag();
+        ReactToDamage(PlayerConfig::attackNumbarSpecialValue);
     }
 }
 

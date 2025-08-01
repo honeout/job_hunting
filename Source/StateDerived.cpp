@@ -731,7 +731,7 @@ void ConfusionState::Enter()
 	modelAnim.loop = false;
 	modelAnim.currentanimationseconds = 0.426f;
 	modelAnim.blendSeconds = 0.35f;
-	modelAnim.currentAnimationAddSeconds = 0.000f;
+	modelAnim.currentAnimationAddSeconds = 0.005f;
 	modelAnim.keyFrameEnd = 70.0f;
 
 	model->PlayAnimation(modelAnim);
@@ -739,8 +739,13 @@ void ConfusionState::Enter()
 	enemyid->SetUpdateAnim(EnemyBoss::UpAnim::Normal);
 	// ステート待機時間
 	stateTimer = stateTimerMax;
+	standUpTimer = standUpTimerMax;
+	
 	// 攻撃種類
 	randamAttack = rand() % 2;
+
+	// 立ち上がり許可
+	isStundUpInitial = false;
 }
 
 // 混乱更新
@@ -754,9 +759,23 @@ void ConfusionState::Execute(float elapsedTime)
 
 	std::shared_ptr<EnemyBoss> enemyid = sharedId->GetComponent<EnemyBoss>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
-	if (!model->IsPlayAnimation())
+	if (!model->IsPlayAnimation() && !isStundUpInitial)
+	{
+		modelAnim.currentAnimationAddSeconds = 0.000001f;
 		model->PlayAnimation(modelAnim);
+	}
+	// 待機
 	if (stateTimer > stateTimerEnd)return;
+
+	// 立ち上がり時間
+	standUpTimer -= elapsedTime;
+
+	// アニメーションルール
+	enemyid->SetUpdateAnim(EnemyBoss::UpAnim::Reverseplayback);
+
+	// 立ち上がり
+	if (standUpTimer > stateTimerEnd)return;
+
 	switch (randamAttack)
 	{
 	case (int)EnemyBoss::AttackMode::AssaultAttack:
@@ -994,6 +1013,7 @@ void PlayerIdleState::Enter()
 		return;
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
+	//std::shared_ptr<Player> playerid = GetPlayerId();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Anim_Idle;
@@ -1845,9 +1865,7 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 				// 正面
 				if (moveid->Turn(vector, turnSpeed, elapsedTime))
 				{
-
 					moveid->Move(vector, speed, elapsedTime);
-
 				}
 			}
 			else
@@ -2146,10 +2164,9 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			if (enemyHpId->ApplyDamage(10, 0.5f)) 
 			{
 				lightningHit->Play(pPosition);
-				
 
-				// ダメージ反応エネミーの
-				playerid->SetForcedStunFlag();
+				// 混乱状態
+				playerid->ReactToDamage(PlayerConfig::attackNumbarSpecialValue);
 			}
 			playerid->SetHitCheck(false);
 		}

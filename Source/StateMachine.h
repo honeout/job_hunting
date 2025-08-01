@@ -17,6 +17,7 @@ public:
 	void ChangeState(int newState);
 	// ステート登録
 	void RegisterState(State* state);
+	//void RegisterState(PlayerState* state);
 	// 現在のステート番号取得
 	int GetStateIndex();
 	// 最大値

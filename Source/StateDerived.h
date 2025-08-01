@@ -286,6 +286,8 @@ public:
 private:
 	bool loopSe = false;
 	float				stateTimer = 0.0f;
+	float				standUpTimer = 0.0f;
+	float				standUpTimerMax = 0.7f;
 	float				stateTimerMax = 2.8f;
 	float				stateTimerEnd = 0.0f;
 	// アニメーションルール
@@ -293,6 +295,9 @@ private:
 	// 攻撃種類
 	// 行動をランダムで
 	int randamAttack = 0;
+
+	// 立ち上がり
+	bool isStundUpInitial = false;
 };
 
 // 死亡ステートオブジェクト

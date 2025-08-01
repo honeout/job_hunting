@@ -25,9 +25,9 @@ void SceneTitle::Initialize()
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
 	camera.SetLookAt(
-		DirectX::XMFLOAT3(1.126f, -2.989f, -17.144f),
-		DirectX::XMFLOAT3(0, 0, 0),
-		DirectX::XMFLOAT3(0, 1, 0)
+		cameraPos,
+		cameraFocus,
+		cameraUp
 	);
 	// どの範囲をどれだけ見るか奥行含め
 	camera.SetPerspedtiveFov(
@@ -356,9 +356,11 @@ void SceneTitle::Render()
 				ImGui::SliderFloat("smoothness", &vignetteData.smoothness, -10, 10);
 				ImGui::TreePop();
 			}
+
+			
 			ImGui::Separator();
-			//// カメラパラメータ設定
-			//cameraControlle->OnGUI();
+			// カメラパラメータ設定
+			cameraControlle->OnGUI();
 			ImGui::Separator();
 		}
 		LightManager::Instanes().DrawDebugGUI();
@@ -504,7 +506,6 @@ void SceneTitle::InitializeComponent()
 
 	// 行動範囲
 	{
-
 		minPos.x = -30;
 		minPos.y = -3.525f;
 		minPos.z = -30;
@@ -516,17 +517,21 @@ void SceneTitle::InitializeComponent()
 	// ステージ初期化
 	{
 		const char* filename = "Data/Model/ExampleStage/stageNotRuby.mdl";
-		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		auto actor = ActorManager::Instance().Create();
+		// 安全チェック
+		if (!actor) return;
 		actor->AddComponent<ModelControll>();
 		actor->GetComponent<ModelControll>()->LoadModel(filename);
 		actor->SetName("StageMain");
 		actor->AddComponent<Transform>();
-		actor->GetComponent<Transform>()->
-			SetPosition(DirectX::XMFLOAT3(0, -25, 0));
-		actor->GetComponent<Transform>()->
-			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
-		actor->GetComponent<Transform>()->
-			SetScale(DirectX::XMFLOAT3(1, 1, 1));
+		// トランスフォーム（位置、角度、スケール値）
+		auto transform = actor->GetComponent<Transform>();
+		// 安全チェック
+		if (!transform) return;
+
+		transform->SetPosition(DirectX::XMFLOAT3(0, -25, 0));
+		transform->SetAngle(DirectX::XMFLOAT3(0, 0, 0));
+		transform->SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
 		actor->AddComponent<StageMain>();
 		// 影シェーダー
@@ -554,7 +559,7 @@ void SceneTitle::InitializeComponent()
 		actor->GetComponent<Transform>()->
 			SetPosition(DirectX::XMFLOAT3(0, -17.85f, 0));
 		actor->GetComponent<Transform>()->
-			SetAngle(DirectX::XMFLOAT3(0, 0, 0));
+			SetAngle(DirectX::XMFLOAT3(0, 1.5f, 0));
 		actor->GetComponent<Transform>()->
 			SetScale(DirectX::XMFLOAT3(1, 1, 1));
 
@@ -635,13 +640,17 @@ void SceneTitle::InitializeComponent()
 	// UI タイトル名前
 	{
 		const char* filename = "Data/Sprite/TitleName.png";
-		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		auto actor = ActorManager::Instance().Create();
+		// 安全チェック
+		if (!actor) return;
 		actor->SetName("UITitle");
 		actor->AddComponent<SpriteControll>();
 		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
-		// 位置　角度　スケール情報
-		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		// トランスフォーム（位置、角度、スケール値）
+		auto transform2D = actor->GetComponent<TransForm2D>();
+		// 安全チェック
+		if (!transform2D) return;
 
 		transform2D->SetPosition(titlePos);
 		// 元の位置
@@ -650,7 +659,7 @@ void SceneTitle::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 376,329 };
+		DirectX::XMFLOAT2 scale = { 676,329 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -658,7 +667,9 @@ void SceneTitle::InitializeComponent()
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
-		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		auto ui = actor->GetComponent<Ui>();
+		// 安全チェック
+		if (!ui) return;
 		ui->SetDrawCheck(true);
 
 		// これが２Dかの確認
@@ -671,14 +682,17 @@ void SceneTitle::InitializeComponent()
 	// UI タイトル名前
 	{
 		const char* filename = "Data/Sprite/Start Button.png";
-		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		auto actor = ActorManager::Instance().Create();
+		// 安全チェック
+		if (!actor) return;
 		actor->SetName("UIPush");
 		actor->AddComponent<SpriteControll>();
 		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
-		// 位置　角度　スケール情報
-		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-		//DirectX::XMFLOAT2 pos = { 543, gameUiPositionSelected };
+		// トランスフォーム（位置、角度、スケール値）
+		auto transform2D = actor->GetComponent<TransForm2D>();
+		// 安全チェック
+		if (!transform2D) return;
 
 		transform2D->SetPosition(startPos);
 		// 元の位置
@@ -693,7 +707,9 @@ void SceneTitle::InitializeComponent()
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
-		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		auto ui = actor->GetComponent<Ui>();
+		// 安全チェック
+		if (!ui) return;
 		ui->SetDrawCheck(true);
 
 		// 非選択状態透明度
@@ -709,13 +725,17 @@ void SceneTitle::InitializeComponent()
 	// UI タイトル名前
 	{
 		const char* filename = "Data/Sprite/EXIT.png";
-		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		auto actor = ActorManager::Instance().Create();
+		// 安全チェック
+		if (!actor) return;
 		actor->SetName("UIExit");
 		actor->AddComponent<SpriteControll>();
 		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
-		// 位置　角度　スケール情報
-		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		// トランスフォーム（位置、角度、スケール値）
+		auto transform2D = actor->GetComponent<TransForm2D>();
+		// 安全チェック
+		if (!transform2D) return;
 
 		transform2D->SetPosition(exitPos);
 		// 元の位置
@@ -730,7 +750,9 @@ void SceneTitle::InitializeComponent()
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
-		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		auto ui = actor->GetComponent<Ui>();
+		// 安全チェック
+		if (!ui) return;
 		ui->SetDrawCheck(true);
 
 		// 非選択状態透明度
@@ -746,13 +768,17 @@ void SceneTitle::InitializeComponent()
 	// UI ボタン
 	{
 		const char* filename = "Data/Sprite/Select button.png";
-		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		auto actor = ActorManager::Instance().Create();
+		// 安全チェック
+		if (!actor) return;
 		actor->SetName("UI Button");
 		actor->AddComponent<SpriteControll>();
 		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
-		// 位置　角度　スケール情報
-		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		// トランスフォーム（位置、角度、スケール値）
+		auto transform2D = actor->GetComponent<TransForm2D>();
+		// 安全チェック
+		if (!transform2D) return;
 	
 		transform2D->SetPosition(buttonPos);
 		// 元の位置
@@ -761,15 +787,16 @@ void SceneTitle::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 60,64 };
-		transform2D->SetScale(scale);
+		transform2D->SetScale(buttonScale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
-		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		auto ui = actor->GetComponent<Ui>();
+		// 安全チェック
+		if (!ui) return;
 		ui->SetDrawCheck(true);
 
 		// これが２Dかの確認
@@ -782,13 +809,17 @@ void SceneTitle::InitializeComponent()
 	// UI 選択
 	{
 		const char* filename = "Data/Sprite/choice.png";
-		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		auto actor = ActorManager::Instance().Create();
+		// 安全チェック
+		if (!actor) return;
 		actor->SetName("UI Select");
 		actor->AddComponent<SpriteControll>();
 		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
-		// 位置　角度　スケール情報
-		std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
+		// トランスフォーム（位置、角度、スケール値）
+		auto transform2D = actor->GetComponent<TransForm2D>();
+		// 安全チェック
+		if (!transform2D) return;
 		transform2D->SetPosition(startPos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -797,14 +828,16 @@ void SceneTitle::InitializeComponent()
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 181,104 };
-		transform2D->SetScale(scale);
+		transform2D->SetScale(commandScale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
-		std::shared_ptr<Ui> ui = actor->GetComponent<Ui>();
+		auto ui = actor->GetComponent<Ui>();
+		// 安全チェック
+		if (!ui) return;
 		ui->SetDrawCheck(false);
 
 		// これが２Dかの確認

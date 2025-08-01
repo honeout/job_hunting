@@ -94,14 +94,14 @@ private:
 	float				lengthMinRock = 10.0f;
 	float				lengthRock = 8.0f;
 	float				heightMaxRock = 0.0f;
-	float				heightAttackMaxRock = -1.0f;
+	float				heightAttackMaxRock = -2.3f;
 
 	// カメラの距離
 	float				attacklengthMinRock = 10.0f;
 	float				attacklengthMinRockScale = 2.1f;
 
 	// ターゲットの一定以上高い
-	float               topHeight = 2.0f;
+	float               topHeight = 8.0f;
 	// ターゲットの高さ
 	float				topTargetY = -1.0f;
 	// メッセージキー
