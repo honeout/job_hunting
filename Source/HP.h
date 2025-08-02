@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 #include "Component.h"
 
+
 // ˆÚ“®
 class HP : public Component
 {
@@ -101,6 +102,8 @@ private:
 
 	// HP
 	int          health = maxHealth;
+
+	
 
 	// –³“GŽžŠÔ
 	float   invincibleTimer = 0.0f;

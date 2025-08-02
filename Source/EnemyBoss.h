@@ -62,6 +62,12 @@ namespace EnemyConfig
     constexpr float kNuckleInvincibleTime = 0.5f;
     constexpr float kImpactInvincibleTime = 0.5f;
 
+    //------ゲージ----------------
+    // ゲージの大きさ
+    constexpr float gaugeScale = 4.5f;
+
+    // ゲージの減るスピード
+    constexpr float lerpSpeed = 3.1f;
 
     // -----デバッグ用------------
     constexpr const float kDebugCylinderHeight = 1.0f;

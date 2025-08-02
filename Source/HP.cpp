@@ -14,7 +14,9 @@ HP::HP()
 HP::~HP()
 {
 }
+
 #ifdef _DEBUG
+
 // GUI•`‰æ
 void HP::OnGUI()
 {

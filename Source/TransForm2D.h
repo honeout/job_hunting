@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "Mathf.h"
 
 class TransForm2D : public Component
 {
@@ -13,6 +14,10 @@ public:
     // GUIï`âÊ
     void OnGUI() override;
 #endif // _DEBUG
+
+    // èôÅXÇ…èkÇﬂÇÈ
+    float UpdateGage(float currentScale, float maxScale, float lerpSpeed, float elapsedTime);
+
     // óhÇÍ
     void Shake();
 

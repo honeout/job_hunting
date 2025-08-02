@@ -853,7 +853,7 @@ void EnemyBoss::UiControlle(float elapsedTime)
     if (!hpId) return;
 
     if (UiManager::Instance().GetUiesCount() <= uiCountMax)return;
-    float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.08f;
+    //float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.08f;
 
     auto uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
 
@@ -862,6 +862,11 @@ void EnemyBoss::UiControlle(float elapsedTime)
     
     // 安全チェック
     if (!uiHp || !uiHpLife1 || !uiHpLife2) return;
+
+    // ゲージの大きさ
+    float gaugeWidth = uiHp->UpdateGage((float)hpId->GetHealth(), (float)hpId->GetMaxHealth(), EnemyConfig::lerpSpeed, elapsedTime);
+    // 大きさ補正
+    gaugeWidth *= EnemyConfig::gaugeScale;
 
     // hpバー最低値
     if (gaugeWidth <= gaugeWidthMin)

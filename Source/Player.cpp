@@ -58,6 +58,7 @@ void Player::Update(float elapsedTime)
         UpdateAnimation(elapsedTime);
         return;
     }
+
     // 入力処理　コマンド等
     HandleInput(elapsedTime);
 
@@ -4285,13 +4286,19 @@ void Player::UiControlleGauge(float elapsedTime)
     if (uiCount <= uiCountMax) return;
 
     // hpゲージ操作用
-    float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.088f;
+    float gaugeWidth;
+    //float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.088f;
 
     // hpゲージ
     auto uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar)->GetComponent<TransForm2D>();
     auto uiHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHp)->GetComponent<TransForm2D>();
     // 安全チェック
     if (!uiHp || !uiHpBar) return;
+
+    // ゲージの大きさ
+    gaugeWidth = uiHp->UpdateGage((float)hpId->GetHealth(), (float)hpId->GetMaxHealth(), PlayerConfig::lerpSpeed,elapsedTime);
+    // 大きさ補正
+    gaugeWidth *= PlayerConfig::gaugeScale;
 
     // hpバー最低値
     if (gaugeWidth <= gaugeWidthMin)
@@ -4300,11 +4307,7 @@ void Player::UiControlleGauge(float elapsedTime)
     // hpゲージUI　変える
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
     uiHp->SetScale(scale);
-    gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.088f;
-
-    // mpバー最低値
-    if (gaugeWidth <= gaugeWidthMin)
-        gaugeWidth = gaugeWidthMin;
+    //gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.088f;
 
     // mpゲージ
     auto uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();
@@ -4312,6 +4315,15 @@ void Player::UiControlleGauge(float elapsedTime)
 
     // 安全チェック
     if (!uiMp || !uiColor) return;
+
+    // ゲージの大きさ
+    gaugeWidth = uiMp->UpdateGage((float)mpId->GetMagic(), (float)mpId->GetMaxMagic(), PlayerConfig::lerpSpeed, elapsedTime);
+    // 大きさ補正
+    gaugeWidth *= PlayerConfig::gaugeScale;
+
+    // mpバー最低値
+    if (gaugeWidth <= gaugeWidthMin)
+        gaugeWidth = gaugeWidthMin;
 
     // mpゲージUI　変える
     scale = { gaugeWidth, uiMp->GetScale().y };

@@ -14,6 +14,16 @@ void TransForm2D::OnGUI()
     ImGui::SliderFloat2("TexScale", &texScale.x,0,500);
 }
 #endif // _DEBUG
+
+// 徐々に縮める
+float TransForm2D::UpdateGage(float currentScale, float maxScale,  float lerpSpeed,  float elapsedTime)
+{
+    // 線形補完に使う割合
+    float interpolationRate = lerpSpeed * elapsedTime;
+
+    // 線形補完で徐々に縮める
+    return Mathf::Lerp(currentScale, maxScale, interpolationRate);
+}
 void TransForm2D::Shake()
 {
     if (shakeTimeUi <= shakeTimeUiMin)

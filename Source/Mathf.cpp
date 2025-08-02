@@ -4,7 +4,9 @@
 // 線形補完
 float Mathf::Lerp(float a, float b, float t)
 {
-    return a * (1.0f - t) + (b * t);
+    // (a(変化する値),b(最終的な値),t(これだけ進))
+    return a + (b - a) * t;
+    //return a * (1.0f - t) + (b * t);
 }
 // 範囲指定
 float Mathf::RandomRange(float min, float max)

@@ -65,6 +65,12 @@ namespace PlayerConfig
     // 魔法チャージ加算
     constexpr float commandChargeAdd = 0.065f;
 
+    // ゲージの大きさ
+    constexpr float gaugeScale = 4.5f;
+
+    // ゲージの減るスピード
+    constexpr float lerpSpeed = 3.1f;
+
     // コマンド余白文
     constexpr float offset = 20.0f;
 
