@@ -15,6 +15,12 @@
 // 定数定義
 namespace EnemyConfig
 {
+    // -----hp用------------
+    // hp 最低値
+    constexpr int healthMin = 0;
+    // 復活数
+    constexpr int lifeMin = 0;
+
     // -----衝突判定・サイズ-----
     constexpr float kBaseBodyRadius = 1.2f;
     constexpr float kHitPartRadius = 0.8f;

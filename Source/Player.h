@@ -32,12 +32,14 @@ namespace PlayerConfig
     // 下半身エンド再生停止場所
     constexpr const char* bornDownerEndPoint = "mixamorig:RightToe_End";
 
+    // -----衝突判定・サイズ-----
     // 身長
     constexpr float height = 1.0f;
 
     // 当たり判定半径
     constexpr float radius = 1.0f;
 
+    // -----プレイヤーの状態-----
     // Hp
     constexpr int health = 50;
 
@@ -59,11 +61,34 @@ namespace PlayerConfig
     // 最大HP
     constexpr int maxHealth = 50;
 
+    // 攻撃ヒット回数
+    constexpr int attackNumbarSlashValue = 2;
+    constexpr int attackNumbarMagicValue = 1;
+    constexpr int attackNumbarSpecialValue = 15;
+
+    // ------近接攻撃---------
+
+    // 空中移動制限限界
+    constexpr int areAttackStateEnd = 0;
+
+    // 空中移動限界最大
+    constexpr int areAttackStateMax = 3;
+
+    // 攻撃補助範囲
+    constexpr float attackCheckRange = 10.0f;
+
+    // 連続攻撃回数
+    constexpr int attackNumberSaveMax = 15;
+
+     // ------魔法---------
+
     // Mp
     constexpr int magicPoint = 50;
 
     // 魔法チャージ加算
     constexpr float commandChargeAdd = 0.065f;
+
+    // ------UI状態---------
 
     // ゲージの大きさ
     constexpr float gaugeScale = 4.5f;
@@ -74,17 +99,13 @@ namespace PlayerConfig
     // コマンド余白文
     constexpr float offset = 20.0f;
 
-    // 空中移動制限限界
-    constexpr int areAttackStateEnd = 0;
-
-    // 空中移動限界最大
-    constexpr int areAttackStateMax = 3;
-
     // 経過時間関数の最低値
     constexpr float timeElapsedMin = 0.0f;
 
     // 経過時間関数の最大値
     constexpr float timeElapsedHintMax = 1.0f;
+
+    // ------コマンド---------
 
     // 特殊技チャージゲージ　斬撃
     constexpr float specialAttackChargeSlashValue = 0.1f;
@@ -105,21 +126,16 @@ namespace PlayerConfig
     // コマンド特殊技選択最大値
     constexpr int spCmdMoveLimitMax = 1;
 
-    // 攻撃サポート範囲
-    constexpr float attackCheckRange = 10.0f;
-
     // HPバー色変化用
     constexpr DirectX::XMFLOAT2 hpBarGreenwTexPos = {0,00};
     constexpr DirectX::XMFLOAT2 hpBarYerowTexPos = {0,76.5f};
     constexpr DirectX::XMFLOAT2 hpBarRedTexPos = {0,152};
 
-    // 連続攻撃回数
-    constexpr int attackNumberSaveMax = 15;
-
-    // 攻撃ヒット回数
-    constexpr int attackNumbarSlashValue = 2;
-    constexpr int attackNumbarMagicValue = 1;
-    constexpr int attackNumbarSpecialValue = 15;
+    // ------カメラ演出---------
+    // カメラ最初の演出の最大値
+    constexpr float currentCameraEffectInitialTimeMax = 0.5f;
+    // 時間
+    constexpr float cameraEffectSpeed = 1.0f;
 };
 
 // プレイヤー
@@ -175,6 +191,9 @@ public:
 
     // アニメーションの再生や状態切り替え
     void UpdateAnimation(float elapsedTime);
+
+    // 最初のカメラ演出
+    void UpdateCameraInitialEffect(float elapsedTime);
  
     // SE再生
     void InputSe(AudioParam param);
@@ -340,6 +359,9 @@ public:
     bool GetInvalidJudgment() const { return invalidJudgment; }
     // セット当たり判定無効
     void SetInvalidJudgment(bool invalidJudgment) { this->invalidJudgment = invalidJudgment; }
+
+    // カメラ演出するか
+    bool GetIsCameraInitialEffect() const { return isCameraInitialEffect; }
 
     // 自分の当たり判定有無
     void DmageInvalidJudment(bool invalidJudgment);
@@ -916,7 +938,12 @@ private:
     // seの音の大きさ
     float seVolume = 0.8f;
     /////////////////////// 
-    
+
+    // 最初のカメラ演出の有無について
+    bool isCameraInitialEffect = false;
+
+    // カメラ演出用　時間
+    float currentCameraEffectInitialTime;
 };
 
 // プレイヤーマネージャー

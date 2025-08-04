@@ -1,5 +1,6 @@
 #pragma once
 #include "StateBase.h"
+#include "StateEnemyBase.h"
 #include "Input\GamePad.h"
 #include "Input/Input.h"
 #include "SceneGameClear.h"

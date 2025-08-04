@@ -52,13 +52,15 @@ void Player::Update(float elapsedTime)
     stateMachine->Update(elapsedTime);
 
     // シーンゲーム以外の処理
-    if (SceneManager::Instance().GetCurrentScene()->GetSceneName() != "SceneGame")
+    if (SceneManager::Instance().GetCurrentScene()->GetSceneName() != "SceneGame" || isCameraInitialEffect)
     {
+        // カメラ演出用
+        UpdateCameraInitialEffect(elapsedTime);
+
         // アニメーション
         UpdateAnimation(elapsedTime);
         return;
     }
-
     // 入力処理　コマンド等
     HandleInput(elapsedTime);
 
@@ -250,6 +252,11 @@ void Player::InitStats()
 
     // 不透明
     lightingTimeAlpha = 0.0f;
+
+    // カメラ演出するか
+    isCameraInitialEffect = true;
+    // カメラ演出現在の時間
+    currentCameraEffectInitialTime = 0.0f;
 }
 
 void Player::InitCommands()
@@ -452,9 +459,11 @@ void Player::HandleCollisions()
     // プレイヤーと敵との衝突処理
     CollisionBornVsProjectile("body2");
     CollisionPlayerVsEnemies();
-    // 弾丸当たり判定
+    // 魔法火当たり判定
     CollisionMagicFire();
+    // 魔法雷当たり判定
     CollisionMagicSunder();
+    // 魔法氷当たり判定
     CollisionMagicIce();
 }
 // アニメーションの再生や状態切り替え
@@ -510,6 +519,18 @@ void Player::UpdateAnimation(float elapsedTime)
 
     // 位置更新
     modelControllId->GetModel()->UpdateTransform(transformId->GetTransform());
+}
+
+// 最初のカメラ演出
+void Player::UpdateCameraInitialEffect(float elapsedTime)
+{
+    // カメラ経過時間
+    currentCameraEffectInitialTime += PlayerConfig::cameraEffectSpeed * elapsedTime;
+
+    // 演出が終わったら
+    if (currentCameraEffectInitialTime > PlayerConfig::currentCameraEffectInitialTimeMax)
+        // 最初のカメラ演出
+        isCameraInitialEffect = false;
 }
 
 // Se再生
@@ -2666,7 +2687,9 @@ void Player::CollisionMagicFire()
 
         // 炎関係
         ++fireEnergyCharge;
+        // 火エフェクト再生
         hitFire->Play(projectilePosition);
+
         // 共通ダメエフェ
         hitEffect->Play(projectilePosition);
 

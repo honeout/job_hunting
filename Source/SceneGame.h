@@ -67,6 +67,15 @@ private:
 	// コマンド位置の差
 	float commandOffset = 10.0f;
 
+	// カメラ位置
+	DirectX::XMFLOAT3 cameraPosition = { 1.126f, -2.089f, -17.144f };
+
+	// カメラ注視点
+	DirectX::XMFLOAT3 cameraFocus = { 0,0,0 };
+
+	// カメラ上情報
+	DirectX::XMFLOAT3 cameraUp = { 0, 1, 0 };
+
 	// プレイヤーHPバー位置情報
 	DirectX::XMFLOAT2 playerHpBarPos = { screenWidth + 200 , screenHeight + 80 };
 	DirectX::XMFLOAT2 enemyHpBarPos = { screenWidth + 130 , 0 };

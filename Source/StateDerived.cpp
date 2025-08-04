@@ -308,18 +308,21 @@ void PursuitState::Execute(float elapsedTime)
 	// 攻撃の種類
 	switch (randamAttack)
 	{
+		// ２撃
 	case (int)EnemyBoss::AttackMode::AssaultAttack:
 	{
 		enemyid->GetStateMachine()->ChangeState(
 			static_cast<int>(EnemyBoss::State::Wander));
 		break;
 	}
+	// ジャンプ攻撃
 	case (int)EnemyBoss::AttackMode::JumpStompAttack:
 	{
 		enemyid->GetStateMachine()->ChangeState(
 			static_cast<int>(EnemyBoss::State::Jump));
 		break;
 	}
+	// まっすぐ引く
 	case (int)EnemyBoss::AttackMode::DushAttack:
 	{
 		enemyid->GetStateMachine()->ChangeState(
@@ -411,6 +414,7 @@ void JumpState::Execute(float elapsedTime)
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = model->GetCurrentANimationSeconds();
 	// 後変更
+	// ジャンプ瞬間
 	if (animationTime - FLT_EPSILON <= 0.8f + FLT_EPSILON && !jumpStart)
 	{
 		bool blurCheck = true;
@@ -427,17 +431,18 @@ void JumpState::Execute(float elapsedTime)
 
 		return;
 	}
+	// playerを狙う
 	else
 	{
 		moveid->Turn(direction, turnSpeed, elapsedTime);
 	}
-
+	// ジャンプ中
 	if (!moveid->GetOnLadius())
 	{
 		moveid->Move(direction, moveSpeed, elapsedTime);
 		moveid->Turn(direction, turnSpeed, elapsedTime);
 	}
-
+	// ジャンプ瞬間
 	if (moveid->GetOnLadius() && jumpStart)
 	{
 		enemyid->InputImpact(enemyid->GetPosition());
@@ -601,9 +606,6 @@ void AttackState::Execute(float elapsedTime)
 	{
 		dushStart = true;
 	}
-	
-
-
 
 	// ダッシュ中
 	if (dushStart)
@@ -1036,6 +1038,10 @@ void PlayerIdleState::Execute(float elapsedTime)
 		return;
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
+
+	// 最初のカメラ演出中なら何も出来ない
+	if (playerid->GetIsCameraInitialEffect()) return;
+
 	// ロックオン処理
 	playerid->UpdateCameraState(elapsedTime);
 	// 移動入力処理
@@ -2529,14 +2535,13 @@ void PlayerMagicState::Execute(float elapsedTime)
 			// 氷発射
 			playerid->InputMagicIce();
 		}
+
 		else
 		{
 			// 角度
 			angle = transformid->GetAngle();
 			playerid->PushMagicIce(angle);
 		}
-
-		
 
 		// ため終わりまで撃つ
 		if (magicCharge <= magicChargeEnd)

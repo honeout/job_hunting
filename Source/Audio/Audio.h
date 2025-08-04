@@ -20,17 +20,17 @@ public:
 		static Audio instance;
 		return instance;
 	}
-
 	// 再生開始
 	void Play(AudioParam param);
-
 
 	// 再生停止
 	void Stop(AudioParam param);
 
-
 	// 既存の奴を停止
 	void Stop(std::string filename);
+
+	// 音の補正
+	void UpdateFadeOut(AudioParam param);
 
 	// 全てのオーディオを停止する
 	void AllStop();
@@ -53,4 +53,8 @@ private:
 
 	IXAudio2*				xaudio = nullptr;
 	IXAudio2MasteringVoice* masteringVoice = nullptr;
+	// 現在の音量
+	float currentVolume = 0.0f;
+	// 次の音量
+	float targetVolume = 0.0f;
 };

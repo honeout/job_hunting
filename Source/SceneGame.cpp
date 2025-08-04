@@ -55,9 +55,9 @@ void SceneGame::Initialize()
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
 	camera.SetLookAt(
-		DirectX::XMFLOAT3(1.126f, -2.989f, -17.144f),
-		DirectX::XMFLOAT3(0, 0, 0),
-		DirectX::XMFLOAT3(0, 1, 0)
+		cameraPosition,
+		cameraFocus,
+		cameraUp
 	);
 	// どの範囲をどれだけ見るか奥行含め
 	camera.SetPerspedtiveFov(
@@ -149,10 +149,13 @@ void SceneGame::Update(float elapsedTime)
 		isMenue = isMenue ? isMenueOf : isMenueOn;
 	}
 
+	// スロー状態を共有
 	float dlayTime = dlayTimeCheck ?  elapsedTime / 2 : elapsedTime;
 
+	// アップデート
 	ActorManager::Instance().Update(dlayTime);
 
+	// 音楽アップデート
 	Audio::Instance().Update();
 
 	// カメラ更新
@@ -166,7 +169,6 @@ void SceneGame::Update(float elapsedTime)
 
 	// シーン切り替え
 	{
-
 		for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 		{
 			// 死んだ瞬間
@@ -184,15 +186,11 @@ void SceneGame::Update(float elapsedTime)
 		for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
 		{
 			std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
+			// 敵が死んだら
 			if (hp->GetDead())
 			{
 				hp->SetDead(false);
 				EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Death));
-			}
-			if (hp->GetHealth() <= 0 && hp->GetLife() >= 0)
-			{
-				// hpを回復
-				hp->SetHealth(hp->GetMaxHealth());
 			}
 			// クリア
 			if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetIsSecenChange())
@@ -221,8 +219,9 @@ void SceneGame::Render()
 	Graphics& graphics = Graphics::Instance();
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
-	//// シャドウマップの描画
+	// シャドウマップの描画
 	RenderShadowmap();
+	// model描画
 	Render3DScene();
 	// GUI
 	ActorManager::Instance().RenderGui();
@@ -355,6 +354,7 @@ void SceneGame::Render()
 #endif // _DEBUG
 }
 
+// model描画
 void SceneGame::Render3DScene()
 {
 	Graphics& graphics = Graphics::Instance();
@@ -442,6 +442,7 @@ void SceneGame::Render3DScene()
 #endif // _DEBUG
 }
 
+// 影描画
 void SceneGame::RenderShadowmap()
 {
 	Graphics& graphics = Graphics::Instance();
@@ -545,6 +546,7 @@ void SceneGame::PostProcessingRendererInitialize()
 	postprocessingRenderer.SetVignetteData(vignetteData);
 }
 
+// スロー状態の変換全体
 void SceneGame::SetSlowState(float elapsedTime)
 {
 	Graphics& graphics = Graphics::Instance();
@@ -1992,8 +1994,6 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 248,38 };
-		//DirectX::XMFLOAT2 scale = { 248,130 };
 		DirectX::XMFLOAT2 scale = { 248,80 };
 		transform2D->SetScale(scale);
 		// 元の大きさ

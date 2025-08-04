@@ -50,6 +50,9 @@ public:
 	// 行列計算　ボーン情報を共有
 	void UpdateTransform(const DirectX::XMFLOAT4X4& transform,  std::vector<Node> nodes);
 
+	// ブレンド
+	void UpdateAnimationBrend(Node& node, const ModelResource::NodeKeyData& key0, const ModelResource::NodeKeyData& key1);
+
 	// アニメーション計算
 	void ComputeAnimation(int animationIndex, int nodeIndex, float time, NodePose& nodePose, float blendRate) ;
 	// 全骨の姿勢

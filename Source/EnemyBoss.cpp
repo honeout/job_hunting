@@ -235,6 +235,13 @@ void EnemyBoss::UpdateStatus(float elapsedTime)
     // 無敵時間更新
     hpId->UpdateInbincibleTimer(elapsedTime);
 
+    // hpが無くなったら、ライフで復活
+    if (hpId->GetHealth() <= EnemyConfig::healthMin && hpId->GetLife() >= EnemyConfig::lifeMin)
+    {
+        // hpを回復
+        hpId->SetHealth(hpId->GetMaxHealth());
+    }
+
     // 削除
     ProjectileManager::Instance().DeleteUpdate(elapsedTime);//todo いるの？
 

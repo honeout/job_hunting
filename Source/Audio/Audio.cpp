@@ -98,6 +98,15 @@ void Audio::Stop(std::string filename)
 	}
 }
 
+// ‘S‚Ä‚Ì‰¹‚Ì•â³
+void Audio::UpdateFadeOut(AudioParam param)
+{
+	for (AudioSource* audio_source : this->audio_source_pool)
+	{
+		audio_source->SetVolume(param.volume);
+	}
+}
+
 void Audio::AllStop()
 {
 	for (AudioSource* audio_source : this->audio_source_pool)

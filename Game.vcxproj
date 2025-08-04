@@ -187,6 +187,7 @@
     <ClInclude Include="Source\StageMain.h" />
     <ClInclude Include="Source\StateBase.h" />
     <ClInclude Include="Source\StateDerived.h" />
+    <ClInclude Include="Source\StateEnemyBase.h" />
     <ClInclude Include="Source\StateMachine.h" />
     <ClInclude Include="Source\Transform.h" />
     <ClInclude Include="Source\TransForm2D.h" />

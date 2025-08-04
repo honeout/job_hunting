@@ -97,6 +97,10 @@ void Model::UpdateTransform(const DirectX::XMFLOAT4X4& transform,  std::vector<N
 	}
 }
 
+void Model::UpdateAnimationBrend(Node& node, const ModelResource::NodeKeyData& key0, const ModelResource::NodeKeyData& key1)
+{
+}
+
 void Model::ComputeAnimation(int animationIndex, int nodeIndex, float time, NodePose& nodePose, float blendRate) 
 {
 	// 指定のアニメーションデータを取得

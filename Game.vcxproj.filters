@@ -261,9 +261,6 @@
     <ClInclude Include="Source\StageMain.h">
       <Filter>Source\Stage</Filter>
     </ClInclude>
-    <ClInclude Include="Source\StateBase.h">
-      <Filter>Source\Stage</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Ui.h">
       <Filter>Source\Ui</Filter>
     </ClInclude>
@@ -305,6 +302,12 @@
     </ClInclude>
     <ClInclude Include="Source\MagicConfig.h">
       <Filter>Source\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StateBase.h">
+      <Filter>Source\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StateEnemyBase.h">
+      <Filter>Source\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
