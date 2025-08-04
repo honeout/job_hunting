@@ -151,9 +151,9 @@ void SceneTitle::Finalize()
 	UiManager::Instance().Clear();
 	ActorManager::Instance().Clear();
 
-	Audio::Instance().AllStop();
+	//Audio::Instance().AllStop();
 
-	Audio::Instance().AllClear();
+	//Audio::Instance().AllClear();
 
 	if (cameraControlle != nullptr)
 	{

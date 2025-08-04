@@ -69,6 +69,9 @@ void SceneLoading::Finalize()
         delete nextScene;
         nextScene = nullptr;
     }
+
+    Audio::Instance().AllStop();
+    Audio::Instance().AllClear();
     //if (!nextScene->IsReady())
     //    nextScene = nullptr;
 }
@@ -80,6 +83,9 @@ void SceneLoading::Update(float elapsedTime)
     RotateLoadingIcon(elapsedTime);
 
     ActorSceneLoadManager::Instance().Update(elapsedTime);
+
+    // 音楽アップデート
+    Audio::Instance().Update();
 
     // 操作説明選択用
     Select(elapsedTime);

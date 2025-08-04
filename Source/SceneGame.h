@@ -68,7 +68,7 @@ private:
 	float commandOffset = 10.0f;
 
 	// カメラ位置
-	DirectX::XMFLOAT3 cameraPosition = { 1.126f, -2.089f, -17.144f };
+	DirectX::XMFLOAT3 cameraPosition = { 1.126f, -2.089f, -19.144f };
 
 	// カメラ注視点
 	DirectX::XMFLOAT3 cameraFocus = { 0,0,0 };

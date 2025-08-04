@@ -1044,6 +1044,7 @@ void PlayerIdleState::Execute(float elapsedTime)
 
 	// ƒƒbƒNƒIƒ“ˆ—
 	playerid->UpdateCameraState(elapsedTime);
+
 	// ˆÚ“®“ü—Íˆ—
 	if (playerid->InputMove())
 	{
