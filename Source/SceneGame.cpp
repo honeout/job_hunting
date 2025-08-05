@@ -150,7 +150,7 @@ void SceneGame::Update(float elapsedTime)
 	}
 
 	// スロー状態を共有
-	float dlayTime = dlayTimeCheck ?  elapsedTime / 2 : elapsedTime;
+	float dlayTime = dlayTimeCheck ? elapsedTime / 2 : elapsedTime;
 
 	// アップデート
 	ActorManager::Instance().Update(dlayTime);
@@ -168,49 +168,67 @@ void SceneGame::Update(float elapsedTime)
 	SetSlowState(elapsedTime);
 
 	// シーン切り替え
+
+	for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 	{
-		for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
+		// 死んだ瞬間
+		if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
 		{
-			// 死んだ瞬間
-			if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
-			{
-				PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Death));
-				sceneChengeCheckDead = true;
-			}
-			// 演出終了
-			if (!PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && sceneChengeCheckDead)
-				// ゲームオーバー
-				SceneManager::Instance().ChangeScene(new SceneGameOver);
-		}
+			PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Death));
+			sceneChengeCheckDead = true;
 
-		for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
-		{
-			std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
-			// 敵が死んだら
-			if (hp->GetDead())
-			{
-				hp->SetDead(false);
-				EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Death));
-			}
-			// クリア
-			if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetIsSecenChange())
-			{
-				SceneManager::Instance().ChangeScene(new SceneGameClear);
-			}
+			AudioParam param;
+			// フェードアウト開始
+			Audio::Instance().PlayFadeOut(param);
 		}
-		// ゲームオーバーに行かないように
-		if (EnemyManager::Instance().GetEnemyCount() <= 0 ||
-			UiManager::Instance().GetUiesCount() <= 5)return;
-
-		// ゲームオーバー時間制限
-		std::weak_ptr<UiTime> uiTime = UiManager::Instance().GetUies((int)UiManager::UiCount::Time)->GetComponent<UiTime>();
-		if (uiTime.lock()->GetTimeUp())
+		// 演出終了
+		if (!PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && sceneChengeCheckDead)
 		{
-			colorGradingData.brigthness = 3.0f;
+			// フェードアウト
+			if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
+
 			// ゲームオーバー
 			SceneManager::Instance().ChangeScene(new SceneGameOver);
 		}
 	}
+
+	for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
+	{
+		std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
+		// 敵が死んだら
+		if (hp->GetDead())
+		{
+			hp->SetDead(false);
+			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Death));
+
+			AudioParam param;
+			// フェードアウト開始
+			Audio::Instance().PlayFadeOut(param);
+		}
+		// クリア
+		if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetIsSecenChange())
+		{
+			// サウンド減少
+			if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
+			SceneManager::Instance().ChangeScene(new SceneGameClear);
+		}
+	}
+	// ゲームオーバーに行かないように
+	if (EnemyManager::Instance().GetEnemyCount() <= 0 ||
+		UiManager::Instance().GetUiesCount() <= 5)return;
+
+	// ゲームオーバー時間制限
+	std::weak_ptr<UiTime> uiTime = UiManager::Instance().GetUies((int)UiManager::UiCount::Time)->GetComponent<UiTime>();
+	if (!uiTime.lock()->GetTimeUp()) return;
+
+	// フェードアウト
+	if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
+
+	colorGradingData.brigthness = 3.0f;
+	// ゲームオーバー
+	SceneManager::Instance().ChangeScene(new SceneGameOver);
+
+
 }
 
 // 描画処理

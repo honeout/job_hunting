@@ -74,6 +74,17 @@ void Audio::Play(AudioParam param)
 	audio->Play();
 }
 
+// フェードアウト再生開始
+void Audio::PlayFadeOut(AudioParam param)
+{
+	// フェードアウト開始
+	isOnFade = true;
+	// 現在の音量
+	currentVolume = 1.0f;
+	// ターゲットボリューム
+	targetVolume = param.volumeMin;
+}
+
 void Audio::Stop(AudioParam param)
 {
 	// リソース作成
@@ -99,12 +110,29 @@ void Audio::Stop(std::string filename)
 }
 
 // 全ての音の補正
-void Audio::UpdateFadeOut(AudioParam param)
+bool Audio::AllUpdateFadeOut(float elapsedTime)
 {
+	// フェードアウト開始
+	if (!isOnFade) return false;
+
+	// フェードアウト中
+	if (currentVolume > targetVolume)
+		currentVolume -= volumeValue * elapsedTime;
+
+	// フェードアウト終了
+	else
+	{
+		isOnFade = false;
+		return true;
+	}
+
+	// 音の大きさ
 	for (AudioSource* audio_source : this->audio_source_pool)
 	{
-		audio_source->SetVolume(param.volume);
+		audio_source->SetVolume(currentVolume);
 	}
+
+	return false;
 }
 
 void Audio::AllStop()

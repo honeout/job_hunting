@@ -135,12 +135,23 @@ void SceneLoading::Update(float elapsedTime)
 
     // 次のシーンの準備が完了したらシーンを切り替える
     if (nextScene->IsReady() && 
-        gamePad.GetButtonDown() & GamePad::BTN_B)
+        gamePad.GetButtonDown() & GamePad::BTN_B && 
+        isFinalizeGame)
     {
         isFinalizeGame = false;
+
+        AudioParam param;
+        // フェードアウト開始
+        Audio::Instance().PlayFadeOut(param);
+    }
+
+    // 次のシーンへ
+    if (isFinalizeGame) return;
+
+    // フェードアウト
+    if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
         SceneManager::Instance().ChangeScene(nextScene);
         nextScene = nullptr;
-    }
 }
 // 描画処理
 void SceneLoading::Render()
