@@ -506,7 +506,7 @@ void SceneGameClear::InitializeComponent()
 		actor->AddComponent<Transform>();
 
 		actor->GetComponent<Transform>()->
-			SetPosition(DirectX::XMFLOAT3(0, 0, 1));
+			SetPosition(DirectX::XMFLOAT3(0, -3.6f, 1));
 
 		actor->GetComponent<Transform>()->
 			SetAngle(DirectX::XMFLOAT3(0, 3, 0));

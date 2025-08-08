@@ -935,6 +935,7 @@ void ClearState::Enter()
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 	modelAnim.index = EnemyBoss::Animation::Anim_Die;
+	modelAnim.currentanimationseconds = 1.6f;
 	modelAnim.loop = false;
 	modelAnim.blendSeconds = 0.7f;
 	Model* model;
@@ -3343,6 +3344,7 @@ void PlayerClearIdleState::Enter()
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Animation::Anim_MagicSeconde;
+	modelAnim.currentanimationseconds = 1.0f;
 	modelAnim.keyFrameEnd = 68.0f;
 	model->PlayAnimation(modelAnim);
 	// アニメーションルール

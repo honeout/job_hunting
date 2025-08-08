@@ -270,6 +270,9 @@ void Player::InitStats()
 
     // ジャンプ不許可
     isJunp = PlayerConfig::unJunp;
+
+    // Tpos対策アニメーション初期化を適当なモーションに
+    modelControllId->GetModel()->UpdateAnimation(0.0f, false);
 }
 
 void Player::InitCommands()

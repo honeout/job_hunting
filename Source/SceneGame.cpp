@@ -806,7 +806,7 @@ void SceneGame::InitializeComponent()
 		// 安全チェック
 		if (!transform) return;
 		transform->
-			SetPosition(DirectX::XMFLOAT3(0, 0, 1));
+			SetPosition(DirectX::XMFLOAT3(0, -3.6f, 1));
 
 		transform->
 			SetAngle(DirectX::XMFLOAT3(0, 3, 0));

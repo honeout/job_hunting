@@ -175,9 +175,10 @@ void EnemyBoss::InitStats()
     // Lockとして実体を使う
     auto hpId = hp.lock();
     auto collisionId = collision.lock();
+    auto modelId = model.lock();
 
     // 有効性チェック
-    if (!hpId)
+    if (!hpId || !collisionId || !modelId)
         return;
 
     int health = EnemyConfig::kHealth;
@@ -211,6 +212,9 @@ void EnemyBoss::InitStats()
 
     // ダメージ食らった時
     onDamageTime = EnemyConfig::onDamageTimeMin;
+
+    // Tpos対策アニメーション初期化を適当なモーションに
+    modelId->GetModel()->UpdateAnimation(0.0f, false);
 }
 
 // ステート更新まとめ
