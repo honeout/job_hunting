@@ -262,6 +262,9 @@ private:
 
 	bool isAudioDebug = true;
 
+	// 時間切れかどうか
+	bool isTimeUp = false;
+
 	// デバッグ
 	DirectX::XMFLOAT2 debugPush2Pos = { 480,0.0f };
 	DirectX::XMFLOAT2 debugShortCutPos = { 480,0.0f };

@@ -279,7 +279,7 @@ void Player::InitCommands()
     // 魔法選択用
     selectMagicCheck = (int)CommandMagic::Normal;
     // 特殊攻撃ため初期値
-    specialAttackCharge = 0.0f;
+    specialAttackCharge = PlayerConfig::specialAttackChargeMin;
     // アニメーションルール
     updateanim = UpAnim::Normal;
     moveSpeedAnimation = 0.0f;

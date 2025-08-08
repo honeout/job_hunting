@@ -51,6 +51,9 @@ void SceneGame::Initialize()
 	// コンポネント登録
 	InitializeComponent();
 
+	// タイムアップじゃない
+	isTimeUp = false;
+
 	// カメラ初期設定 見える位置追いかけるものなど
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::Instance();
@@ -201,8 +204,8 @@ void SceneGame::Update(float elapsedTime)
 			hp->SetDead(false);
 			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Death));
 
-			AudioParam param;
 			// フェードアウト開始
+			AudioParam param;
 			Audio::Instance().PlayFadeOut(param);
 		}
 		// クリア
@@ -221,14 +224,20 @@ void SceneGame::Update(float elapsedTime)
 	std::weak_ptr<UiTime> uiTime = UiManager::Instance().GetUies((int)UiManager::UiCount::Time)->GetComponent<UiTime>();
 	if (!uiTime.lock()->GetTimeUp()) return;
 
+	// フェードアウト開始
+	if (!isTimeUp)
+	{
+		AudioParam param;
+		Audio::Instance().PlayFadeOut(param);
+		isTimeUp = true;
+	}
+
 	// フェードアウト
 	if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
 
 	colorGradingData.brigthness = 3.0f;
 	// ゲームオーバー
 	SceneManager::Instance().ChangeScene(new SceneGameOver);
-
-
 }
 
 // 描画処理
@@ -2374,8 +2383,8 @@ void SceneGame::InitializeComponent()
 		actor->SetCheck2d(check2d);
 
 		// 制限時間
-		//int timeMax = 10;
 		int timeMax = 180;
+		//int timeMax = 10;
 		//int timeMax = 10;
 		ui->SetTimeMax(timeMax);
 
