@@ -109,6 +109,11 @@ namespace PlayerConfig
     // 経過時間関数の最大値
     constexpr float timeElapsedHintMax = 1.0f;
 
+    // しっかり描画
+    constexpr float onAlpha = 1.0f;
+    // 透けてる？
+    constexpr float halfAlpha = 0.5f;
+
     //------UIHP----------------
     constexpr DirectX::XMFLOAT2 texNoDamagePos = { 0.0f, 0.0f };
     constexpr DirectX::XMFLOAT2 texDamagePos = { 0.0f, 103.0f };
@@ -812,6 +817,7 @@ private:
 
     // 描画の色をどうするか
     DirectX::XMFLOAT4 mpUiColor = {1,1,1,1};
+    float mpUiAlpha = 1.0f;
 
     // スペキュラー無効
     int isSpecular = 0;

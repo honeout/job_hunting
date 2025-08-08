@@ -4390,7 +4390,6 @@ void Player::UiControlleGauge(float elapsedTime)
     // hpゲージUI　変える
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
     uiHp->SetScale(scale);
-    //gaugeWidth = mpId->GetMaxMagic() * mpId->GetMagic() * 0.088f;
 
     // mpゲージ
     auto uiMp = UiManager::Instance().GetUies((int)UiManager::UiCount::Mp)->GetComponent<TransForm2D>();
@@ -4412,13 +4411,19 @@ void Player::UiControlleGauge(float elapsedTime)
     scale = { gaugeWidth, uiMp->GetScale().y };
     uiMp->SetScale(scale);
     
-    // mp色
-   mpUiColor = { 1,1,1,1 };
+   // mp透けていない
+   mpUiAlpha = PlayerConfig::onAlpha;
+
+   // mp切れ
     if (mpId->GetMpEmpth())
     {
-        mpUiColor = { 1,0.5f,0,1 };
+        // mp透けてる
+        mpUiAlpha = PlayerConfig::halfAlpha;
     }
-   uiColor->SetColor(mpUiColor);
+
+    // 透明度設定
+   uiColor->SetAlpha(mpUiAlpha);
+   
     // 揺れ
     if (shakeMode)
     {
