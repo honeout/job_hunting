@@ -66,6 +66,10 @@ namespace PlayerConfig
     constexpr int attackNumbarMagicValue = 1;
     constexpr int attackNumbarSpecialValue = 15;
 
+    // ジャンプについて
+    constexpr bool onJunp = true;
+    constexpr bool unJunp = false;
+
     // ------近接攻撃---------
 
     // 空中移動制限限界
@@ -91,7 +95,7 @@ namespace PlayerConfig
     // ------UI状態---------
 
     // ゲージの大きさ
-    constexpr float gaugeScale = 4.5f;
+    constexpr float gaugeScale = 4.0f;
 
     // ゲージの減るスピード
     constexpr float lerpSpeed = 3.1f;
@@ -104,6 +108,13 @@ namespace PlayerConfig
 
     // 経過時間関数の最大値
     constexpr float timeElapsedHintMax = 1.0f;
+
+    //------UIHP----------------
+    constexpr DirectX::XMFLOAT2 texNoDamagePos = { 0.0f, 0.0f };
+    constexpr DirectX::XMFLOAT2 texDamagePos = { 0.0f, 103.0f };
+    constexpr float onDamageTimeValue = 1.0f;
+    constexpr float onDamageTimeMin = 0.0f;
+    constexpr float onDamageTimeMax = 1.0f;
 
     // ------コマンド---------
 
@@ -291,6 +302,9 @@ public:
 
     // ダメージによって反応が変わる
     void ReactToDamage(int attackValue);
+
+    // ジャンプ開始
+    void StartJump();
 
     // ジャンプ入力処理
     bool InputJump();
@@ -944,6 +958,12 @@ private:
 
     // カメラ演出用　時間
     float currentCameraEffectInitialTime;
+
+    // 経過時間ダメージ判定
+    float onDamageTime = 0.0f;
+
+    // ジャンプ判定
+    bool isJunp = false;
 };
 
 // プレイヤーマネージャー

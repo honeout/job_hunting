@@ -860,28 +860,22 @@ void SceneGame::InitializeComponent()
 		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
 		actor->AddComponent<TransForm2D>();
 
-
-
 		// 位置　角度　スケール情報
 		auto transform2D = actor->GetComponent<TransForm2D>();
 		// 安全チェック
 		if (!transform2D) return;
-
 		
 		// hpバー位置情報
 		transform2D->SetPosition(playerHpBarPos);
 		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
+		transform2D->SetTexPosition(playerHpBarTexPos);
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		//DirectX::XMFLOAT2 scale = { 358,310 };
-		DirectX::XMFLOAT2 scale = { 368,140 };
-		transform2D->SetScale(scale);
+		transform2D->SetScale(barScale);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
+		DirectX::XMFLOAT2 texScale = { 276,93 };
+		transform2D->SetTexScale(playerHpBarTexScale);
 
 		// UI揺らす範囲を指定揺らす場合
 		int max = (int)playerHpBarPos.y + 3;
@@ -928,16 +922,16 @@ void SceneGame::InitializeComponent()
 		transform2D->SetPosition(enemyHpBarPos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
+		transform2D->SetTexPosition(enemyHpBarTexPos);
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		//DirectX::XMFLOAT2 scale = { 376,329 };
-		DirectX::XMFLOAT2 scale = { 576,259 };
-		transform2D->SetScale(scale);
+		//DirectX::XMFLOAT2 scale = { 576,259 };
+		transform2D->SetScale(enemyHpBarScale);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
+		//DirectX::XMFLOAT2 texScale = { 0,0 };
+		transform2D->SetTexScale(enemyHpBarTexScale);
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
@@ -1262,7 +1256,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -1309,7 +1303,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -1384,7 +1378,7 @@ void SceneGame::InitializeComponent()
 		//DirectX::XMFLOAT2 pos = { 179, 430 };
 
 		DirectX::XMFLOAT2 pos = { commandPos.x + commandMagicOffset.x,
-	commandPos.y + commandMagicOffsetY  + commandMagicOffset.y * 2};
+	    commandPos.y + commandMagicOffsetY + commandMagicOffset.y * 2 };
 
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1404,7 +1398,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -1432,7 +1426,7 @@ void SceneGame::InitializeComponent()
 		if (!transform2D)return;
 
 		DirectX::XMFLOAT2 pos = { commandPos.x + commandMagicOffset.x,
-	commandPos.y + commandMagicOffsetY + commandMagicOffset.y * 2};
+	    commandPos.y + commandMagicOffsetY + commandMagicOffset.y * 2};
 
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1498,7 +1492,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui)return;
- 		ui->SetDrawCheck(DrawUi);
+ 		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -1526,7 +1520,7 @@ void SceneGame::InitializeComponent()
 		if (!transform2D) return;
 
 		DirectX::XMFLOAT2 pos = { commandPos.x + commandMagicOffset.x,
-	commandPos.y + commandMagicOffsetY * 2 + commandMagicOffset.y * 3};
+	    commandPos.y + commandMagicOffsetY * 2 + commandMagicOffset.y * 3};
 
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1547,7 +1541,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -1592,7 +1586,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -1641,7 +1635,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -2004,7 +1998,7 @@ void SceneGame::InitializeComponent()
 		// 安全チェック
 		if (!transform2D) return;
 		
-		DirectX::XMFLOAT2 pos = { playerHpBarPos.x + 130, playerHpBarPos.y + 27.5f };
+		DirectX::XMFLOAT2 pos = { playerHpBarPos.x + 140, playerHpBarPos.y + 50.5f };
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -2012,8 +2006,7 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 248,80 };
-		transform2D->SetScale(scale);
+		transform2D->SetScale(gageScale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0.0f,75.0f };
 		transform2D->SetTexScale(texScale);
@@ -2068,7 +2061,7 @@ void SceneGame::InitializeComponent()
 
 		float angle = 0;
 		transform2D->SetAngle(angle);
-		DirectX::XMFLOAT2 scale = { 368,140 };
+		DirectX::XMFLOAT2 scale = { 348,130 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -2114,7 +2107,7 @@ void SceneGame::InitializeComponent()
 		// 安全チェック
 		if (!transform2D) return;
 
-		DirectX::XMFLOAT2 pos = { enemyHpBarPos.x + 230, enemyHpBarPos.y + 18 };
+		DirectX::XMFLOAT2 pos = { enemyHpBarPos.x + 140, enemyHpBarPos.y + 20 };
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -2123,7 +2116,7 @@ void SceneGame::InitializeComponent()
 		float angle = 0;
 		transform2D->SetAngle(angle);
 
-		DirectX::XMFLOAT2 scale = { 248,155 };
+		DirectX::XMFLOAT2 scale = { 220,90 };
 		transform2D->SetScale(scale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -2171,7 +2164,7 @@ void SceneGame::InitializeComponent()
 		// 安全チェック
 		if (!transform2D) return;
 
-		float offsetX = 350;
+		float offsetX = 218;
 		DirectX::XMFLOAT2 pos = { offsetX + enemyHpBarPos.x, enemyHpOffsestY + enemyHpBarPos.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2181,8 +2174,7 @@ void SceneGame::InitializeComponent()
 		float angle = 0;
 		transform2D->SetAngle(angle);
 
-		DirectX::XMFLOAT2 scale = { 67,57 };
-		transform2D->SetScale(scale);
+		transform2D->SetScale(LifeScale);
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -2228,7 +2220,7 @@ void SceneGame::InitializeComponent()
 		// 安全チェック
 		if (!transform2D) return;
 
-		float offsetX = 424;
+		float offsetX = 268;
 
 		DirectX::XMFLOAT2 pos = { offsetX + enemyHpBarPos.x, enemyHpOffsestY + enemyHpBarPos.y };
 		transform2D->SetPosition(pos);
@@ -2242,7 +2234,7 @@ void SceneGame::InitializeComponent()
 
 		//DirectX::XMFLOAT2 scale = { 27,17 };
 		DirectX::XMFLOAT2 scale = { 67,57 };
-		transform2D->SetScale(scale);
+		transform2D->SetScale(LifeScale);
 
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
@@ -2341,9 +2333,8 @@ void SceneGame::InitializeComponent()
 		// 安全チェック
 		if (!transform2D) return;
 
-
 		// 位置
-		DirectX::XMFLOAT2 pos = { 330.0f, 100.0f };
+		DirectX::XMFLOAT2 pos = { 320.0f + timeIrastPos.x, 100.0f + timeIrastPos.y };
 
 		transform2D->SetPosition(pos);
 
@@ -2524,7 +2515,7 @@ void SceneGame::InitializeComponent()
 		auto transform2D = actor->GetComponent<TransForm2D>();
 		if (!transform2D) return;
 
-		DirectX::XMFLOAT2 pos = { playerMpBarPos.x + 130 , playerMpBarPos.y + 13.0f };
+		DirectX::XMFLOAT2 pos = { playerMpBarPos.x + 118 , playerMpBarPos.y + 10.0f };
 		//DirectX::XMFLOAT2 pos = { 100 , 100  };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -2534,7 +2525,7 @@ void SceneGame::InitializeComponent()
 		float angle = 0;
 		transform2D->SetAngle(angle);
 		DirectX::XMFLOAT2 scale = { 248,115 };
-		transform2D->SetScale(scale);
+		transform2D->SetScale({ gageScale.x,scale.y });
 		// 元の大きさ
 		DirectX::XMFLOAT2 texScale = { 0,0 };
 		transform2D->SetTexScale(texScale);
@@ -2824,7 +2815,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -3023,7 +3014,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -3065,7 +3056,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -3233,7 +3224,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;
@@ -3275,7 +3266,7 @@ void SceneGame::InitializeComponent()
 		auto ui = actor->GetComponent<Ui>();
 		// 安全チェック
 		if (!ui) return;
-		ui->SetDrawCheck(DrawUi);
+		ui->SetDrawCheck(DrawUiEmpth);
 
 		// これが２Dかの確認
 		bool check2d = true;

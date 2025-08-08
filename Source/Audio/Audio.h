@@ -61,7 +61,7 @@ private:
 	float targetVolume = 0.0f;
 
 	// 経過時間
-	float volumeValue = 0.5f;
+	float volumeValue = 0.8f;
 
 	// フェードアウト処理を発動
 	bool isOnFade = false;

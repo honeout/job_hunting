@@ -472,6 +472,9 @@ private:
 	bool                jumpCheck = false;
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
+
+	// アニメーションジャンプ　する瞬間の時間
+	float animTime = 0.27f;
 };
 
 // 着地ステートオブジェクト
@@ -523,6 +526,9 @@ private:
 	float turnSpeed = DirectX::XMConvertToRadians(720);
 	// 音楽情報
 	AudioParam audioParam;
+
+	// アニメーションジャンプ　する瞬間の時間
+	float animTime = 0.17f;
 };
 
 

@@ -255,8 +255,21 @@ void Player::InitStats()
 
     // カメラ演出するか
     isCameraInitialEffect = true;
+
     // カメラ演出現在の時間
     currentCameraEffectInitialTime = 0.0f;
+
+    // 使うか
+    magicAction = false;
+
+    // 必殺技使うか
+    specialAction = false;
+
+    // ダメージ食らった時
+    onDamageTime = PlayerConfig::onDamageTimeMin;
+
+    // ジャンプ不許可
+    isJunp = PlayerConfig::unJunp;
 }
 
 void Player::InitCommands()
@@ -3272,17 +3285,17 @@ void Player::PinchMode(float elapsedTime)
             PlaySe("Data/Audio/SE/slash.wav");
 
             hintDrawCheck = hintDrawCheck ? false : true;
-            playerPushShortUi->SetDrawCheck(hintDrawCheck);
+            //playerPushShortUi->SetDrawCheck(hintDrawCheck);
         }
         // ショートカットキーが押されたら変わらない
         if (InputShortCutkeyMagic())
         {
             hintDrawCheck = true;
-            playerPushShortUi->SetDrawCheck(hintDrawCheck);
+            //playerPushShortUi->SetDrawCheck(hintDrawCheck);
         }
         // ピンチ時常に描画
-        playerPush2Ui->SetDrawCheck(isDrawUi);
-        playerShortCutUi->SetDrawCheck(isDrawUi);
+        //playerPush2Ui->SetDrawCheck(isDrawUi);
+        //playerShortCutUi->SetDrawCheck(isDrawUi);
         PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
         // ポストエフェクト
         vignetteData.color = vignettePinchColor;
@@ -3301,9 +3314,9 @@ void Player::PinchMode(float elapsedTime)
         // ピンチかどうか
         isPintch = false;
         hintDrawCheck = false;
-        playerPushShortUi->SetDrawCheck(hintDrawCheck);
-        playerPush2Ui->SetDrawCheck(hintDrawCheck);
-        playerShortCutUi->SetDrawCheck(hintDrawCheck);
+        //playerPushShortUi->SetDrawCheck(hintDrawCheck);
+        //playerPush2Ui->SetDrawCheck(hintDrawCheck);
+        //playerShortCutUi->SetDrawCheck(hintDrawCheck);
         PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
         vignetteData.smoothness = vignetteNormalSmoothness;
         vignetteData.intensity = vignetteNormalIntensity;
@@ -3348,7 +3361,31 @@ bool Player::LitMode(float elapsedTime)
 
     return isLightingTime;
 }
-// ジャンプ
+
+// ジャンプ開始
+void Player::StartJump()
+{
+    // ジャンプ不許可
+    if (!isJunp) return;
+
+    // Lockとして実体を使う
+    auto movementId = movement.lock();
+
+    // 有効性チェック
+    if (!movementId)
+        return;
+
+    // ジャンプ開始
+    movementId->JumpVelocity(PlayerConfig::jumpSpeed);
+
+    // ジャンプse再生
+    PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
+
+    // ジャンプ不許可
+    isJunp = PlayerConfig::unJunp;
+}
+
+// ジャンプ用の入力処理
 bool Player::InputJump()
 {
     // Lockとして実体を使う
@@ -3364,15 +3401,18 @@ bool Player::InputJump()
     // 魔法コマンドを使っていたら
     if (specialAction) return false;
 
-    if (gamePad.GetButtonDown() & GamePad::BTN_A)
+    // 入力とジャンプ上限確認
+    if (gamePad.GetButtonDown() & GamePad::BTN_A && 
+        movementId->GetJumpCount() < PlayerConfig::jumpLimit)
     {
-        // 値を小さくする
-        if (movementId->GetJumpCount() < PlayerConfig::jumpLimit) {
-            movementId->JumpVelocity(PlayerConfig::jumpSpeed);
-            // ジャンプ入力した
-           return true;
-        }
+        // ジャンプ許可
+        isJunp = PlayerConfig::onJunp;
+
+        // ジャンプ入力した
+        return true;
     }
+
+    // 入力無は特に操作無
     return false;
 }
 
@@ -4326,6 +4366,26 @@ void Player::UiControlleGauge(float elapsedTime)
     // hpバー最低値
     if (gaugeWidth <= gaugeWidthMin)
         gaugeWidth = gaugeWidthMin;
+
+    // 経過時間
+    if (onDamageTime > PlayerConfig::onDamageTimeMin)
+    {
+        uiHpBar->SetTexPosition(PlayerConfig::texDamagePos);
+        // ダメージ食らってる時のUI
+        onDamageTime -= PlayerConfig::onDamageTimeValue * elapsedTime;
+    }
+    // ダメ終了
+    else
+    {
+        // ダメージ食らっていない時のUI
+        uiHpBar->SetTexPosition(PlayerConfig::texNoDamagePos);
+    }
+    // ダメージ食らった瞬間
+    if (hpId->OnDamaged())
+    {
+        // ダメージ食らった時間を継続
+        onDamageTime = PlayerConfig::onDamageTimeMax;
+    }
 
     // hpゲージUI　変える
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };

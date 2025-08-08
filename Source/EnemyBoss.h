@@ -70,11 +70,19 @@ namespace EnemyConfig
 
     //------ゲージ----------------
     // ゲージの大きさ
-    constexpr float gaugeScale = 4.5f;
+    constexpr float gaugeScale = 3.8f;
 
     // ゲージの減るスピード
     constexpr float lerpSpeed = 3.1f;
 
+    //------UIHP----------------
+    constexpr DirectX::XMFLOAT2 texDamagePos = { 0.0f, 0.0f };
+    constexpr DirectX::XMFLOAT2 texNoDamagePos = { 0.0f, 113.0f };
+    constexpr float onDamageTimeValue = 1.0f;
+    constexpr float onDamageTimeMin = 0.0f;
+    constexpr float onDamageTimeMax = 1.0f;
+
+    
     // -----デバッグ用------------
     constexpr const float kDebugCylinderHeight = 1.0f;
     constexpr const float kDebugSphereLargeRadius = 10.0f;
@@ -515,6 +523,9 @@ private:
 
     bool isPlayerStopMove;
     bool isPlayerStopFall;
+
+    // 経過時間ダメージ判定
+    float onDamageTime = 0.0f;
 };
 
 // エネミーマネージャー

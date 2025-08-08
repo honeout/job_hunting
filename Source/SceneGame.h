@@ -77,11 +77,34 @@ private:
 	DirectX::XMFLOAT3 cameraUp = { 0, 1, 0 };
 
 	// プレイヤーHPバー位置情報
-	DirectX::XMFLOAT2 playerHpBarPos = { screenWidth + 200 , screenHeight + 80 };
-	DirectX::XMFLOAT2 enemyHpBarPos = { screenWidth + 130 , 0 };
+	DirectX::XMFLOAT2 playerHpBarPos = { 0.0f , 0.0f };
+	//DirectX::XMFLOAT2 playerHpBarPos = { screenWidth + 195 , 715 };
+	
+	// 基画像位置
+	DirectX::XMFLOAT2 playerHpBarTexPos = {0.0f, 0.0f };
+
+	// HPバースケール値
+	DirectX::XMFLOAT2 barScale = { 388,160 };
+
+	// HPバースケール値
+	DirectX::XMFLOAT2 playerHpBarTexScale = { 0.0f,118 };
+	
+	// エネミーHPバー位置
+	DirectX::XMFLOAT2 enemyHpBarPos = { screenWidth + 290 , 0 };
+
+	// エネミーテクス位置
+	DirectX::XMFLOAT2 enemyHpBarTexPos = { 0.0f , 0.0f };
+
+	// HPバースケール値
+	DirectX::XMFLOAT2 enemyHpBarScale = { 368,140 };
+
+	// HPバースケール値
+	DirectX::XMFLOAT2 enemyHpBarTexScale = { 306,111};
 
 	// playerMPバー位置
-	DirectX::XMFLOAT2 playerMpBarPos = { playerHpBarPos.x , playerHpBarPos.y + 140 };
+	DirectX::XMFLOAT2 playerMpBarPos = { playerHpBarPos.x + 10, playerHpBarPos.y + 170 };
+
+	DirectX::XMFLOAT2 gageScale = { 220,60 };
 
 	// 必殺技チャージ枠位置
 	DirectX::XMFLOAT2 SpecialGagePos = { 10, 300 };
@@ -122,14 +145,17 @@ private:
 	// 非選択状態透明度
 	float commandAlphaUnSelect = 0.5f;
 
-	DirectX::XMFLOAT2 timeIrastPos = { 10.0f, 0.0f };
+	DirectX::XMFLOAT2 timeIrastPos = { screenWidth * 0.6f, 0.0f };
 	DirectX::XMFLOAT2 timeIrastSize = { 250.0f, 250.0f };
 
 	// 簡易操作説明大きさ
 	DirectX::XMFLOAT2 operationInstructionsSelect = { 460,126 };
 
 	// hpの位置の差
-	float enemyHpOffsestY = 163;
+	float enemyHpOffsestY = 105;
+
+	// エネミーライフUI大きさ
+	DirectX::XMFLOAT2 LifeScale = { 47,37 };
 
 	// シェーダーをエフェクトして再生
 	float shaderPlayStateTimer = 0;
@@ -228,8 +254,6 @@ private:
 	// 行動範囲
 	DirectX::XMFLOAT3 minPos = {0.0f,0.0f,0.0f};
 	DirectX::XMFLOAT3 maxPos = {0.0f,0.0f,0.0f};
-
-	
 
 	// メニューのオンオフ
 	bool isMenue = false;

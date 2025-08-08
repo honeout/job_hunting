@@ -208,6 +208,9 @@ void EnemyBoss::InitStats()
 
     // 衝撃波高さ
     radiusInpactHeight = 0.3f;
+
+    // ダメージ食らった時
+    onDamageTime = EnemyConfig::onDamageTimeMin;
 }
 
 // ステート更新まとめ
@@ -863,12 +866,13 @@ void EnemyBoss::UiControlle(float elapsedTime)
     //float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.08f;
 
     auto uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
+    auto uiHpEnemy = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHp)->GetComponent<TransForm2D>();
 
     auto uiHpLife1 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife01)->GetComponent<Ui>();
     auto uiHpLife2 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife02)->GetComponent<Ui>();
     
     // 安全チェック
-    if (!uiHp || !uiHpLife1 || !uiHpLife2) return;
+    if (!uiHp || !uiHpEnemy || !uiHpLife1 || !uiHpLife2) return;
 
     // ゲージの大きさ
     float gaugeWidth = uiHp->UpdateGage((float)hpId->GetHealth(), (float)hpId->GetMaxHealth(), EnemyConfig::lerpSpeed, elapsedTime);
@@ -878,6 +882,26 @@ void EnemyBoss::UiControlle(float elapsedTime)
     // hpバー最低値
     if (gaugeWidth <= gaugeWidthMin)
         gaugeWidth = gaugeWidthMin;
+
+    // 経過時間
+    if (onDamageTime > EnemyConfig::onDamageTimeMin)
+    {
+        uiHpEnemy->SetTexPosition(EnemyConfig::texDamagePos);
+        // ダメージ食らってる時のUI
+        onDamageTime -= EnemyConfig::onDamageTimeValue * elapsedTime;
+    }
+    // ダメ終了
+    else
+    {
+        // ダメージ食らっていない時のUI
+        uiHpEnemy->SetTexPosition(EnemyConfig::texNoDamagePos);
+    }
+    // ダメージ食らった瞬間
+    if (hpId->OnDamaged())
+    {
+        // ダメージ食らった時間を継続
+        onDamageTime = EnemyConfig::onDamageTimeMax;
+    }
 
     // hpバー
     DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };

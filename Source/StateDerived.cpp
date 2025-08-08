@@ -1152,9 +1152,6 @@ void PlayerJumpState::Enter()
 	playerid->SetUpdateAnim(Player::UpAnim::Normal);
 	// 落ちる
 	moveid->SetStopMove(false);
-
-	// ジャンプse再生
-	playerid->PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
 }
 
 void PlayerJumpState::Execute(float elapsedTime)
@@ -1166,8 +1163,21 @@ void PlayerJumpState::Execute(float elapsedTime)
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
+	auto model = sharedId->GetComponent<ModelControll>();
+	
 	// ロックオン処理
 	playerid->UpdateCameraState(elapsedTime);
+
+	// アニメーション時間
+	float modelAnimTime = model->GetModel()->GetCurrentANimationSeconds();
+
+	// ジャンプまでの時間
+	if (modelAnimTime <= animTime)
+		return;
+
+	// 1度だけジャンプ開始
+	playerid->StartJump();
+
 	// 移動
 	if (playerid->InputMove())
 	{
@@ -1184,15 +1194,15 @@ void PlayerJumpState::Execute(float elapsedTime)
 		playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Avoidance));
 	}
 	// 着地
-	if (moveid->GetOnLadius())
+	if (moveid->GetOnLadius() && !model->GetModel()->IsPlayAnimation())
 	{
 		playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Land));
 	}
-	// 着地移動
-	if (moveid->GetOnLadius() && playerid->InputMove())
-	{
-		playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
-	}
+	//// 着地移動
+	//if (moveid->GetOnLadius() && playerid->InputMove())
+	//{
+	//	playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
+	//}
 }
 
 void PlayerJumpState::Exit()
@@ -1218,7 +1228,8 @@ void PlayerLandState::Enter()
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Anim_Land;
-	modelAnim.currentanimationseconds = 0.35f;
+	modelAnim.currentanimationseconds = 0.5f;
+	modelAnim.blendSeconds = 0.7f;
 	model->PlayAnimation(modelAnim);
 	// アニメーションルール
 	playerid->SetUpdateAnim(Player::UpAnim::Normal);
@@ -1238,11 +1249,7 @@ void PlayerLandState::Execute(float elapsedTime)
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	// ロックオン処理
 	playerid->UpdateCameraState(elapsedTime);
-	// 歩き
-	if (playerid->InputMove())
-	{
-		playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
-	}
+
 	// 回避
 	if (playerid->InputAvoidance())
 	{
@@ -1257,15 +1264,6 @@ void PlayerLandState::Execute(float elapsedTime)
 
 void PlayerLandState::Exit()
 {
-	// 安全チェック
-	auto sharedId = owner.lock();
-	if (!sharedId)
-		return;
-
-	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
-
-	// ジャンプse再生
-	playerid->PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
 }
 
 // 後変更
@@ -1280,7 +1278,7 @@ void PlayerJumpFlipState::Enter()
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Anim_Jump;
-	modelAnim.currentAnimationAddSeconds = 0.03f;
+	modelAnim.currentAnimationAddSeconds = 0.13f;
 	modelAnim.keyFrameEnd = 25.0f;
 	model->PlayAnimation(modelAnim);
 	// アニメーションルール
@@ -1299,8 +1297,19 @@ void PlayerJumpFlipState::Execute(float elapsedTime)
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
+	// model時間
+	float modelAnimTime = model->GetCurrentANimationSeconds();
+
 	// ロックオン処理
 	playerid->UpdateCameraState(elapsedTime);
+
+	// ジャンプまでの時間
+	if (modelAnimTime <= animTime)
+		return;
+
+	// ジャンプ開始
+	playerid->StartJump();
+
 	// 移動
 	if (playerid->InputMove())
 	{
