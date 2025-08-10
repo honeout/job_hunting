@@ -3040,6 +3040,9 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	std::shared_ptr<Transform> transformid = sharedId->GetComponent<Transform>();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
+	std::shared_ptr<HP> hpId = sharedId->GetComponent<HP>();
+	auto modelId = sharedId->GetComponent<ModelControll>();
+
 	// 動き自由
 	bool stopMove = false;
 	moveid->SetStopMove(stopMove);
@@ -3051,7 +3054,7 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 	dir.y = cosf(transformid->GetAngle().x);
 	dir.z = cosf(transformid->GetAngle().y);
 	// 任意のアニメーション再生区間
-	float animationTime = sharedId->GetComponent<ModelControll>()->GetModel()->GetCurrentANimationSeconds();
+	float animationTime = modelId->GetModel()->GetCurrentANimationSeconds();
 	// 位置更新
 	wind->SetPosition(wind->GetEfeHandle(),
 		{
@@ -3093,6 +3096,10 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 	{
 		playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
 	}
+
+	// 無敵中
+	if (animationTime >= 0.2f && animationTime <= 0.5f)
+		hpId->SetInvincibleTimer(0.1f);
 }
 
 // 回避終了
