@@ -831,6 +831,11 @@ void DeathState::Enter()
 	int playerCountMax = PlayerManager::Instance().GetPlayerCount();
 	if (playerCountMax > 0)
 	PlayerManager::Instance().GetPlayer(playerCountMax - 1)->GetComponent<Player>()->SetFreeCameraCheck(freeCheckCamera);
+
+
+	AudioParam param;
+	// フェードアウト開始
+	Audio::Instance().PlayFadeOut(param);
 }
 
 void DeathState::Execute(float elapsedTime)
@@ -859,6 +864,11 @@ void DeathState::Execute(float elapsedTime)
 	{
 		enemyid->SetIsSecenChange(IsClear);
 	}
+
+	// フェードアウト
+	if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
+
+	enemyid->SetIsSceneChange(true);
 }
 
 void DeathState::Exit()

@@ -174,6 +174,10 @@ void SceneGame::Update(float elapsedTime)
 	if (PlayerManager::Instance().GetPlayer(0)->GetComponent<Player>()->GetIsSceneChange())
 		SceneManager::Instance().ChangeScene(new SceneGameOver);
 
+	// クリア
+	if (EnemyManager::Instance().GetEnemy(0)->GetComponent<EnemyBoss>()->GetIsSceneChange())
+		SceneManager::Instance().ChangeScene(new SceneGameClear);
+
 	// シーン切り替え
 	//for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
 	//{
@@ -198,27 +202,27 @@ void SceneGame::Update(float elapsedTime)
 	//	}
 	//}
 
-	for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
-	{
-		std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
-		// 敵が死んだら
-		if (hp->GetDead())
-		{
-			hp->SetDead(false);
-			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Death));
+	//for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
+	//{
+	//	std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
+	//	// 敵が死んだら
+	//	if (hp->GetDead())
+	//	{
+	//		hp->SetDead(false);
+	//		EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Death));
 
-			// フェードアウト開始
-			AudioParam param;
-			Audio::Instance().PlayFadeOut(param);
-		}
-		// クリア
-		if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetIsSecenChange())
-		{
-			// サウンド減少
-			if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
-			SceneManager::Instance().ChangeScene(new SceneGameClear);
-		}
-	}
+	//		// フェードアウト開始
+	//		AudioParam param;
+	//		Audio::Instance().PlayFadeOut(param);
+	//	}
+	//	// クリア
+	//	if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetIsSecenChange())
+	//	{
+	//		// サウンド減少
+	//		if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
+	//		SceneManager::Instance().ChangeScene(new SceneGameClear);
+	//	}
+	//}
 	// ゲームオーバーに行かないように
 	if (EnemyManager::Instance().GetEnemyCount() <= 0 ||
 		UiManager::Instance().GetUiesCount() <= 5)return;

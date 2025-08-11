@@ -215,6 +215,12 @@ void EnemyBoss::InitStats()
 
     // Tpos対策アニメーション初期化を適当なモーションに
     modelId->GetModel()->UpdateAnimation(0.0f, false);
+
+    // 死亡確認
+    isDead = false;
+
+    // クリアシーンに
+    isSceneChange = false;
 }
 
 // ステート更新まとめ
@@ -254,6 +260,14 @@ void EnemyBoss::UpdateStatus(float elapsedTime)
 
     // ゲージ管理
     UiControlle(elapsedTime);
+
+    // クリアシーンへ行く
+    if (hpId->GetDead() && !isDead)
+    {
+        // 死亡状態
+        isDead = true;
+        stateMachine->ChangeState(static_cast<int>(State::Death));
+    }
 }
 
 // 物理挙動

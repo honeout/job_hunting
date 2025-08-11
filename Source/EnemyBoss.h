@@ -369,6 +369,11 @@ public:
         return bornPart;
     }
 
+
+    // シーン変化確認
+    void SetIsSceneChange(bool isSceneChange) { this->isSceneChange = isSceneChange; }
+    bool GetIsSceneChange() const { return this->isSceneChange; }
+
 private: 
     DirectX::XMFLOAT3 position = {};
     DirectX::XMFLOAT3 angle = {};
@@ -452,6 +457,12 @@ private:
 
     // 影オンオフ
     int isRimRightning = 0;
+
+    // 死亡確認
+    bool isDead = false;
+
+    // シーン変化確認
+    bool isSceneChange = false;
 
     // modelオンオフ
     int StencilRef = 0;
