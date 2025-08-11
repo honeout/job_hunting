@@ -416,7 +416,7 @@ private:
     std::unique_ptr<Effect> awakeEffect;
 
     // seの音の大きさ
-    float seVolume = 0.5f;
+    float seVolume = 0.8f;
 
     // どのステートで動くか
     State state = State::Wander;

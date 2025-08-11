@@ -22,6 +22,7 @@
 #include "MagicConfig.h"
 #include "SceneManager.h"
 #include "SceneGame.h"
+#include "SceneGameOver.h"
 
 // デストラクタ
 Player::~Player()
@@ -273,6 +274,12 @@ void Player::InitStats()
 
     // Tpos対策アニメーション初期化を適当なモーションに
     modelControllId->GetModel()->UpdateAnimation(0.0f, false);
+
+    // 死亡判定
+    isDead = false;
+
+    // シーン変化確認
+    isSceneChange = false;
 }
 
 void Player::InitCommands()
@@ -435,6 +442,14 @@ void Player::UpdateStatus(float elapsedTime)
 
     // ロックオン
     InputRockOn();
+
+    // 死亡シーンへ行く
+    if (hpId->GetDead() && !isDead)
+    {
+        // 死亡状態
+        isDead = true;
+        stateMachine->ChangeState(static_cast<int>(Player::State::Death));
+    }
 }
 
 // 物理挙動

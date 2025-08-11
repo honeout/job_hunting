@@ -7,6 +7,7 @@
 #include "Actor.h"
 #include "Effect.h"
 #include "ProjectileTornade.h"
+#include "CameraController.h"
 
 enum AttackChange
 {
@@ -153,6 +154,9 @@ private:
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
+
+	// カメラシェイクdata
+	MessageData::CAMERASHAKEDATA cameraShakeData = { 0.8f, 0.8f };
 
 	// 歩き速度
 	float moveSpeed = 10;

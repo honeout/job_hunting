@@ -429,6 +429,11 @@ void JumpState::Execute(float elapsedTime)
 		radialBlurData.radius = 15;
 		postprocessingRenderer.SetRadialBlurMaxData(radialBlurData);
 
+		// カメラ振動設定
+		Messenger::Instance().SendData(MessageData::CAMERASHAKE, &cameraShakeData);
+
+		// 足音
+		enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
 		return;
 	}
 	// playerを狙う
@@ -462,6 +467,11 @@ void JumpState::Execute(float elapsedTime)
 			smorker->Play(bossLeftFootPosition, scaleEffect);
 		}
 
+		// カメラ振動設定
+		Messenger::Instance().SendData(MessageData::CAMERASHAKE, &cameraShakeData);
+
+		// 足音
+		enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
 	}
 }
 // 終了処理
@@ -2932,6 +2942,10 @@ void PlayerDeathState::Enter()
 	PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
 	colorGradingData.saturation = 0.0f;
 	postprocessingRenderer.SetColorGradingMinData(colorGradingData);
+
+	AudioParam param;
+	// フェードアウト開始
+	Audio::Instance().PlayFadeOut(param);
 }
 
 void PlayerDeathState::Execute(float elapsedTime)
@@ -2970,6 +2984,11 @@ void PlayerDeathState::Execute(float elapsedTime)
 		++stateTimer;
 		playerid->SetUpdateAnim(Player::UpAnim::Stop);
 	}
+
+	// フェードアウト
+	if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
+
+	playerid->SetIsSceneChange(true);
 }
 
 void PlayerDeathState::Exit()

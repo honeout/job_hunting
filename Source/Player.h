@@ -395,6 +395,11 @@ public:
     bool GetIsEnemyHit() { return isEnemyHit; }
     // エネミー接触判定上半身
     bool GetIsEnemyHitBody() { return isEnemyHitBody; }
+
+    // シーン変化確認
+    void SetIsSceneChange(bool isSceneChange) { this->isSceneChange = isSceneChange; }
+    bool GetIsSceneChange() const { return this->isSceneChange; }
+
 public:
     // ゲームステート
     enum class State
@@ -790,6 +795,12 @@ private:
 
     // 特殊技コマンド開く
     bool specialAction = false;
+
+    // 死亡確認
+    bool isDead = false;
+
+    // シーン変化確認
+    bool isSceneChange = false;
 
     // 特殊技たまった時の反応
     bool isUiSpecilDrawCheck = false;

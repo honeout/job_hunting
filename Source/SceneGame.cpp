@@ -170,30 +170,33 @@ void SceneGame::Update(float elapsedTime)
 	// ポストエフェクト
 	SetSlowState(elapsedTime);
 
+	// ゲームオーバー
+	if (PlayerManager::Instance().GetPlayer(0)->GetComponent<Player>()->GetIsSceneChange())
+		SceneManager::Instance().ChangeScene(new SceneGameOver);
+
 	// シーン切り替え
+	//for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
+	//{
+	//	// 死んだ瞬間
+	//	if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
+	//	{
+	//		PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Death));
+	//		sceneChengeCheckDead = true;
 
-	for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
-	{
-		// 死んだ瞬間
-		if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
-		{
-			PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Death));
-			sceneChengeCheckDead = true;
+	//		AudioParam param;
+	//		// フェードアウト開始
+	//		Audio::Instance().PlayFadeOut(param);
+	//	}
+	//	// 演出終了
+	//	if (!PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && sceneChengeCheckDead)
+	//	{
+	//		// フェードアウト
+	//		if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
 
-			AudioParam param;
-			// フェードアウト開始
-			Audio::Instance().PlayFadeOut(param);
-		}
-		// 演出終了
-		if (!PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && sceneChengeCheckDead)
-		{
-			// フェードアウト
-			if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
-
-			// ゲームオーバー
-			SceneManager::Instance().ChangeScene(new SceneGameOver);
-		}
-	}
+	//		// ゲームオーバー
+	//		SceneManager::Instance().ChangeScene(new SceneGameOver);
+	//	}
+	//}
 
 	for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
 	{

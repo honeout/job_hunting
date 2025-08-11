@@ -19,6 +19,7 @@ void SceneGameOver::Initialize()
 
 	// bgm
 	StartBgm();
+
     // コンポーネント初期化
     InitializeComponent();
 
