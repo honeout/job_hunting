@@ -146,19 +146,13 @@ void SceneGame::Finalize()
 // 更新処理
 void SceneGame::Update(float elapsedTime)
 {
-	// メニューを選ぶ
-	if (InputMenue())
-	{
-		isMenue = isMenue ? isMenueOf : isMenueOn;
-	}
-
 	// スロー状態を共有
 	float dlayTime = dlayTimeCheck ? elapsedTime / 2 : elapsedTime;
 
-	// アップデート
+	// 更新処理
 	ActorManager::Instance().Update(dlayTime);
 
-	// 音楽アップデート
+	// 音楽更新処理
 	Audio::Instance().Update();
 
 	// カメラ更新
@@ -178,51 +172,6 @@ void SceneGame::Update(float elapsedTime)
 	if (EnemyManager::Instance().GetEnemy(0)->GetComponent<EnemyBoss>()->GetIsSceneChange())
 		SceneManager::Instance().ChangeScene(new SceneGameClear);
 
-	// シーン切り替え
-	//for (int i = 0; i < PlayerManager::Instance().GetPlayerCount(); ++i)
-	//{
-	//	// 死んだ瞬間
-	//	if (PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && !sceneChengeCheckDead)
-	//	{
-	//		PlayerManager::Instance().GetPlayer(i)->GetComponent<Player>()->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Death));
-	//		sceneChengeCheckDead = true;
-
-	//		AudioParam param;
-	//		// フェードアウト開始
-	//		Audio::Instance().PlayFadeOut(param);
-	//	}
-	//	// 演出終了
-	//	if (!PlayerManager::Instance().GetPlayer(i)->GetComponent<HP>()->GetDead() && sceneChengeCheckDead)
-	//	{
-	//		// フェードアウト
-	//		if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
-
-	//		// ゲームオーバー
-	//		SceneManager::Instance().ChangeScene(new SceneGameOver);
-	//	}
-	//}
-
-	//for (int i = 0; i < EnemyManager::Instance().GetEnemyCount(); ++i)
-	//{
-	//	std::shared_ptr<HP> hp = EnemyManager::Instance().GetEnemy(i)->GetComponent<HP>();
-	//	// 敵が死んだら
-	//	if (hp->GetDead())
-	//	{
-	//		hp->SetDead(false);
-	//		EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetStateMachine()->ChangeState(static_cast<int>(EnemyBoss::State::Death));
-
-	//		// フェードアウト開始
-	//		AudioParam param;
-	//		Audio::Instance().PlayFadeOut(param);
-	//	}
-	//	// クリア
-	//	if (EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->GetIsSecenChange())
-	//	{
-	//		// サウンド減少
-	//		if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
-	//		SceneManager::Instance().ChangeScene(new SceneGameClear);
-	//	}
-	//}
 	// ゲームオーバーに行かないように
 	if (EnemyManager::Instance().GetEnemyCount() <= 0 ||
 		UiManager::Instance().GetUiesCount() <= 5)return;
