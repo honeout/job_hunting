@@ -312,13 +312,6 @@ void Player::HandleInput(float elapsedTime)
     // 入力情報
     GamePad& gamePad = Input::Instance().GetGamePad();
 
-    // Lockとして実体を使う
-    auto movementId = movement.lock();
-    auto mpId = mp.lock();
-
-    // 有効性チェック
-    if (!movementId || !mpId) return;
-
     // コマンド操作
     if (uiControlleCheck &&
         stateMachine->GetStateSize() > stateSize)
@@ -331,6 +324,12 @@ void Player::HandleInput(float elapsedTime)
         InputShortCutkeyMagic();
         // ポストエフェクトｈｐの一定以下
         PinchMode(elapsedTime);
+
+        // Lockとして実体を使う
+        auto movementId = movement.lock();
+
+        // 有効性チェック
+        if (!movementId) return;
 
         // 着地時にエフェクト切る
         if (movementId->GetOnLadius() || GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
@@ -373,6 +372,12 @@ void Player::HandleInput(float elapsedTime)
         {
             // デバッグ
             debugInt++;
+
+            // Lockとして実体を使う
+            auto mpId = mp.lock();
+
+            // 有効性チェック
+            if (!mpId) return;
 
             // mpが０だったら
             if (mpId->GetMpEmpth())

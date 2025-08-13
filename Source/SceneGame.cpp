@@ -407,17 +407,8 @@ void SceneGame::Render3DScene()
 			EnemyManager::Instance().GetEnemy(i)->GetComponent<EnemyBoss>()->DrawDebugPrimitive();
 		}
 
-		//for (int i = 0; i < ProjectileManager::Instance().GetProjectileCount(); i++)
-		//{
-		//	if(ProjectileManager::Instance().GetProjectile(i)->GetComponent<ProjectileImpact>())
-		//	ProjectileManager::Instance().GetProjectile(i)->GetComponent<ProjectileImpact>()->DrawDebugPrimitive();
-		//}
-
 		// ライトのデバッグプリミティブの描画
 		LightManager::Instanes().DrawDebugPrimitive();
-
-		// ラインレンダラ描画実行
-		graphics.GetLineRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
 
 		// デバッグレンダラ描画実行
 		graphics.GetDebugRenderer()->Render(dc, camera.GetView(), camera.GetProjection());
