@@ -989,6 +989,7 @@ bool Player::InputMove()
     }
     return false;
 }
+
 // ロックオン状態の確認
 bool Player::InputRockOn()
 {
@@ -1007,6 +1008,7 @@ bool Player::InputRockOn()
     }
     return false;
 }
+
 // ロックオンUIを表示
 void Player::RockOnUI(ID3D11DeviceContext* dc,
     const DirectX::XMFLOAT4X4& view,
@@ -1062,7 +1064,7 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
     auto enemyModel = enemyShader->GetComponent<ModelControll>();
     if (!enemyBoss || !enemyModel) return;
 
-    Model::Node* characterBorn = enemyModel->GetModel()->FindNode("shoulder");
+    Model::Node* characterBorn = enemyModel->GetModel()->FindNode("boss_right_eye");
     // エネミー腰位置
     DirectX::XMFLOAT3 enemyPosition;
 

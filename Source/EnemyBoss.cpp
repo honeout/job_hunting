@@ -167,6 +167,8 @@ void EnemyBoss::InitEffects()
     moveAttackEffect = std::make_unique<Effect>("Data/Effect/enemyMoveAttackHit.efk");
     awakeEffect = std::make_unique<Effect>("Data/Effect/awake.efk");
     inpactEffect = std::make_unique<Effect>("Data/Effect/hit fire.efk");
+    // 混乱エフェクト
+    confusionEffect = std::make_unique<Effect>("Data/Effect/confusion.efk");
 }
 
 // ステータス初期化
@@ -364,6 +366,7 @@ void EnemyBoss::InputSe(AudioParam param)
     Audio& Se = Audio::Instance();
     Se.Play(param);
 }
+
 void EnemyBoss::PlaySe(const std::string& filename)
 {
     Audio& Se = Audio::Instance();
@@ -373,6 +376,7 @@ void EnemyBoss::PlaySe(const std::string& filename)
     audioParam.volume = seVolume;
     Se.Play(audioParam);
 }
+
 // se停止
 void EnemyBoss::StopSe(const std::string& filename)
 {
@@ -1107,6 +1111,25 @@ void EnemyBoss::StartDamageShake()
     damageDistortion.radius = 300.0f;
     damageDistortion.mask_radius = 200.0f;
     postprocessingRenderer.SetRadialBlurMaxData(damageDistortion);
+}
+
+// 混乱エフェクト再生
+void EnemyBoss::StartConfusion()
+{
+    // Lockとして実体を使う
+    auto modelId = model.lock();
+
+    // 有効性チェック
+    if (!modelId)
+        return;
+
+    Model::Node* characterBorn = modelId->GetModel()->FindNode("boss_right_hand4");
+    // エネミー腰位置
+    DirectX::XMFLOAT3 enemyHeadPosition;
+
+    enemyHeadPosition = modelId->GetModel()->ConvertLocalToWorld(characterBorn);
+
+    confusionEffect->Play(enemyHeadPosition);
 }
 
 // 削除更新

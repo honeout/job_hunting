@@ -337,6 +337,8 @@ public:
     // シェイク時間 パワー
     void StartDamageShake();
 
+    // 混乱エフェクトスタート
+    void StartConfusion();
 public:
 
     // 部位タイプ
@@ -369,11 +371,9 @@ public:
         return bornPart;
     }
 
-
     // シーン変化確認
     void SetIsSceneChange(bool isSceneChange) { this->isSceneChange = isSceneChange; }
     bool GetIsSceneChange() const { return this->isSceneChange; }
-
 private: 
     DirectX::XMFLOAT3 position = {};
     DirectX::XMFLOAT3 angle = {};
@@ -419,6 +419,9 @@ private:
     std::unique_ptr<Effect> inpactEffect;
 
     std::unique_ptr<Effect> awakeEffect;
+
+    // エフェクト混乱状態
+    std::unique_ptr<Effect> confusionEffect;
 
     // seの音の大きさ
     float seVolume = 0.8f;

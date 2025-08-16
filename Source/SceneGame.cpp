@@ -468,6 +468,7 @@ void SceneGame::RenderShadowmap()
 		ActorManager::Instance().Render(rc, shader);
 	}
 }
+
 // ポストエフェクトの初期化
 void SceneGame::PostProcessingRendererInitialize()
 {

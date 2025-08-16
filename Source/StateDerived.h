@@ -295,6 +295,7 @@ private:
 	float				standUpTimerMax = 0.7f;
 	float				stateTimerMax = 2.8f;
 	float				stateTimerEnd = 0.0f;
+
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
 	// 攻撃種類

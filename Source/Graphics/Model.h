@@ -88,6 +88,7 @@ public:
 	//下半身アニメーション更新処理
 	void UpdateLowerBodyAnimation(float elapsedTime, const char* start, const char* end, bool blend = false);
 
+	// 逆再生
 	void ReverseplaybackLowerBodyAnimation(float elapsedTime, const char* end, bool blend = false);
 
 	//アニメーション再生
@@ -118,6 +119,12 @@ public:
 	bool IsPlayUpeerBodyAnimation() const;
 
 	bool IsPlayAnimationBlend() const;
+
+	// 姿勢のブレンド関数 現在とキーフレームの間
+	void BlendBonePose(Node& node, const ModelResource::NodeKeyData& key1, float blendRate);
+	// 姿勢のブレンド関数　
+	void BlendBonePose(Node& node, const ModelResource::NodeKeyData& key0,const ModelResource::NodeKeyData& key1, float rate);
+
 
 	// ノード検索
 	Node* FindNode(const char* name);

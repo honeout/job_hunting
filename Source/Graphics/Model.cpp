@@ -1151,38 +1151,44 @@ void Model::ReverseplaybackLowerBodyAnimation(float elapsedTime, const char* end
 				//ブレンド補完処理
 				if (blendRate < 1.0f && blend)
 				{
-					//現在の姿勢と次のキーフレームとの姿勢の補完
-					DirectX::XMVECTOR S0 = DirectX::XMLoadFloat3(&node.scale);
-					DirectX::XMVECTOR S1 = DirectX::XMLoadFloat3(&key1.scale);
-					DirectX::XMVECTOR R0 = DirectX::XMLoadFloat4(&node.rotate);
-					DirectX::XMVECTOR R1 = DirectX::XMLoadFloat4(&key1.rotate);
-					DirectX::XMVECTOR T0 = DirectX::XMLoadFloat3(&node.translate);
-					DirectX::XMVECTOR T1 = DirectX::XMLoadFloat3(&key1.translate);
-					DirectX::XMVECTOR S = DirectX::XMVectorLerp(S0, S1, blendRate);
-					DirectX::XMVECTOR R = DirectX::XMQuaternionSlerp(R0, R1, blendRate);
-					DirectX::XMVECTOR T = DirectX::XMVectorLerp(T0, T1, blendRate);
-					//計算結果をボーンに格納
-					DirectX::XMStoreFloat3(&node.scale, S);
-					DirectX::XMStoreFloat4(&node.rotate, R);
-					DirectX::XMStoreFloat3(&node.translate, T);
+					// 今次のブレンド
+					BlendBonePose(node,key1,blendRate);
+
+					////現在の姿勢と次のキーフレームとの姿勢の補完
+					//DirectX::XMVECTOR S0 = DirectX::XMLoadFloat3(&node.scale);
+					//DirectX::XMVECTOR S1 = DirectX::XMLoadFloat3(&key1.scale);
+					//DirectX::XMVECTOR R0 = DirectX::XMLoadFloat4(&node.rotate);
+					//DirectX::XMVECTOR R1 = DirectX::XMLoadFloat4(&key1.rotate);
+					//DirectX::XMVECTOR T0 = DirectX::XMLoadFloat3(&node.translate);
+					//DirectX::XMVECTOR T1 = DirectX::XMLoadFloat3(&key1.translate);
+					//DirectX::XMVECTOR S = DirectX::XMVectorLerp(S0, S1, blendRate);
+					//DirectX::XMVECTOR R = DirectX::XMQuaternionSlerp(R0, R1, blendRate);
+					//DirectX::XMVECTOR T = DirectX::XMVectorLerp(T0, T1, blendRate);
+					////計算結果をボーンに格納
+					//DirectX::XMStoreFloat3(&node.scale, S);
+					//DirectX::XMStoreFloat4(&node.rotate, R);
+					//DirectX::XMStoreFloat3(&node.translate, T);
 				}
 
 				else
 				{
-					//前のキーフレームと次のキーフレームの姿勢を補完
-					DirectX::XMVECTOR S0 = DirectX::XMLoadFloat3(&key0.scale);
-					DirectX::XMVECTOR S1 = DirectX::XMLoadFloat3(&key1.scale);
-					DirectX::XMVECTOR R0 = DirectX::XMLoadFloat4(&key0.rotate);
-					DirectX::XMVECTOR R1 = DirectX::XMLoadFloat4(&key1.rotate);
-					DirectX::XMVECTOR T0 = DirectX::XMLoadFloat3(&key0.translate);
-					DirectX::XMVECTOR T1 = DirectX::XMLoadFloat3(&key1.translate);
-					DirectX::XMVECTOR S = DirectX::XMVectorLerp(S0, S1, rate);
-					DirectX::XMVECTOR R = DirectX::XMQuaternionSlerp(R0, R1, rate);
-					DirectX::XMVECTOR T = DirectX::XMVectorLerp(T0, T1, rate);
-					//計算結果をボーンに格納
-					DirectX::XMStoreFloat3(&node.scale, S);
-					DirectX::XMStoreFloat4(&node.rotate, R);
-					DirectX::XMStoreFloat3(&node.translate, T);
+					// 前キーフレームと次キーフレームブレンド
+					BlendBonePose(node, key0,key1, rate);
+
+					////前のキーフレームと次のキーフレームの姿勢を補完
+					//DirectX::XMVECTOR S0 = DirectX::XMLoadFloat3(&key0.scale);
+					//DirectX::XMVECTOR S1 = DirectX::XMLoadFloat3(&key1.scale);
+					//DirectX::XMVECTOR R0 = DirectX::XMLoadFloat4(&key0.rotate);
+					//DirectX::XMVECTOR R1 = DirectX::XMLoadFloat4(&key1.rotate);
+					//DirectX::XMVECTOR T0 = DirectX::XMLoadFloat3(&key0.translate);
+					//DirectX::XMVECTOR T1 = DirectX::XMLoadFloat3(&key1.translate);
+					//DirectX::XMVECTOR S = DirectX::XMVectorLerp(S0, S1, rate);
+					//DirectX::XMVECTOR R = DirectX::XMQuaternionSlerp(R0, R1, rate);
+					//DirectX::XMVECTOR T = DirectX::XMVectorLerp(T0, T1, rate);
+					////計算結果をボーンに格納
+					//DirectX::XMStoreFloat3(&node.scale, S);
+					//DirectX::XMStoreFloat4(&node.rotate, R);
+					//DirectX::XMStoreFloat3(&node.translate, T);
 				}
 			}
 			break;
@@ -1306,6 +1312,45 @@ bool Model::IsPlayAnimationBlend() const
 	if (currentAnimationIndex < 0 && currentAnimationIndexSeconds < 0) return false;
 	if (currentAnimationIndex >= resource->GetAnimations().size() && currentAnimationIndexSeconds >= resource->GetAnimations().size()) return false;
 	return true;
+}
+
+// 姿勢のブレンド関数 現在とキーフレームの間
+void Model::BlendBonePose(Node& node, const ModelResource::NodeKeyData& key1, float blendRate)
+{
+	// それぞれのボーンの情報とキーフレームのボーン情報
+	DirectX::XMVECTOR S0 = DirectX::XMLoadFloat3(&node.scale);
+	DirectX::XMVECTOR S1 = DirectX::XMLoadFloat3(&key1.scale);
+	DirectX::XMVECTOR R0 = DirectX::XMLoadFloat4(&node.rotate);
+	DirectX::XMVECTOR R1 = DirectX::XMLoadFloat4(&key1.rotate);
+	DirectX::XMVECTOR T0 = DirectX::XMLoadFloat3(&node.translate);
+	DirectX::XMVECTOR T1 = DirectX::XMLoadFloat3(&key1.translate);
+	// キーフレームの割合を求める。
+	DirectX::XMVECTOR S = DirectX::XMVectorLerp(S0, S1, blendRate);
+	DirectX::XMVECTOR R = DirectX::XMQuaternionSlerp(R0, R1, blendRate);
+	DirectX::XMVECTOR T = DirectX::XMVectorLerp(T0, T1, blendRate);
+	// 計算結果をボーンに格納
+	DirectX::XMStoreFloat3(&node.scale, S);
+	DirectX::XMStoreFloat4(&node.rotate, R);
+	DirectX::XMStoreFloat3(&node.translate, T);
+}
+
+// 姿勢のブレンド関数　　キーフレームとキーフレームの間
+void Model::BlendBonePose(Node& node, const ModelResource::NodeKeyData& key0, const ModelResource::NodeKeyData& key1, float rate)
+{
+	//前のキーフレームと次のキーフレームの姿勢を補完
+	DirectX::XMVECTOR S0 = DirectX::XMLoadFloat3(&key0.scale);
+	DirectX::XMVECTOR S1 = DirectX::XMLoadFloat3(&key1.scale);
+	DirectX::XMVECTOR R0 = DirectX::XMLoadFloat4(&key0.rotate);
+	DirectX::XMVECTOR R1 = DirectX::XMLoadFloat4(&key1.rotate);
+	DirectX::XMVECTOR T0 = DirectX::XMLoadFloat3(&key0.translate);
+	DirectX::XMVECTOR T1 = DirectX::XMLoadFloat3(&key1.translate);
+	DirectX::XMVECTOR S = DirectX::XMVectorLerp(S0, S1, rate);
+	DirectX::XMVECTOR R = DirectX::XMQuaternionSlerp(R0, R1, rate);
+	DirectX::XMVECTOR T = DirectX::XMVectorLerp(T0, T1, rate);
+	//計算結果をボーンに格納
+	DirectX::XMStoreFloat3(&node.scale, S);
+	DirectX::XMStoreFloat4(&node.rotate, R);
+	DirectX::XMStoreFloat3(&node.translate, T);
 }
 
 Model::Node* Model::FindNode(const char* name)

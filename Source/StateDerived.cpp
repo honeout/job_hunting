@@ -758,6 +758,9 @@ void ConfusionState::Enter()
 
 	// 立ち上がり許可
 	isStundUpInitial = false;
+
+	// 混乱エフェクト再生
+	enemyid->StartConfusion();
 }
 
 // 混乱更新
