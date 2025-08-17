@@ -285,7 +285,7 @@ public:
     bool InputShortCutkeyMagic();
 
     // –‚–@‘I‘ğUI‰ğœ
-    void RemoveUIMagic();
+    void RemoveUIComando();
 
     // “ÁêUŒ‚‘I‘ğ
     bool InputSpecialAttackCharge(float elapsedTime);

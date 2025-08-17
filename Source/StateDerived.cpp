@@ -2263,8 +2263,8 @@ void PlayerSpecialAttackState::Exit()
 	bool specialRockOff = false;
 	playerid->SetSpecialRockOff(specialRockOff);
 
-
-
+	// コマンドを初期化
+	playerid->RemoveUIComando();
 }
 // 火魔法
 void PlayerMagicState::Enter()
@@ -2886,6 +2886,9 @@ void PlayerSpecialMagicState::Exit()
 	postprocessingRenderer.StepValueMin();
 	bool specialRockOff = false;
 	playerid->SetSpecialRockOff(specialRockOff);
+
+	// コマンドを初期化
+	playerid->RemoveUIComando();
 }
 
 void PlayerDamageState::Enter()

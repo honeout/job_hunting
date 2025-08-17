@@ -1860,7 +1860,7 @@ bool Player::InputShortCutkeyMagic()
     if (gamePad.GetButtonUp() & GamePad::BTN_LEFT_SHOULDER)
     {
         // 魔法選択UI解除
-        RemoveUIMagic();
+        RemoveUIComando();
 
         // コマンド火
         {
@@ -1915,11 +1915,16 @@ bool Player::InputShortCutkeyMagic()
 }
 
 // 魔法選択UI解除
-void Player::RemoveUIMagic()
+void Player::RemoveUIComando()
 {
+    // 魔法コマンド設定を解除
     selectMagicCheck = (int)CommandMagic::Normal;
+    // コマンドセレクトを近接攻撃に
     selectCheck = (int)CommandAttack::Attack;
+    // 魔法を解除
     magicAction = false;
+    // 必殺技UIを解除
+    specialAction = false;
 }
 
 // 特殊攻撃選択
@@ -2002,6 +2007,8 @@ bool Player::InputSpecialAttackCharge(float elapsedTime)
                 InputSe(seParam);
                 // 必殺技UIを解除
                 specialAction = false;
+                // コマンド選択を攻撃に
+                selectCheck = (int)CommandAttack::Attack;
                 return false;
             }
             // 安全チェック
@@ -2266,6 +2273,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
 
         // UIコマンド　点滅用 表示、非表示切り替え用
         auto uiIdSpecialUnCheck = sharedUiCommandSpecialUnCheckId->GetComponent<Ui>();
+
         // 安全チェック
         if (!uiIdSpecialUnCheck)
             return;
@@ -2281,8 +2289,10 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
 
         // 特殊攻撃たまった 知らせるために コマンドUI点滅
         if (!UpdateElapsedTime(timeElapsedHintMax, elapsedTime))return;
+
         // 点滅
         isUiSpecilDrawCheck = isUiSpecilDrawCheck ? false : true;
+
         // 表示　非表示
         uiIdSpecialUnCheck->SetDrawCheck(isUiSpecilDrawCheck);
         return;
@@ -3126,6 +3136,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
         }
     }
 }
+
 // ダメージ反応エネミーの
 void Player::ReactToDamage(int attackValue)
 {
@@ -3147,6 +3158,7 @@ void Player::ReactToDamage(int attackValue)
     // 攻撃ヒット回数
     attackNumberSave += attackValue;
 
+    // 攻撃じゃなかったら
     if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
         enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
         enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle
@@ -3155,6 +3167,7 @@ void Player::ReactToDamage(int attackValue)
         // 敵が攻撃してなかったら
         if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack)
         {
+            // ダメージアニメーション再生
             Model::ModelAnim modelAnim;
             modelAnim.index = EnemyBoss::Animation::Anim_Movie;
             modelAnim.currentanimationseconds = 1.0f;
@@ -3162,10 +3175,11 @@ void Player::ReactToDamage(int attackValue)
             // 通常
             enemyModelId->GetModel()->PlayAnimation(modelAnim);
         }
-        // 混乱状態
+        // 混乱状態じゃ無かったら
         if (attackNumberSave >= PlayerConfig::attackNumberSaveMax &&
             enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
         {
+            // 混乱ステート処理遷移
             enemyBoss->GetStateMachine()->ChangeState(
                 (int)EnemyBoss::State::IdleBattle);
             // 攻撃連続ヒット停止
@@ -3297,8 +3311,8 @@ void Player::PinchMode(float elapsedTime)
         // 一定時間で描画
         if (UpdateElapsedTime(timeElapsedHintMax, elapsedTime))
         {
-            // Se再生
-            PlaySe("Data/Audio/SE/slash.wav");
+            // サイレン音再生
+            PlaySe("Data/Audio/SE/siren.wav");
 
             hintDrawCheck = hintDrawCheck ? false : true;
             //playerPushShortUi->SetDrawCheck(hintDrawCheck);
