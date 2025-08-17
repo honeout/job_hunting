@@ -3152,6 +3152,7 @@ void Player::ReactToDamage(int attackValue)
         enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle
         )
     {
+        // 敵が攻撃してなかったら
         if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack)
         {
             Model::ModelAnim modelAnim;
@@ -3159,16 +3160,6 @@ void Player::ReactToDamage(int attackValue)
             modelAnim.currentanimationseconds = 1.0f;
             modelAnim.keyFrameEnd = 153.0f;
             // 通常
-            enemyModelId->GetModel()->PlayAnimation(modelAnim);
-        }
-        // 死んだとき
-        if (enemyBoss->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle)
-        {
-            // model情報
-            Model::ModelAnim modelAnim;
-            modelAnim.index = EnemyBoss::Animation::Anim_Die;
-            modelAnim.currentanimationseconds = 0.3f;
-            modelAnim.keyFrameEnd = 55.0f;
             enemyModelId->GetModel()->PlayAnimation(modelAnim);
         }
         // 混乱状態
