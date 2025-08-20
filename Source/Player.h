@@ -142,10 +142,18 @@ namespace PlayerConfig
     // コマンド特殊技選択最大値
     constexpr int spCmdMoveLimitMax = 1;
 
+    // コマンド基画像大きさ
+    constexpr DirectX::XMFLOAT2 commandUnSelectTexScale = { .0f,.0f };
+    constexpr DirectX::XMFLOAT2 commandSelectTexScale = { .0f,86.0f };
+    constexpr DirectX::XMFLOAT2 commandShortCutTexScale = { .0f,172.0f };
+
     // HPバー色変化用
     constexpr DirectX::XMFLOAT2 hpBarGreenwTexPos = {0,00};
     constexpr DirectX::XMFLOAT2 hpBarYerowTexPos = {0,76.5f};
     constexpr DirectX::XMFLOAT2 hpBarRedTexPos = {0,152};
+
+    // MPバー
+    constexpr float mpBarOffset = 45.0f;
 
     // ------カメラ演出---------
     // カメラ最初の演出の最大値
@@ -621,7 +629,6 @@ private:
     // 経過時間を測る
     float timeElapsed = 0.0f;
     float timeElapsedHintMax = 0.0f;
-
     
     // UI処理を出すかチェック
     bool             uiControlleCheck = false;

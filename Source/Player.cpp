@@ -362,12 +362,11 @@ void Player::HandleInput(float elapsedTime)
         }
 
         //　魔法入力処理
-        if (InputMagick() && GetSelectCheck() == (int)Player::CommandAttack::Magic &&
+        if (InputMagick() && magicAction &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Magic) &&
             GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) &&
-            !gamePad.GetButtonDownCountinue()
+            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death)
             )
         {
             // デバッグ
@@ -1425,69 +1424,88 @@ bool Player::InputSelectMagicCheck()
     if (InputShortCutkeyMagic() &&
         gamePad.GetButtonDown() & GamePad::BTN_B )
     {
-        // 魔法の種類を炎に
-        selectMagicCheck = (int)CommandMagic::Fire;
+        // 安全チェック　コマンド ショートカット　魔法　火
+        auto sharedUiCommandFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire);
 
+        if (!sharedUiCommandFireId)
+            return false;
+        auto commandFire = sharedUiCommandFireId->GetComponent<TransForm2D>();
+        auto commandFireUi = sharedUiCommandFireId->GetComponent<Ui>();
         // 安全チェック
-        if (!selectMagicCheck)
+        if (!commandFire || !commandFireUi)
             return false;
-        
-        // 安全チェック　コマンドショートカット　魔法炎の位置
-        auto sharedUiCommandShortCutFireId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandShortCutFire);
-        if (!sharedUiCommandShortCutFireId)
-            return false;
-
-        auto uiIdFireShortCutCheckPos = sharedUiCommandShortCutFireId->GetComponent<TransForm2D>();
+        // ショートカット
+        commandFire->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+        // 描画していない
+        commandFireUi->SetDrawCheck(isDrawUi);
+        // 透かしオフ
+        commandFireUi->SetAlpha(PlayerConfig::onAlpha);
     }
     // ショートカットキー雷選択
     if (InputShortCutkeyMagic() &&
         gamePad.GetButtonDown() & GamePad::BTN_X)
     {
-        // 魔法の種類を雷に
-        selectMagicCheck = (int)CommandMagic::Thander;
+        // 安全チェック　コマンド　ショートカット　魔法　雷
+        auto sharedUiCommandRightningId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning);
 
-        // ショートカット魔法雷の位置
-        // 安全チェック
-        auto sharedUiCommandShortCutSunderId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandShortCutSunder);
-        if (!sharedUiCommandShortCutSunderId)
+        if (!sharedUiCommandRightningId)
             return false;
-        auto uiIdSunderShortCutCheckPos = sharedUiCommandShortCutSunderId->GetComponent<TransForm2D>();
+        auto commandRightning = sharedUiCommandRightningId->GetComponent<TransForm2D>();
+        auto commandRightningUi = sharedUiCommandRightningId->GetComponent<Ui>();
         // 安全チェック
-        if (!uiIdSunderShortCutCheckPos)
+        if (!commandRightning || !commandRightningUi)
             return false;
+        // 選択に
+        commandRightning->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+        // 描画
+        commandRightningUi->SetDrawCheck(isDrawUi);
+        // 透かしオフ
+        commandRightningUi->SetAlpha(PlayerConfig::onAlpha);
 
+    }
+    // ショートカットキー氷選択
+    if (InputShortCutkeyMagic() &&
+        gamePad.GetButtonDown() & GamePad::BTN_A)
+    {
+        // 安全チェック　コマンド ショートカット　魔法　氷
+        auto sharedUiCommandIceId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce);
+
+        if (!sharedUiCommandIceId)
+            return false;
+        auto commandIce = sharedUiCommandIceId->GetComponent<TransForm2D>();
+        auto commandIceUi = sharedUiCommandIceId->GetComponent<Ui>();
+        // 安全チェック
+        if (!commandIce || !commandIceUi)
+            return false;
+        // 選択に
+        commandIce->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+        // 描画
+        commandIceUi->SetDrawCheck(isDrawUi);
+        // 透かしオフ
+        commandIceUi->SetAlpha(PlayerConfig::onAlpha);
     }
     // ショートカットキー回復選択
     if (InputShortCutkeyMagic() &&
         gamePad.GetButtonDown() & GamePad::BTN_Y )
     {
-        // 魔法の種類を回復に
-        selectMagicCheck = (int)CommandMagic::Heale;
+        // 安全チェック　コマンド ショートカット　魔法　回復
+        auto sharedUiCommandHealeId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale);
 
-        // ショートカット魔法回復
-        auto sharedUiCommandShortCutKeuleId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandShortCutKeule);
+        if (!sharedUiCommandHealeId)
+            return false;
+        auto commandHeale = sharedUiCommandHealeId->GetComponent<TransForm2D>();
+        auto commandHealeUi = sharedUiCommandHealeId->GetComponent<Ui>();
         // 安全チェック
-        if (!sharedUiCommandShortCutKeuleId)
+        if (!commandHeale || !commandHealeUi)
             return false;
-        auto uiIdHealeShortCutCheckPos = sharedUiCommandShortCutKeuleId->GetComponent<TransForm2D>();
+        // 選択に
+        commandHeale->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+        // 描画
+        commandHealeUi->SetDrawCheck(isDrawUi);
+        // 透かしオフ
+        commandHealeUi->SetAlpha(PlayerConfig::onAlpha);
     }
-    // ショートカットキー氷選択
-    if (InputShortCutkeyMagic() &&
-        gamePad.GetButtonDown() & GamePad::BTN_A )
-    {
-        // 魔法の種類を氷に
-        selectMagicCheck = (int)CommandMagic::Ice;
 
-       // 安全チェック ショートカット魔法氷
-        auto sharedUiCommandShortCutIceId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandShortCutIce);
-        if (!sharedUiCommandShortCutIceId)
-            return false;
-        auto uiIdIceShortCutCheckPos = sharedUiCommandShortCutIceId->GetComponent<TransForm2D>();
-    }
     /////////////////////////
 
     // コマンド魔法選択では無かったら
@@ -1504,40 +1522,40 @@ bool Player::InputSelectMagicCheck()
     {
         // 安全チェック　コマンド　魔法　火
         auto sharedUiCommandFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire);
-        // 安全チェック　コマンド選択　魔法　火
-        auto sharedUiCommandFireCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck);
-        if (!sharedUiCommandFireId || !sharedUiCommandFireCheckId)
+
+        if (!sharedUiCommandFireId)
             return false;
-        auto uiCommandFire = sharedUiCommandFireId->GetComponent<Ui>();
-        auto uiCommandFireCheck = sharedUiCommandFireCheckId->GetComponent<Ui>();
+        auto commandFire = sharedUiCommandFireId->GetComponent<TransForm2D>();
+        auto commandFireUi = sharedUiCommandFireId->GetComponent<Ui>();
         // 安全チェック
-        if (!uiCommandFire || !uiCommandFireCheck)
+        if (!commandFire || !commandFireUi)
             return false;
-        
-        // UIコマンド 魔法　火 選択 非表示
-        uiCommandFire->SetDrawCheck(isDrawUiEmpth);
-        // UIコマンド選択　魔法　火 表示
-        uiCommandFireCheck->SetDrawCheck(isDrawUi);
+        // 選択に
+        commandFire->SetTexPosition(PlayerConfig::commandSelectTexScale);
+        // 描画
+        commandFireUi->SetDrawCheck(isDrawUi);
+        // 透かしオフ
+        commandFireUi->SetAlpha(PlayerConfig::onAlpha);
     }
-    // UI設定 コマンド　魔法　炎 
+    // UI設定 コマンド 非選択　魔法　炎 
     else
     {
         // 安全チェック　コマンド　魔法　火
         auto sharedUiCommandFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire);
-        // 安全チェック　コマンド選択　火　魔法　
-        auto sharedUiCommandFireCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck);
-        if (!sharedUiCommandFireId || !sharedUiCommandFireCheckId)
-            return false;
-        auto uiCommandFire = sharedUiCommandFireId->GetComponent<Ui>();
-        auto uiCommandFireCheck = sharedUiCommandFireCheckId->GetComponent<Ui>();
-        // 安全チェック
-        if (!uiCommandFire || !uiCommandFireCheck)
-            return false;
 
-        // UIコマンド 魔法　火 選択 表示
-        uiCommandFire->SetDrawCheck(isDrawUi);
-        // UIコマンド選択　魔法　火 非表示
-        uiCommandFireCheck->SetDrawCheck(isDrawUiEmpth);
+        if (!sharedUiCommandFireId)
+            return false;
+        auto commandFire = sharedUiCommandFireId->GetComponent<TransForm2D>();
+        auto commandFireUi = sharedUiCommandFireId->GetComponent<Ui>();
+        // 安全チェック
+        if (!commandFire || !commandFireUi)
+            return false;
+        // 非選択
+        commandFire->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
+        // 描画
+        commandFireUi->SetDrawCheck(isDrawUi);
+        // 透かしオン
+        commandFireUi->SetAlpha(PlayerConfig::halfAlpha);
     }
     // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
     if (!magicAction ||
@@ -1545,80 +1563,78 @@ bool Player::InputSelectMagicCheck()
     {
         // 安全チェック　コマンド　魔法　火
         auto sharedUiCommandFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire);
-        // 安全チェック　コマンド選択　火　魔法　
-        auto sharedUiCommandFireCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFireCheck);
-        if (!sharedUiCommandFireId || !sharedUiCommandFireCheckId)
-            return false;
-        auto uiCommandFire = sharedUiCommandFireId->GetComponent<Ui>();
-        auto uiCommandFireCheck = sharedUiCommandFireCheckId->GetComponent<Ui>();
-        // 安全チェック
-        if (!uiCommandFire || !uiCommandFireCheck)
-            return false;
 
-        // UIコマンド 魔法　火 選択 非表示
-        uiCommandFire->SetDrawCheck(isDrawUiEmpth);
-        // UIコマンド選択　魔法　火 非表示
-        uiCommandFireCheck->SetDrawCheck(isDrawUiEmpth);
+        if (!sharedUiCommandFireId)
+            return false;
+        auto commandFire = sharedUiCommandFireId->GetComponent<TransForm2D>();
+        auto commandFireUi = sharedUiCommandFireId->GetComponent<Ui>();
+        // 安全チェック
+        if (!commandFire || !commandFireUi)
+            return false;
+        // ショートカット
+        commandFire->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+        // 描画していない
+        commandFireUi->SetDrawCheck(isDrawUiEmpth);
     }
     // UI設定 コマンド選択　魔法　雷 
     if (selectMagicCheck == (int)CommandMagic::Thander && magicAction &&
         !InputShortCutkeyMagic())
     {
         // 安全チェック　コマンド　魔法　雷
-        auto sharedUiCommandRigtningId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning);
-        // 安全チェック　コマンド選択　魔法　雷
-        auto sharedUiCommandRigtningCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck);
-        if (!sharedUiCommandRigtningId || !sharedUiCommandRigtningCheckId)
-            return false;
-        auto uiIdCommandRightning = sharedUiCommandRigtningId->GetComponent<Ui>();
-        auto uiIdCommandRightningCheck = sharedUiCommandRigtningCheckId->GetComponent<Ui>();
-        // 安全チェック
-        if (!uiIdCommandRightning || !uiIdCommandRightningCheck)
-            return false;
+        auto sharedUiCommandRightningId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning);
 
-        // UIコマンド 魔法　雷 選択 非表示
-        uiIdCommandRightning->SetDrawCheck(isDrawUiEmpth);
-        // UIコマンド選択　魔法　雷 表示
-        uiIdCommandRightningCheck->SetDrawCheck(isDrawUi);
+        if (!sharedUiCommandRightningId)
+            return false;
+        auto commandRightning = sharedUiCommandRightningId->GetComponent<TransForm2D>();
+        auto commandRightningUi = sharedUiCommandRightningId->GetComponent<Ui>();
+        // 安全チェック
+        if (!commandRightning || !commandRightningUi)
+            return false;
+        // 選択に
+        commandRightning->SetTexPosition(PlayerConfig::commandSelectTexScale);
+        // 描画
+        commandRightningUi->SetDrawCheck(isDrawUi);
+        // 透かしオフ
+        commandRightningUi->SetAlpha(PlayerConfig::onAlpha);
     }
+    // UI設定 コマンド 非選択　魔法　雷 
     else
     {
         // 安全チェック　コマンド　魔法　雷
-        auto sharedUiCommandRigtningId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning);
-        // 安全チェック　コマンド選択　魔法　雷
-        auto sharedUiCommandRigtningCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck);
-        if (!sharedUiCommandRigtningId || !sharedUiCommandRigtningCheckId)
-            return false;
-        auto uiIdCommandRightning = sharedUiCommandRigtningId->GetComponent<Ui>();
-        auto uiIdCommandRightningCheck = sharedUiCommandRigtningCheckId->GetComponent<Ui>();
-        // 安全チェック
-        if (!uiIdCommandRightning || !uiIdCommandRightningCheck)
-            return false;
+        auto sharedUiCommandRightningId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning);
 
-        // UIコマンド 魔法　雷 選択 表示
-        uiIdCommandRightning->SetDrawCheck(isDrawUi);
-        // UIコマンド選択　魔法　雷 非表示
-        uiIdCommandRightningCheck->SetDrawCheck(isDrawUiEmpth);
+        if (!sharedUiCommandRightningId)
+            return false;
+        auto commandRightning = sharedUiCommandRightningId->GetComponent<TransForm2D>();
+        auto commandRightningUi = sharedUiCommandRightningId->GetComponent<Ui>();
+        // 安全チェック
+        if (!commandRightning || !commandRightningUi)
+            return false;
+        // 非選択に
+        commandRightning->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
+        // 描画
+        commandRightningUi->SetDrawCheck(isDrawUi);
+        // 透かしオン
+        commandRightningUi->SetAlpha(PlayerConfig::halfAlpha);
     }
     // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
     if (!magicAction || 
         InputShortCutkeyMagic())
     {
         // 安全チェック　コマンド　魔法　雷
-        auto sharedUiCommandRigtningId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning);
-        // 安全チェック　コマンド選択　魔法　雷
-        auto sharedUiCommandRigtningCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtningCheck);
-        if (!sharedUiCommandRigtningId || !sharedUiCommandRigtningCheckId)
+        auto sharedUiCommandRightningId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning);
+
+        if (!sharedUiCommandRightningId)
             return false;
-        auto uiIdCommandRightning = sharedUiCommandRigtningId->GetComponent<Ui>();
-        auto uiIdCommandRightningCheck = sharedUiCommandRigtningCheckId->GetComponent<Ui>();
+        auto commandRightning = sharedUiCommandRightningId->GetComponent<TransForm2D>();
+        auto commandRightningUi = sharedUiCommandRightningId->GetComponent<Ui>();
         // 安全チェック
-        if (!uiIdCommandRightning || !uiIdCommandRightningCheck)
+        if (!commandRightning || !commandRightningUi)
             return false;
-        // UIコマンド 魔法　雷 選択 非表示
-        uiIdCommandRightning->SetDrawCheck(isDrawUiEmpth);
-        // UIコマンド選択　魔法　雷 非表示
-        uiIdCommandRightningCheck->SetDrawCheck(isDrawUiEmpth);
+        // ショートカットに
+        commandRightning->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+        // 描画していない
+        commandRightningUi->SetDrawCheck(isDrawUiEmpth);
     }
     // UI設定 氷
     if (selectMagicCheck == (int)CommandMagic::Ice && magicAction &&
@@ -1626,37 +1642,40 @@ bool Player::InputSelectMagicCheck()
     {
         // 安全チェック　コマンド　魔法　氷
         auto sharedUiCommandIceId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce);
-        // 安全チェック　コマンド選択　魔法　氷
-        auto sharedUiCommandIceCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck);
-        if (!sharedUiCommandIceId || !sharedUiCommandIceCheckId)
+
+        if (!sharedUiCommandIceId)
             return false;
-        auto uiIdCommandIce = sharedUiCommandIceId->GetComponent<Ui>();
-        auto uiIdCommandIceCheck = sharedUiCommandIceCheckId->GetComponent<Ui>();
+        auto commandIce = sharedUiCommandIceId->GetComponent<TransForm2D>();
+        auto commandIceUi = sharedUiCommandIceId->GetComponent<Ui>();
         // 安全チェック
-        if (!uiIdCommandIce || !uiIdCommandIceCheck)
+        if (!commandIce || !commandIceUi)
             return false;
-        // UIコマンド 魔法　氷 選択 非表示
-        uiIdCommandIce->SetDrawCheck(isDrawUiEmpth);
-        // UIコマンド選択　魔法　氷 表示
-        uiIdCommandIceCheck->SetDrawCheck(isDrawUi);
+        // 選択に
+        commandIce->SetTexPosition(PlayerConfig::commandSelectTexScale);
+        // 描画
+        commandIceUi->SetDrawCheck(isDrawUi);
+        // 透かしオフ
+        commandIceUi->SetAlpha(PlayerConfig::onAlpha);
     }
+    // UI設定 コマンド 非選択　魔法　氷
     else
     {
         // 安全チェック　コマンド　魔法　氷
         auto sharedUiCommandIceId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce);
-        // 安全チェック　コマンド選択　魔法　氷
-        auto sharedUiCommandIceCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck);
-        if (!sharedUiCommandIceId || !sharedUiCommandIceCheckId)
+
+        if (!sharedUiCommandIceId)
             return false;
-        auto uiIdCommandIce = sharedUiCommandIceId->GetComponent<Ui>();
-        auto uiIdCommandIceCheck = sharedUiCommandIceCheckId->GetComponent<Ui>();
+        auto commandIce = sharedUiCommandIceId->GetComponent<TransForm2D>();
+        auto commandIceUi = sharedUiCommandIceId->GetComponent<Ui>();
         // 安全チェック
-        if (!uiIdCommandIce || !uiIdCommandIceCheck)
+        if (!commandIce || !commandIceUi)
             return false;
-        // UIコマンド 魔法　氷 選択 表示
-        uiIdCommandIce->SetDrawCheck(isDrawUi);
-        // UIコマンド選択　魔法　氷 非表示
-        uiIdCommandIceCheck->SetDrawCheck(isDrawUiEmpth);
+        // 非選択に
+        commandIce->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
+        // 描画
+        commandIceUi->SetDrawCheck(isDrawUi);
+        // 透かしオン
+        commandIceUi->SetAlpha(PlayerConfig::halfAlpha);
     }
     // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
     if (!magicAction || 
@@ -1664,19 +1683,20 @@ bool Player::InputSelectMagicCheck()
     {
         // 安全チェック　コマンド　魔法　氷
         auto sharedUiCommandIceId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce);
-        // 安全チェック　コマンド選択　魔法　氷
-        auto sharedUiCommandIceCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIceCheck);
-        if (!sharedUiCommandIceId || !sharedUiCommandIceCheckId)
+
+        if (!sharedUiCommandIceId)
             return false;
-        auto uiIdCommandIce = sharedUiCommandIceId->GetComponent<Ui>();
-        auto uiIdCommandIceCheck = sharedUiCommandIceCheckId->GetComponent<Ui>();
+        auto commandIce = sharedUiCommandIceId->GetComponent<TransForm2D>();
+        auto commandIceUi = sharedUiCommandIceId->GetComponent<Ui>();
         // 安全チェック
-        if (!uiIdCommandIce || !uiIdCommandIceCheck)
+        if (!commandIce || !commandIceUi)
             return false;
-        // UIコマンド 魔法　氷 選択 非表示
-        uiIdCommandIce->SetDrawCheck(isDrawUiEmpth);
-        // UIコマンド選択　魔法　氷 非表示
-        uiIdCommandIceCheck->SetDrawCheck(isDrawUiEmpth);
+        // ショートカットに
+        commandIce->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+        // 描画していない
+        commandIceUi->SetDrawCheck(isDrawUiEmpth);
+        // 透かしオフ
+        commandIceUi->SetAlpha(PlayerConfig::onAlpha);
     }
     // UI設定 回復
     if (selectMagicCheck == (int)CommandMagic::Heale && magicAction &&
@@ -1684,37 +1704,40 @@ bool Player::InputSelectMagicCheck()
     {
         // 安全チェック　コマンド　魔法　回復
         auto sharedUiCommandHealeId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale);
-        // 安全チェック　コマンド選択　魔法　回復
-        auto sharedUiCommandHealeCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHealeCheck);
-        if (!sharedUiCommandHealeId || !sharedUiCommandHealeCheckId)
+
+        if (!sharedUiCommandHealeId)
             return false;
-        auto uiIdCommandHeale = sharedUiCommandHealeId->GetComponent<Ui>();
-        auto uiIdCommandHealeCheck = sharedUiCommandHealeCheckId->GetComponent<Ui>();
+        auto commandHeale = sharedUiCommandHealeId->GetComponent<TransForm2D>();
+        auto commandHealeUi = sharedUiCommandHealeId->GetComponent<Ui>();
         // 安全チェック
-        if (!uiIdCommandHeale || !uiIdCommandHealeCheck)
+        if (!commandHeale || !commandHealeUi)
             return false;
-        // UIコマンド 魔法　回復 選択 非表示
-        uiIdCommandHeale->SetDrawCheck(isDrawUiEmpth);
-        // UIコマンド選択　魔法　回復 表示
-        uiIdCommandHealeCheck->SetDrawCheck(isDrawUi);
+        // 選択に
+        commandHeale->SetTexPosition(PlayerConfig::commandSelectTexScale);
+        // 描画
+        commandHealeUi->SetDrawCheck(isDrawUi);
+        // 透かしオフ
+        commandHealeUi->SetAlpha(PlayerConfig::onAlpha);
     }
+    // UI設定 コマンド 非選択　魔法　回復 
     else
     {
         // 安全チェック　コマンド　魔法　回復
         auto sharedUiCommandHealeId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale);
-        // 安全チェック　コマンド選択　魔法　回復
-        auto sharedUiCommandHealeCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHealeCheck);
-        if (!sharedUiCommandHealeId || !sharedUiCommandHealeCheckId)
+
+        if (!sharedUiCommandHealeId)
             return false;
-        auto uiIdCommandHeale = sharedUiCommandHealeId->GetComponent<Ui>();
-        auto uiIdCommandHealeCheck = sharedUiCommandHealeCheckId->GetComponent<Ui>();
+        auto commandHeale = sharedUiCommandHealeId->GetComponent<TransForm2D>();
+        auto commandHealeUi = sharedUiCommandHealeId->GetComponent<Ui>();
         // 安全チェック
-        if (!uiIdCommandHeale || !uiIdCommandHealeCheck)
+        if (!commandHeale || !commandHealeUi)
             return false;
-        // UIコマンド 魔法　回復 選択 表示
-        uiIdCommandHeale->SetDrawCheck(isDrawUi);
-        // UIコマンド選択　魔法　回復 非表示
-        uiIdCommandHealeCheck->SetDrawCheck(isDrawUiEmpth);
+        // 非選択に
+        commandHeale->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
+        // 描画
+        commandHealeUi->SetDrawCheck(isDrawUi);
+        // 透かしオフ
+        commandHealeUi->SetAlpha(PlayerConfig::halfAlpha);
     }
     // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
     if (!magicAction ||
@@ -1722,19 +1745,20 @@ bool Player::InputSelectMagicCheck()
     {
         // 安全チェック　コマンド　魔法　回復
         auto sharedUiCommandHealeId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale);
-        // 安全チェック　コマンド選択　魔法　回復
-        auto sharedUiCommandHealeCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHealeCheck);
-        if (!sharedUiCommandHealeId || !sharedUiCommandHealeCheckId)
+
+        if (!sharedUiCommandHealeId)
             return false;
-        auto uiIdCommandHeale = sharedUiCommandHealeId->GetComponent<Ui>();
-        auto uiIdCommandHealeCheck = sharedUiCommandHealeCheckId->GetComponent<Ui>();
+        auto commandHeale = sharedUiCommandHealeId->GetComponent<TransForm2D>();
+        auto commandHealeUi = sharedUiCommandHealeId->GetComponent<Ui>();
         // 安全チェック
-        if (!uiIdCommandHeale || !uiIdCommandHealeCheck)
+        if (!commandHeale || !commandHealeUi)
             return false;
-        // UIコマンド 魔法　回復 選択 非表示
-        uiIdCommandHeale->SetDrawCheck(isDrawUiEmpth);
-        // UIコマンド選択　魔法　回復 非表示
-        uiIdCommandHealeCheck->SetDrawCheck(isDrawUiEmpth);
+        // 選択に
+        commandHeale->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+        // 描画していない
+        commandHealeUi->SetDrawCheck(isDrawUiEmpth);
+        // 透かしオフ
+        commandHealeUi->SetAlpha(PlayerConfig::onAlpha);
     }
     return false;
 }
@@ -1760,157 +1784,91 @@ bool Player::InputShortCutkeyMagic()
 
         // 火コマンド
         {
-            // 安全チェック コマンド火　非選択
-            auto sharedUiCommandShortCutFireId = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandShortCutFire);
-            if (!sharedUiCommandShortCutFireId)
-                return false;
+            // 安全チェック　コマンド ショートカット　魔法　火
+            auto sharedUiCommandFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandFire);
 
-            auto uiIdAttackCheckFire = sharedUiCommandShortCutFireId->GetComponent<Ui>();
-            if (!uiIdAttackCheckFire)
+            if (!sharedUiCommandFireId)
                 return false;
-            // 安全チェック コマンド火　非選択 表示
-            uiIdAttackCheckFire->SetDrawCheck(isDrawUi);
+            auto commandFire = sharedUiCommandFireId->GetComponent<TransForm2D>();
+            auto commandFireUi = sharedUiCommandFireId->GetComponent<Ui>();
+            // 安全チェック
+            if (!commandFire || !commandFireUi)
+                return false;
+            // 選択に
+            commandFire->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+            // 描画
+            commandFireUi->SetDrawCheck(isDrawUi);
+            // 透かしオフ
+            commandFireUi->SetAlpha(PlayerConfig::onAlpha);
         }
 
         // 雷コマンド
         {
-            // 安全チェック コマンド雷　非選択
-            auto sharedUiCommandShortCutSunderId = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandShortCutSunder);
-            if (!sharedUiCommandShortCutSunderId)
-                return false;
+            // 安全チェック　コマンド ショートカット　魔法　雷
+            auto sharedUiCommandRightningId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandRigtning);
 
-            std::shared_ptr<Ui> uiIdAttackCheckSunder = sharedUiCommandShortCutSunderId->GetComponent<Ui>();
-            // 安全チェック コマンド雷　非選択 表示
-            uiIdAttackCheckSunder->SetDrawCheck(isDrawUi);
+            if (!sharedUiCommandRightningId)
+                return false;
+            auto commandRightning = sharedUiCommandRightningId->GetComponent<TransForm2D>();
+            auto commandRightningUi = sharedUiCommandRightningId->GetComponent<Ui>();
+            // 安全チェック
+            if (!commandRightning || !commandRightningUi)
+                return false;
+            // ショートカットに
+            commandRightning->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+            // 描画していない
+            commandRightningUi->SetDrawCheck(isDrawUi);
+            // 透かしオフ
+            commandRightningUi->SetAlpha(PlayerConfig::onAlpha);
         }
 
         // 氷コマンド
         {
-            // 安全チェック コマンド氷　非選択
-            auto sharedUiCommandShortCutIceId = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandShortCutIce);
-            if (!sharedUiCommandShortCutIceId)
-                return false;
+            // 安全チェック　コマンド　魔法　氷
+            auto sharedUiCommandIceId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandIce);
 
-            std::shared_ptr<Ui> uiIdAttackCheckIce = sharedUiCommandShortCutIceId->GetComponent<Ui>();
-            // 安全チェック コマンド氷　非選択 表示
-            uiIdAttackCheckIce->SetDrawCheck(isDrawUi);
+            if (!sharedUiCommandIceId)
+                return false;
+            auto commandIce = sharedUiCommandIceId->GetComponent<TransForm2D>();
+            auto commandIceUi = sharedUiCommandIceId->GetComponent<Ui>();
+            // 安全チェック
+            if (!commandIce || !commandIceUi)
+                return false;
+            // ショートカットに
+            commandIce->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+            // 描画していない
+            commandIceUi->SetDrawCheck(isDrawUi);
+            // 透かしオフ
+            commandIceUi->SetAlpha(PlayerConfig::onAlpha);
         }
 
         // 回復コマンド
         {
-            // 安全チェック コマンド回復　非選択
-            auto sharedUiCommandShortCutHealeId = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandShortCutKeule);
-            if (!sharedUiCommandShortCutHealeId)
-                return false;
+            // 安全チェック　コマンド　魔法　回復
+            auto sharedUiCommandHealeId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandHeale);
 
-            std::shared_ptr<Ui> uiIdAttackCheckHeale = sharedUiCommandShortCutHealeId->GetComponent<Ui>();
-            // 安全チェック コマンド回復　非選択 表示
-            uiIdAttackCheckHeale->SetDrawCheck(isDrawUi);
+            if (!sharedUiCommandHealeId)
+                return false;
+            auto commandHeale = sharedUiCommandHealeId->GetComponent<TransForm2D>();
+            auto commandHealeUi = sharedUiCommandHealeId->GetComponent<Ui>();
+            // 安全チェック
+            if (!commandHeale || !commandHealeUi)
+                return false;
+            // 選択に
+            commandHeale->SetTexPosition(PlayerConfig::commandShortCutTexScale);
+            // 描画していない
+            commandHealeUi->SetDrawCheck(isDrawUi);
+            // 透かしオフ
+            commandHealeUi->SetAlpha(PlayerConfig::onAlpha);
         }
         return true;
     }
-    
-    // 後変更 いるのか分からない
-    // 魔法打った後
-    else if (gamePad.GetButton() == GamePad::BTN_LEFT_SHOULDER)
-    {        
-        // 炎
-        // 安全チェック
-        auto sharedUiCommandShortCutFireId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandShortCutFire);
-        if (!sharedUiCommandShortCutFireId)
-            return false;
-
-        std::shared_ptr<Ui> uiIdAttackCheckFire = sharedUiCommandShortCutFireId->GetComponent<Ui>();
-        uiIdAttackCheckFire->SetDrawCheck(isDrawUiEmpth);
-        // 雷
-        // 安全チェック
-        auto sharedUiCommandShortCutSunderId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandShortCutSunder);
-        if (!sharedUiCommandShortCutSunderId)
-            return false;
-
-        std::shared_ptr<Ui> uiIdAttackCheckSunder = sharedUiCommandShortCutSunderId->GetComponent<Ui>();
-        uiIdAttackCheckSunder->SetDrawCheck(isDrawUiEmpth);
-        // 氷
-        // 安全チェック
-        auto sharedUiCommandShortCutIceId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandShortCutIce);
-        if (!sharedUiCommandShortCutIceId)
-            return false;
-
-        std::shared_ptr<Ui> uiIdAttackCheckIce = sharedUiCommandShortCutIceId->GetComponent<Ui>();
-        uiIdAttackCheckIce->SetDrawCheck(isDrawUiEmpth);
-        // 回復
-        // 安全チェック
-        auto sharedUiCommandShortCutHealeId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandShortCutKeule);
-        if (!sharedUiCommandShortCutHealeId)
-            return false;
-
-        std::shared_ptr<Ui> uiIdAttackCheckHeale = sharedUiCommandShortCutHealeId->GetComponent<Ui>();
-        uiIdAttackCheckHeale->SetDrawCheck(isDrawUiEmpth);
-    }
-
-    // ショートカットキー解除
+    // ショートカット離した直後
     if (gamePad.GetButtonUp() & GamePad::BTN_LEFT_SHOULDER)
     {
-        // 魔法選択UI解除
-        RemoveUIComando();
-
-        // コマンド火
-        {
-            // 安全チェック コマンド火　非選択
-            auto sharedUiCommandShortCutFireId = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandShortCutFire);
-            if (!sharedUiCommandShortCutFireId)
-                return false;
-
-            std::shared_ptr<Ui> uiIdAttackCheckFire = sharedUiCommandShortCutFireId->GetComponent<Ui>();
-            uiIdAttackCheckFire->SetDrawCheck(isDrawUiEmpth);
-        }
-
-        // コマンド雷
-        {
-            // 安全チェック コマンド雷　非選択
-            auto sharedUiCommandShortCutSunderId = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandShortCutSunder);
-            if (!sharedUiCommandShortCutSunderId)
-                return false;
-
-            std::shared_ptr<Ui> uiIdAttackCheckSunder = sharedUiCommandShortCutSunderId->GetComponent<Ui>();
-            uiIdAttackCheckSunder->SetDrawCheck(isDrawUiEmpth);
-        }
-
-        // コマンド氷
-        {
-            // 安全チェック コマンド氷　非選択
-            auto sharedUiCommandShortCutIceId = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandShortCutIce);
-            if (!sharedUiCommandShortCutIceId)
-                return false;
-
-            std::shared_ptr<Ui> uiIdAttackCheckIce = sharedUiCommandShortCutIceId->GetComponent<Ui>();
-            uiIdAttackCheckIce->SetDrawCheck(isDrawUiEmpth);
-        }
-
-        // コマンド回復
-        {
-            // 安全チェック コマンド回復　非選択
-            auto sharedUiCommandShortCutHealeId = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandShortCutKeule);
-            if (!sharedUiCommandShortCutHealeId)
-                return false;
-
-            std::shared_ptr<Ui> uiIdAttackCheckHeale = sharedUiCommandShortCutHealeId->GetComponent<Ui>();
-            // 非表示
-            uiIdAttackCheckHeale->SetDrawCheck(isDrawUiEmpth);
-        }
+        magicAction = false;
     }
+
     return false;
 }
 
@@ -3358,7 +3316,7 @@ void Player::PinchMode(float elapsedTime)
         isPintch)
     {
         auto uiIdAttackCheckPos = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandShortCutKeule)->GetComponent<TransForm2D>();
+            (int)UiManager::UiCount::PlayerCommandHeale)->GetComponent<TransForm2D>();
         uiIdAttackCheckPos->Shake();
     }
     //  ピンチの時にヒントを出す　コマンド操作
@@ -3460,6 +3418,7 @@ bool Player::InputAvoidance()
     }
     return false;
 }
+
 // 攻撃入力
 bool Player::InputAttack()
 {
@@ -3479,6 +3438,7 @@ bool Player::InputAttack()
     }
     return false;
 }
+
 // 魔法発射
 bool Player::InputMagick()
 {
@@ -3503,30 +3463,31 @@ bool Player::InputMagick()
         StartMagicUiFire();
         return false;
     }
+
     // 通常コマンド操作
-    if (!InputShortCutkeyMagic() &&
-        gamePad.GetButton() & GamePad::BTN_B)
+    if (gamePad.GetButton() & GamePad::BTN_B)
     {
         switch (selectMagicCheck)
         {
         case (int)CommandMagic::Fire:
         {
             // 魔法
-                auto transform2DPush
-                    = UiManager::Instance().GetUies(
-                        (int)UiManager::UiCount::PlayerCommandFireCheck)
-                    ->GetComponent<TransForm2D>();
+            auto transform2DPush
+                = UiManager::Instance().GetUies(
+                    (int)UiManager::UiCount::PlayerCommandFire)
+                ->GetComponent<TransForm2D>();
 
-                DirectX::XMFLOAT2 pos;
-                pos = transform2DPush->GetPosition();
+            DirectX::XMFLOAT2 pos;
+            pos = transform2DPush->GetPosition();
 
-                float sizeMax;
-                sizeMax = transform2DPush->GetScale().x;
-                StartMagicUiCharge(pos, sizeMax);
+            float sizeMax;
+            // コマンドボタン分の大きさを削る
+            sizeMax = transform2DPush->GetScale().x - PlayerConfig::mpBarOffset;
+            StartMagicUiCharge(pos, sizeMax);
 
-                transform2DPush->SetPosition(pos);
-                return true;
-          
+            transform2DPush->SetPosition(pos);
+            return true;
+
             break;
         }
         case (int)CommandMagic::Thander:
@@ -3534,14 +3495,15 @@ bool Player::InputMagick()
             // 魔法
                 auto transform2DPush
                     = UiManager::Instance().GetUies(
-                        (int)UiManager::UiCount::PlayerCommandRigtningCheck)
+                        (int)UiManager::UiCount::PlayerCommandRigtning)
                     ->GetComponent<TransForm2D>();
 
                 DirectX::XMFLOAT2 pos;
                 pos = transform2DPush->GetPosition();
 
                 float sizeMax;
-                sizeMax = transform2DPush->GetScale().x;
+                // コマンドボタン分の大きさを削る
+                sizeMax = transform2DPush->GetScale().x - PlayerConfig::mpBarOffset;
                 StartMagicUiCharge(pos, sizeMax);
 
                 transform2DPush->SetPosition(pos);
@@ -3554,14 +3516,15 @@ bool Player::InputMagick()
             // 魔法
                 auto transform2DPush
                     = UiManager::Instance().GetUies(
-                        (int)UiManager::UiCount::PlayerCommandIceCheck)
+                        (int)UiManager::UiCount::PlayerCommandIce)
                     ->GetComponent<TransForm2D>();
 
                 DirectX::XMFLOAT2 pos;
                 pos = transform2DPush->GetPosition();
 
                 float sizeMax;
-                sizeMax = transform2DPush->GetScale().x;
+                // コマンドボタン分の大きさを削る
+                sizeMax = transform2DPush->GetScale().x - PlayerConfig::mpBarOffset;
                 StartMagicUiCharge(pos, sizeMax);
 
                 transform2DPush->SetPosition(pos);
@@ -3581,141 +3544,6 @@ bool Player::InputMagick()
 
     }
 
-
-    //// 続けて押せない
-    //if ()return false;
-    switch (selectMagicCheck)
-    {
-    case (int)CommandMagic::Fire:
-    {
-        // 魔法
-        if (gamePad.GetButton() & GamePad::BTN_B &&
-            !gamePad.GetButtonDownCountinue())
-        {
-            auto transform2DPush
-                = UiManager::Instance().GetUies(
-                    (int)UiManager::UiCount::PlayerCommandShortCutFire)
-                ->GetComponent<TransForm2D>();
-
-            // 一つコマンドの大きさ
-            auto transform2DScale
-                = UiManager::Instance().GetUies(
-                    (int)UiManager::UiCount::PlayerCommandFireCheck)
-                ->GetComponent<TransForm2D>();
-
-            DirectX::XMFLOAT2 pos;
-            pos = transform2DPush->GetPosition();
-
-            float sizeMax;
-            sizeMax = transform2DScale->GetScale().x;
-            StartMagicUiCharge(pos, sizeMax);
-
-            transform2DPush->SetPosition(pos);
-            return true;
-        }
-        // 魔法UI初期化
-        else
-        {
-            bool isPush = false;
-            gamePad.SetButtonDownCountinue(isPush);
-            StartMagicUiFire();
-        }
-        break;
-    }
-    case (int)CommandMagic::Thander:
-    {
-        // 魔法
-        if (gamePad.GetButton() & GamePad::BTN_X &&
-            !gamePad.GetButtonDownCountinue())
-        {
-            auto transform2DPush
-                = UiManager::Instance().GetUies(
-                    (int)UiManager::UiCount::PlayerCommandShortCutSunder)
-                ->GetComponent<TransForm2D>();
-
-            // 一つコマンドの大きさ
-            auto transform2DScale
-                = UiManager::Instance().GetUies(
-                    (int)UiManager::UiCount::PlayerCommandFireCheck)
-                ->GetComponent<TransForm2D>();
-
-            DirectX::XMFLOAT2 pos;
-            pos = transform2DPush->GetPosition();
-
-            float sizeMax;
-            sizeMax = transform2DScale->GetScale().x;
-            StartMagicUiCharge(pos, sizeMax);
-
-            transform2DPush->SetPosition(pos);
-            return true;
-        }
-        // 魔法UI初期化
-        else
-        {
-            bool isPush = false;
-            gamePad.SetButtonDownCountinue(isPush);
-            StartMagicUiFire();
-        }
-        break;
-    }
-    case (int)CommandMagic::Ice:
-    {
-        // 魔法
-        if (gamePad.GetButton() & GamePad::BTN_A &&
-            !gamePad.GetButtonDownCountinue())
-        {
-            auto transform2DPush
-                = UiManager::Instance().GetUies(
-                    (int)UiManager::UiCount::PlayerCommandShortCutIce)
-                ->GetComponent<TransForm2D>();
-
-            // 一つコマンドの大きさ
-            auto transform2DScale
-                = UiManager::Instance().GetUies(
-                    (int)UiManager::UiCount::PlayerCommandFireCheck)
-                ->GetComponent<TransForm2D>();
-
-            DirectX::XMFLOAT2 pos;
-            pos = transform2DPush->GetPosition();
-
-            float sizeMax;
-            sizeMax = transform2DScale->GetScale().x;
-            StartMagicUiCharge(pos, sizeMax);
-
-            transform2DPush->SetPosition(pos);
-            return true;
-        }
-        // 魔法UI初期化
-        else
-        {
-            bool isPush = false;
-            gamePad.SetButtonDownCountinue(isPush);
-            StartMagicUiFire();
-        }
-        break;
-    }
-    case (int)CommandMagic::Heale:
-    {
-        // 魔法
-        if (gamePad.GetButton() & GamePad::BTN_Y &&
-            !gamePad.GetButtonDownCountinue())
-        {
-            return true;
-        }
-        else
-        {
-            bool isPush = false;
-            gamePad.SetButtonDownCountinue(isPush);
-        }
-        break;
-    }
-    default:
-    {
-
-        break;
-    }
-    }
-  
     // ボタンから手を離したら
     StartMagicUiFire();
     return false;
@@ -4608,7 +4436,7 @@ void Player::StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax)
                 (int)UiManager::UiCount::PlayerCommandPushNow)
             ->GetComponent<Ui>();
         // 安全チェック
-        if (!pushUi2D)return;
+        if (!pushNowUi)return;
 
         pushNowUi->SetDrawCheck(isDrawUi);
 
@@ -4617,11 +4445,11 @@ void Player::StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax)
                 (int)UiManager::UiCount::PlayerCommandCharge)
             ->GetComponent<Ui>();
         // 安全チェック
-        if (!pushUi2D)return;
+        if (!pushUiCharge)return;
 
         pushUiCharge->SetDrawCheck(isDrawUi);
 
-        // 位置大きさ
+        // 位置大きさ　ゲージ
         auto transform2DPush
             = UiManager::Instance().GetUies(
                 (int)UiManager::UiCount::PlayerCommandPush)
@@ -4630,9 +4458,13 @@ void Player::StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax)
         if (!transform2DPush)return;
 
         transform2DPush->SetPosition(pos);
+
+        transform2DPush->GetScale();
+
         transform2DPush->SetScale(
             { gaugeSizeMax,transform2DPush->GetScale().y });
 
+        // バー
         auto transform2DPushNow
             = UiManager::Instance().GetUies(
                 (int)UiManager::UiCount::PlayerCommandPushNow)
@@ -4642,17 +4474,20 @@ void Player::StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax)
 
         transform2DPushNow->SetPosition(pos);
 
-
+        // 長押し文字UI位置
         auto transform2DCharge
             = UiManager::Instance().GetUies(
                 (int)UiManager::UiCount::PlayerCommandCharge)
             ->GetComponent<TransForm2D>();
         transform2DCharge->SetPositionY(pos.y);
+
         // 溜め
         float gaugeWidth = gaugeSizeMax * playerCommandPushUiChargeTime * 0.08f;
 
         transform2DPushNow->SetScale(
             { gaugeWidth,transform2DPushNow->GetScale().y});
+
+
     }
 }
 

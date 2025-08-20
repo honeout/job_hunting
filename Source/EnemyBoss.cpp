@@ -703,7 +703,6 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
         audioParam.volume = seVolume;
         InputSe(audioParam);
 
-
         DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
         DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
         DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
