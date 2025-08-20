@@ -930,7 +930,7 @@ void SceneGame::InitializeComponent()
 		DirectX::XMFLOAT2 scale = { 358,310 };
 		transform2D->SetScale(commandSize);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
+		DirectX::XMFLOAT2 texScale = { PlayerConfig::commandSelectTexScale };
 		transform2D->SetTexScale(texScale);
 
 		actor->AddComponent<Ui>();
@@ -976,7 +976,7 @@ void SceneGame::InitializeComponent()
 		DirectX::XMFLOAT2 scale = { 358,310 };
 		transform2D->SetScale(commandSize);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
+		DirectX::XMFLOAT2 texScale = { PlayerConfig::commandSelectTexScale };
 		transform2D->SetTexScale(texScale);
 
 		actor->AddComponent<Ui>();
@@ -992,94 +992,6 @@ void SceneGame::InitializeComponent()
 
 		// 非選択状態透明度
 		ui->SetAlpha(commandAlphaUnSelect);
-
-		UiManager::Instance().Register(actor);
-	}
-
-
-	// UI PlayerCommandAttackCheck
-	{
-		const char* filename = "Data/Sprite/Command selection attack.png";
-		auto actor = ActorManager::Instance().Create();
-		// 安全チェック
-		if (!actor) return;
-		actor->SetName("PlayerCommandAttackCheck");
-		actor->AddComponent<SpriteControll>();
-		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-		actor->AddComponent<TransForm2D>();
-		// 位置　角度　スケール情報
-		auto transform2D = actor->GetComponent<TransForm2D>();
-		// 安全チェック
-		if (!transform2D) return;
-
-		transform2D->SetPosition({ commandPos.x,commandPos.y - commandOffset });
-		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
-
-		float angle = 0;
-		transform2D->SetAngle(angle);
-		
-		DirectX::XMFLOAT2 scale = { 358,310 };
-		transform2D->SetScale(commandSize);
-		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
-
-		actor->AddComponent<Ui>();
-		// 描画チェック
-		auto ui = actor->GetComponent<Ui>();
-		// 安全チェック
-		if (!ui) return;
-		ui->SetDrawCheck(DrawUiEmpth);
-
-		// これが２Dかの確認
-		bool check2d = true;
-		actor->SetCheck2d(check2d);
-
-		UiManager::Instance().Register(actor);
-	}
-
-	// UI PlayerCommandMagickCheck
-	{
-		const char* filename = "Data/Sprite/Command selection magic.png";
-		auto actor = ActorManager::Instance().Create();
-		// 安全チェック
-		if (!actor) return;
-		actor->SetName("PlayerCommandMagickCheck");
-		actor->AddComponent<SpriteControll>();
-		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-		actor->AddComponent<TransForm2D>();
-		// 位置　角度　スケール情報
-		auto transform2D = actor->GetComponent<TransForm2D>();
-		// 安全チェック
-		if (!transform2D) return;
-		DirectX::XMFLOAT2 pos;
-		pos = { commandPos.x, commandPos.y + commandMagicOffset.y };
-		transform2D->SetPosition(pos);
-		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
-
-		float angle = 0;
-		transform2D->SetAngle(angle);
-
-		DirectX::XMFLOAT2 scale = { 358,310 };
-		transform2D->SetScale(commandSize);
-		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
-
-		actor->AddComponent<Ui>();
-		// 描画チェック
-		auto ui = actor->GetComponent<Ui>();
-		// 安全チェック
-		if (!ui) return;
-		ui->SetDrawCheck(DrawUiEmpth);
-
-		// これが２Dかの確認
-		bool check2d = true;
-		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}
@@ -1112,7 +1024,7 @@ void SceneGame::InitializeComponent()
 		DirectX::XMFLOAT2 scale = { 280,89 };
 		transform2D->SetScale(commandSize);
 		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
+		DirectX::XMFLOAT2 texScale = { PlayerConfig::commandSelectTexScale };
 		transform2D->SetTexScale(texScale);
 
 		actor->AddComponent<Ui>();
@@ -1128,96 +1040,6 @@ void SceneGame::InitializeComponent()
 
 		// 非選択状態透明度
 		ui->SetAlpha(commandAlphaUnSelect);
-
-		UiManager::Instance().Register(actor);
-	}
-	// UI PlayerCommandSpecialUnCheck
-	{
-		const char* filename = "Data/Sprite/Special Move Selection.png";
-		auto actor = ActorManager::Instance().Create();
-		// 安全チェック
-		if (!actor) return;
-		actor->SetName("PlayerCommandSpecialUnCheck");
-		actor->AddComponent<SpriteControll>();
-		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-		actor->AddComponent<TransForm2D>();
-		// 位置　角度　スケール情報
-		auto transform2D = actor->GetComponent<TransForm2D>();
-		// 安全チェック
-		if (!transform2D) return;
-
-		DirectX::XMFLOAT2 pos;
-		pos = { commandPos.x + commandSpecialOffset.x, commandPos.y + commandSpecialOffset.y };
-		transform2D->SetPosition(pos);
-		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
-
-		float angle = 0;
-		transform2D->SetAngle(angle);
-
-		DirectX::XMFLOAT2 scale = { 280,89 };
-		transform2D->SetScale(commandSize);
-		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
-
-		actor->AddComponent<Ui>();
-		// 描画チェック
-		auto ui = actor->GetComponent<Ui>();
-		// 安全チェック
-		if (!ui) return;
-		ui->SetDrawCheck(DrawUiEmpth);
-
-		// これが２Dかの確認
-		bool check2d = true;
-		actor->SetCheck2d(check2d);
-
-		// 非選択状態透明度
-		ui->SetAlpha(commandAlphaUnSelect);
-
-		UiManager::Instance().Register(actor);
-	}
-	// UI PlayerCommandSpecialCheck
-	{
-		const char* filename = "Data/Sprite/Special Move Selection.png";
-		auto actor = ActorManager::Instance().Create();
-		// 安全チェック
-		if (!actor) return;
-		actor->SetName("PlayerCommandSpecialCheck");
-		actor->AddComponent<SpriteControll>();
-		actor->GetComponent<SpriteControll>()->LoadSprite(filename);
-		actor->AddComponent<TransForm2D>();
-		// 位置　角度　スケール情報
-		auto transform2D = actor->GetComponent<TransForm2D>();
-		if (!transform2D) return;
-
-		DirectX::XMFLOAT2 pos;
-		pos = { commandPos.x + commandSpecialOffset.x, commandPos.y + commandSpecialOffset.y };
-		transform2D->SetPosition(pos);
-		// 元の位置
-		DirectX::XMFLOAT2 texPos = { 0, 0 };
-		transform2D->SetTexPosition(texPos);
-
-		float angle = 0;
-		transform2D->SetAngle(angle);
-
-		DirectX::XMFLOAT2 scale = { 308,89 };
-		transform2D->SetScale(commandSize);
-		// 元の大きさ
-		DirectX::XMFLOAT2 texScale = { 0,0 };
-		transform2D->SetTexScale(texScale);
-
-		actor->AddComponent<Ui>();
-		// 描画チェック
-		auto ui = actor->GetComponent<Ui>();
-		// 安全チェック
-		if (!ui) return;
-		ui->SetDrawCheck(DrawUiEmpth);
-
-		// これが２Dかの確認
-		bool check2d = true;
-		actor->SetCheck2d(check2d);
 
 		UiManager::Instance().Register(actor);
 	}

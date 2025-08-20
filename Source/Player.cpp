@@ -1255,16 +1255,17 @@ bool Player::InputSelectCheck()
         auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack);
         if (!sharedUiComandoAttackId)
             return false;
-        auto uiIdAttack = sharedUiComandoAttackId->GetComponent<Ui>();
-        // 安全チェック コマンドUI　攻撃選択中
-        auto sharedUiComandoAttackCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttackCheck);
-        if (!sharedUiComandoAttackCheckId || !uiIdAttack)
-            return false;
-        auto uiIdAttackCheck = sharedUiComandoAttackCheckId->GetComponent<Ui>();
-        // 　コマンドUI　攻撃 非表示
-        uiIdAttack->SetDrawCheck(isDrawUiEmpth);
-        // コマンドUI　攻撃選択中　表示
-        uiIdAttackCheck->SetDrawCheck(isDrawUi);
+        auto uiIdAttackUi = sharedUiComandoAttackId->GetComponent<Ui>();
+        auto uiIdAttackTransform2D = sharedUiComandoAttackId->GetComponent<TransForm2D>();
+
+        // 安全チェック
+        if (!uiIdAttackUi && !uiIdAttackTransform2D) return false;
+
+        // 元画像の選択状態の場所
+        uiIdAttackTransform2D->SetTexPosition(PlayerConfig::commandSelectTexScale);
+
+        // 非選択用アルファ値
+        uiIdAttackUi->SetAlpha(PlayerConfig::onAlpha);
     }
     // コマンドUI　非選択 攻撃
     else
@@ -1273,18 +1274,17 @@ bool Player::InputSelectCheck()
         auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack);
         if (!sharedUiComandoAttackId)
             return false;
-        auto uiIdAttack = sharedUiComandoAttackId->GetComponent<Ui>();
-        // 安全チェック コマンドUI　攻撃選択中
-        auto sharedUiComandoAttackCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttackCheck);
-        if (!sharedUiComandoAttackCheckId || !uiIdAttack)
-            return false;
-        auto uiIdAttackCheck = sharedUiComandoAttackCheckId->GetComponent<Ui>();
-        if (!uiIdAttackCheck) return false;
+        auto uiIdAttackUi = sharedUiComandoAttackId->GetComponent<Ui>();
+        auto uiIdAttackTransform2D = sharedUiComandoAttackId->GetComponent<TransForm2D>();
 
-        // 　コマンドUI　攻撃 表示
-        uiIdAttack->SetDrawCheck(isDrawUi);
-        // コマンドUI　攻撃選択中　非表示
-        uiIdAttackCheck->SetDrawCheck(isDrawUiEmpth);
+        // 安全チェック
+        if (!uiIdAttackUi && !uiIdAttackTransform2D) return false;
+
+        // 元画像の非選択状態の場所
+        uiIdAttackTransform2D->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
+
+        // 非選択用アルファ値
+        uiIdAttackUi->SetAlpha(PlayerConfig::halfAlpha);
     }
     //  コマンドUI　選択中 魔法選んだ時
     if (selectCheck == (int)CommandAttack::Magic)
@@ -1293,17 +1293,17 @@ bool Player::InputSelectCheck()
         auto sharedUiComandoMagickId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick);
         if (!sharedUiComandoMagickId)
             return false;
-        auto uiIdMagick = sharedUiComandoMagickId->GetComponent<Ui>();
-        // 安全チェック コマンドUI　魔法選択中
-        auto sharedUiComandoMagickCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagickCheck);
-        if (!sharedUiComandoMagickCheckId || !uiIdMagick)
-            return false;
-        auto uiIdMagickCheck = sharedUiComandoMagickCheckId->GetComponent<Ui>();
-        if (!uiIdMagickCheck) return false;
-        // コマンドUI　魔法 非表示
-        uiIdMagick->SetDrawCheck(isDrawUiEmpth);
-        // コマンドUI　魔法 表示
-        uiIdMagickCheck->SetDrawCheck(isDrawUi);
+        auto uiIdMagicUi = sharedUiComandoMagickId->GetComponent<Ui>();
+        auto uiIdMagickTransform2D = sharedUiComandoMagickId->GetComponent<TransForm2D>();
+
+        // 安全チェック
+        if (!uiIdMagicUi && !uiIdMagickTransform2D) return false;
+
+        // 元画像の選択状態の場所
+        uiIdMagickTransform2D->SetTexPosition(PlayerConfig::commandSelectTexScale);
+
+        // 非選択用アルファ値
+        uiIdMagicUi->SetAlpha(PlayerConfig::onAlpha);
     }
     //  コマンドUI　非選択 魔法
     else
@@ -1312,18 +1312,17 @@ bool Player::InputSelectCheck()
         auto sharedUiComandoMagickId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick);
         if (!sharedUiComandoMagickId)
             return false;
-        auto uiIdMagick = sharedUiComandoMagickId->GetComponent<Ui>();
-        // 安全チェック コマンドUI　魔法選択中
-        auto sharedUiComandoMagickCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagickCheck);
-        if (!sharedUiComandoMagickCheckId || !uiIdMagick)
-            return false;
-        auto uiIdMagickCheck = sharedUiComandoMagickCheckId->GetComponent<Ui>();
-        if (!uiIdMagickCheck)
-            return false;
-        // コマンドUI　魔法 表示
-        uiIdMagick->SetDrawCheck(isDrawUi);
-        // コマンドUI　魔法 非表示
-        uiIdMagickCheck->SetDrawCheck(isDrawUiEmpth);
+        auto uiIdMagicUi = sharedUiComandoMagickId->GetComponent<Ui>();
+        auto uiIdMagickTransform2D = sharedUiComandoMagickId->GetComponent<TransForm2D>();
+
+        // 安全チェック
+        if (!uiIdMagicUi && !uiIdMagickTransform2D) return false;
+
+        // 元画像の非選択状態の場所
+        uiIdMagickTransform2D->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
+
+        // 非選択用アルファ値
+        uiIdMagicUi->SetAlpha(PlayerConfig::halfAlpha);
     }
     // コマンドUI　選択中 必殺技選ぶ
     if (selectCheck == (int)CommandAttack::Special)
@@ -1332,18 +1331,12 @@ bool Player::InputSelectCheck()
         auto sharedUiSpecialId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
         if (!sharedUiSpecialId)
             return false;
-        auto uiIdSpecial = sharedUiSpecialId->GetComponent<Ui>();
-        // 安全チェック コマンドUI　必殺技選択中
-        auto sharedUiSpecialCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecialCheck);
-        if (!sharedUiSpecialId || !uiIdSpecial)
-            return false;
-        auto uiIdSpecialCheck = sharedUiSpecialCheckId->GetComponent<Ui>();
-        if (!uiIdSpecialCheck)
-            return false;
-        // コマンドUI　必殺技 非表示
-        uiIdSpecial->SetDrawCheck(isDrawUiEmpth);
-        // コマンドUI　必殺技 表示
-        uiIdSpecialCheck->SetDrawCheck(isDrawUi);
+        auto uiIdSpecialUi = sharedUiSpecialId->GetComponent<Ui>();
+        auto uiIdSpecialTransform2D = sharedUiSpecialId->GetComponent<TransForm2D>();
+        if (!uiIdSpecialUi && !uiIdSpecialTransform2D) return false;
+
+        // 選択
+        uiIdSpecialTransform2D->SetTexPosition(PlayerConfig::commandSelectTexScale);
 
         // コマンド選択判断　透明度
         float selectAlpha = commandAlphaSelect;
@@ -1354,7 +1347,7 @@ bool Player::InputSelectCheck()
             selectAlpha = commandAlphaUnSelect;
 
         // 選択不可かどうか
-        uiIdSpecialCheck->SetAlpha(selectAlpha);
+        uiIdSpecialUi->SetAlpha(selectAlpha);
     }
     //  コマンドUI　非選択 必殺技
     else
@@ -1363,18 +1356,15 @@ bool Player::InputSelectCheck()
         auto sharedUiSpecialId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
         if (!sharedUiSpecialId)
             return false;
-        auto uiIdSpecial = sharedUiSpecialId->GetComponent<Ui>();
-        // 安全チェック コマンドUI　必殺技選択中
-        auto sharedUiSpecialCheckId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecialCheck);
-        if (!sharedUiSpecialCheckId || !uiIdSpecial)
-            return false;
-        auto uiIdSpecialCheck = sharedUiSpecialCheckId->GetComponent<Ui>();
-        if (!uiIdSpecialCheck)
-            return false;
-        // コマンドUI　必殺技 表示
-        uiIdSpecial->SetDrawCheck(isDrawUi);
-        // コマンドUI　必殺技 非表示
-        uiIdSpecialCheck->SetDrawCheck(isDrawUiEmpth);
+        auto uiIdSpecialUi = sharedUiSpecialId->GetComponent<Ui>();
+        auto uiIdSpecialTransform2D = sharedUiSpecialId->GetComponent<TransForm2D>();
+        if (!uiIdSpecialUi && !uiIdSpecialTransform2D) return false;
+
+        // 選択
+        uiIdSpecialTransform2D->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
+
+        // 選択不可かどうか
+        uiIdSpecialUi->SetAlpha(PlayerConfig::halfAlpha);
     }
 
     return false;
@@ -2225,12 +2215,12 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
 
         // 安全チェック UIコマンド　点滅用
         auto sharedUiCommandSpecialUnCheckId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandSpecialUnCheck);
+            (int)UiManager::UiCount::PlayerCommandSpecial);
         if (!sharedUiCommandSpecialUnCheckId)
             return;
 
         // UIコマンド　点滅用 表示、非表示切り替え用
-        auto uiIdSpecialUnCheck = sharedUiCommandSpecialUnCheckId->GetComponent<Ui>();
+        auto uiIdSpecialUnCheck = sharedUiCommandSpecialUnCheckId->GetComponent<TransForm2D>();
 
         // 安全チェック
         if (!uiIdSpecialUnCheck)
@@ -2241,7 +2231,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
             !specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill)
         {
             // UI非表示
-            uiIdSpecialUnCheck->SetDrawCheck(isDrawUiEmpth);
+            uiIdSpecialUnCheck->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
             return;
         }
 
@@ -2251,8 +2241,11 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         // 点滅
         isUiSpecilDrawCheck = isUiSpecilDrawCheck ? false : true;
 
-        // 表示　非表示
-        uiIdSpecialUnCheck->SetDrawCheck(isUiSpecilDrawCheck);
+        // 点滅用　コマンド変換値 元画像
+        DirectX::XMFLOAT2 blinkTexPos = isUiSpecilDrawCheck ? PlayerConfig::commandSelectTexScale : PlayerConfig::commandUnSelectTexScale;
+
+        // 選択、非選択
+        uiIdSpecialUnCheck->SetTexPosition(blinkTexPos);
         return;
     }
 

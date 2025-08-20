@@ -39,6 +39,8 @@ public:
 
     // 元位置の設定
     void SetTexPosition(const DirectX::XMFLOAT2& texPosition) { this->texPosition = texPosition; }
+    // 元位置Y座標の設定
+    void SetTexPositionY(const float texPositionY) { this->texPosition.y = texPositionY; }
 
     // 位置の取得
     const DirectX::XMFLOAT2& GetPosition() const { return position; }
