@@ -164,9 +164,15 @@ void SceneGame::Update(float elapsedTime)
 	// ポストエフェクト
 	SetSlowState(elapsedTime);
 
+	// プレイヤーが０なら処理を通さない
+	if (PlayerManager::Instance().GetPlayerCount() <= 0) return;
+
 	// ゲームオーバー
 	if (PlayerManager::Instance().GetPlayer(0)->GetComponent<Player>()->GetIsSceneChange())
 		SceneManager::Instance().ChangeScene(new SceneGameOver);
+
+	// エネミーが０なら処理を通さない
+	if (EnemyManager::Instance().GetEnemyCount() <= 0) return;
 
 	// クリア
 	if (EnemyManager::Instance().GetEnemy(0)->GetComponent<EnemyBoss>()->GetIsSceneChange())

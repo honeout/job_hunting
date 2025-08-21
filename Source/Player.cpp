@@ -2197,6 +2197,7 @@ void Player::InputSpecialAttackChange()
     if (specialAttackNum >= PlayerConfig::spCmdMoveLimitMax)
         specialAttackNum = PlayerConfig::spCmdMoveLimitMax;
 }
+
 // UI必殺技演出
 void Player::SpecialPlayUlEffect(float elapsedTime)
 {
@@ -2220,10 +2221,11 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
             return;
 
         // UIコマンド　点滅用 表示、非表示切り替え用
-        auto uiIdSpecialUnCheck = sharedUiCommandSpecialUnCheckId->GetComponent<TransForm2D>();
+        auto uiIdSpecialUnCheckUi = sharedUiCommandSpecialUnCheckId->GetComponent<Ui>();
+        auto uiIdSpecialUnCheckTransform2D = sharedUiCommandSpecialUnCheckId->GetComponent<TransForm2D>();
 
         // 安全チェック
-        if (!uiIdSpecialUnCheck)
+        if (!uiIdSpecialUnCheckUi && !uiIdSpecialUnCheckTransform2D)
             return;
 
         // 特殊技溜まって無かったら コマンドUI点滅しない
@@ -2231,7 +2233,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
             !specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill)
         {
             // UI非表示
-            uiIdSpecialUnCheck->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
+            uiIdSpecialUnCheckUi->SetAlpha(PlayerConfig::halfAlpha);
             return;
         }
 
@@ -2245,7 +2247,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         DirectX::XMFLOAT2 blinkTexPos = isUiSpecilDrawCheck ? PlayerConfig::commandSelectTexScale : PlayerConfig::commandUnSelectTexScale;
 
         // 選択、非選択
-        uiIdSpecialUnCheck->SetTexPosition(blinkTexPos);
+        uiIdSpecialUnCheckTransform2D->SetTexPosition(blinkTexPos);
         return;
     }
 
