@@ -1013,6 +1013,9 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
     const DirectX::XMFLOAT4X4& view,
     const DirectX::XMFLOAT4X4& projection)
 {
+    int uiCount = UiManager::Instance().GetUiesCount();
+    if (uiCount <= uiCountMax) return;
+
     // ビューポート 画面のサイズ等
     // ビューポートとは2Dの画面に描画範囲の指定(クリッピング指定も出来る)位置を指定
     D3D11_VIEWPORT viewport;
@@ -1024,8 +1027,6 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
     DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
     // ローカルからワールドに行くときにいる奴相手のポジションを渡す。
     DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
-
-    if ((int)UiManager::Instance().GetUiesCount() < (int)UiManager::UiCount::CommandDisabled02) return;
 
     // ロックオンしてるか 安全チェック
     auto sharedUiSightId = UiManager::Instance().GetUies((int)UiManager::UiCount::Sight);
@@ -1041,15 +1042,11 @@ void Player::RockOnUI(ID3D11DeviceContext* dc,
     auto uiIdSightTransform = sharedUiSightId->GetComponent<TransForm2D>();
     auto uiIdSightMove = sharedUiMoveId->GetComponent<Ui>();
     auto uiIdSightMoveTransform = sharedUiMoveId->GetComponent<TransForm2D>();
-    int uiCount = UiManager::Instance().GetUiesCount();
-    if (uiCount <= uiCountMax) return;
 
     // 安全チェック
     if (!uiIdSight || !uiIdSightTransform || !uiIdSightMove || !uiIdSightMoveTransform)return;
     
-    
     // 全ての敵の頭上にHPゲージを表示
-
     EnemyManager& enemyManager = EnemyManager::Instance();
     // エネミーの数
     int enemyCount = enemyManager.GetEnemyCount();
@@ -1197,29 +1194,8 @@ bool Player::InputSelectCheck()
         if (!uiIdAttackCheck)
             return false;
 
-        // 安全チェック 特殊技UI選択不可
-        auto sharedUiCommandDisabled01Id = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled01);
-        if (!sharedUiCommandDisabled01Id)
-            return false;
-
-        auto uiIdIsCommandDisabledAttack = sharedUiCommandDisabled01Id->GetComponent<Ui>();
-        
-        // 安全チェック
-        if (!uiIdIsCommandDisabledAttack)
-            return false;
-
-        // 安全チェック 特殊技UI選択不可
-        auto sharedUiCommandDisabled02Id = UiManager::Instance().GetUies((int)UiManager::UiCount::CommandDisabled02);
-        if (!sharedUiCommandDisabled02Id)
-            return false;
-        auto uiIdIsCommandDisabledFire = sharedUiCommandDisabled02Id->GetComponent<Ui>();
-        if (!uiIdIsCommandDisabledFire)
-            return false;
         uiIdAttack->SetDrawCheck(isDrawUiEmpth);
         uiIdAttackCheck->SetDrawCheck(isDrawUiEmpth);
-
-        uiIdIsCommandDisabledAttack->SetDrawCheck(isDrawUiEmpth);
-        uiIdIsCommandDisabledFire->SetDrawCheck(isDrawUiEmpth);
     }
 
     // 一度離すまでボタン効かない
@@ -2204,16 +2180,6 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
     // Ui必殺技選択してないとき コマンドUI点滅処理
     if (!specialAction)
     {
-        auto uiId = UiManager::Instance().GetUies((int)UiManager::UiCount::ButtonY);
-        if (!uiId) return;
-
-        auto uiIdSpecialButton = uiId->GetComponent<Ui>();
-        // 安全チェック
-        if (!uiIdSpecialButton) return;
-
-        // コマンド　ボタン　非表示
-        uiIdSpecialButton->SetDrawCheck(isDrawUiEmpth);
-
         // 安全チェック UIコマンド　点滅用
         auto sharedUiCommandSpecialUnCheckId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpecial);
@@ -2283,19 +2249,6 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         // 安全チェック
         if (!uiIdSpecialFireTransForm2D || !uiIdSpecialFire)
             return;
-
-        // 必殺技ボタン
-        // 安全チェック
-        auto sharedUiButtonId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::ButtonY);
-        if (!sharedUiButtonId)
-            return;
-
-        auto uiIdSpecialButton = sharedUiButtonId->GetComponent<Ui>();
-        auto uiIdSpecialButtonTransForm2D= sharedUiButtonId->GetComponent<TransForm2D>();
-        // 安全チェック
-        if (!uiIdSpecialButton || !uiIdSpecialButtonTransForm2D)
-            return;
         
         float pos = uiIdSpecialAttackTransForm2D->GetPosition().y + PlayerConfig::offset;
 
@@ -2305,10 +2258,7 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         if (!specialAttack.at((int)SpecialAttackType::Attack).hasSkill)
             selectAlpha = commandAlphaUnSelect;
 
-        //// 必殺技コマンド切りつけ
-        //uiIdSpecialButton->SetDrawCheck(isDrawUi);
-        //uiIdSpecialButtonTransForm2D->SetPositionY(pos);
-        // 選択コマンドに変更
+        // 必殺技コマンド切りつけ 選択コマンドに変更
         uiIdSpecialAttackTransForm2D->SetTexPosition(commandSelectTexPos);
         uiIdSpecialAttackTransForm2D->SetTexScale(commandSelectTexScale);
 
@@ -2350,18 +2300,6 @@ void Player::SpecialPlayUlEffect(float elapsedTime)
         auto uiIdSpecialAttack = sharedUiSpecialShurashuId->GetComponent<Ui>();
         // 安全チェック
         if (!uiIdSpecialAttackTransForm2D || !uiIdSpecialAttack)
-            return;
-
-        // 安全チェック
-        auto sharedUiButtonId = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::ButtonY);
-        if (!sharedUiButtonId)
-            return;
-
-        auto uiIdSpecialButton = sharedUiButtonId->GetComponent<Ui>();
-        auto uiIdSpecialButtonTransForm2D = sharedUiButtonId->GetComponent<TransForm2D>();
-        // 安全チェック
-        if (!uiIdSpecialButton || !uiIdSpecialButtonTransForm2D)
             return;
 
         float pos = uiIdSpecialFireTransForm2D->GetPosition().y + PlayerConfig::offset;
@@ -3233,18 +3171,16 @@ void Player::PinchMode(float elapsedTime)
 
     auto playerHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar);
     auto playerPushShort = UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort);
-    auto playerPush2 = UiManager::Instance().GetUies((int)UiManager::UiCount::Push2);
     auto playerShortCut = UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut);
 
     // 安全チェック
-    if (!playerHpBar || !playerPushShort ||!playerPush2 || !playerShortCut ) return;
+    if (!playerHpBar || !playerPushShort || !playerShortCut ) return;
     auto playerHpBarTransform2D = playerHpBar->GetComponent<TransForm2D>();
     auto playerPushShortUi = playerPushShort->GetComponent<Ui>();
-    auto playerPush2Ui = playerPush2->GetComponent<Ui>();
     auto playerShortCutUi = playerShortCut->GetComponent<Ui>();
 
     // 安全チェック
-    if (!playerHpBarTransform2D || !playerPushShortUi || !playerPush2Ui || !playerShortCutUi ) return;
+    if (!playerHpBarTransform2D || !playerPushShortUi || !playerShortCutUi ) return;
 
     // HP変化色
     playerHpBarTransform2D->SetTexPosition({ PlayerConfig::hpBarGreenwTexPos });
@@ -3268,13 +3204,11 @@ void Player::PinchMode(float elapsedTime)
             PlaySe("Data/Audio/SE/siren.wav");
 
             hintDrawCheck = hintDrawCheck ? false : true;
-            //playerPushShortUi->SetDrawCheck(hintDrawCheck);
         }
         // ショートカットキーが押されたら変わらない
         if (InputShortCutkeyMagic())
         {
             hintDrawCheck = true;
-            //playerPushShortUi->SetDrawCheck(hintDrawCheck);
         }
         // ピンチ時常に描画
         //playerPush2Ui->SetDrawCheck(isDrawUi);
@@ -3297,9 +3231,7 @@ void Player::PinchMode(float elapsedTime)
         // ピンチかどうか
         isPintch = false;
         hintDrawCheck = false;
-        //playerPushShortUi->SetDrawCheck(hintDrawCheck);
-        //playerPush2Ui->SetDrawCheck(hintDrawCheck);
-        //playerShortCutUi->SetDrawCheck(hintDrawCheck);
+
         PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
         vignetteData.smoothness = vignetteNormalSmoothness;
         vignetteData.intensity = vignetteNormalIntensity;

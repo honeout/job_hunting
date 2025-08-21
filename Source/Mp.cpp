@@ -21,6 +21,8 @@ void Mp::OnGUI()
     ImGui::SliderInt("Mp", &magic, 1, maxMagic);
 }
 #endif // _DEBUG
+
+// –³“GŽžŠÔXV
 bool Mp::UpdateInbincibleTimer(float elapsedTime)
 {
     if (invincibleTimer > invincibleTimerMin)

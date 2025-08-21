@@ -78,8 +78,6 @@ public:
         Sight,
         SightCheck,
         Mp,
-        Push,
-        Push2,
         PlayerCommandPush,
         PlayerCommandPushNow,
         PlayerCommandCharge,
@@ -88,10 +86,6 @@ public:
         PushShort,
         OperationInstructionsSelect,
         OperationInstructionsButton,
-        ButtonY,
-        CommandDisabled01,
-        CommandDisabled02,
-        //OperationInstructionsRBLB,
     };
 
     enum class UiCountTitle

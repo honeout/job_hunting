@@ -803,7 +803,7 @@ void SceneGameOver::SelectScene(float elapsedTime)
 
 	// ボタン確認
 	if (gamePad.GetButtonDown() & anyButton)isPush = true;
-
+	
 	switch (selectPush)
 	{
 	case (int)Select::Title:
