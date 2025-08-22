@@ -212,6 +212,6 @@ float4 main(VS_OUT pin) : SV_TARGET
 
         //return color;
 
-            return float4(f, color.a);
+        return float4(f, color.a);
 
 }

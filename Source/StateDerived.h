@@ -479,7 +479,7 @@ private:
 	Model::ModelAnim modelAnim;
 
 	// アニメーションジャンプ　する瞬間の時間
-	float animTime = 0.10f;
+	float animTime = 0.15f;
 };
 
 // 着地ステートオブジェクト

@@ -227,7 +227,7 @@ void SceneTitle::Render()
 	RenderShadowmap();
 	// model•`‰æ
 	Render3DScene();
-	postprocessingRenderer.SetBloomData(bloomData);
+	//postprocessingRenderer.SetBloomData(bloomData);
 
 	// GUI
 	ActorManager::Instance().RenderGui();

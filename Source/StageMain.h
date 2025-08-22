@@ -49,7 +49,7 @@ private:
     // 解消度を上げる。
     int texcoordMult = 0;
     // リムライト
-    int isRimRightning = 1;
+    int isRimRightning = 0;
 
     // 半径移動範囲
     float radiusArea = 100;

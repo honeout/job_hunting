@@ -131,6 +131,8 @@ int Framework::Run()
 			CalculateFrameStats();
 				//: syncInterval / 60.0f
 
+			//float elapsedTime = timer.TimeInterval();
+
 			float elapsedTime = syncInterval == 0
 				? timer.TimeInterval()
 				: syncInterval / static_cast<float>(GetDeviceCaps(hDC, VREFRESH))

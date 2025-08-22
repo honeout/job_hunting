@@ -1170,6 +1170,7 @@ void PlayerJumpState::Enter()
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Animation::Anim_Jump;
+	modelAnim.currentAnimationAddSeconds = 0.025f;
 	modelAnim.keyFrameEnd = 46.0f;
 	model->PlayAnimation(modelAnim);
 	// アニメーションルール
@@ -1222,11 +1223,6 @@ void PlayerJumpState::Execute(float elapsedTime)
 	{
 		playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Land));
 	}
-	//// 着地移動
-	//if (moveid->GetOnLadius() && playerid->InputMove())
-	//{
-	//	playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Move));
-	//}
 }
 
 void PlayerJumpState::Exit()
