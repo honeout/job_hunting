@@ -63,10 +63,6 @@ float4 main(VS_OUT pin) : SV_TARGET
     //float3 directionalDiffuse = CalcHalfLambert(N, L, directionalLightData.color.rgb, kd);
     //float3 directionalSpecular = CalcPhongSpecular(N, L, directionalLightData.color.rgb, E, shiness, ks);
 
-    //UNIT11
-    // 平行光源のライティング計算
-    float3 directionalDiffuse = CalcLambertDiffuse(N, L, directionalLightData.color.rgb, kd);
-    float3 directionalSpecular = CalcPhongSpecular(N, L, directionalLightData.color.rgb, E, shiness, ks);
 
     // UNIT11
     //// 平行光源の影なので、平行光源に退位して影を適応
@@ -75,11 +71,6 @@ float4 main(VS_OUT pin) : SV_TARGET
 
     // UNIT12
         // 平行光源の影なので、平行光源に退位して影を適応
-    float3 shadow = CalcShadowColorPCFFilter(shadowMap, shadowMapSamplerState, pin.shadowTexcoord, shadowColor,
-        shadowBias);
-
-        directionalDiffuse *= shadow;
-        directionalSpecular *= shadow;
 
         //float4 color = float4(ambient,diffuseColor.a);
         //color.rgb += diffuseColor.rgb*directionalDiffuse;
@@ -122,52 +113,6 @@ float4 main(VS_OUT pin) : SV_TARGET
 
 
 
-        // UNIT04
-    // スポットライトの処理
-    // 拡散光
-    // 結果
-        float3 spotDiffuse = (float3)0;
-        // 円光
-        // 結果
-        float3 spotSpecular = (float3)0;
-
-        for (i = 0; i < spotLightCount; ++i)
-        {
-            // ライトベクトルを算出
-            float3 lightVector = pin.world_position - spotLightData[i].position;
-
-            // ライトベクトルの長さを算出 サイズ型
-            float lightLenght = length(lightVector);
-
-            // ライトの影響範囲外なら後の計算をしない。
-            if (lightLenght > spotLightData[i].range)
-                continue;
-
-            // 中でマイナスをする理由
-            // 距離減衰を算出 逆数して光の範囲を出す クランプないで１１が出た場合それを引くとマイナスになるだからそれ以上は消す
-            //float attenuate = clamp(1.0f - lightLenght / pointLightData[i].range,0.0f,1.0f);
-            float attenuate = clamp(1.0f - lightLenght / spotLightData[i].range, 0.0f, 1.0f);
-
-            //lightVector = normalize(lightVector);
-            lightVector = normalize(lightVector);
-
-            // 角度減衰を算出してattenuateに乗算する
-            float3 spotDirection = normalize(spotLightData[i].direction.xyz);
-            float  angle = dot(spotDirection,lightVector);
-            float area = spotLightData[i].innerCorn - spotLightData[i].outerCorn;
-            attenuate *= clamp(1.0f - (spotLightData[i].innerCorn - angle) / area, 0.0f, 1.0f);
-
-            // 単位化ベクトル
-            //lightVector = lightVector / lightLenght;
-          spotDiffuse += CalcLambertDiffuse(N, lightVector,
-                spotLightData[i].color.rgb, kd.rgb) * attenuate;
-
-            spotSpecular += CalcPhongSpecular(N, lightVector,
-                spotLightData[i].color.rgb, E, shiness, ks.rgb) * attenuate;
-
-        }
-
-
         // 改造発色の良い処理
         //float4 color = diffuseColor;
         //color.rgb *= ambient + directionalDiffuse;
@@ -177,11 +122,11 @@ float4 main(VS_OUT pin) : SV_TARGET
 
         float4 color = float4(ambient, diffuseColor.a);
         // 影
-        color.rgb += diffuseColor.rgb * (directionalDiffuse + pointDiffuse + spotDiffuse);
+        color.rgb += diffuseColor.rgb * (pointDiffuse );
         // スペキュラー用
         if (isSpecular == 1)
         {
-            color.rgb += directionalSpecular + pointSpecular + spotSpecular;
+            color.rgb +=  pointSpecular;
         }
         if (isRimLighting)
         {
