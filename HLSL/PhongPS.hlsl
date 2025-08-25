@@ -59,9 +59,20 @@ float4 main(VS_OUT pin) : SV_TARGET
     float3 ambient = ka * ambientLightColor;
 
     // 平行光源のライティング計算
+    float3 directionalDiffuse = CalcLambertDiffuse(N, L, directionalLightData.color.rgb, kd);
+    float3 directionalSpecular = CalcPhongSpecular(N, L, directionalLightData.color.rgb, E, shiness, ks);
+
+    // 平行光源のライティング計算
     //float3 directionalDiffuse = CalcLambertDiffuse(N, L, directionalLightData.color.rgb, kd);
     //float3 directionalDiffuse = CalcHalfLambert(N, L, directionalLightData.color.rgb, kd);
     //float3 directionalSpecular = CalcPhongSpecular(N, L, directionalLightData.color.rgb, E, shiness, ks);
+
+    // 平行光源の影なので、平行光源に退位して影を適応
+    float3 shadow = CalcShadowColorPCFFilter(shadowMap, shadowMapSamplerState, pin.shadowTexcoord, shadowColor,
+        shadowBias);
+
+    directionalDiffuse *= shadow;
+    directionalSpecular *= shadow;
 
 
     // UNIT11
@@ -122,11 +133,11 @@ float4 main(VS_OUT pin) : SV_TARGET
 
         float4 color = float4(ambient, diffuseColor.a);
         // 影
-        color.rgb += diffuseColor.rgb * (pointDiffuse );
+        color.rgb += diffuseColor.rgb * (directionalDiffuse + pointDiffuse );
         // スペキュラー用
         if (isSpecular == 1)
         {
-            color.rgb +=  pointSpecular;
+            color.rgb += directionalSpecular + pointSpecular;
         }
         if (isRimLighting)
         {
