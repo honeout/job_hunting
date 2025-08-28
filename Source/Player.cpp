@@ -1833,6 +1833,8 @@ bool Player::InputShortCutkeyMagic()
     if (gamePad.GetButtonUp() & GamePad::BTN_LEFT_SHOULDER)
     {
         magicAction = false;
+        selectCheck = (int)CommandAttack::Attack;
+        selectMagicCheck = (int)CommandMagic::Normal;
     }
 
     return false;
@@ -3170,17 +3172,13 @@ void Player::PinchMode(float elapsedTime)
         return;
 
     auto playerHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar);
-    auto playerPushShort = UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort);
-    auto playerShortCut = UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut);
 
     // 安全チェック
-    if (!playerHpBar || !playerPushShort || !playerShortCut ) return;
+    if (!playerHpBar) return;
     auto playerHpBarTransform2D = playerHpBar->GetComponent<TransForm2D>();
-    auto playerPushShortUi = playerPushShort->GetComponent<Ui>();
-    auto playerShortCutUi = playerShortCut->GetComponent<Ui>();
 
     // 安全チェック
-    if (!playerHpBarTransform2D || !playerPushShortUi || !playerShortCutUi ) return;
+    if (!playerHpBarTransform2D) return;
 
     // HP変化色
     playerHpBarTransform2D->SetTexPosition({ PlayerConfig::hpBarGreenwTexPos });

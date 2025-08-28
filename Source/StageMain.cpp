@@ -40,6 +40,9 @@ void StageMain::Update(float elasedTime)
 void StageMain::Render(RenderContext& rc, ModelShader& shader)
 {
     Graphics& graphics = Graphics::Instance();
+    // シェーダー選択
+    //ModelShader* shaderStage = graphics.GetShader(ModelShaderId::Lanbert);
+
     // スペキュラー無効化
     rc.isSpecular = isSpecular;
     // 解消度を上げる。

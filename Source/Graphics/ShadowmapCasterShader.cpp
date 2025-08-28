@@ -174,6 +174,7 @@ void ShadowmapCasterShader::Draw(const RenderContext& rc, const Model* model)
 
 		for (const ModelResource::Subset& subset : mesh.subsets)
 		{
+			if (subset.indexCount == 0)continue;
 			rc.deviceContext->DrawIndexed(subset.indexCount, subset.startIndex, 0);
 		}
 	}

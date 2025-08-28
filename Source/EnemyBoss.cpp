@@ -258,7 +258,7 @@ void EnemyBoss::UpdateStatus(float elapsedTime)
     }
 
     // 削除
-    ProjectileManager::Instance().DeleteUpdate(elapsedTime);//todo いるの？
+    ProjectileManager::Instance().DeleteUpdate(elapsedTime);
 
     // ゲージ管理
     UiControlle(elapsedTime);
@@ -398,7 +398,7 @@ void EnemyBoss::CollisionImpactVsPlayer()
     ProjectileManager& projectileManager = ProjectileManager::Instance();
 
     // 全ての敵と総当たりで衝突処理
-    int playerCount = playerManager.GetPlayerCount();//todo 外
+    int playerCount = playerManager.GetPlayerCount();
     int projectileCount = projectileManager.GetProjectileCount();
 
     // player所持無し

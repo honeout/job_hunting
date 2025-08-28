@@ -71,6 +71,15 @@ private:
     // カウントダウン
     int        countDown = 0;
 
+    // 時間フレームレート変動用　経過時間
+    float      coolDownLimit = 0.0f;
+    // 時間フレームレート変動用　経過時間　最低値
+    float      coolDownLimitMin = 0.0f;
+    // 時間フレームレート変動用　経過速度
+    float      coolDownSpeed = 1.0f;
+    // 時間フレームレート変動用　経過速度　最大値
+    float      coolDownSpeedMax = 0.015f;
+
     // 桁
     int        digit = 0;
 

@@ -427,6 +427,8 @@ void SceneTitle::Render3DScene()
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
+	rc.shadowMapData.shadowBias;
+
 	// 3Dモデル描画
 	{
 		ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
@@ -452,6 +454,7 @@ void SceneTitle::RenderShadowmap()
 	if (!mainDirectionalLight)
 		return;
 
+	// 描画する場所
 	dc->OMSetRenderTargets(0, &rtv, dsv);
 
 	// ビューポートの設定

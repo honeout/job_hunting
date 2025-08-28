@@ -1,6 +1,7 @@
 #include "Graphics/Graphics.h"
 #include "EffectManager.h"
 
+
 // ‰Šú‰»
 void EffectManager::Intialize()
 {

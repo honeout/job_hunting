@@ -273,12 +273,8 @@ void SceneGame::Render()
 			ImGui::SliderFloat2("debugShortCutScale", &debugShortCutScale.x, 0.0f, 200.1f);
 			ImGui::SliderFloat2("debugShortPushScale", &debugShortPushScale.x, 0.0f, 200.1f);
 
-			UiManager::Instance().GetUies((int)UiManager::UiCount::Push2)->GetComponent<TransForm2D>()->SetPosition(debugPush2Pos);
-			//UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut)->GetComponent<TransForm2D>()->SetPosition(debugShortCutPos);
 			UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->GetComponent<TransForm2D>()->SetPosition(debugShortPushPos);
 
-			UiManager::Instance().GetUies((int)UiManager::UiCount::Push2)->GetComponent<TransForm2D>()->SetScale(debugPush2Scale);
-			//UiManager::Instance().GetUies((int)UiManager::UiCount::ShortCut)->GetComponent<TransForm2D>()->SetScale(debugShortCutScale);
 			UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->GetComponent<TransForm2D>()->SetScale(debugShortPushScale);
 
 			ImGui::TreePop();

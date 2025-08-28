@@ -299,6 +299,8 @@ void PhonShader::Draw(const RenderContext& rc, const Model* model)
 {
     const ModelResource* resource = model->GetResource();
     const std::vector<Model::Node>& nodes = model->GetNodes();
+    
+    
     for (const ModelResource::Mesh& mesh : resource->GetMeshes())
     {
         // メッシュ用定数バッファ更新
@@ -327,6 +329,7 @@ void PhonShader::Draw(const RenderContext& rc, const Model* model)
         rc.deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         for (const ModelResource::Subset& subset : mesh.subsets)
         {
+            if (subset.indexCount == 0)continue;
             CbSubset cbSubset;
             cbSubset.materialColor = subset.material->color;
             rc.deviceContext->UpdateSubresource(subsetConstantBuffer.Get(), 0, 0, &cbSubset, 0, 0);

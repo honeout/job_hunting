@@ -6,6 +6,7 @@
 // エフェクトマネージャー
 class EffectManager
 {
+    friend void UpdateThread();
 private:
     EffectManager() {}
     ~EffectManager() {}

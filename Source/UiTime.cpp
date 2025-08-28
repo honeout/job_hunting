@@ -24,8 +24,20 @@ void UiTime::Start()
 
 void UiTime::Update(float elapsedTime)
 {
+    // 経過時間更新
     if (timeMax > 0)
+    {
+        // 時間経過
+        coolDownLimit += coolDownSpeed * elapsedTime;
+        
+    }
+
+    // 表示用時間を変更
+    if (coolDownLimit >= coolDownSpeedMax)
+    {
+        coolDownLimit = coolDownLimitMin;
         --countDown;
+    }
 
     if (countDown / 60 <= 0)
         timeUp = true;

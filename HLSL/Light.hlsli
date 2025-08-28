@@ -47,7 +47,7 @@ float3 CalcLambertDiffuse(float3 normal, float3 LightVector, float3 LightColor, 
     // それをそのまま乗算すると色がおかしくなります。
     // 0以下で有れば０になるように制限をつけましょう。
     // -LightVector理由内積
-    float d = max(dot(-LightVector, normal), 0) * LightColor * kd;
+    float d = max(dot(-LightVector, normal), 0.0) * LightColor * kd;
     //float d = clamp((dot(-lightVector,normal)*0.5+0.5),0,1)*lightColor*kd;
 
     // 入射光色と内積の結果、および反射率を全て蒸散して返却しましょう。

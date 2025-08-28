@@ -103,8 +103,6 @@ float3 RedChange(float3 color,float colorValue)
     float colorR = 0.5f;
     float colorAfterChange = color.r >= colorValue ? saturate(color.r + colorValue) : color.r;
 
-
-
     color.r = colorAfterChange;
 
     //return color.rgb * (1.0 - colorValue) + changeColor * colorValue;

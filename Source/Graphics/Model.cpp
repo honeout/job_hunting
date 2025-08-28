@@ -207,7 +207,7 @@ void Model::UpdateRootMortion(float elapsedTime)
 	const ModelResource::Animation& animation = animations.at(currentAnimationIndex);
 	// 指定時間のアニメーションの姿勢を取得
 	ComputeAnimation(currentAnimationIndex, currentAnimationSeconds, nodePoses, blendRate);
-	// TODO①:ルートモーション処理を行い、キャラクターを移動せよ
+	// ルートモーション処理を行い、キャラクターを移動せよ
 	{
 		// ルートモーションノード番号取得 腰骨番号
 		const int rootMotionNodeIndex = GetNodeIndex("B_Pelvis");
@@ -222,7 +222,7 @@ void Model::UpdateRootMortion(float elapsedTime)
 		DirectX::XMFLOAT3 movepos;
 		if (oldcurrentAnimationSeconds > currentAnimationSeconds)
 		{
-			// TODO②:ループアニメーションに対応せよ
+			// ループアニメーションに対応せよ
 			// 終端の姿勢を取得
 			Model::NodePose rastPose;
 			ComputeAnimation(currentAnimationIndex, rootMotionNodeIndex, rastcurrentAnimationSeconds, rastPose, blendRate);
@@ -356,7 +356,7 @@ void Model::UpdateAnimation(float elapsedTime, bool blend)
 		return;
 	}
 	// 時間経過 加算分アニメーションを早めるかどうか
-	currentAnimationSeconds += currentAnimationAddSeconds > currentAnimationAddSecondsMin ? currentAnimationAddSeconds : elapsedTime;
+	currentAnimationSeconds += currentAnimationAddSeconds > currentAnimationAddSecondsMin ? currentAnimationAddSeconds * elapsedTime : elapsedTime;
 	// 通常最大値
 	float animSecondsLength = animation.secondsLength;
 	// 再生時間が終端時間を超えたら
@@ -768,9 +768,9 @@ void Model::UpdateUpeerBodyAnimation(float elapsedTime, const char* start, const
 	}
 
 	//時間経過
-	currentAnimationSecondsUpeer += elapsedTime;
+	//currentAnimationSecondsUpeer += elapsedTime;
 	// 時間経過 加算分アニメーションを早めるかどうか
-	currentAnimationSecondsUpeer += currentAnimationUpperAddSeconds > currentAnimationUpperAddSecondsMin ? currentAnimationUpperAddSeconds : elapsedTime;
+	currentAnimationSecondsUpeer += currentAnimationUpperAddSeconds > currentAnimationUpperAddSecondsMin ? currentAnimationUpperAddSeconds  * elapsedTime: elapsedTime;
 	//再生時間が週短時間を超えたら
 	if (currentAnimationSecondsUpeer >= animation.secondsLength)
 	{

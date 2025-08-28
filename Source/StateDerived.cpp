@@ -42,7 +42,7 @@ void WanderState::Enter()
 	modelAnim.loop = false;
 	modelAnim.currentanimationseconds = 3.3f;
 	modelAnim.blendSeconds = 0.7f;
-	modelAnim.currentAnimationAddSeconds = 0.008f;
+	modelAnim.currentAnimationAddSeconds = 2.8f;
 	modelAnim.keyFrameEnd = 300.0f;
 
 	// アニメーション再生
@@ -349,7 +349,7 @@ void JumpState::Enter()
 	modelAnim.loop = true;
 	modelAnim.currentanimationseconds = 2.0f;
 	modelAnim.blendSeconds = 0.7f;
-	modelAnim.currentAnimationAddSeconds = 0.01f;
+	modelAnim.currentAnimationAddSeconds = 0.7f;
 
 	Model* model =  sharedId->GetComponent<ModelControll>()->GetModel();
 	std::shared_ptr<HP> hpid = sharedId->GetComponent<HP>();
@@ -496,7 +496,7 @@ void AttackState::Enter()
 	modelAnim.currentanimationseconds = 2.8f;
 	modelAnim.loop = false;
 	modelAnim.blendSeconds = 0.7f;
-	modelAnim.currentAnimationAddSeconds = 0.015f;
+	modelAnim.currentAnimationAddSeconds = 1.5f;
 	modelAnim.keyFrameEnd = 0.0f;
 	// アニメーション再生
 	model->
@@ -600,7 +600,7 @@ void AttackState::Execute(float elapsedTime)
 		modelAnim.index = EnemyBoss::Animation::Anim_Walk;
 		modelAnim.currentanimationseconds = 0.0f;
 		modelAnim.loop = true;
-		modelAnim.currentAnimationAddSeconds = 0.2f;
+		modelAnim.currentAnimationAddSeconds = 5.8f;
 		modelAnim.keyFrameEnd = 0.0f;
 		// アニメーション再生
 		model->
@@ -703,7 +703,7 @@ void DamageState::Enter()
 	modelAnim.loop = true;
 	modelAnim.currentanimationseconds = 2.5f;
 	modelAnim.blendSeconds = 0.7f;
-	modelAnim.currentAnimationAddSeconds = 0.025f;
+	modelAnim.currentAnimationAddSeconds = 1.3f;
 	modelAnim.keyFrameEnd = 3.0f;
 	Model* momdel = sharedId->GetComponent<ModelControll>()->GetModel();
 	momdel->
@@ -743,7 +743,7 @@ void ConfusionState::Enter()
 	modelAnim.loop = false;
 	modelAnim.currentanimationseconds = 0.426f;
 	modelAnim.blendSeconds = 0.35f;
-	modelAnim.currentAnimationAddSeconds = 0.005f;
+	modelAnim.currentAnimationAddSeconds = 0.7f;
 	modelAnim.keyFrameEnd = 70.0f;
 
 	model->PlayAnimation(modelAnim);
@@ -891,7 +891,7 @@ void AwakeStartState::Enter()
 	modelAnim.loop = false;
 	modelAnim.currentanimationseconds = 5.829f;
 	modelAnim.blendSeconds = 0.35f;
-	modelAnim.currentAnimationAddSeconds = 0.025f;
+	modelAnim.currentAnimationAddSeconds = 1.3f;
 	modelAnim.keyFrameEnd = 3.0f;
 	model->
 		PlayAnimation(modelAnim);
@@ -1106,7 +1106,7 @@ void PlayerMovestate::Enter()
 	modelAnim.index = Player::Anim_Running;
 	modelAnim.loop = true;
 	modelAnim.blendSeconds = 0.7f;
-	modelAnim.currentAnimationAddSeconds = 0.025f;
+	modelAnim.currentAnimationAddSeconds = 1.3f;
 	model->PlayAnimation(modelAnim);
 	// アニメーションルール
 	playerid->SetUpdateAnim(Player::UpAnim::Normal);
@@ -1170,7 +1170,7 @@ void PlayerJumpState::Enter()
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Animation::Anim_Jump;
-	modelAnim.currentAnimationAddSeconds = 0.025f;
+	modelAnim.currentAnimationAddSeconds = 1.3f;
 	modelAnim.keyFrameEnd = 46.0f;
 	model->PlayAnimation(modelAnim);
 	// アニメーションルール
@@ -1298,7 +1298,7 @@ void PlayerJumpFlipState::Enter()
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Anim_Jump;
-	modelAnim.currentAnimationAddSeconds = 0.13f;
+	modelAnim.currentAnimationAddSeconds = 1.3f;
 	modelAnim.keyFrameEnd = 25.0f;
 	model->PlayAnimation(modelAnim);
 	// アニメーションルール
@@ -1548,9 +1548,9 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 				Model::ModelAnim modelAnimUpperBody;
 				modelAnim.index = Player::Anim_Jump;
 				modelAnimUpperBody.index = Player::Anim_Slash;
-				modelAnimUpperBody.currentAnimationAddSeconds = 0.030f;
+				modelAnimUpperBody.currentAnimationAddSeconds = 1.3f;
 				modelAnim.loop = true;
-				modelAnim.currentAnimationAddSeconds = 0.03f;
+				modelAnim.currentAnimationAddSeconds = 0.7f;
 				// アニメーション再生
 				model->PlayAnimation(modelAnim);
 				// アニメーション上半身再生
@@ -1566,7 +1566,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 				// アニメーションルール
 				Model::ModelAnim modelAnim;
 				modelAnim.index = Player::Animation::Anim_Slash;
-				modelAnim.currentAnimationAddSeconds = 0.031f;
+				modelAnim.currentAnimationAddSeconds = 1.3f;
 				// アニメーション再生
 				model->PlayAnimation(modelAnim);
 				// 攻撃三回で一度強制終了
@@ -1584,6 +1584,10 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 		model->GetCurrentAnimationSecondsUpeer();
 	// 上手く行けば敵が回避行動を取ってくれる行動を用意出来る。
 
+	if (animationTime >= 0.5f)
+		// 斬撃の当たり判定
+		playerid->CollisionNodeVsEnemies();
+
 	// 1撃目
 	if (animationTime >= 0.8f)
 	{
@@ -1595,8 +1599,7 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 		playerid->GetStateMachine()->ChangeState(static_cast<int>(button  ? Player::State::SideCut : Player::State::Move));
 		return;
 	}
-	// 斬撃の当たり判定
-	playerid->CollisionNodeVsEnemies();
+
 	//playerid->CollisionNodeVsEnemies("mixamorig:LeftHand",playerid->GetLeftHandRadius());
 }
 
@@ -1662,8 +1665,8 @@ void PlayerSideCutState::Enter()
 		bool loop = true;
 		modelAnim.loop = true;
 		// 再生時間加算分の値
-		modelAnim.currentAnimationAddSeconds = 0.03f;
-		modelAnimUpperBody.currentAnimationAddSeconds = 0.03f;
+		modelAnim.currentAnimationAddSeconds = 1.3f;
+		modelAnimUpperBody.currentAnimationAddSeconds = 1.5f;
 		modelAnim.keyFrameEnd = 0.63f;
 		// アニメーション再生
 		model->PlayAnimation(modelAnim);
@@ -1680,7 +1683,7 @@ void PlayerSideCutState::Enter()
 		Model::ModelAnim modelAnim;
 		modelAnim.index = Player::Animation::Anim_SlashBeside;
 		modelAnim.currentanimationseconds = 0.2f;
-		modelAnim.currentAnimationAddSeconds = 0.03f;
+		modelAnim.currentAnimationAddSeconds = 1.5f;
 		// アニメーション再生
 		model->PlayAnimation(modelAnim);
 		// 攻撃三回で一度強制終了
@@ -1818,7 +1821,7 @@ void PlayerCycloneStrikeState::Enter()
 		Model::ModelAnim modelAnim;
 		modelAnim.index = Player::Animation::Anim_SlashThree;
 		modelAnim.currentanimationseconds = 0.7f;
-		modelAnim.currentAnimationAddSeconds = 0.03f;
+		modelAnim.currentAnimationAddSeconds = 1.3f;
 		// アニメーション再生
 		model->PlayAnimation(modelAnim);
 		// 攻撃三回で一度強制終了
@@ -3034,7 +3037,7 @@ void PlayerAvoidanceState::Enter()
 	// 下半身
 	modelAnim.index = Player::Animation::Anim_Dush;
 	modelAnim.currentanimationseconds = 0.3f;
-	modelAnim.currentAnimationAddSeconds = 0.025f;
+	modelAnim.currentAnimationAddSeconds = 1.3f;
 	model->PlayAnimation(modelAnim);
 	// アニメーション種類 通常
 	playerid->SetUpdateAnim(Player::UpAnim::Normal);
