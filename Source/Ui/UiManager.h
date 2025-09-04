@@ -82,6 +82,9 @@ public:
     // UI–‚–@“ü—ÍŽž
     void InputMagic();
 
+    // UI–‚–@‚Ì‘I‘ð
+    void SelectMagic(int uiNumber);
+
     // UI“ÁŽê‹Z“ü—ÍŽž
     void InputSpecialAttack();
 

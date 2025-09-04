@@ -295,6 +295,9 @@ public:
     // ショートカットキー
     bool InputShortCutkeyMagic();
 
+    // ショートカットキーの魔法入力
+    bool InputShortCutkeyMagicPush();
+
     // 魔法選択UI解除
     void RemoveUIComando();
 

@@ -137,6 +137,27 @@ void UiManager::InputMagic()
     }
 }
 
+// UI魔法の選択
+void UiManager::SelectMagic(int uiNumber)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi)
+        return;
+    // ショートカット
+    commandTransform->SetTexPosition(CommandConfig::commandShortCutTexScale);
+    // 描画していない
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // 透かしオフ
+    commandUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
+}
+
 // コマンドUI　選択中 必殺技選ぶ
 void UiManager::InputSpecialAttack()
 {
