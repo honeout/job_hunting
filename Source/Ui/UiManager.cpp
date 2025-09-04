@@ -27,10 +27,240 @@ void UiManager::Remove(std::shared_ptr<Actor> ui)
     removes.insert(ui);
 }
 
-// UI特殊技入力チャージ
-bool UiManager::InputSpecialAttackCharge(float elapsedTime)
+// 入力UI
+void UiManager::InputAttack()
 {
-    return false;
+    int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
+
+    // 安全チェック プレイヤー
+    auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
+    if (!playerId)
+        return;
+
+    // 安全チェック プレイヤーの情報
+    auto playerMain = playerId->GetComponent<Player>();
+    if (!playerMain)
+        return;
+
+    // コマンドUI　選択中 攻撃選ぶ
+    if (playerMain->GetSelectCheck() == (int)Player::CommandAttack::Attack)
+    {
+        // 安全チェック　コマンドUI　攻撃
+        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack);
+        if (!sharedUiComandoAttackId)
+            return;
+        auto uiIdAttackUi = sharedUiComandoAttackId->GetComponent<Ui>();
+        auto uiIdAttackTransform2D = sharedUiComandoAttackId->GetComponent<TransForm2D>();
+
+        // 安全チェック
+        if (!uiIdAttackUi && !uiIdAttackTransform2D) return;
+
+        // 元画像の選択状態の場所
+        uiIdAttackTransform2D->SetTexPosition(CommandConfig::commandSelectTexScale);
+
+        // 非選択用アルファ値
+        uiIdAttackUi->SetAlpha(CommandConfig::commandAlphaSelect);
+    }
+    // コマンドUI　非選択 攻撃
+    else
+    {
+        // 安全チェック　コマンドUI　攻撃
+        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack);
+        if (!sharedUiComandoAttackId)
+            return;
+        auto uiIdAttackUi = sharedUiComandoAttackId->GetComponent<Ui>();
+        auto uiIdAttackTransform2D = sharedUiComandoAttackId->GetComponent<TransForm2D>();
+
+        // 安全チェック
+        if (!uiIdAttackUi && !uiIdAttackTransform2D) return;
+
+        // 元画像の非選択状態の場所
+        uiIdAttackTransform2D->SetTexPosition(CommandConfig::commandUnSelectTexScale);
+
+        // 非選択用アルファ値
+        uiIdAttackUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
+    }
+}
+
+// UI魔法入力時
+void UiManager::InputMagic()
+{
+    int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
+
+    // 安全チェック プレイヤー
+    auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
+    if (!playerId)
+        return;
+
+    // 安全チェック プレイヤーの情報
+    auto playerMain = playerId->GetComponent<Player>();
+    if (!playerMain)
+        return;
+
+    //  コマンドUI　選択中 魔法選んだ時
+    if (playerMain->GetSelectCheck() == (int)Player::CommandAttack::Magic)
+    {
+        // 安全チェック コマンドUI　魔法
+        auto sharedUiComandoMagickId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick);
+        if (!sharedUiComandoMagickId)
+            return;
+        auto uiIdMagicUi = sharedUiComandoMagickId->GetComponent<Ui>();
+        auto uiIdMagickTransform2D = sharedUiComandoMagickId->GetComponent<TransForm2D>();
+
+        // 安全チェック
+        if (!uiIdMagicUi && !uiIdMagickTransform2D) return;
+
+        // 元画像の選択状態の場所
+        uiIdMagickTransform2D->SetTexPosition(CommandConfig::commandSelectTexScale);
+
+        // 非選択用アルファ値
+        uiIdMagicUi->SetAlpha(CommandConfig::commandAlphaSelect);
+    }
+    //  コマンドUI　非選択 魔法
+    else
+    {
+        // 安全チェック コマンドUI　魔法
+        auto sharedUiComandoMagickId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick);
+        if (!sharedUiComandoMagickId)
+            return;
+        auto uiIdMagicUi = sharedUiComandoMagickId->GetComponent<Ui>();
+        auto uiIdMagickTransform2D = sharedUiComandoMagickId->GetComponent<TransForm2D>();
+
+        // 安全チェック
+        if (!uiIdMagicUi && !uiIdMagickTransform2D) return;
+
+        // 元画像の非選択状態の場所
+        uiIdMagickTransform2D->SetTexPosition(CommandConfig::commandUnSelectTexScale);
+
+        // 非選択用アルファ値
+        uiIdMagicUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
+    }
+}
+
+// コマンドUI　選択中 必殺技選ぶ
+void UiManager::InputSpecialAttack()
+{
+    int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
+
+    // 安全チェック プレイヤー
+    auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
+    if (!playerId)
+        return;
+
+    // 安全チェック プレイヤーの情報
+    auto playerMain = playerId->GetComponent<Player>();
+    if (!playerMain)
+        return;
+
+    // コマンドUI　選択中 必殺技選ぶ
+    if (playerMain->GetSelectCheck() == (int)Player::CommandAttack::Special)
+    {
+        // 安全チェック コマンドUI　必殺技
+        auto sharedUiSpecialId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
+        if (!sharedUiSpecialId)
+            return;
+        auto uiIdSpecialUi = sharedUiSpecialId->GetComponent<Ui>();
+        auto uiIdSpecialTransform2D = sharedUiSpecialId->GetComponent<TransForm2D>();
+        if (!uiIdSpecialUi && !uiIdSpecialTransform2D) return;
+
+        // 選択
+        uiIdSpecialTransform2D->SetTexPosition(CommandConfig::commandSelectTexScale);
+
+        // コマンド選択判断　透明度
+        float selectAlpha = CommandConfig::commandAlphaSelect;
+
+        // 特殊技UI選択不可 斬撃
+        if (!playerMain->GetSpecialAttack((int)Player::SpecialAttackType::Attack) &&
+            !playerMain->GetSpecialAttack((int)Player::SpecialAttackType::MagicFire))
+            selectAlpha = CommandConfig::commandAlphaUnSelect;
+
+        // 選択不可かどうか
+        uiIdSpecialUi->SetAlpha(selectAlpha);
+    }
+    //  コマンドUI　非選択 必殺技
+    else
+    {
+        // 安全チェック コマンドUI　必殺技
+        auto sharedUiSpecialId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
+        if (!sharedUiSpecialId)
+            return;
+        auto uiIdSpecialUi = sharedUiSpecialId->GetComponent<Ui>();
+        auto uiIdSpecialTransform2D = sharedUiSpecialId->GetComponent<TransForm2D>();
+        if (!uiIdSpecialUi && !uiIdSpecialTransform2D) return;
+
+        // 選択
+        uiIdSpecialTransform2D->SetTexPosition(CommandConfig::commandUnSelectTexScale);
+
+        // 選択不可かどうか
+        uiIdSpecialUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
+    }
+}
+
+// コマンド選択 必殺技
+void UiManager::SelectSpecialAttack()
+{
+    int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
+
+    // 安全チェック プレイヤー
+    auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
+    if (!playerId)
+        return;
+
+    // 安全チェック プレイヤーの情報
+    auto playerMain = playerId->GetComponent<Player>();
+    if (!playerMain)
+        return;
+
+    // コマンド選択 必殺技
+    if (playerMain->GetSpecialAction())
+    {
+        // 安全チェック コマンド斬撃
+        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
+        if (!sharedUiComandoAttackId)
+            return;
+        // コマンド　必殺技斬撃表示するか
+        auto uiIdSpecialComandoAttack = sharedUiComandoAttackId->GetComponent<Ui>();
+        // 安全チェック
+        if (!uiIdSpecialComandoAttack) return;
+
+        // 安全チェック コマンド魔法炎
+        auto sharedUiCommandSpecialFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
+        if (!sharedUiCommandSpecialFireId)
+            return;
+        // コマンド　必殺技魔法炎表示するか
+        auto uiIdSpecialComandoFire = sharedUiCommandSpecialFireId->GetComponent<Ui>();
+        // 安全チェック
+        if (!uiIdSpecialComandoFire) return;
+
+        uiIdSpecialComandoAttack->SetDrawCheck(CommandConfig::draw);
+        uiIdSpecialComandoFire->SetDrawCheck(CommandConfig::draw);
+    }
+    // コマンド非選択 必殺技
+    else
+    {
+        // 安全チェック コマンド斬撃
+        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
+        if (!sharedUiComandoAttackId)
+            return;
+        auto uiIdAttack = sharedUiComandoAttackId->GetComponent<Ui>();
+
+        // 安全チェック
+        if (!uiIdAttack)
+            return;
+
+        // 安全チェック コマンド魔法炎
+        auto sharedUiComandoFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
+        if (!sharedUiComandoFireId)
+            return;
+        auto uiIdAttackCheck = sharedUiComandoFireId->GetComponent<Ui>();
+
+        // 安全チェック
+        if (!uiIdAttackCheck)
+            return;
+
+        uiIdAttack->SetDrawCheck(CommandConfig::unDraw);
+        uiIdAttackCheck->SetDrawCheck(CommandConfig::unDraw);
+    }
 }
 
 // 特殊技溜まった

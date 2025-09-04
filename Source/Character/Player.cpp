@@ -1148,55 +1148,7 @@ bool Player::InputSelectCheck()
         specialAction = false;
     }
     // コマンド選択 必殺技
-    if (specialAction)
-    {
-        // 安全チェック コマンド斬撃
-        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
-        if (!sharedUiComandoAttackId)
-            return false;
-        // コマンド　必殺技斬撃表示するか
-        auto uiIdSpecialComandoAttack = sharedUiComandoAttackId->GetComponent<Ui>();
-        // 安全チェック
-        if (!uiIdSpecialComandoAttack) return false;
-
-        // 安全チェック コマンド魔法炎
-        auto sharedUiCommandSpecialFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
-        if (!sharedUiCommandSpecialFireId)
-            return false;
-        // コマンド　必殺技魔法炎表示するか
-        auto uiIdSpecialComandoFire = sharedUiCommandSpecialFireId->GetComponent<Ui>();
-        // 安全チェック
-        if (!uiIdSpecialComandoFire) return false;
-
-        uiIdSpecialComandoAttack->SetDrawCheck(isDrawUi);
-        uiIdSpecialComandoFire->SetDrawCheck(isDrawUi);
-    }
-    // コマンド非選択 必殺技
-    else
-    {
-        // 安全チェック コマンド斬撃
-        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
-        if (!sharedUiComandoAttackId)
-            return false;
-        auto uiIdAttack = sharedUiComandoAttackId->GetComponent<Ui>();
-
-        // 安全チェック
-        if (!uiIdAttack)
-            return false;
-
-        // 安全チェック コマンド魔法炎
-        auto sharedUiComandoFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
-        if (!sharedUiComandoFireId)
-            return false;
-        auto uiIdAttackCheck = sharedUiComandoFireId->GetComponent<Ui>();
-
-        // 安全チェック
-        if (!uiIdAttackCheck)
-            return false;
-
-        uiIdAttack->SetDrawCheck(isDrawUiEmpth);
-        uiIdAttackCheck->SetDrawCheck(isDrawUiEmpth);
-    }
+    UiManager::Instance().SelectSpecialAttack();
 
     // 一度離すまでボタン効かない
     if (gamePad.GetButtonUp() & GamePad::BTN_B)
@@ -1225,123 +1177,13 @@ bool Player::InputSelectCheck()
     if (uiCount <= uiCountMax) return false;
     
     // コマンドUI　選択中 攻撃選ぶ
-    if (selectCheck == (int)CommandAttack::Attack)
-    {
-        // 安全チェック　コマンドUI　攻撃
-        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack);
-        if (!sharedUiComandoAttackId)
-            return false;
-        auto uiIdAttackUi = sharedUiComandoAttackId->GetComponent<Ui>();
-        auto uiIdAttackTransform2D = sharedUiComandoAttackId->GetComponent<TransForm2D>();
+    UiManager::Instance().InputAttack();
 
-        // 安全チェック
-        if (!uiIdAttackUi && !uiIdAttackTransform2D) return false;
-
-        // 元画像の選択状態の場所
-        uiIdAttackTransform2D->SetTexPosition(PlayerConfig::commandSelectTexScale);
-
-        // 非選択用アルファ値
-        uiIdAttackUi->SetAlpha(PlayerConfig::onAlpha);
-    }
-    // コマンドUI　非選択 攻撃
-    else
-    {
-        // 安全チェック　コマンドUI　攻撃
-        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack);
-        if (!sharedUiComandoAttackId)
-            return false;
-        auto uiIdAttackUi = sharedUiComandoAttackId->GetComponent<Ui>();
-        auto uiIdAttackTransform2D = sharedUiComandoAttackId->GetComponent<TransForm2D>();
-
-        // 安全チェック
-        if (!uiIdAttackUi && !uiIdAttackTransform2D) return false;
-
-        // 元画像の非選択状態の場所
-        uiIdAttackTransform2D->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
-
-        // 非選択用アルファ値
-        uiIdAttackUi->SetAlpha(PlayerConfig::halfAlpha);
-    }
     //  コマンドUI　選択中 魔法選んだ時
-    if (selectCheck == (int)CommandAttack::Magic)
-    {
-        // 安全チェック コマンドUI　魔法
-        auto sharedUiComandoMagickId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick);
-        if (!sharedUiComandoMagickId)
-            return false;
-        auto uiIdMagicUi = sharedUiComandoMagickId->GetComponent<Ui>();
-        auto uiIdMagickTransform2D = sharedUiComandoMagickId->GetComponent<TransForm2D>();
+    UiManager::Instance().InputMagic();
 
-        // 安全チェック
-        if (!uiIdMagicUi && !uiIdMagickTransform2D) return false;
-
-        // 元画像の選択状態の場所
-        uiIdMagickTransform2D->SetTexPosition(PlayerConfig::commandSelectTexScale);
-
-        // 非選択用アルファ値
-        uiIdMagicUi->SetAlpha(PlayerConfig::onAlpha);
-    }
-    //  コマンドUI　非選択 魔法
-    else
-    {
-        // 安全チェック コマンドUI　魔法
-        auto sharedUiComandoMagickId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick);
-        if (!sharedUiComandoMagickId)
-            return false;
-        auto uiIdMagicUi = sharedUiComandoMagickId->GetComponent<Ui>();
-        auto uiIdMagickTransform2D = sharedUiComandoMagickId->GetComponent<TransForm2D>();
-
-        // 安全チェック
-        if (!uiIdMagicUi && !uiIdMagickTransform2D) return false;
-
-        // 元画像の非選択状態の場所
-        uiIdMagickTransform2D->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
-
-        // 非選択用アルファ値
-        uiIdMagicUi->SetAlpha(PlayerConfig::halfAlpha);
-    }
     // コマンドUI　選択中 必殺技選ぶ
-    if (selectCheck == (int)CommandAttack::Special)
-    {
-        // 安全チェック コマンドUI　必殺技
-        auto sharedUiSpecialId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
-        if (!sharedUiSpecialId)
-            return false;
-        auto uiIdSpecialUi = sharedUiSpecialId->GetComponent<Ui>();
-        auto uiIdSpecialTransform2D = sharedUiSpecialId->GetComponent<TransForm2D>();
-        if (!uiIdSpecialUi && !uiIdSpecialTransform2D) return false;
-
-        // 選択
-        uiIdSpecialTransform2D->SetTexPosition(PlayerConfig::commandSelectTexScale);
-
-        // コマンド選択判断　透明度
-        float selectAlpha = commandAlphaSelect;
-
-        // 特殊技UI選択不可 斬撃
-        if (!specialAttack.at((int)SpecialAttackType::Attack).hasSkill &&
-            !specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill)
-            selectAlpha = commandAlphaUnSelect;
-
-        // 選択不可かどうか
-        uiIdSpecialUi->SetAlpha(selectAlpha);
-    }
-    //  コマンドUI　非選択 必殺技
-    else
-    {
-        // 安全チェック コマンドUI　必殺技
-        auto sharedUiSpecialId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
-        if (!sharedUiSpecialId)
-            return false;
-        auto uiIdSpecialUi = sharedUiSpecialId->GetComponent<Ui>();
-        auto uiIdSpecialTransform2D = sharedUiSpecialId->GetComponent<TransForm2D>();
-        if (!uiIdSpecialUi && !uiIdSpecialTransform2D) return false;
-
-        // 選択
-        uiIdSpecialTransform2D->SetTexPosition(PlayerConfig::commandUnSelectTexScale);
-
-        // 選択不可かどうか
-        uiIdSpecialUi->SetAlpha(PlayerConfig::halfAlpha);
-    }
+    UiManager::Instance().InputSpecialAttack();
 
     return false;
 }

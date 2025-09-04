@@ -76,8 +76,17 @@ public:
     // ui削除
     void Remove(std::shared_ptr<Actor> ui);
 
-    // UI特殊技入力チャージ
-    bool InputSpecialAttackCharge(float elapsedTime);
+    // UI攻撃入力時
+    void InputAttack();
+
+    // UI魔法入力時
+    void InputMagic();
+
+    // UI特殊技入力時
+    void InputSpecialAttack();
+
+    // コマンド選択 必殺技
+    void SelectSpecialAttack();
 
     // 特殊技溜まった
     void SpecialAttackCharge(float elapsedTime);
