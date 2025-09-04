@@ -3,9 +3,9 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "StateBase.h"
-#include "Actor.h"
-#include "EnemyBoss.h"
+#include "State\StateBase.h"
+#include "Component\Actor.h"
+#include "Character\EnemyBoss.h"
 
 class EnemyState : State
 {

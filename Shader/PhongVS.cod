@@ -133,7 +133,7 @@ dcl_output o4.xyz
 dcl_output o5.xy
 dcl_output o6.xyzw
 dcl_output o7.xyz
-dcl_temps 5
+dcl_temps 6
 ishl r0.xyzw, v6.xyzw, l(2, 2, 2, 2)
 mul r1.xyz, v0.yyyy, cb1[r0.y + 1].xyzx
 mad r1.xyz, v0.xxxx, cb1[r0.y + 0].xyzx, r1.xyzx
@@ -180,21 +180,22 @@ dp3 r1.w, r2.xyzx, r2.xyzx
 rsq r1.w, r1.w
 mul r2.xyz, r1.wwww, r2.xyzx
 mov o2.xyz, r2.xyzx
-mul r3.xyz, v2.yyyy, cb1[r0.y + 1].xyzx
-mad r3.xyz, v2.xxxx, cb1[r0.y + 0].xyzx, r3.xyzx
-mad r3.xyz, v2.zzzz, cb1[r0.y + 2].xyzx, r3.xyzx
-mul r3.xyz, r3.xyzx, v5.yyyy
-mul r4.xyz, v2.yyyy, cb1[r0.x + 1].xyzx
-mad r4.xyz, v2.xxxx, cb1[r0.x + 0].xyzx, r4.xyzx
-mad r4.xyz, v2.zzzz, cb1[r0.x + 2].xyzx, r4.xyzx
-mad r3.xyz, v5.xxxx, r4.xyzx, r3.xyzx
-mul r4.xyz, v2.yyyy, cb1[r0.z + 1].xyzx
-mad r4.xyz, v2.xxxx, cb1[r0.z + 0].xyzx, r4.xyzx
-mad r0.xyz, v2.zzzz, cb1[r0.z + 2].xyzx, r4.xyzx
-mad r0.xyz, v5.zzzz, r0.xyzx, r3.xyzx
-mul r3.xyz, v2.yyyy, cb1[r0.w + 1].xyzx
-mad r3.xyz, v2.xxxx, cb1[r0.w + 0].xyzx, r3.xyzx
-mad r3.xyz, v2.zzzz, cb1[r0.w + 2].xyzx, r3.xyzx
+mul r3.xyz, v2.xyzx, l(0.500000, 0.500000, 0.500000, 0.000000)
+mul r4.xyz, r3.yyyy, cb1[r0.y + 1].xyzx
+mad r4.xyz, r3.xxxx, cb1[r0.y + 0].xyzx, r4.xyzx
+mad r4.xyz, r3.zzzz, cb1[r0.y + 2].xyzx, r4.xyzx
+mul r4.xyz, r4.xyzx, v5.yyyy
+mul r5.xyz, r3.yyyy, cb1[r0.x + 1].xyzx
+mad r5.xyz, r3.xxxx, cb1[r0.x + 0].xyzx, r5.xyzx
+mad r5.xyz, r3.zzzz, cb1[r0.x + 2].xyzx, r5.xyzx
+mad r4.xyz, v5.xxxx, r5.xyzx, r4.xyzx
+mul r5.xyz, r3.yyyy, cb1[r0.z + 1].xyzx
+mad r5.xyz, r3.xxxx, cb1[r0.z + 0].xyzx, r5.xyzx
+mad r0.xyz, r3.zzzz, cb1[r0.z + 2].xyzx, r5.xyzx
+mad r0.xyz, v5.zzzz, r0.xyzx, r4.xyzx
+mul r4.xyz, r3.yyyy, cb1[r0.w + 1].xyzx
+mad r3.xyw, r3.xxxx, cb1[r0.w + 0].xyxz, r4.xyxz
+mad r3.xyz, r3.zzzz, cb1[r0.w + 2].xyzx, r3.xywx
 mad r0.xyz, v5.wwww, r3.xyzx, r0.xyzx
 dp3 r0.w, r0.xyzx, r0.xyzx
 rsq r0.w, r0.w
@@ -215,4 +216,4 @@ add r0.xyzw, r0.xyzw, cb3[3].xyzw
 div r0.xyz, r0.xyzx, r0.wwww
 mad o7.xyz, r0.xyzx, l(0.500000, -0.500000, 1.000000, 0.000000), l(0.500000, 0.500000, 0.000000, 0.000000)
 ret 
-// Approximately 81 instruction slots used
+// Approximately 82 instruction slots used

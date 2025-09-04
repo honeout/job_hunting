@@ -2,7 +2,7 @@
 #include <memory>
 #include <assert.h>
 #include <tchar.h>
-#include "Framework.h"
+#include "Graphics\Framework.h"
 //#include <vld.h>
 const LONG SCREEN_WIDTH = 1280;
 const LONG SCREEN_HEIGHT = 720;

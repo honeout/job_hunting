@@ -300,12 +300,13 @@ void PhonShader::Draw(const RenderContext& rc, const Model* model)
     const ModelResource* resource = model->GetResource();
     const std::vector<Model::Node>& nodes = model->GetNodes();
     
-    
+    rc.deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
     for (const ModelResource::Mesh& mesh : resource->GetMeshes())
     {
         // メッシュ用定数バッファ更新
-        CbMesh cbMesh;
-        ::memset(&cbMesh, 0, sizeof(cbMesh));
+        CbMesh cbMesh = {};
+        //::memset(&cbMesh, 0, sizeof(cbMesh));
         if (mesh.nodeIndices.size() > 0)
         {
             for (size_t i = 0; i < mesh.nodeIndices.size(); ++i)
@@ -326,7 +327,6 @@ void PhonShader::Draw(const RenderContext& rc, const Model* model)
         UINT offset = 0;
         rc.deviceContext->IASetVertexBuffers(0, 1, mesh.vertexBuffer.GetAddressOf(), &stride, &offset);
         rc.deviceContext->IASetIndexBuffer(mesh.indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-        rc.deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         for (const ModelResource::Subset& subset : mesh.subsets)
         {
             if (subset.indexCount == 0)continue;

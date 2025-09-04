@@ -1,0 +1,72 @@
+#pragma once
+
+#include "Graphics/Model.h"
+#include "Component\Component.h"
+#include "Component\Collision.h"
+#include "Component\BulletFiring.h"
+#include "Component\ModelControll.h"
+#include "Component\Transform.h"
+#include "Effect\Effect.h"
+
+// 直進弾丸
+class ProjectileStraight : public Component
+{
+public:
+    ProjectileStraight();
+    ~ProjectileStraight()override;
+
+    // 名前取得
+    const char* GetName() const override { return "ProjectileStraight"; }
+
+    // 開始処理
+    void Start() override;
+
+    // 更新処理 
+    void Update(float elapsedTime) override;
+
+    // 描画処理
+    void Render(RenderContext& rc, ModelShader& shader) override;
+
+    // 当たり判定見る
+    void DrawDebugPrimitive();
+
+    // エフェクト更新
+    void SetEffectProgress(const char* storageLocation)
+    {
+        effectProgress = new Effect(storageLocation);
+    }
+
+    // エフェクト発生
+    void SetEffectSpawned(const char* storageLocation)
+    {
+        effectSpawned = new Effect(storageLocation);
+    }
+
+
+    void SetMovementCheck(bool movementCheck)
+    {
+        this->movementCheck = movementCheck;
+    }
+#ifdef _DEBUG
+    // GUI描画
+    void OnGUI() override;
+#endif // _DEBUG
+private:
+    std::weak_ptr<BulletFiring> bulletFiring;
+    std::weak_ptr<Transform> transform;
+    std::weak_ptr<ModelControll> modelControll;
+
+    Effect* effectProgress = nullptr;
+    // エフェクト発生時
+    Effect* effectSpawned = nullptr;
+    float  speed = 10.0f;// １秒間１０メートル
+
+    // 弾丸生命時間
+    float   lifeTimer = 3.0f;
+
+    float stepOffset = 1.0f;
+
+    float radius = 0.3f;
+
+    bool movementCheck = true;
+};

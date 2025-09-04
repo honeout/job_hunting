@@ -1,0 +1,228 @@
+#pragma once
+
+#include <DirectXMath.h>
+
+#include "Camera\CameraController.h"
+#include "Graphics/Sprite.h"
+#include "Scene.h"
+
+#include "Graphics/RenderTarget.h"
+#include "Graphics/DepthStencil.h"
+#include "Light\Light.h"
+#include "Graphics\PostprocessingRenderer.h"
+#include "Audio/AudioSource.h"
+#include "Component\SpriteControll.h"
+#include "Component\TransForm2D.h"
+#include "Ui\Ui.h"
+#include "Ui\UiManager.h"
+
+// シャドウマップのサイズ
+static const UINT SHADOWMAP_SIZE = 2048;
+
+
+class SceneTitle : public Scene
+{
+public:
+    SceneTitle() {};
+    ~SceneTitle() override {}
+
+    // 初期化
+    void Initialize() override;
+	// スタート
+	void Start() override;
+    // 終了化
+    void Finalize() override;
+    // 更新処理
+    void Update(float elapsedTime)override;
+    // 描画処理
+    void Render() override;
+
+
+#ifdef _DEBUG
+	// デバッグ用
+	void DebugGui();
+#endif // _DEBUG
+
+	// bgm開始
+	void StartMusic();
+	void StopMusic();
+
+	// 3D空間の描画
+	void Render3DScene();
+
+	// シャドウマップの描画
+	void RenderShadowmap();
+
+	// コンポネント登録
+	void InitializeComponent();
+
+	// カメラの時間制御初期化
+	void CameraInitialize();
+	// スロー状態変更
+	void SetSlowState(float elapsedTime);
+
+	// どのシーンに行くか
+	void SelectScene(float elapsedTime);
+private:
+	enum class Select
+	{
+		Game,
+		Exit
+	};
+private:
+	// カメラ
+	CameraController* cameraControlle = nullptr;
+
+	// 画面サイズ
+	float screenWidth = 1280;
+	float screenHeight = 720;
+	// 画面の比率
+	DirectX::XMFLOAT2 scaleScreen;
+
+	// カメラ位置
+	DirectX::XMFLOAT3 cameraPos = { 0.026f, -2.989f, -14.144f };
+	// カメラ向き
+	DirectX::XMFLOAT3 cameraFocus = { 0.0f, 0.0f, 0.0f };
+	// カメラ上
+	DirectX::XMFLOAT3 cameraUp = { 0.0f, 1.0f, 0.0f };
+
+    // オフスクリーンレンダリング用描画ターゲット
+    std::unique_ptr<RenderTarget> renderTarget;
+
+	// 画面の色
+	ColorGradingData       colorGradingData;
+
+	// 画面歪み
+	// ラジアルブラー情報
+	RadialBlurData  radialBlurData;
+
+	// 画面の白ボケの最大値
+	float colorGradingDataBrigthnessMax = 1.5f;
+
+	// 画面歪み最大
+	float radialBlurDataRadislBlurRadiusMax = 500.0f;
+
+	// seの大きさ
+	float bgmVolume = 1.0f;
+
+	// シャドウマップ用情報
+	Light* mainDirectionalLight = nullptr; // シャドウマップを生成する平行光源
+	std::unique_ptr<DepthStencil> shadowmapDepthStencil; // シャドウマップ用深度ステンシルバッファ
+	float shadowDrawRect = 30.0f;// シャドウマップに描画する範囲
+	DirectX::XMFLOAT4X4 lightViewProjeciton = {
+	0.0f,0.0f,0.0f,0.0f,
+	0.0f,0.0f,0.0f,0.0f,
+	0.0f,0.0f,0.0f,0.0f,
+	0.0f,0.0f,0.0f,0.0f }; // ライトビュープロジェクション行列
+	DirectX::XMFLOAT3 shadowColor = { 0.2f,0.2f,0.2f };// 影の色
+	float shadowBias = 0.001f;// 深度比較用のオフセット値
+
+	// ブルーム用
+	BloomData bloomData;
+
+	// hpピンチ時 ビジネットの動的data
+	VignetteData vignetteData;
+
+    std::unique_ptr<Sprite> sprite;
+    std::unique_ptr<Sprite> spritePush;
+
+
+    DirectX::XMFLOAT2 position = {500.0f,300.0f};
+    DirectX::XMFLOAT2 scale = {0.0f,0.0f};
+
+
+	// 行動範囲
+	DirectX::XMFLOAT3 minPos = { 0.0f,0.0f,0.0f };
+	DirectX::XMFLOAT3 maxPos = { 0.0f,0.0f,0.0f };
+
+	// 光半径
+	float lightRange = 130;
+
+
+	// シェーダーをエフェクトして再生
+	float shaderPlayStateTimer = 0;
+	float shaderPlayStateTimerMax = 0.8f;
+
+	// シェーダーをエフェクトして再生揺れ
+	float shaderBlurStateTimer = 0;
+	float shaderBlurStartStateTimer = 0;
+	float shaderBlurStateTimerMax = 0.9f;
+
+
+
+	// スロー時間
+	float dlayStateTimer = 0.0f;
+	float dlayStateTimerMax = 4.5f;
+
+	bool dlayTimeCheck = false;
+
+
+	// UI大きさ
+	DirectX::XMFLOAT2 gameUiScaleSelected = { 181,104 };
+	DirectX::XMFLOAT2 gameUiScaleUnselected = { 151,64 };
+
+
+	// UI位置
+	float gameUiPositionSelected = 477;
+	float exitUiPositionSelected = 515;
+	float exitUiPositionUnselected = 554;
+	// UI大きさ
+	DirectX::XMFLOAT2 exitUiScaleSelected = { 181,104 };
+	DirectX::XMFLOAT2 exitUiScaleUnselected = { 151,64 };
+
+	// 非選択状態透明度
+	float commandAlphaUnSelect = 0.5f;
+	float commandAlphaSelect = 1.0f;
+
+	// 選択コマンド元画像位置
+	DirectX::XMFLOAT2 commandSelectTexPos = {.0f,92.0f };
+	// 選択コマンド元画像大きさ
+	DirectX::XMFLOAT2 commandSelectTexScale = { .0f,92.0f };
+	// 非選択コマンド基画像位置
+	DirectX::XMFLOAT2 commandUnSelectTexPos = { .0f,0.0f};
+	// 非選択コマンド基画像大きさ
+	DirectX::XMFLOAT2 commandSUnelectTexScale = { .0f,92.0f };
+
+	// どれを選択しているかUI
+	int selectPush = 0;
+
+	// debug
+	float debugShakePower = 0.5f;
+	float debugShakeTimer = 0.2f;
+
+	// タイトル位置
+	DirectX::XMFLOAT2 titlePos = { 1100.0f, 100.0f };
+
+	// コマンドの大きさ
+	DirectX::XMFLOAT2 commandScale = { 281,154 };
+
+	// コマンドstart位置
+	DirectX::XMFLOAT2 startPos = { 1253, 677 };
+
+	// コマンドexit位置
+	DirectX::XMFLOAT2 exitPos = { startPos.x, startPos.y + commandScale.y };
+
+	// ボタンの位置
+	DirectX::XMFLOAT2 buttonPos = {0,0};
+	DirectX::XMFLOAT2 buttonScale = { 100,104 };
+
+	// ボタン用位置の大きさ分
+	float buttonOffset = 25.0f;
+
+	// ボタンを押すと描画する
+	bool isDrawButton = true;
+
+	// ボタン確認
+	bool isPush = false;
+
+	// コマンド上下反応
+	float isInputEmpty = 0.0f;
+
+	// 入力保持用（グローバル or クラス内に保持）
+	float stickHoldTimerY = 0.0f;
+	float stickHoldTimerYStart = 0.0f;
+	float stickHoldTime = 0.1f;
+
+	// コマンド操作
+	bool isSelectCommand = false;
+};
