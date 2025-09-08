@@ -32,6 +32,15 @@ bool Mathf::UpdateElapsedTime(float timeMax, float elapsedTime)
     timeElapsed += timeElapsedValue * elapsedTime;
     return false;
 }
+// 徐々に縮める
+float Mathf::LinearInterpolate(float currentScale, float maxScale, float lerpSpeed, float elapsedTime)
+{
+    // 線形補完に使う割合
+    float interpolationRate = lerpSpeed * elapsedTime;
+
+    // 線形補完で徐々に縮める
+    return Lerp(currentScale, maxScale, interpolationRate);
+}
 
 DirectX::XMFLOAT3 Mathf::Scale(DirectX::XMFLOAT3 scale, float number)
 {

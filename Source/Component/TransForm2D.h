@@ -56,6 +56,8 @@ public:
 
     // スケールの設定
     void SetScale(const DirectX::XMFLOAT2& scale) { this->scale = scale; }
+    void SetScaleX(const float& scaleX) { this->scale.x = scaleX; }
+    void SetScaleY(const float& scaleY) { this->scale.y = scaleY; }
 
     // 元スケールの設定
     void SetTexScale(const DirectX::XMFLOAT2& texScale) { this->texScale = texScale; }

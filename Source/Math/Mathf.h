@@ -8,10 +8,13 @@ public:
 
     Mathf() {
         timeElapsed = 0.0f;
-        timeElapsedValue = 1.0f;
+        timeElapsedValue = 5.0f;
         timeElapsedMin = 0.0f;
     };
     ~Mathf() {};
+
+    //// インスタンス
+    //static Mathf Create() { return Mathf(); }
 
     // 線形補完
     static float Lerp(float a, float b, float t);
@@ -21,6 +24,9 @@ public:
 
     // 経過時間
     bool UpdateElapsedTime(float timeMax, float elapsedTime);
+
+    // 徐々に縮める
+    float LinearInterpolate(float currentScale, float maxScale, float lerpSpeed, float elapsedTime);
 
     static DirectX::XMFLOAT3 Scale(DirectX::XMFLOAT3 scale, float number);
 

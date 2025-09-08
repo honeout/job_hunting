@@ -18,6 +18,7 @@
 #include "State\StateMachine.h"
 #include "Graphics\PostprocessingRenderer.h"
 #include "EnemyBoss.h"
+#include "Math\Mathf.h"
 #include <stack>
 
 // 定数定義
@@ -132,6 +133,7 @@ namespace PlayerConfig
     // 特殊技チャージゲージ　最大値　共有
     constexpr float specialAttackChargeMax = 1.5f;
 
+
     // 特殊技最大値 それぞれの技のチャージ最大値
     constexpr int energyChargeMax = 4;
     // 特殊技最大値 それぞれの技のチャージ初期化
@@ -197,9 +199,6 @@ public:
 
     // ステータス初期化
     void InitStats();
-
-    // コマンド初期化
-    void InitCommands();
 
     // 入力受付と行動への変換
     void HandleInput(float elapsedTime);
@@ -267,8 +266,6 @@ public:
     void UpdateSwordeTraile();
     // hpピンチ
     void PinchMode(float elapsedTime);
-    // 点灯
-    bool LitMode(float elapsedTime);
 public:
     // スティック入力値から移動ベクトルを取得 進行ベクトルを取る進むべき方向
     DirectX::XMFLOAT3 GetMoveVec(float elapsedTime);
@@ -595,6 +592,7 @@ public:
 
     // 魔法チャージ変更
     void SetIsMagicChageEnd(bool isMagicChageEnd) { this->isMagicChageEnd = isMagicChageEnd; }
+
     // 魔法チャージ取得
     bool GetIsMagicChageEnd() const { return isMagicChageEnd; }
 
@@ -604,10 +602,11 @@ public:
     // 特殊技種類
     int GetSpecialAttackNum() { return specialAttackNum; }
 
-    void AreAttackDecreaseAmount();
+    // コマンドチャージ時間
+    float GetPlayerCommandPushUiChargeTime() const { return playerCommandPushUiChargeTime;}
 
-    // 経過時間
-    bool UpdateElapsedTime(float timeMax, float elapsedTime);
+    // 空中行動の経過時間
+    void AreAttackDecreaseAmount();
 
     // 描画するかどうか
     void SetPlayeDrawCheck(int isPlayerDrawCheck) { this->isPlayerDrawCheck = isPlayerDrawCheck; }
@@ -664,6 +663,9 @@ private:
 
     // 移動速度
     float          moveSpeed = 0.0f;
+
+    // あらゆる計算
+    Mathf mathfPintch;
 
     // 弾丸マネージャー
     ProjectileManager projectileManager;
@@ -835,6 +837,8 @@ private:
 
     // 揺れ
     bool shakeMode = false;
+    // UI揺れピンチ
+    bool shakeModePintch = false;
 
     // 回転確認
     bool angleCheck = false;
@@ -889,7 +893,7 @@ private:
     bool freeCameraCheck = true;
     // デバッグ
     bool angleCameraCheck = false;
-
+    
     // 画面の色
     ColorGradingData       colorGradingData;
     ColorGradingData       colorGradingPostData;

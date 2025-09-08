@@ -2476,11 +2476,13 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 	if (!magicStart) return;
 
-
-
-
 	// UI処理の初期化
-	playerid->StartMagicUiFire();
+	//playerid->StartMagicUiFire();
+	UiManager::Instance().StartMagicUiFire(
+		(int)UiManager::UiCount::PlayerCommandPush,
+		(int)UiManager::UiCount::PlayerCommandPushNow,
+		(int)UiManager::UiCount::PlayerCommandCharge);
+
 	// 魔法の種類で終わりを帰る。
 	switch (magicType)
 	{

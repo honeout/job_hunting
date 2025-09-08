@@ -11,6 +11,11 @@ namespace CommandConfig
 
     // コマンド基画像大きさ
 
+    // コマンドHP元画像の位置　通常
+    constexpr DirectX::XMFLOAT2 texNoDamagePos = { 0.0f, 0.0f };
+    // コマンドHP元画像の位置　ダメージ
+    constexpr DirectX::XMFLOAT2 texDamagePos = { 0.0f, 103.0f };
+
     // 非選択
     constexpr DirectX::XMFLOAT2 commandUnSelectTexScale = { .0f,.0f };
     // 選択
@@ -24,15 +29,38 @@ namespace CommandConfig
     // 非選択コマンド基画像位置
     constexpr DirectX::XMFLOAT2 commandUnSelectTexPos = { .0f,0.0f };
 
+    // MPバー
+    constexpr float mpBarOffset = 45.0f;
+
+    // 魔法チャージ値
+    constexpr float commandChargeAdd = 5.0f;
+
+    // チャージ最大値
+    constexpr float chargeMagicGaugeWidthMax = 260.0f;
     // -----コマンドアルファ-----
     // 透明度０
     constexpr float commandAlphaSelect = 1.0f;
     constexpr float commandAlphaUnSelect = 0.5f;
+
+    // 値更新用
+    constexpr float commandAlphaValue = 1.0f;
+    constexpr float commandAlphaValueMax = 1.0f;
+    constexpr float commandAlphaValueMin = 0.0f;
     
     // -----描画設定----- 
     // 描画
     constexpr bool draw = true;
     constexpr bool unDraw = false;
+
+    // -----矢印描画-----
+    // 特殊技チャージ矢印一個目開始
+    constexpr float specialAttackChargeStart = 0.4f;
+    // 特殊技チャージ矢印2個目開始
+    constexpr float specialAttackChargeFirst = 0.8f;
+    // 特殊技チャージ矢印3個目開始
+    constexpr float specialAttackChargeSecond = 1.2f;
+
+
 
 };
 
@@ -76,14 +104,55 @@ public:
     // ui削除
     void Remove(std::shared_ptr<Actor> ui);
 
+    // UI選択
+    void SelectTex();
+
     // UI攻撃入力時
     void InputAttack();
 
     // UI魔法入力時
     void InputMagic();
 
+    // UI表示
+    void SelectDrawUi(int uiNumber);
+
+    // UI点滅
+    void SelectDrawUi(int uiNumber, float TimeAlpha, float TimeAlphaMax, float elapsedTime);
+
+    // UI非表示
+    void SelectNotDrawUi(int uiNumber);
+
     // UI魔法の選択
-    void SelectMagic(int uiNumber);
+    void SelectUi(int uiNumber);
+
+    // UI魔法の非選択
+    void UnSelectUi(int uiNumber);
+
+    // UIショートカットキー選択
+    void SelectShortCutUi(int uiNumber);
+
+    // UIショートカットキー非選択
+    void UnSelectShortCutUi(int uiNumber);
+
+    // Ui魔法チャージ動作開始
+    void StartMagicUiCharge(int uiCommandNumber, int uiNumber , int uiFrameNumber, int chageNumber, float elapsedTime);
+
+    // Ui魔法チャージ動作発射
+    void StartMagicUiFire(int uiNumber, int uiFrameNumber, int chargeNumber);
+
+    // UIシェイク
+    void ShakeModeTyme(int uiNumber, bool& shakeMode);
+
+    // UIポジション更新
+    void PositionUpdate(int uiNumber, DirectX::XMFLOAT2 pos);
+
+    // UI大きさ更新
+    void ScaleUpdate(int uiNumber, DirectX::XMFLOAT2 scale);
+    void ScaleUpdateX(int uiNumber, float scaleX);
+    void ScaleUpdateY(int uiNumber, float scaleY);
+
+    // UI元画像の位置を変える。
+    void TexPosUpdate(int uiNumber, DirectX::XMFLOAT2 texPos);
 
     // UI特殊技入力時
     void InputSpecialAttack();
@@ -176,11 +245,19 @@ private:
     // UIの描画について
     bool isUiSpecilDrawCheck = false;
 
-    // あらゆる計算
-    Mathf mathfPintch;
+    // 特殊技経過時間計算
+    Mathf mathfSpecial;
+    // ライト経過時間計算
+    Mathf mathfblinking;
 
     // 経過時間ヒント最大値
     float timeElapsedHintMax = 1.0f;
+
+    // 点滅時間
+    float TimeAlpha = 0.0f;
+
+    // UI操作用
+    float commandPushUiChargeTime = 0.0f;
 };
 
 

@@ -27,6 +27,25 @@ void UiManager::Remove(std::shared_ptr<Actor> ui)
     removes.insert(ui);
 }
 
+
+// UI選択
+void UiManager::SelectTex()
+{
+    // 安全チェック
+    auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(
+        (int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
+    if (!sharedUiSpecialShurashuId)
+        return;
+
+    // 技確定
+    std::shared_ptr<Ui> uiIdSpecialShurashu = sharedUiSpecialShurashuId->GetComponent<Ui>();
+    std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = sharedUiSpecialShurashuId->GetComponent<TransForm2D>();
+    bool drawCheck = false;
+    uiIdSpecialShurashu->SetDrawCheck(drawCheck);
+    DirectX::XMFLOAT2 pos;
+    pos = { uiIdSpecialShurashuTransForm2D->GetPosition() };
+}
+
 // 入力UI
 void UiManager::InputAttack()
 {
@@ -137,8 +156,117 @@ void UiManager::InputMagic()
     }
 }
 
+// UI表示
+void UiManager::SelectDrawUi(int uiNumber)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandUi)
+        return;
+
+    // 描画
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // 透明度100％
+    commandUi->SetAlpha(CommandConfig::commandAlphaSelect);
+}
+
+// UI点滅
+void UiManager::SelectDrawUi(int uiNumber, float TimeAlphaValue, float TimeAlphaMax, float elapsedTime)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandUi)
+        return;
+
+    // 描画
+    commandUi->SetDrawCheck(CommandConfig::draw);
+
+    // 点灯処理
+    if (mathfblinking.UpdateElapsedTime(TimeAlphaMax, elapsedTime))
+        TimeAlpha = TimeAlpha < TimeAlphaMax ? 1.0f : 0.0f;
+
+
+    //// 点灯処理
+    //if (mathfblinking.UpdateElapsedTime(TimeAlphaMax,elapsedTime))
+    //    TimeAlpha += TimeAlphaValue < CommandConfig::commandAlphaValueMin ? TimeAlphaValue * elapsedTime: TimeAlphaMax;
+    //else
+    //    TimeAlpha -= TimeAlphaValue > TimeAlphaMax ? TimeAlphaValue * elapsedTime: 0.0f;
+
+    // 点滅
+    commandUi->SetAlpha(TimeAlpha);
+}
+
+// UI非表示
+void UiManager::SelectNotDrawUi(int uiNumber)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandUi)
+        return;
+
+    // 描画していない
+    commandUi->SetDrawCheck(CommandConfig::unDraw);
+}
+
 // UI魔法の選択
-void UiManager::SelectMagic(int uiNumber)
+void UiManager::SelectUi(int uiNumber)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi)
+        return;
+    // ショートカット
+    commandTransform->SetTexPosition(CommandConfig::commandSelectTexPos);
+    // 描画していない
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // 透かしオフ
+    commandUi->SetAlpha(CommandConfig::commandAlphaSelect);
+}
+
+// UI非選択
+void UiManager::UnSelectUi(int uiNumber)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi)
+        return;
+    // ショートカット
+    commandTransform->SetTexPosition(CommandConfig::commandUnSelectTexPos);
+    // 描画していない
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // 透かしオン
+    commandUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
+}
+
+// ショートカットキー選択
+void UiManager::SelectShortCutUi(int uiNumber)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
@@ -155,7 +283,270 @@ void UiManager::SelectMagic(int uiNumber)
     // 描画していない
     commandUi->SetDrawCheck(CommandConfig::draw);
     // 透かしオフ
+    commandUi->SetAlpha(CommandConfig::commandAlphaSelect);
+}
+
+// ショートカットキー非選択
+void UiManager::UnSelectShortCutUi(int uiNumber)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi)
+        return;
+    // ショートカット
+    commandTransform->SetTexPosition(CommandConfig::commandShortCutTexScale);
+    // 描画していない
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // 透かしオン
     commandUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
+}
+
+// Ui魔法チャージ動作開始
+void UiManager::StartMagicUiCharge(int uiCommandNumber ,int uiNumber, int uiFrameNumber, int chargeNumber,float elapsedTime)
+{
+    // 安全チェックプレイヤー
+    auto playerid = PlayerManager::Instance().GetPlayer(0);
+    
+    if (!playerid) 
+        return;
+    auto playerMain = playerid->GetComponent<Player>();
+    auto playerMp = playerid->GetComponent<Mp>();
+    // 安全チェック
+    if (!playerMain || !playerMp)
+        return;
+
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandMagicId = UiManager::Instance().GetUies(uiCommandNumber);
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiFrameCommandId = UiManager::Instance().GetUies(uiFrameNumber);
+    auto sharedUiChargeCommandId = UiManager::Instance().GetUies(chargeNumber);
+
+    if (!sharedUiCommandMagicId ||!sharedUiCommandId|| !sharedUiFrameCommandId || !sharedUiChargeCommandId)
+        return;
+    auto commandMagicTransform = sharedUiCommandMagicId->GetComponent<TransForm2D>();
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    auto commandFrameTransform = sharedUiFrameCommandId->GetComponent<TransForm2D>();
+    auto commandFrameUi = sharedUiFrameCommandId->GetComponent<Ui>();
+    auto commandChargeTransform = sharedUiChargeCommandId->GetComponent<TransForm2D>();
+    auto commandChargeUi = sharedUiChargeCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi || !commandFrameTransform || !commandFrameUi || !commandChargeTransform || !commandChargeUi)
+        return;
+
+    // mp切れ
+    if (playerMp->GetMpEmpth())
+    {
+        // 魔法チャージオフ
+        playerMain->SetIsMagicChageEnd(false);
+        // 魔法
+        StartMagicUiFire(uiNumber, uiFrameNumber, chargeNumber);
+        return;
+    }
+
+    // ゲージ溜め
+    commandPushUiChargeTime += PlayerConfig::commandChargeAdd * elapsedTime;
+
+    // ゲージの横最大値
+    float gaugeSize = commandMagicTransform->GetScale().x - CommandConfig::mpBarOffset;
+
+    // 溜め
+    float gaugeWidth = gaugeSize * commandPushUiChargeTime * 0.08f;
+
+    // コマンド位置
+    DirectX::XMFLOAT2 pos = commandMagicTransform->GetPosition();
+
+    // 位置補正
+    commandTransform->SetPosition(pos);
+    commandFrameTransform->SetPosition(pos);
+    commandChargeTransform->SetPosition(pos);
+
+    // 描画
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    commandFrameUi->SetDrawCheck(CommandConfig::draw);
+    commandChargeUi->SetDrawCheck(CommandConfig::draw);
+
+    // ショートカット
+    commandFrameTransform->SetScaleX(gaugeWidth);
+    commandChargeTransform->SetScaleX(gaugeSize);
+
+    // 透かしオフ
+    commandFrameUi->SetAlpha(CommandConfig::commandAlphaSelect);
+
+    // 魔法チャージ完了
+    if (gaugeWidth >= CommandConfig::chargeMagicGaugeWidthMax)
+    {
+        playerMain->SetIsMagicChageEnd(true);
+        gaugeWidth = CommandConfig::chargeMagicGaugeWidthMax;
+    }
+}
+
+// Ui魔法チャージ動作発射
+void UiManager::StartMagicUiFire(int uiNumber, int uiFrameNumber, int chargeNumber)
+{
+    // 初期化
+    commandPushUiChargeTime = 0.0f;
+
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiFrameCommandId = UiManager::Instance().GetUies(uiFrameNumber);
+    auto sharedUiChargeCommandId = UiManager::Instance().GetUies(chargeNumber);
+
+    if (!sharedUiCommandId || !sharedUiFrameCommandId || !sharedUiChargeCommandId)
+        return;
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    auto commandFrameUi = sharedUiFrameCommandId->GetComponent<Ui>();
+    auto commandChargeUi = sharedUiChargeCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandUi ||!commandFrameUi || !commandChargeUi)
+        return;
+
+    commandUi->SetDrawCheck(CommandConfig::unDraw);
+    commandFrameUi->SetDrawCheck(CommandConfig::unDraw);
+    commandChargeUi->SetDrawCheck(CommandConfig::unDraw);
+}
+
+// UIシェイク
+void UiManager::ShakeModeTyme(int uiNumber, bool& shakeMode)
+{
+    // シェイクの有無
+    if (!shakeMode) return;
+
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi)
+        return;
+
+    // 描画している
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // 透かしオン
+    commandUi->SetAlpha(CommandConfig::commandAlphaSelect);
+
+    // 揺れ
+    if (shakeMode)
+    {
+        commandTransform->Shake();
+    }
+    //　初期化
+    if (commandTransform->GetShakeEnd())
+    {
+        shakeMode = false;
+    }
+}
+
+// UIポジション更新
+void UiManager::PositionUpdate(int uiNumber, DirectX::XMFLOAT2 pos)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi)
+        return;
+
+    // ショートカット
+    commandTransform->SetTexPosition(pos);
+    // 描画していない
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // 透かしオン
+    commandUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
+}
+
+// UI大きさ更新
+void UiManager::ScaleUpdate(int uiNumber, DirectX::XMFLOAT2 scale)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi)
+        return;
+
+    // ショートカット
+    commandTransform->SetScale(scale);
+    // 描画していない
+    commandUi->SetDrawCheck(CommandConfig::draw);
+}
+
+// UI大きさX
+void UiManager::ScaleUpdateX(int uiNumber, float scaleX)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi)
+        return;
+
+    // ショートカット
+    commandTransform->SetScaleX(scaleX);
+    // 描画していない
+    commandUi->SetDrawCheck(CommandConfig::draw);
+}
+
+// UI大きさY
+void UiManager::ScaleUpdateY(int uiNumber, float scaleY)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi)
+        return;
+
+    // ショートカット
+    commandTransform->SetScaleY(scaleY);
+    // 描画していない
+    commandUi->SetDrawCheck(CommandConfig::draw);
+}
+
+// UI元画像の位置を変える。
+void UiManager::TexPosUpdate(int uiNumber, DirectX::XMFLOAT2 texPos)
+{
+    // 安全チェック　コマンド ショートカット　魔法　火
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // 安全チェック
+    if (!commandTransform || !commandUi)
+        return;
+
+    // 描画していない
+    commandUi->SetDrawCheck(CommandConfig::draw);
+
+    // 元画像位置
+    commandTransform->SetTexPosition(texPos);
 }
 
 // コマンドUI　選択中 必殺技選ぶ
@@ -287,18 +678,6 @@ void UiManager::SelectSpecialAttack()
 // 特殊技溜まった
 void UiManager::SpecialAttackCharge(float elapsedTime)
 {
-    int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
-
-    // 安全チェック プレイヤー
-    auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
-    if (!playerId)
-        return;
-
-    // 安全チェック プレイヤーの情報
-    auto playerMain = playerId->GetComponent<Player>();
-    if (!playerMain)
-        return;
-
     int uiCount = UiManager::Instance().GetUiesCount();
 
     // uiCount最大値
@@ -370,7 +749,7 @@ void UiManager::SpecialUpdate(float elapsedTime)
         }
         
         // 特殊攻撃たまった 知らせるために コマンドUI点滅
-        if (!mathfPintch.UpdateElapsedTime(timeElapsedHintMax, elapsedTime))return;
+        if (!mathfSpecial.UpdateElapsedTime(timeElapsedHintMax, elapsedTime))return;
 
         // 点滅
         isUiSpecilDrawCheck = isUiSpecilDrawCheck ? false : true;
@@ -382,7 +761,6 @@ void UiManager::SpecialUpdate(float elapsedTime)
         uiIdSpecialUnCheckTransform2D->SetTexPosition(blinkTexPos);
         return;
     }
-
 
     // コマンド　必殺技選択中
     switch (playerMain->GetSpecialAttackNum())
