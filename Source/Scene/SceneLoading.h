@@ -80,6 +80,9 @@ private:
     // ‰æ–Ê‚Ì”ä—¦
     DirectX::XMFLOAT2 scaleScreen;
 
+    // ‰¹Se
+    AudioParam paramSe;
+
     // ”ñ‘I‘ğó‘Ô“§–¾“x
     float commandAlphaUnSelect = 0.5f;
     float commandAlphaSelect = 1.0f;

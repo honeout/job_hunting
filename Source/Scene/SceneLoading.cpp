@@ -25,12 +25,12 @@ void SceneLoading::Initialize()
     // ゲームをロード中に消すか
     isFinalizeGame = true;
 
-    //// スプライト初期化
-    //spriteLoading = std::make_unique<Sprite>("Data/Sprite/LoadingIcon.png");
-    //spriteControlManual = std::make_unique<Sprite>("Data/Sprite/xbx操作方法.png");
     //// スレッド開始      (関数名、引数の中身 自分自信)スレッド立ち上げる
     // 引数を何個でも入れられる。関数の引数の長さによる
     this->thread = new std::thread(LoadingThread,this);
+
+    // 初期化
+    paramSe = AudioParam::Se();
 }
 
 void SceneLoading::Start()
@@ -62,7 +62,6 @@ void SceneLoading::Finalize()
         thread = nullptr;
     }
 
-    //if (this->nextScene)
     if (isFinalizeGame)
     {
         delete nextScene;
@@ -71,8 +70,6 @@ void SceneLoading::Finalize()
 
     Audio::Instance().AllStop();
     Audio::Instance().AllClear();
-    //if (!nextScene->IsReady())
-    //    nextScene = nullptr;
 }
 // 更新処理
 void SceneLoading::Update(float elapsedTime)
@@ -92,44 +89,30 @@ void SceneLoading::Update(float elapsedTime)
     // 不透明度点滅
     FadeAlphaPulse(elapsedTime);
 
-    //UiLoadingManager::Instance().GetUies(
-    //    (int)UiLoadingManager::UiCountLoading::Debug)->GetComponent<SpriteControll>()->GetSprite()
-    //    ->UpdateAnimation(elapsedTime);
-    
-
     // ゲームスタート準備完了UI表示
     if (nextScene->IsReady())
     {
         // ロードの描画チェック
-        UiLoadingManager::Instance().GetUies(
-            (int)UiLoadingManager::UiCountLoading::LodingIcon)->
-            GetComponent<Ui>()->SetDrawCheck(false);
+        UiLoadingManager::Instance().SelectNotDrawUi(
+            (int)UiLoadingManager::UiCountLoading::LodingIcon);
 
         // ロードの描画チェック
-        UiLoadingManager::Instance().GetUies(
-            (int)UiLoadingManager::UiCountLoading::NowLoading)->
-            GetComponent<Ui>()->SetDrawCheck(false);
+        UiLoadingManager::Instance().SelectNotDrawUi(
+            (int)UiLoadingManager::UiCountLoading::NowLoading);
 
         // ロードの描画チェック
-        UiLoadingManager::Instance().GetUies(
-            (int)UiLoadingManager::UiCountLoading::NowLoading1)->
-            GetComponent<Ui>()->SetDrawCheck(false);
+        UiLoadingManager::Instance().SelectNotDrawUi(
+            (int)UiLoadingManager::UiCountLoading::NowLoading1);
 
-        //// ゲームスタートの描画チェック
-        //UiLoadingManager::Instance().GetUies(
-        //    (int)UiLoadingManager::UiCountLoading::GameStart)->
-        //    GetComponent<Ui>()->SetDrawCheck(true);
 
         // ゲームスタートのスタート描画チェック
-        UiLoadingManager::Instance().GetUies(
-            (int)UiLoadingManager::UiCountLoading::Start)->
-            GetComponent<Ui>()->SetDrawCheck(true);
+        UiLoadingManager::Instance().SelectDrawUi(
+            (int)UiLoadingManager::UiCountLoading::Start);
 
 
         // ゲームスタートのボタン描画チェック
-        UiLoadingManager::Instance().GetUies(
-            (int)UiLoadingManager::UiCountLoading::Button)->
-            GetComponent<Ui>()->SetDrawCheck(true);
+        UiLoadingManager::Instance().SelectDrawUi(
+            (int)UiLoadingManager::UiCountLoading::Button);
     }
 
     // 次のシーンの準備が完了したらシーンを切り替える
@@ -139,9 +122,8 @@ void SceneLoading::Update(float elapsedTime)
     {
         isFinalizeGame = false;
 
-        AudioParam param;
         // フェードアウト開始
-        Audio::Instance().PlayFadeOut(param);
+        Audio::Instance().PlayFadeOut(paramSe);
     }
 
     // 次のシーンへ
@@ -168,51 +150,6 @@ void SceneLoading::Render()
     dc->ClearRenderTargetView(rtv, color);
     dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     dc->OMSetRenderTargets(1, &rtv, dsv);
-
-    //// ２Dスプライト描画
-    //{
-    //    // 画面右下にローディングアイコンを描画
-    //    float screenWidth = static_cast<float>(graphics.GetScreenWidth());
-    //    float screenHeight = static_cast<float>(graphics.GetScreenHeight());
-
-    //    float textureWidth = static_cast<float>(spriteLoading->GetTextureWidth());
-    //    float textureHeight = static_cast<float>(spriteLoading->GetTextureHeight());
-    //    float positionX = screenWidth - textureWidth;
-    //    float positionY = screenHeight - textureHeight;
-
-
-    //    Render2D(spriteLoading, angleLoading, dc, { positionX ,positionY });
-    //}
-    //Render2D(spriteControlManual, angle, dc, {200, 300});
-
-    //Graphics& graphics = Graphics::Instance();
-    //ID3D11DeviceContext* dc = graphics.GetDeviceContext();
-    //ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
-    //ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
-
-    //// 画面クリア＆レンダーターゲット設定
-    //FLOAT color[] = { 0.0f, 0.0f, 0.0f, 1.0f }; // RGBA(0.0～1.0)
-    //dc->ClearRenderTargetView(rtv, color);
-    //dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-    //dc->OMSetRenderTargets(1, &rtv, dsv);
-
-    //// ２Dスプライト描画
-    //{
-    //    // 画面右下にローディングアイコンを描画
-    //    float screenWidth = static_cast<float>(graphics.GetScreenWidth());
-    //    float screenHeight = static_cast<float>(graphics.GetScreenHeight());
-    //    float textureWidth = static_cast<float>(spriteLoading->GetTextureWidth());
-    //    float textureHeight = static_cast<float>(spriteLoading->GetTextureHeight());
-    //    float positionX = screenWidth - textureWidth;
-    //    float positionY = screenHeight - textureHeight;
-
-    //    spriteLoading->Render(dc,
-    //        positionX, positionY, textureWidth, textureHeight,
-    //        0, 0, textureWidth, textureHeight,
-    //        angle,
-    //        1, 1, 1, 1);
-    //}
-
 
     // 2Dスプライト描画
     {
@@ -272,7 +209,6 @@ void SceneLoading::InitializeComponent()
         actor->AddComponent<TransForm2D>();
         // 位置　角度　スケール情報
         std::shared_ptr<TransForm2D> transform2D = actor->GetComponent<TransForm2D>();
-        //DirectX::XMFLOAT2 pos = { screenWidth, 700 };
 
         transform2D->SetPosition(loadingIconPos);
         // 元の位置

@@ -24,6 +24,8 @@
 #include "Scene\SceneGame.h"
 #include "Scene\SceneGameOver.h"
 
+#define getModel modelControllId->GetModel()
+
 // デストラクタ
 Player::~Player()
 {
@@ -50,7 +52,7 @@ void Player::Update(float elapsedTime)
     stateMachine->Update(elapsedTime);
 
     // シーンゲーム以外の処理
-    if (SceneManager::Instance().GetCurrentScene()->GetSceneName() != "SceneGame" || isCameraInitialEffect)
+    if (!SceneManager::Instance().GetIsSceneGameCheck("SceneGame") || isCameraInitialEffect)
     {
         // カメラ演出用
         UpdateCameraInitialEffect(elapsedTime);
@@ -85,7 +87,6 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
     // 有効性チェック
     if (!modelControllId) return;
 
-    RockOnUI(rc.deviceContext,rc.view,rc.projection);
     rc.colorGradingData = colorGradingData;
     // スペキュラー無効化
     rc.isSpecular = isSpecular;
@@ -97,7 +98,7 @@ void Player::Render(RenderContext& rc, ModelShader& shader)
     if (isPlayerDrawCheck == skipDraw) return;
     Graphics& graphics = Graphics::Instance();
     shader.Begin(rc);// シェーダーにカメラの情報を渡す
-    shader.Draw(rc, modelControllId->GetModel());
+    shader.Draw(rc, getModel);
     shader.End(rc);
 }
 
@@ -112,7 +113,7 @@ void Player::RenderShadowmap(RenderContext& rc)
     Graphics& graphics = Graphics::Instance();
     ModelShader* shader = graphics.GetShader(ModelShaderId::ShadowmapCaster);
     shader->Begin(rc);// シェーダーにカメラの情報を渡す
-    shader->Draw(rc, modelControllId->GetModel());
+    shader->Draw(rc, getModel);
     shader->End(rc);
 }
 
@@ -146,8 +147,6 @@ void Player::InitEffects()
     hitEffect = std::make_unique<Effect>("Data/Effect/Hit.efk");
     ImpactEffect = std::make_unique<Effect>("Data/Effect/rehleckte.efk");
     desEffect = std::make_unique<Effect>("Data/Effect/F.efk");
-    // エフェクト読み込み
-    float effectScale = 1.0f;
     // 斬撃
     hitSlash = std::make_unique<Effect>("Data/Effect/slashHit.efk");
     hitFire = std::make_unique<Effect>("Data/Effect/hit fire.efk");
@@ -270,7 +269,7 @@ void Player::InitStats()
     isJunp = PlayerConfig::unJunp;
 
     // Tpos対策アニメーション初期化を適当なモーションに
-    modelControllId->GetModel()->UpdateAnimation(0.0f, false);
+    getModel->UpdateAnimation(0.0f, false);
 
     // 死亡判定
     isDead = false;
@@ -298,6 +297,10 @@ void Player::InitStats()
     specialAttackInitialize.id = (int)SpecialAttackType::MagicFire;
     specialAttackInitialize.hasSkill = isSkillHave;
     specialAttack.push_back(specialAttackInitialize);
+    
+    // audioの個々設定
+    // 初期化
+    paramSe = AudioParam::Se();
 }
 
 // 入力受付と行動への変換
@@ -326,7 +329,7 @@ void Player::HandleInput(float elapsedTime)
         if (!movementId) return;
 
         // 着地時にエフェクト切る
-        if (movementId->GetOnLadius() || GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
+        if (movementId->GetOnLadius() || stateMachineIndex() != static_cast<int>(Player::State::Death))
         {
             areWork->Stop(areWork->GetEfeHandle());
         }
@@ -334,20 +337,18 @@ void Player::HandleInput(float elapsedTime)
         // 攻撃の時にステートを変更
         if (InputAttack() && GetSelectCheck() ==
             (int)Player::CommandAttack::Attack &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::SideCut) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::CycloneStrike) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death) &&
+            CanChangeState() &&
             !isAreAttack
             )
         {
             // 空中行動回数
             --areAttackState;
             // ステート遷移
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::QuickJab));
+            changeState(static_cast<int>(Player::State::QuickJab));
             // 音再生
-            PlaySe("Data/Audio/SE/slash.wav");
+            paramSe.filename = AudioConfig::audioDealtDamage;
+            Audio::Instance().Play(paramSe);
+
             // もし地面なら何もしない
             bool noStart = false;
             // エフェクト再生
@@ -356,12 +357,7 @@ void Player::HandleInput(float elapsedTime)
         }
 
         //　魔法入力処理
-        if (InputMagick(elapsedTime) && magicAction &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Magic) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death)
-            )
+        if (InputMagick(elapsedTime) && magicAction && CanChangeState())
         {
             // デバッグ
             debugInt++;
@@ -375,16 +371,17 @@ void Player::HandleInput(float elapsedTime)
             // mpが０だったら
             if (mpId->GetMpEmpth())
             {
-                // se再生
-                seParam.filename = "Data/Audio/SE/cant magic.wav";
-                seParam.volume = 1.0f;
-                InputSe(seParam);
+                paramSe.filename = AudioConfig::audioMagicCant;
+                paramSe.volume = AudioConfig::bgmVolume;
+                Audio::Instance().Play(paramSe);
+                paramSe.volume = AudioConfig::seVolume;
+
                 magicAction = false;
                 selectCheck = (int)CommandAttack::Attack;
                 return;
             }
             // 魔法ステートに
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::Magic));
+            changeState(static_cast<int>(Player::State::Magic));
 
             // もし地面なら何もしない
             bool noStart = false;
@@ -394,16 +391,14 @@ void Player::HandleInput(float elapsedTime)
             areWork->Play(position);
         }
         // 必殺技
-        if (GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
-            GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
+        if (stateMachineIndex() != static_cast<int>(Player::State::Damage) &&
+            stateMachineIndex() != static_cast<int>(Player::State::Death))
             // 特殊攻撃
             InputSpecialAttackCharge(elapsedTime);
         // 特殊技変更
         InputSpecialAttackChange();
         // UI必殺技演出
         SpecialPlayUlEffect(elapsedTime);
-        // 攻撃範囲内なのでUI描画
-        AttackCheckUI();
         // ゲージ管理
         UiControlleGauge(elapsedTime);
     }
@@ -442,7 +437,7 @@ void Player::UpdateStatus(float elapsedTime)
     InputRockOn();
 
     // 死亡シーンへ行く
-    if (hpId->GetDead() && !isDead)
+    if (hpId->DeadStart())
     {
         // 死亡状態
         isDead = true;
@@ -486,7 +481,7 @@ void Player::UpdateEffects(float elapsedTime)
 void Player::HandleCollisions()
 {
     // プレイヤーと敵との衝突処理
-    CollisionBornVsProjectile("body2");
+    CollisionBornVsProjectile(PlayerConfig::bornWaistPoint);
     CollisionPlayerVsEnemies();
     // 魔法火当たり判定
     CollisionMagicFire();
@@ -519,35 +514,35 @@ void Player::UpdateAnimation(float elapsedTime)
     case UpAnim::Normal:
     {
         // アニメーション再生
-        modelControllId->GetModel()->UpdateAnimation(elapsedTime, true);
+        getModel->UpdateAnimation(elapsedTime, true);
         break;
     }
     // 部分再生
     case UpAnim::Doble:
     {
         // モデル部分アニメーション更新処理
-        modelControllId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, PlayerConfig::bornUpStartPoint, PlayerConfig::bornUpEndPoint, true);
-        modelControllId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, PlayerConfig::bornDownerStartPoint, PlayerConfig::bornDownerEndPoint, true);
+        getModel->UpdateUpeerBodyAnimation(elapsedTime, PlayerConfig::bornUpStartPoint, PlayerConfig::bornUpEndPoint, true);
+        getModel->UpdateLowerBodyAnimation(elapsedTime, PlayerConfig::bornDownerStartPoint, PlayerConfig::bornDownerEndPoint, true);
         break;
     }
     // 複数ブレンド再生
     case UpAnim::Blend:
     {
         // モデル複数ブレンドアニメーション更新処理
-        modelControllId->GetModel()->Update_blend_animations(elapsedTime, true);
+        getModel->Update_blend_animations(elapsedTime, true);
         break;
     }
     // 逆再生
     case UpAnim::Reverseplayback:
     {
         // モデル逆再生アニメーション更新処理
-        modelControllId->GetModel()->ReverseplaybackAnimation(elapsedTime, true);
+        getModel->ReverseplaybackAnimation(elapsedTime, true);
         break;
     }
     }
 
     // 位置更新
-    modelControllId->GetModel()->UpdateTransform(transformId->GetTransform());
+    getModel->UpdateTransform(transformId->GetTransform());
 }
 
 // 最初のカメラ演出
@@ -560,200 +555,6 @@ void Player::UpdateCameraInitialEffect(float elapsedTime)
     if (currentCameraEffectInitialTime > PlayerConfig::currentCameraEffectInitialTimeMax)
         // 最初のカメラ演出
         isCameraInitialEffect = false;
-}
-
-// Se再生
-void Player::InputSe(AudioParam param)
-{
-    Audio& Se = Audio::Instance();
-    Se.Play(param);
-}
-
-// 音再生
-void Player::PlaySe(const std::string& filename)
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = filename;
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-// 音ループ再生
-void Player::PlayLoopSe(const std::string& filename)
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = filename;
-    audioParam.loop = isLoopAnim;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-// se停止
-void Player::StopSe(const std::string& filename)
-{
-    Audio& Se = Audio::Instance();
-    // 種類停止
-    Se.Stop(filename);
-}
-
-// カメラのステート管理
-void Player::UpdateCameraState(float elapsedTime)
-{
-    auto modelControllId = modelControll.lock();
-
-    // 有効性チェック
-    if (!modelControllId) return;
-
-    CameraState oldLockonState = lockonState;
-    DirectX::XMFLOAT3 oldLockonCharacter = lockonCharactor;
-    lockonState = CameraState::NotLockOn;
-    lockonCharactor = { 0,0,0 };
-
-    // 通常カメラなら足元を送る。
-    if (!rockCheck)
-    {
-        Model::Node* PRock = modelControllId->GetModel()->FindNode("mixamorig:Neck");
-        DirectX::XMFLOAT3 pPosition =
-        {
-                    PRock->worldTransform._41,
-                    PRock->worldTransform._42,
-                    PRock->worldTransform._43
-        };
-        MessageData::CAMERACHANGEFREEMODEDATA	p = { pPosition };
-        Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
-        return;
-    }
-
-    EnemyManager& enemyManager = EnemyManager::Instance();
-    // エネミーの数
-    int enemyCount = enemyManager.GetEnemyCount();
-    // エネミーが一人でも生きていたら
-    if (enemyCount <= 0) return;
-    // エネミーの安全☑
-    auto enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
-    if (!enemyShader) return;
-
-    auto enemyBoss = enemyShader->GetComponent<EnemyBoss>();
-    auto enemyModel = enemyShader->GetComponent<ModelControll>();
-
-    if (!enemyBoss || !enemyModel)return;
-
-    // ロックオンモード
-    Model::Node* PRock = modelControllId->GetModel()->FindNode("mixamorig:Hips");
-    DirectX::XMFLOAT3 pPosition;
-    pPosition = enemyModel->GetModel()->ConvertLocalToWorld(PRock);
-    pPosition.z *= 1.1f;
-    DirectX::XMVECTOR p, t, v;
-    switch (oldLockonState)
-    {
-        // ノーマルカメラ
-    case	CameraState::NotLockOn:
-    {
-        // 一番近い距離のキャラクターを検索
-        float	length1, length2;
-
-        Model::Node* characterBorn = enemyModel->GetModel()->FindNode("shoulder");
-        // 敵位置
-        DirectX::XMFLOAT3 character;
-
-        character = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
-        // ロックオン
-        if (lockonState != CameraState::NotLockOn)
-        {
-            p = DirectX::XMLoadFloat3(&pPosition);
-            t = DirectX::XMLoadFloat3(&lockonCharactor);
-            v = DirectX::XMVectorSubtract(t, p);
-            DirectX::XMStoreFloat(&length2, DirectX::XMVector3LengthSq(v));
-            p = DirectX::XMLoadFloat3(&pPosition);
-            t = DirectX::XMLoadFloat3(&character);
-            v = DirectX::XMVectorSubtract(t, p);
-            DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
-            if (length1 < length2)
-            {
-                lockonCharactor = character;
-            }
-        }
-        // ノーマル
-        else
-        {
-            p = DirectX::XMLoadFloat3(&pPosition);
-            t = DirectX::XMLoadFloat3(&character);
-            v = DirectX::XMVectorSubtract(t, p);
-            DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
-            lockonCharactor = character;
-            lockonState = CameraState::LockOn;
-        }
-
-        break;
-    }
-    // ロックオン
-    case	CameraState::LockOn:
-    {
-        // ボーン名取得
-        Model::Node* characterBorn = enemyModel->GetModel()->FindNode("body1");
-        // 敵位置
-        DirectX::XMFLOAT3 character;
-
-        character = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
-
-        // エネミーステート
-        stateEnemyIndex = enemyBoss->GetStateMachine()->GetStateIndex();
-        // エネミーの特定ステートならカメラ更新しない
-        if (stateEnemyIndex == (int)EnemyBoss::State::Jump ||
-            stateEnemyIndex == (int)EnemyBoss::State::Attack ||
-            stateEnemyIndex == (int)EnemyBoss::State::Wander
-            )
-        {
-            lockonState = CameraState::AttackLock;
-        }
-        // 通常ロックオンに
-        else
-        {
-            lockonState = CameraState::LockOn;
-        }
-        lockonCharactor = character;
-        break;
-    }
-    // 敵の攻撃ロックオン
-    case CameraState::AttackLock:
-    {
-        // 敵攻撃ロックオンステート
-        lockonState = CameraState::AttackLock;
-
-        // ボーン名取得
-        Model::Node* characterBorn = enemyModel->GetModel()->FindNode("body1");
-
-        // 敵位置
-        lockonCharactor = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
-
-        // 敵ステート
-        stateEnemyIndex = enemyBoss->GetStateMachine()->GetStateIndex();
-
-        // 特定の行動以外なら通常ロックオンに
-        if (stateEnemyIndex != (int)EnemyBoss::State::Jump &&
-            stateEnemyIndex != (int)EnemyBoss::State::Attack)
-        {
-            lockonState = CameraState::LockOn;
-        }
-
-        break;
-    }
-    }
-    // ステートがロックオンならカメラにモードを送る。
-    if (lockonState == CameraState::LockOn)
-    {
-        MessageData::CAMERACHANGELOCKONMODEDATA	p = { pPosition, lockonCharactor };
-        Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONMODE, &p);
-    }
-    // ステートが敵攻撃ロックオンならカメラにモードを送る。
-    if (lockonState == CameraState::AttackLock)
-    {
-        MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA	p = { pPosition, lockonCharactor };
-        Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONTOPHEIGHTMODE, &p);
-    }
 }
 
 // デバッグプリミティブ描画
@@ -774,7 +575,7 @@ void Player::DrawDebugPrimitive()
     if (attackCollisionFlag)
     {
         // 攻撃衝突用の左手ノードデバッグ球を描画
-        Model::Node* leftHandBone = modelControllId->GetModel()->FindNode("mixamorig:LeftHand");
+        Model::Node* leftHandBone = getModel->FindNode("mixamorig:LeftHand");
         debugRenderer->DrawSphere(DirectX::XMFLOAT3(
             leftHandBone->worldTransform._41,
             leftHandBone->worldTransform._42,
@@ -844,7 +645,7 @@ void Player::OnGUI()
         AudioParam audioParam;
         audioParam.filename = "Data/Audio/SE/Special Move Thunder.wav";
         audioParam.loop = isLoopDisabled;
-        audioParam.volume = seVolume;
+        audioParam.volume = AudioConfig::seVolume;
         Se.Play(audioParam);
     }
 
@@ -898,12 +699,12 @@ void Player::OnGUI()
         Model::ModelAnim modelAnim;
         modelAnim.index = Player::Animation::Anim_SpecialAttack;
         // アニメーション再生
-        modelControllId->GetModel()->PlayAnimation(modelAnim);
+        getModel->PlayAnimation(modelAnim);
         angleCameraCheck = true;
     }
     if (angleCameraCheck)
     {
-        Model::Node* pHPosiiton = modelControllId->GetModel()->FindNode("mixamorig:LeftHand");
+        Model::Node* pHPosiiton = getModel->FindNode("mixamorig:LeftHand");
         DirectX::XMFLOAT3 pPosition =
         {
                     pHPosiiton->worldTransform._41,
@@ -911,7 +712,7 @@ void Player::OnGUI()
                     pHPosiiton->worldTransform._43
         };
         // 任意のアニメーション再生区間でのみ衝突判定処理をする
-        float animationTime = modelControllId->GetModel()->GetCurrentANimationSeconds();
+        float animationTime = getModel->GetCurrentANimationSeconds();
         if (animationTime >= 1.1f - FLT_EPSILON && animationTime <= 1.2f + FLT_EPSILON)
         {
             hitCheck = true;
@@ -967,16 +768,16 @@ bool Player::InputMove()
     float ay = gamePad.GetAxisLY();
     // x軸の移動感知  特定の動作中移動禁止
     if (ax + FLT_EPSILON != isInputEmpty + FLT_EPSILON &&
-        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
-        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
+        stateMachineIndex() != static_cast<int>(Player::State::Damage) &&
+        stateMachineIndex() != static_cast<int>(Player::State::Death))
     {
         
         return true;
     }
     // ｙ軸の移動感知　特定の動作中移動禁止
     if (ay + FLT_EPSILON != isInputEmpty + FLT_EPSILON &&
-        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Damage) &&
-        GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::Death))
+        stateMachineIndex() != static_cast<int>(Player::State::Damage) &&
+        stateMachineIndex() != static_cast<int>(Player::State::Death))
     {
 
         return true;
@@ -1001,88 +802,6 @@ bool Player::InputRockOn()
         return true;
     }
     return false;
-}
-
-// ロックオンUIを表示
-void Player::RockOnUI(ID3D11DeviceContext* dc,
-    const DirectX::XMFLOAT4X4& view,
-    const DirectX::XMFLOAT4X4& projection)
-{
-    int uiCount = UiManager::Instance().GetUiesCount();
-    if (uiCount <= uiCountMax) return;
-
-    // ビューポート 画面のサイズ等
-    // ビューポートとは2Dの画面に描画範囲の指定(クリッピング指定も出来る)位置を指定
-    D3D11_VIEWPORT viewport;
-    UINT numViewports = 1;
-    // ラスタライザーステートにバインドされているビューポート配列を取得
-    dc->RSGetViewports(&numViewports, &viewport);
-    // 変換行列
-    DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&view);
-    DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
-    // ローカルからワールドに行くときにいる奴相手のポジションを渡す。
-    DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
-    
-    // 全ての敵の頭上にHPゲージを表示
-    EnemyManager& enemyManager = EnemyManager::Instance();
-    // エネミーの数
-    int enemyCount = enemyManager.GetEnemyCount();
-    // エネミーが一人でも生きていたら
-    if (enemyCount <= 0) return;
-    // エネミーの安全☑
-    auto enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
-    if (!enemyShader) return;
-
-    auto enemyBoss = enemyShader->GetComponent<EnemyBoss>();
-    auto enemyModel = enemyShader->GetComponent<ModelControll>();
-    if (!enemyBoss || !enemyModel) return;
-
-    Model::Node* characterBorn = enemyModel->GetModel()->FindNode("boss_right_eye");
-    // エネミー腰位置
-    DirectX::XMFLOAT3 enemyPosition;
-
-    enemyPosition = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
-
-    // ワールドからスクリーン
-    DirectX::XMVECTOR enemyPositionVe = DirectX::XMLoadFloat3(&enemyPosition);
-    // ゲージ描画 // ワールドからスクリーン座標に
-    DirectX::XMVECTOR screenPositionVe = DirectX::XMVector3Project(
-        enemyPositionVe,
-        viewport.TopLeftX,
-        viewport.TopLeftY,
-        viewport.Width,
-        viewport.Height,
-        viewport.MinDepth,
-        viewport.MaxDepth,
-        Projection,
-        View,
-        World
-    );
-    // スクリーン座標
-    DirectX::XMFLOAT3 scereenPosition;
-    DirectX::XMStoreFloat3(&scereenPosition, screenPositionVe);
-    // 必殺技がでていなかったらロックオン
-    if (rockCheck || !specialRockOff)
-    {
-        UiManager::Instance().PositionUpdate((int)UiManager::UiCount::Sight, 
-            { 
-                scereenPosition.x, 
-                scereenPosition.y 
-            });
-
-        UiManager::Instance().PositionUpdate((int)UiManager::UiCount::SightCheck,
-            {
-                scereenPosition.x - scereenPositionOffset.x,
-                scereenPosition.y - scereenPositionOffset.y
-            });
-    }
-    // 必殺技中ロックオン系UIを消す。
-    if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f || !rockCheck || specialRockOff)
-    {
-        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::Sight);
-        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
-        return;
-    }
 }
 
 // コマンド　攻撃種類方法選択
@@ -1390,8 +1109,9 @@ bool Player::InputSpecialAttackCharge(float elapsedTime)
         // コマンドチャージUI消す
         UiManager::Instance().SpecialAttackCharge(elapsedTime);
 
-        // 必殺技たまった音
-        PlaySe("Data/Audio/SE/For the killer move.wav");
+        // 音再生
+        paramSe.filename = AudioConfig::audioSpecialCharge;
+        Audio::Instance().Play(paramSe);
 
         //// 一度発動すると初期化
         specialAttackCharge = 0.0f;
@@ -1437,10 +1157,12 @@ bool Player::InputSpecialAttackCharge(float elapsedTime)
         {
             if (!specialAttack.at(specialAttackNum).hasSkill)
             {
-                // se再生
-                seParam.filename = "Data/Audio/SE/cant magic.wav";
-                seParam.volume = 1.0f;
-                InputSe(seParam);
+                // se再生 必殺技溜まっていなかったら
+                paramSe.filename = AudioConfig::audioMagicCant;
+                paramSe.volume = AudioConfig::bgmVolume;
+                Audio::Instance().Play(paramSe);
+                paramSe.volume = AudioConfig::seVolume;
+
                 // 必殺技UIを解除
                 specialAction = false;
                 // コマンド選択を攻撃に
@@ -1451,7 +1173,7 @@ bool Player::InputSpecialAttackCharge(float elapsedTime)
             // 必殺技否所持
             specialAttack.at((int)SpecialAttackType::Attack).hasSkill = false;
 
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialAttack));
+            changeState(static_cast<int>(Player::State::SpecialAttack));
             // もし地面なら何もしない
             bool noStart = false;
             // エフェクト再生
@@ -1464,10 +1186,11 @@ bool Player::InputSpecialAttackCharge(float elapsedTime)
         {
             if (!specialAttack.at(specialAttackNum).hasSkill)
             {
-                // se再生
-                seParam.filename = "Data/Audio/SE/cant magic.wav";
-                seParam.volume = 1.0f;
-                InputSe(seParam);
+                // se再生 必殺技溜まっていなかったら
+                paramSe.filename = AudioConfig::audioMagicCant;
+                paramSe.volume = AudioConfig::bgmVolume;
+                Audio::Instance().Play(paramSe);
+                paramSe.volume = AudioConfig::seVolume;
                 // 必殺技UIを解除
                 specialAction = false;
                 return false;
@@ -1475,7 +1198,7 @@ bool Player::InputSpecialAttackCharge(float elapsedTime)
 
             // 必殺技否所持
             specialAttack.at((int)SpecialAttackType::MagicFire).hasSkill = false;
-            GetStateMachine()->ChangeState(static_cast<int>(Player::State::SpecialMagic));
+            changeState(static_cast<int>(Player::State::SpecialMagic));
             // もし地面なら何もしない
             bool noStart = false;
             // エフェクト再生
@@ -1546,26 +1269,26 @@ bool Player::InputSpecialAttackCharge(float elapsedTime)
             CommandConfig::commandAlphaValue, CommandConfig::commandAlphaValueMax, elapsedTime);
     }
     // コマンド点灯　alpha100%
-    else if(specialAttackCharge >= CommandConfig::specialAttackChargeFirst)
+    else if(specialAttackCharge > CommandConfig::specialAttackChargeFirst)
     {
         // チャージ矢印
         UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge01);
     }
     // チャージを見やすく
-    if (specialAttackCharge >= CommandConfig::specialAttackChargeFirst && specialAttackCharge <= CommandConfig::specialAttackChargeSecond)
+    if (specialAttackCharge > CommandConfig::specialAttackChargeFirst && specialAttackCharge <= CommandConfig::specialAttackChargeSecond)
     {
         // チャージ矢印
         UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge02,
             CommandConfig::commandAlphaValue, CommandConfig::commandAlphaValueMax, elapsedTime);
     }
     // コマンド点灯　alpha100%
-    else if (specialAttackCharge >= CommandConfig::specialAttackChargeSecond)
+    else if (specialAttackCharge > CommandConfig::specialAttackChargeSecond)
     {
         // チャージ矢印
         UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge02);
     }
     // チャージを見やすく
-    if (specialAttackCharge >= CommandConfig::specialAttackChargeSecond)
+    if (specialAttackCharge > CommandConfig::specialAttackChargeSecond)
     {
         // チャージ矢印
         UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge03,
@@ -2043,7 +1766,7 @@ void Player::CollisionPlayerVsEnemies()
     DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
     float enemyRadius = EnemyConfig::kBaseBodyRadius;
     // もし高さが一緒なら
-    float enemyHeight = enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle ?
+    float enemyHeight = enemyBoss->stateMachineIndex() != (int)EnemyBoss::State::IdleBattle ?
         EnemyConfig::kHeight : EnemyConfig::kConFusionHeight;
     // エネミーとプレイヤーの当たり判定はじき
     if (collisionId->IntersectCylinderVsCylinder(
@@ -2112,7 +1835,7 @@ void Player::CollisionBornVsProjectile(const char* bornname)
     DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
     float enemyRadius = EnemyConfig::kUpperBodyRadius;
     // もし高さが一緒なら
-    float enemyHeight = enemyBoss->GetStateMachine()->GetStateIndex() == (int)EnemyBoss::State::IdleBattle ?
+    float enemyHeight = enemyBoss->stateMachineIndex() == (int)EnemyBoss::State::IdleBattle ?
         EnemyConfig::kHeight : EnemyConfig::kConFusionHeight;
     // 当たり判定腰から上
     if (collisionId->IntersectCylinderVsCylinder(
@@ -2171,10 +1894,10 @@ bool Player::CollisionNodeVsEnemies()
     if (!enemyBoss || !enemyHp || !enemyModelId) return false;
 
     // ノード取得
-    Model::Node* node = modelControllId->GetModel()->FindNode("mixamorig:LeftHand");
+    Model::Node* node = getModel->FindNode("mixamorig:LeftHand");
     // ノード位置取得
     DirectX::XMFLOAT3 nodePosition;
-    nodePosition = modelControllId->GetModel()->ConvertLocalToWorld(node);
+    nodePosition = getModel->ConvertLocalToWorld(node);
 
     //// 衝突処理
     if (!CheckAllPartsCollision(nodePosition, leftHandRadius)) return false;
@@ -2182,7 +1905,8 @@ bool Player::CollisionNodeVsEnemies()
     if (!enemyHp->ApplyDamage(applyDamageNormal, 0.5f)) return false;
 
     // 斬撃se再生
-    PlaySe("Data/Audio/SE/slash.wav");
+    paramSe.filename = AudioConfig::audioDealtDamage;
+        Audio::Instance().Play(paramSe);
 
     // 当たり判定
     hitSlash->Play(nodePosition, slashScale);
@@ -2210,7 +1934,7 @@ void Player::CollisionNodeVsEnemiesCounter(const char* nodeName, float nodeRadiu
         return;
 
     // ノード取得
-    Model::Node* node = modelControllId->GetModel()->FindNode(nodeName);
+    Model::Node* node = getModel->FindNode(nodeName);
     // ノード位置取得
     DirectX::XMFLOAT3 nodePosition;
     nodePosition = {
@@ -2290,13 +2014,13 @@ void Player::ReactToDamage(int attackValue)
     attackNumberSave += attackValue;
 
     // 攻撃じゃなかったら
-    if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Wander &&
-        enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Jump &&
-        enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle
+    if (enemyBoss->stateMachineIndex() != (int)EnemyBoss::State::Wander &&
+        enemyBoss->stateMachineIndex() != (int)EnemyBoss::State::Jump &&
+        enemyBoss->stateMachineIndex() != (int)EnemyBoss::State::IdleBattle
         )
     {
         // 敵が攻撃してなかったら
-        if (enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::Attack)
+        if (enemyBoss->stateMachineIndex() != (int)EnemyBoss::State::Attack)
         {
             // ダメージアニメーション再生
             Model::ModelAnim modelAnim;
@@ -2308,10 +2032,10 @@ void Player::ReactToDamage(int attackValue)
         }
         // 混乱状態じゃ無かったら
         if (attackNumberSave >= PlayerConfig::attackNumberSaveMax &&
-            enemyBoss->GetStateMachine()->GetStateIndex() != (int)EnemyBoss::State::IdleBattle)
+            enemyBoss->stateMachineIndex() != (int)EnemyBoss::State::IdleBattle)
         {
             // 混乱ステート処理遷移
-            enemyBoss->GetStateMachine()->ChangeState(
+            enemyBoss->changeState(
                 (int)EnemyBoss::State::IdleBattle);
             // 攻撃連続ヒット停止
             attackNumberSave = 0;
@@ -2366,10 +2090,10 @@ void Player::UpdateSwordeTraile()
     // 剣の原点から根本と先端までのオフセット値
     DirectX::XMVECTOR RootOffset = DirectX::XMVectorSet(0, 0, 0.5f, 0);
     DirectX::XMVECTOR TipOffset = DirectX::XMVectorSet(0, 0, 2.3f, 0);
-    Model::Node* SwordeRootName = modelControllId->GetModel()->FindNode("mixamorig:RightHand");
+    Model::Node* SwordeRootName = getModel->FindNode("mixamorig:RightHand");
     // 剣の手元
     DirectX::XMFLOAT3 swordeRootPosition;
-    swordeRootPosition = modelControllId->GetModel()->ConvertLocalToWorld(SwordeRootName);
+    swordeRootPosition = getModel->ConvertLocalToWorld(SwordeRootName);
     // 前
     DirectX::XMFLOAT3 dir;
     dir.x = sinf(swordeRootPosition.y);// 三角を斜めにして位置を変えた
@@ -2409,35 +2133,27 @@ void Player::PinchMode(float elapsedTime)
     if (!hpId)
         return;
 
-    auto playerHpBar = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerHPBar);
-
-    // 安全チェック
-    if (!playerHpBar) return;
-    auto playerHpBarTransform2D = playerHpBar->GetComponent<TransForm2D>();
-
-    // 安全チェック
-    if (!playerHpBarTransform2D) return;
-
     // HP変化色
-    playerHpBarTransform2D->SetTexPosition({ PlayerConfig::hpBarGreenwTexPos });
+    UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::PlayerHPBar, PlayerConfig::hpBarGreenwTexPos);
     // hp半分
     if (hpId->HealthHalf() && !hpId->GetDead())
     {
         // HP変化色
-        playerHpBarTransform2D->SetTexPosition({ PlayerConfig::hpBarYerowTexPos });
+        UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::PlayerHPBar,PlayerConfig::hpBarYerowTexPos );
     }
 
     // hp が一定以下なら
     if (hpId->HealthPinch() && !hpId->GetDead())
     {
         // HP変化色
-        playerHpBarTransform2D->SetTexPosition({ PlayerConfig::hpBarRedTexPos });
+        UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::PlayerHPBar, PlayerConfig::hpBarRedTexPos);
 
         // 一定時間で描画
         if (mathfPintch.UpdateElapsedTime(timeElapsedHintMax, elapsedTime))
         {
             // サイレン音再生
-            PlaySe("Data/Audio/SE/siren.wav");
+            paramSe.filename = AudioConfig::audioSiren;
+            Audio::Instance().Play(paramSe);
 
             hintDrawCheck = hintDrawCheck ? false : true;
         }
@@ -2447,8 +2163,6 @@ void Player::PinchMode(float elapsedTime)
             hintDrawCheck = true;
         }
         // ピンチ時常に描画
-        //playerPush2Ui->SetDrawCheck(isDrawUi);
-        //playerShortCutUi->SetDrawCheck(isDrawUi);
         PostprocessingRenderer& postprocessingRenderer = PostprocessingRenderer::Instance();
         // ポストエフェクト
         vignetteData.color = vignettePinchColor;
@@ -2512,7 +2226,8 @@ void Player::StartJump()
     movementId->JumpVelocity(PlayerConfig::jumpSpeed);
 
     // ジャンプse再生
-    PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
+    paramSe.filename = AudioConfig::audioJump;
+    Audio::Instance().Play(paramSe);
 
     // ジャンプ不許可
     isJunp = PlayerConfig::unJunp;
@@ -2597,15 +2312,14 @@ bool Player::InputMagick(float elapsedTime)
 
     GamePad& gamePad = Input::Instance().GetGamePad();
 
-    if (GetStateMachine()->GetStateIndex() != static_cast<int>(Player::State::QuickJab) &&
-        modelControllId->GetModel()->GetCurrentAnimationIndex() == Anim_Magic&&
-        modelControllId->GetModel()->GetCurrentAnimationIndex() == Anim_MagicSeconde)
+    if (stateMachineIndex() != static_cast<int>(Player::State::QuickJab) &&
+        getModel->GetCurrentAnimationIndex() == Anim_Magic&&
+        getModel->GetCurrentAnimationIndex() == Anim_MagicSeconde)
         return false;
 
     // 魔法コマンド選択中では無かったら
     if (!magicAction)
     {
-        StartMagicUiFire();
         UiManager::Instance().StartMagicUiFire(
             (int)UiManager::UiCount::PlayerCommandPush,
             (int)UiManager::UiCount::PlayerCommandPushNow,
@@ -2719,7 +2433,10 @@ bool Player::InputMagick(float elapsedTime)
     }
 
     // ボタンから手を離したら
-    StartMagicUiFire();
+    UiManager::Instance().StartMagicUiFire(
+        (int)UiManager::UiCount::PlayerCommandPush,
+        (int)UiManager::UiCount::PlayerCommandPushNow,
+        (int)UiManager::UiCount::PlayerCommandCharge);
     return false;
 }
 
@@ -3248,83 +2965,6 @@ void Player::InputSpecialMagicframe()
     projectile->GetComponent<ProjectileTornade>()->SetTarget(target);
 }
 
-// 距離でUIを変えるロックオン中
-void Player::AttackCheckUI()
-{
-    // Lockとして実体を使う
-    auto collisionId = collision.lock();
-
-    // 有効性チェック
-    if (!collisionId)
-        return;
-
-    int uiCount = UiManager::Instance().GetUiesCount();
-    // ui無かったら
-    if (uiCount <= uiCountMax || !rockCheck || specialRockOff) return;
-    EnemyManager& enemyManager = EnemyManager::Instance();
-    int enemyCount = enemyManager.GetEnemyCount();
-    for (int i = 0; i < enemyCount; ++i)
-    {
-        auto enemy = enemyManager.GetEnemy(i);
-        // 安全チェック
-        if (!enemy) return;
-
-        auto enemyTransform = enemy->GetComponent<Transform>();
-        // 安全チェック
-        if (!enemyTransform)return ;
-        DirectX::XMVECTOR playerPosition =
-            DirectX::XMLoadFloat3(&position);
-        DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
-        DirectX::XMVECTOR enemyPositionXM =
-            DirectX::XMLoadFloat3(&enemyPosition);
-        DirectX::XMVECTOR LengthSq =
-            DirectX::XMVectorSubtract(playerPosition, enemyPositionXM);
-        LengthSq = DirectX::XMVector3LengthSq(LengthSq);
-        float lengthSq;
-        DirectX::XMStoreFloat(&lengthSq, LengthSq);
-        switch (selectCheck)
-        {
-        // 近距離の時の射程距離によるUI表示
-        case (int)CommandAttack::Attack:
-        {
-            // 当たり判定距離
-            if (lengthSq < PlayerConfig::attackCheckRange)
-            {
-                // 描画ロックオン
-                UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::SightCheck);
-            }
-            else
-            {
-                // 非表示ロックオン
-                UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
-            }
-
-            break;
-        }
-        // 魔法の時の射程距離によるUI表示
-        case (int)CommandAttack::Magic:
-        {
-
-
-            if (lengthSq < magicRangeLength)
-            {
-                // 描画ロックオン
-                UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::SightCheck);
-            }
-            else
-            {
-                // 非表示ロックオン
-                UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
-            }
-
-            break;
-        }
-        default:
-            break;
-        }
-    }
-}
-
 // 後変更角度
 DirectX::XMFLOAT3 Player::GetForwerd(DirectX::XMFLOAT3 angle)
 {
@@ -3429,7 +3069,6 @@ void Player::UiControlleGauge(float elapsedTime)
     // 揺れ
     UiManager::Instance().ShakeModeTyme((int)UiManager::UiCount::PlayerHp, shakeMode);
     UiManager::Instance().ShakeModeTyme((int)UiManager::UiCount::PlayerHPBar, shakeMode);
-
 }
 
 // 後変更
@@ -3522,139 +3161,6 @@ void Player::AreAttackDecreaseAmount()
 {
     // 空中行動制限
     --areAttackState;
-}
-
-// Ui魔法チャージ動作開始
-void Player::StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSize,float elapsedTime)
-{
-    // Lockとして実体を使う
-    auto mpId = mp.lock();
-
-    // 安全チェック
-    if (!mpId)
-        return;
-
-    // mp切れ
-    if (mpId->GetMpEmpth())
-    {
-        // 魔法チャージオフ
-        isMagicChageEnd = false;
-        StartMagicUiFire();
-        return;
-    }
-
-    // ゲージ溜め
-    playerCommandPushUiChargeTime += PlayerConfig::commandChargeAdd * elapsedTime;
-
-    // 後変更UIコマンド見にくい
-    // 描画
-    {
-        auto pushUi2D
-            = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandPush)
-            ->GetComponent<Ui>();
-        // 安全チェック
-        if (!pushUi2D)return;
-
-        pushUi2D->SetDrawCheck(isDrawUi);
-
-        auto pushNowUi
-            = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandPushNow)
-            ->GetComponent<Ui>();
-        // 安全チェック
-        if (!pushNowUi)return;
-
-        pushNowUi->SetDrawCheck(isDrawUi);
-
-        auto pushUiCharge
-            = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandCharge)
-            ->GetComponent<Ui>();
-        // 安全チェック
-        if (!pushUiCharge)return;
-
-        pushUiCharge->SetDrawCheck(isDrawUi);
-
-        // 位置大きさ　ゲージ
-        auto transform2DPush
-            = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandPush)
-            ->GetComponent<TransForm2D>();
-        // 安全チェック
-        if (!transform2DPush)return;
-
-        transform2DPush->SetPosition(pos);
-
-        transform2DPush->GetScale();
-
-        transform2DPush->SetScale(
-            { gaugeSize,transform2DPush->GetScale().y });
-
-        // ber
-        auto transform2DPushNow
-            = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandPushNow)
-            ->GetComponent<TransForm2D>();
-        // 安全チェック
-        if (!transform2DPushNow)return;
-
-        transform2DPushNow->SetPosition(pos);
-
-        // 長押し文字UI位置
-        auto transform2DCharge
-            = UiManager::Instance().GetUies(
-                (int)UiManager::UiCount::PlayerCommandCharge)
-            ->GetComponent<TransForm2D>();
-        transform2DCharge->SetPositionY(pos.y);
-
-        // 溜め
-        float gaugeWidth = gaugeSize * playerCommandPushUiChargeTime * 0.08f;
-
-        transform2DPushNow->SetScale(
-            { gaugeWidth,transform2DPushNow->GetScale().y});
-
-        // 魔法チャージ完了
-        if (gaugeWidth >= PlayerConfig::chargeMagicGaugeWidthMax)
-            isMagicChageEnd = true;
-    }
-}
-
-// 後変更コマンド見にくい
-// Ui魔法チャージ動作発射
-void Player::StartMagicUiFire()
-{
-    // 初期化
-    playerCommandPushUiChargeTime = 0.0f;
-
-    auto pushUi2D
-        = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandPush)
-        ->GetComponent<Ui>();
-    // 安全チェック
-    if (!pushUi2D)return;
-
-    pushUi2D->SetDrawCheck(isDrawUiEmpth);
-
-    auto pushNowUi
-        = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandPushNow)
-        ->GetComponent<Ui>();
-    // 安全チェック
-    if (!pushNowUi)return;
-
-    pushNowUi->SetDrawCheck(isDrawUiEmpth);
-
-    auto pushUiCharge
-        = UiManager::Instance().GetUies(
-            (int)UiManager::UiCount::PlayerCommandCharge)
-        ->GetComponent<Ui>();
-
-    // 安全チェック
-    if (!pushUiCharge)return;
-
-    pushUiCharge->SetDrawCheck(isDrawUiEmpth);
-
 }
 
 // 後変更デリートマネージャー

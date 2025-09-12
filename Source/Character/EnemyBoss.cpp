@@ -223,6 +223,10 @@ void EnemyBoss::InitStats()
 
     // クリアシーンに
     isSceneChange = false;
+
+    // audioの個々設定
+    // 初期化
+    paramSe = AudioParam::Se();
 }
 
 // ステート更新まとめ
@@ -264,7 +268,7 @@ void EnemyBoss::UpdateStatus(float elapsedTime)
     UiControlle(elapsedTime);
 
     // クリアシーンへ行く
-    if (hpId->GetDead() && !isDead)
+    if (hpId->DeadStart())
     {
         // 死亡状態
         isDead = true;
@@ -360,32 +364,6 @@ void EnemyBoss::UpdateAnimation(float elapsedTime)
     modelId->GetModel()->UpdateTransform(transformId->GetTransform());
 }
 
-// se再生
-void EnemyBoss::InputSe(AudioParam param)
-{
-    Audio& Se = Audio::Instance();
-    Se.Play(param);
-}
-
-void EnemyBoss::PlaySe(const std::string& filename)
-{
-    Audio& Se = Audio::Instance();
-    AudioParam audioParam;
-    audioParam.filename = filename;
-    audioParam.loop = isLoopDisabled;
-    audioParam.volume = seVolume;
-    Se.Play(audioParam);
-}
-
-// se停止
-void EnemyBoss::StopSe(const std::string& filename)
-{
-    Audio& Se = Audio::Instance();
-
-    // 種類停止
-    Se.Stop(filename);
-}
-
 // 後変更Collision
 // 足踏み(衝撃波)の当たり判定
 void EnemyBoss::CollisionImpactVsPlayer()
@@ -463,10 +441,11 @@ void EnemyBoss::CollisionImpactVsPlayer()
             // ダメージを与える。
             if (!playerHp->ApplyDamage(EnemyConfig::kApplyDamageStamp, EnemyConfig::kImpactInvincibleTime)) return;
 
-            playerMain->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+            playerMain->changeState(static_cast<int>(Player::State::Damage));
 
             // 衝撃波音
-            PlaySe("Data/Audio/SE/shockwave hit.wav");
+            paramSe.filename = AudioConfig::audioImpactPush;
+            Audio::Instance().Play(paramSe);
 
             // 吹き飛ばす
             {
@@ -589,7 +568,7 @@ void EnemyBoss::CollisionInpact()
         // ダメージを与える。
         if (!playerHp->ApplyDamage(EnemyConfig::kApplyDamageImpact, EnemyConfig::kImpactInvincibleTime)) return;
 
-        playerMain->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Damage));
+        playerMain->changeState(static_cast<int>(Player::State::Damage));
 
         // 吹き飛ばす
         {
@@ -696,12 +675,8 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
         if (!playerHp->ApplyDamage(applyDamage, EnemyConfig::kNuckleInvincibleTime)) return;
 
         // 斬撃音
-        // se再生
-        AudioParam audioParam;
-        audioParam.filename = "Data/Audio/SE/slash.wav";
-        audioParam.loop = isLoopDisabled;
-        audioParam.volume = seVolume;
-        InputSe(audioParam);
+        paramSe.filename = AudioConfig::audioDealtDamage;
+        Audio::Instance().Play(paramSe);
 
         DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
         DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
@@ -724,7 +699,7 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
             impulse.x = vx * power;
             impulse.y = power * 0.5f;
             impulse.z = vz * power;
-            playerMain->GetStateMachine()->ChangeState((int)Player::State::Damage);
+            playerMain->changeState((int)Player::State::Damage);
             playerMovement->AddImpulse(impulse);
             // エフェクト発生位置
             DirectX::XMFLOAT3 efcPos = playerPosition;
@@ -801,7 +776,9 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
         if (!playerHp->ApplyDamage(applyDamage, EnemyConfig::kNuckleInvincibleTime)) return;
 
         // 斬撃音
-        PlaySe("Data/Audio/SE/slash.wav");
+        paramSe.filename = AudioConfig::audioDealtDamage;
+        Audio::Instance().Play(paramSe);
+
         DirectX::XMVECTOR E = DirectX::XMLoadFloat3(&position);
         DirectX::XMVECTOR P = DirectX::XMLoadFloat3(&playerPosition);
         DirectX::XMVECTOR V = DirectX::XMVectorSubtract(P, E);
@@ -823,7 +800,7 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
             impulse.x = vx * power;
             impulse.y = power * 0.5f;
             impulse.z = vz * power;
-            playerMain->GetStateMachine()->ChangeState((int)Player::State::Damage);
+            playerMain->changeState((int)Player::State::Damage);
             playerMovement->AddImpulse(impulse);
             // エフェクト発生位置
             DirectX::XMFLOAT3 efcPos = playerPosition;
@@ -884,21 +861,12 @@ void EnemyBoss::UiControlle(float elapsedTime)
     if (!hpId) return;
 
     if (UiManager::Instance().GetUiesCount() <= uiCountMax)return;
-    //float gaugeWidth = hpId->GetMaxHealth() * hpId->GetHealth() * 0.08f;
-
-    auto uiHp = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPBar)->GetComponent<TransForm2D>();
-    auto uiHpEnemy = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHp)->GetComponent<TransForm2D>();
-
-    auto uiHpLife1 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife01)->GetComponent<Ui>();
-    auto uiHpLife2 = UiManager::Instance().GetUies((int)UiManager::UiCount::EnemyHPLife02)->GetComponent<Ui>();
-    
-    // 安全チェック
-    if (!uiHp || !uiHpEnemy || !uiHpLife1 || !uiHpLife2) return;
 
     // ゲージの大きさ
-    float gaugeWidth = uiHp->UpdateGage((float)hpId->GetHealth(), (float)hpId->GetMaxHealth(), EnemyConfig::lerpSpeed, elapsedTime);
+    float gaugeWidth = mathfPintch.LinearInterpolate((float)hpId->GetHealth(), (float)hpId->GetMaxHealth(), EnemyConfig::lerpSpeed, elapsedTime);
     // 大きさ補正
     gaugeWidth *= EnemyConfig::gaugeScale;
+
 
     // hpバー最低値
     if (gaugeWidth <= gaugeWidthMin)
@@ -907,15 +875,15 @@ void EnemyBoss::UiControlle(float elapsedTime)
     // 経過時間
     if (onDamageTime > EnemyConfig::onDamageTimeMin)
     {
-        uiHpEnemy->SetTexPosition(EnemyConfig::texDamagePos);
         // ダメージ食らってる時のUI
+        UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::EnemyHp, EnemyConfig::texDamagePos);
         onDamageTime -= EnemyConfig::onDamageTimeValue * elapsedTime;
     }
     // ダメ終了
     else
     {
         // ダメージ食らっていない時のUI
-        uiHpEnemy->SetTexPosition(EnemyConfig::texNoDamagePos);
+        UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::EnemyHp, EnemyConfig::texNoDamagePos);
     }
     // ダメージ食らった瞬間
     if (hpId->OnDamaged())
@@ -925,20 +893,20 @@ void EnemyBoss::UiControlle(float elapsedTime)
     }
 
     // hpバー
-    DirectX::XMFLOAT2 scale = { gaugeWidth, uiHp->GetScale().y };
-    uiHp->SetScale(scale);
+    // hpゲージUI　変える
+    UiManager::Instance().ScaleUpdateX((int)UiManager::UiCount::EnemyHPBar, gaugeWidth);
 
     bool checkDraw = false;
     switch (hpId->GetLife())
     {
     case 1:
     {
-        uiHpLife2->SetDrawCheck(checkDraw);
+        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::EnemyHPLife02);
         break;
     }
     case 0:
     {
-        uiHpLife1->SetDrawCheck(checkDraw);
+        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::EnemyHPLife01);
         break;
     }
     default:
@@ -959,6 +927,7 @@ void EnemyBoss::OnHit(float elapsedTime)
     if (hpId->FlashTime(elapsedTime))
     {
         ++damageStateTime;
+        // 点滅のオンオフ
         if (damageStateTime >= damageStateTimeMax)
         {
             damageStateCheck = damageStateCheck ? false : true;
@@ -981,6 +950,7 @@ void EnemyBoss::OnHit(float elapsedTime)
             colorGB.y -= 0.1f;
         }
     }
+    // 点滅しない
     else
     {
         damageStateTime = 0;

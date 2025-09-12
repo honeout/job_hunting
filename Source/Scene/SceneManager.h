@@ -29,6 +29,15 @@ public:
     void ChangeScene(Scene* scene);
 
     Scene* GetCurrentScene() const { return currentScene; }
+
+    // ------判定------------
+    // 現在シーンとあってほしいシーンの確認
+    inline bool GetIsSceneGameCheck(char * scene)
+    {
+        if (currentScene->GetSceneName() == "SceneGame")
+            return true;
+        return false;
+    };
 private:
     Scene* currentScene = nullptr;
     Scene* nextScene = nullptr;

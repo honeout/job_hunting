@@ -1,10 +1,12 @@
-#include <imgui.h>
+ï»¿#include <imgui.h>
 #include "CameraController.h"
 #include "Camera.h"
 #include "Input/Input.h"
 #include "Stage\StageMain.h"
+#include "Character\Player.h"
+#include "Character\EnemyBoss.h"
 
-// ‰Šú‰»
+// åˆæœŸåŒ–
 CameraController::CameraController()
 {
 	position = Camera::Instance().GetEye();
@@ -29,10 +31,10 @@ CameraController::~CameraController()
 }
 
 
-// XVˆ—
+// æ›´æ–°å‡¦ç†
 void CameraController::Update(float elapsedTime)
 {
-	// Šeƒ‚[ƒh‚Å‚Ìˆ—
+	// å„ãƒ¢ãƒ¼ãƒ‰ã§ã®å‡¦ç†
 	switch (mode)
 	{
 	case Mode::FreeSelectCamera: FreeSelectCamera(elapsedTime); break;
@@ -42,7 +44,7 @@ void CameraController::Update(float elapsedTime)
 	case	Mode::MotionCamera:	MotionCamera(elapsedTime);	break;
 	}
 
-	// ƒJƒƒ‰—h‚ê
+	// ã‚«ãƒ¡ãƒ©æºã‚Œ
 	if (shakeTimer > 0)
 	{
 		newPosition.x += (rand() % 3 - 1) * shakePower;
@@ -50,7 +52,7 @@ void CameraController::Update(float elapsedTime)
 		newPosition.z += (rand() % 3 - 1) * shakePower;
 		shakeTimer -= elapsedTime;
 	}
-	// X²‚ÌƒJƒƒ‰‰ñ“]‚ğ§ŒÀ
+	// Xè»¸ã®ã‚«ãƒ¡ãƒ©å›è»¢ã‚’åˆ¶é™
 	if (angle.x < minAngleX)
 	{
 		angle.x = minAngleX;
@@ -59,7 +61,7 @@ void CameraController::Update(float elapsedTime)
 	{
 		angle.x = maxAngleX;
 	}
-	// Y²‚Ì‰ñ“]’l‚ğ-3.14`3.14‚Éû‚Ü‚é‚æ‚¤‚É‚·‚é
+	// Yè»¸ã®å›è»¢å€¤ã‚’-3.14ï½3.14ã«åã¾ã‚‹ã‚ˆã†ã«ã™ã‚‹
 	if (angle.y < -DirectX::XM_PI)
 	{
 		angle.y += DirectX::XM_2PI;
@@ -69,13 +71,13 @@ void CameraController::Update(float elapsedTime)
 		angle.y -= DirectX::XM_2PI;
 	}
 
-	// V‚µ‚¢ƒJƒƒ‰‚ÌÅ’áˆÊ’u
+	// æ–°ã—ã„ã‚«ãƒ¡ãƒ©ã®æœ€ä½ä½ç½®
 	if(newPosition.y - FLT_EPSILON <= minPositionY + FLT_EPSILON)
 	{
 		newPosition.y  = minPositionY;
 	}
 
-	// ™X‚É–Ú•W‚É‹ß‚Ã‚¯‚é
+	// å¾ã€…ã«ç›®æ¨™ã«è¿‘ã¥ã‘ã‚‹
 	static	constexpr	float	Speed = 1.0f / 8.0f;
 	position.x += (newPosition.x - position.x) * Speed;
 	position.y += (newPosition.y - position.y) * Speed;
@@ -84,8 +86,11 @@ void CameraController::Update(float elapsedTime)
 	target.y += (newTarget.y - target.y) * Speed;
 	target.z += (newTarget.z - target.z) * Speed;
 
-	// ƒJƒƒ‰‚É‹“_‚ğ’‹“_‚ğİ’è
+	// ã‚«ãƒ¡ãƒ©ã«è¦–ç‚¹ã‚’æ³¨è¦–ç‚¹ã‚’è¨­å®š
 	Camera::Instance().SetLookAt(position, target, DirectX::XMFLOAT3(0, 1, 0));
+
+	// ãƒ­ãƒƒã‚¯ã‚ªãƒ³å¤‰æ›´
+	Lockon();
 }
 #ifdef _DEBUG
 void CameraController::OnGUI()
@@ -107,10 +112,10 @@ void CameraController::OnGUI()
 	ImGui::Separator();
 }
 #endif // _DEBUG
-// ƒ‚[ƒVƒ‡ƒ“ƒ^ƒCƒ~ƒ“ƒO
+// ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒŸãƒ³ã‚°
 bool CameraController::GetCameraMortionDataTime()
 {
-	// ‚»‚ÌuŠÔ‚¾‚¯—~‚µ‚¢
+	// ãã®ç¬é–“ã ã‘æ¬²ã—ã„
 	if (isEffect)
 	{
 		isEffect = false;
@@ -120,10 +125,10 @@ bool CameraController::GetCameraMortionDataTime()
 
 	return isEffect;
 }
-// ‘€ì•s”\ƒJƒƒ‰
+// æ“ä½œä¸èƒ½ã‚«ãƒ¡ãƒ©
 void CameraController::FreeSelectCamera(float elapsedTime)
 {
-	// X²‚ÌƒJƒƒ‰‰ñ“]‚ğ§ŒÀ
+	// Xè»¸ã®ã‚«ãƒ¡ãƒ©å›è»¢ã‚’åˆ¶é™
 	if (angle.x < minAngleX)
 	{
 		angle.x = minAngleX;
@@ -132,7 +137,7 @@ void CameraController::FreeSelectCamera(float elapsedTime)
 	{
 		angle.x = maxAngleX;
 	}
-	// Y²‚Ì‰ñ“]’l‚ğ-3.14`3.14‚Éû‚Ü‚é‚æ‚¤‚É‚·‚é
+	// Yè»¸ã®å›è»¢å€¤ã‚’-3.14ï½3.14ã«åã¾ã‚‹ã‚ˆã†ã«ã™ã‚‹
 	if (angle.y < -DirectX::XM_PI)
 	{
 		angle.y += DirectX::XM_2PI;
@@ -142,33 +147,33 @@ void CameraController::FreeSelectCamera(float elapsedTime)
 		angle.y -= DirectX::XM_2PI;
 	}
 
-	//// ƒJƒƒ‰‰ñ“]’l‚ğ‰ñ“]s—ñ‚É•ÏŠ·
+	//// ã‚«ãƒ¡ãƒ©å›è»¢å€¤ã‚’å›è»¢è¡Œåˆ—ã«å¤‰æ›
 	//DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
 
-	//// ‰ñ“]s—ñ‚©‚ç‘O•ûŒüƒxƒNƒgƒ‹‚ğæ‚èo‚·
+	//// å›è»¢è¡Œåˆ—ã‹ã‚‰å‰æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’å–ã‚Šå‡ºã™
 	//DirectX::XMVECTOR Front = Transform.r[2];
 	//DirectX::XMFLOAT3 front;
 	//DirectX::XMStoreFloat3(&front, Front);
 
-	//// ’‹“_‚©‚çŒã‚ëƒxƒNƒgƒ‹•ûŒü‚Éˆê’è‹——£—£‚ê‚½ƒJƒƒ‰‹“_‚ğ‹‚ß‚é
+	//// æ³¨è¦–ç‚¹ã‹ã‚‰å¾Œã‚ãƒ™ã‚¯ãƒˆãƒ«æ–¹å‘ã«ä¸€å®šè·é›¢é›¢ã‚ŒãŸã‚«ãƒ¡ãƒ©è¦–ç‚¹ã‚’æ±‚ã‚ã‚‹
 	//newPosition.x = target.x - front.x * range;
 	//newPosition.y = target.y - front.y * range;
 	//newPosition.z = target.z - front.z * range;
 }
-// ’ÊíƒJƒƒ‰
+// é€šå¸¸ã‚«ãƒ¡ãƒ©
 void CameraController::FreeCamera(float elapsedTime)
 {
 	GamePad& gamePad = Input::Instance().GetGamePad();
 	float ax = gamePad.GetAxisRX();
 	float ay = gamePad.GetAxisRY();
-	// ƒJƒƒ‰‚Ì‰ñ“]‘¬“x
+	// ã‚«ãƒ¡ãƒ©ã®å›è»¢é€Ÿåº¦
 	float speed = rollSpeed * elapsedTime;
 
-	// ƒXƒeƒBƒbƒN‚Ì“ü—Í’l‚É‡‚í‚¹‚ÄX²‚ÆY²‚ğ‰ñ“]
+	// ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›å€¤ã«åˆã‚ã›ã¦Xè»¸ã¨Yè»¸ã‚’å›è»¢
 	angle.x += ay * speed;
 	angle.y += ax * speed;
 
-	// X²‚ÌƒJƒƒ‰‰ñ“]‚ğ§ŒÀ
+	// Xè»¸ã®ã‚«ãƒ¡ãƒ©å›è»¢ã‚’åˆ¶é™
 	if (angle.x < minAngleX)
 	{
 		angle.x = minAngleX;
@@ -177,7 +182,7 @@ void CameraController::FreeCamera(float elapsedTime)
 	{
 		angle.x = maxAngleX;
 	}
-	// Y²‚Ì‰ñ“]’l‚ğ-3.14`3.14‚Éû‚Ü‚é‚æ‚¤‚É‚·‚é
+	// Yè»¸ã®å›è»¢å€¤ã‚’-3.14ï½3.14ã«åã¾ã‚‹ã‚ˆã†ã«ã™ã‚‹
 	if (angle.y < -DirectX::XM_PI)
 	{
 		angle.y += DirectX::XM_2PI;
@@ -187,23 +192,23 @@ void CameraController::FreeCamera(float elapsedTime)
 		angle.y -= DirectX::XM_2PI;
 	}
 
-	// ƒJƒƒ‰‰ñ“]’l‚ğ‰ñ“]s—ñ‚É•ÏŠ·
+	// ã‚«ãƒ¡ãƒ©å›è»¢å€¤ã‚’å›è»¢è¡Œåˆ—ã«å¤‰æ›
 	DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
 
-	// ‰ñ“]s—ñ‚©‚ç‘O•ûŒüƒxƒNƒgƒ‹‚ğæ‚èo‚·
+	// å›è»¢è¡Œåˆ—ã‹ã‚‰å‰æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’å–ã‚Šå‡ºã™
 	DirectX::XMVECTOR Front = Transform.r[2];
 	DirectX::XMFLOAT3 front;
 	DirectX::XMStoreFloat3(&front, Front);
 
-	// ’‹“_‚©‚çŒã‚ëƒxƒNƒgƒ‹•ûŒü‚Éˆê’è‹——£—£‚ê‚½ƒJƒƒ‰‹“_‚ğ‹‚ß‚é
+	// æ³¨è¦–ç‚¹ã‹ã‚‰å¾Œã‚ãƒ™ã‚¯ãƒˆãƒ«æ–¹å‘ã«ä¸€å®šè·é›¢é›¢ã‚ŒãŸã‚«ãƒ¡ãƒ©è¦–ç‚¹ã‚’æ±‚ã‚ã‚‹
 	newPosition.x = target.x - front.x * range;
 	newPosition.y = target.y - front.y * range;
 	newPosition.z = target.z - front.z * range;
 }
-//  ’ÊíƒƒbƒNƒIƒ“XV
+//  é€šå¸¸ãƒ­ãƒƒã‚¯ã‚ªãƒ³æ›´æ–°
 void CameraController::LockonCamera(float elapsedTime)
 {
-	//	Œã•ûÎ‚ÉˆÚ“®‚³‚¹‚é
+	//	å¾Œæ–¹æ–œã«ç§»å‹•ã•ã›ã‚‹
 	DirectX::XMVECTOR	t0 = DirectX::XMVectorSet(targetWork[0].x, targetWork[0].y, targetWork[0].z, 0);
 	DirectX::XMVECTOR	t0XZ = DirectX::XMVectorSet(targetWork[0].x, targetWork[0].z,0,0);
 	DirectX::XMVECTOR	t1 = DirectX::XMVectorSet(targetWork[1].x, targetWork[1].y, targetWork[1].z, 0);
@@ -221,20 +226,20 @@ void CameraController::LockonCamera(float elapsedTime)
 	t0 = DirectX::XMLoadFloat3(&targetWork[0]);
 	t1 = DirectX::XMLoadFloat3(&targetWork[1]);
 
-	//	V‚µ‚¢’‹“_‚ğZo
+	//	æ–°ã—ã„æ³¨è¦–ç‚¹ã‚’ç®—å‡º
 	DirectX::XMStoreFloat3(&newTarget, DirectX::XMVectorMultiplyAdd(v, DirectX::XMVectorReplicate(lookAtOffset), t0));
-	// ƒ^[ƒQƒbƒg‚Ì‚‚³
+	// ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®é«˜ã•
 	newTarget.y = topTargetY;
-	//	V‚µ‚¢À•W‚ğZo
+	//	æ–°ã—ã„åº§æ¨™ã‚’ç®—å‡º
 	l = DirectX::XMVectorClamp(l
 		, DirectX::XMVectorReplicate(lengthLimit[0])
 		, DirectX::XMVectorReplicate(lengthLimit[1]));
 	t0 = DirectX::XMVectorMultiplyAdd(l, DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), t0);
 
-	// ‹——£ˆê’èˆÈ‰º‚ÌƒJƒƒ‰‹——£
+	// è·é›¢ä¸€å®šä»¥ä¸‹ã®ã‚«ãƒ¡ãƒ©è·é›¢
 	if (attackMinRange >= len)
 	{
-		// ­‚µ—£‚ê‚é
+		// å°‘ã—é›¢ã‚Œã‚‹
 		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(attacklengthMinRock), t0);
 
 		DirectX::XMStoreFloat3(&newPosition, t0);
@@ -242,30 +247,30 @@ void CameraController::LockonCamera(float elapsedTime)
 		return;
 	}
 
-	// ‹——£‚ªˆê’èˆÈã
+	// è·é›¢ãŒä¸€å®šä»¥ä¸Š
 	if (lengthMin <= len)
 	{
-		// ­‚µã
+		// å°‘ã—ä¸Š
 		t0 = DirectX::XMVectorMultiplyAdd(cuv, DirectX::XMVectorReplicate(topHeight), t0);
 		DirectX::XMStoreFloat3(&newPosition, t0);
 		newPosition.y = heightAttackMaxRock;
 
 	}
 
-	// ‹ß‚¢‚ÌƒJƒƒ‰
+	// è¿‘ã„æ™‚ã®ã‚«ãƒ¡ãƒ©
 	else
 	{
-		// ­‚µ—£‚ê‚é
+		// å°‘ã—é›¢ã‚Œã‚‹
 		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(lengthMinRock), t0);
 
 		DirectX::XMStoreFloat3(&newPosition, t0);
 		newPosition.y = heightMaxRock;
 	}
 }
-// “GUŒ‚‚ÌƒJƒƒ‰ƒAƒ“ƒOƒ‹XV
+// æ•µæ”»æ’ƒæ™‚ã®ã‚«ãƒ¡ãƒ©ã‚¢ãƒ³ã‚°ãƒ«æ›´æ–°
 void CameraController::LockonTopHeightCamera(float elapsedTime)
 {
-	//	Œã•ûÎ‚ÉˆÚ“®‚³‚¹‚é
+	//	å¾Œæ–¹æ–œã«ç§»å‹•ã•ã›ã‚‹
 	DirectX::XMVECTOR	t0 = DirectX::XMVectorSet(targetWork[0].x, 0.0f, targetWork[0].z, 0);
 	DirectX::XMVECTOR	t1 = DirectX::XMVectorSet(targetWork[1].x, 0.0f, targetWork[1].z, 0);
 	DirectX::XMVECTOR	crv = DirectX::XMLoadFloat3(&Camera::Instance().GetRight());
@@ -278,20 +283,20 @@ void CameraController::LockonTopHeightCamera(float elapsedTime)
 	cameraRandeDebug = len;
 	t0 = DirectX::XMLoadFloat3(&targetWork[0]);
 	t1 = DirectX::XMLoadFloat3(&targetWork[1]);
-	//	V‚µ‚¢’‹“_‚ğZo
+	//	æ–°ã—ã„æ³¨è¦–ç‚¹ã‚’ç®—å‡º
 	DirectX::XMStoreFloat3(&newTarget, DirectX::XMVectorMultiplyAdd(v, DirectX::XMVectorReplicate(lookAtOffset), t0));
-	// ƒ^[ƒQƒbƒg‚Ì‚‚³
+	// ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®é«˜ã•
 	newTarget.y = topTargetY;
-	//	V‚µ‚¢À•W‚ğZo
+	//	æ–°ã—ã„åº§æ¨™ã‚’ç®—å‡º
 	l = DirectX::XMVectorClamp(l
 		, DirectX::XMVectorReplicate(lengthLimit[0])
 		, DirectX::XMVectorReplicate(lengthLimit[1]));
 	t0 = DirectX::XMVectorMultiplyAdd(l, DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), t0);
 
-	// ˆê’èˆÈ‰º‚ÌƒJƒƒ‰‹——£
+	// ä¸€å®šä»¥ä¸‹ã®ã‚«ãƒ¡ãƒ©è·é›¢
 	if (attackMinRange >= len)
 	{
-		// ­‚µ—£‚ê‚é
+		// å°‘ã—é›¢ã‚Œã‚‹
 		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(attacklengthMinRock), t0);
 
 		DirectX::XMStoreFloat3(&newPosition, t0);
@@ -300,20 +305,20 @@ void CameraController::LockonTopHeightCamera(float elapsedTime)
 	}
 
 	if (len > cameraDisableRange)
-	// ­‚µ—£‚ê‚é 16.0f
+	// å°‘ã—é›¢ã‚Œã‚‹ 16.0f
 	t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(lengthMinRock), t0);
 
 	else
 	{
-		// ­‚µ—£‚ê‚é 16.0f
+		// å°‘ã—é›¢ã‚Œã‚‹ 16.0f
 		t0 = DirectX::XMVectorMultiplyAdd(DirectX::XMVector3Normalize(DirectX::XMVectorNegate(v)), DirectX::XMVectorReplicate(lengthRock), t0);
 	}
 
 	DirectX::XMStoreFloat3(&newPosition, t0);
-	// ‚‚³w’è
+	// é«˜ã•æŒ‡å®š
 	newPosition.y = topHeight;
 }
-// ƒ‚[ƒVƒ‡ƒ“ƒJƒƒ‰‚ÌXV
+// ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚«ãƒ¡ãƒ©ã®æ›´æ–°
 void CameraController::MotionCamera(float elapsedTime)
 {
 	if (motionData.empty())
@@ -328,7 +333,7 @@ void CameraController::MotionCamera(float elapsedTime)
 			newTarget = motionData[0].target;
 			position = newPosition;
 			target = newTarget;
-			// ŠÔŒo‰ß
+			// æ™‚é–“çµŒé
 			isEffect = motionData[0].isEffect ? motionData[0].isEffect : motionData[0].isEffect;
 		}
 
@@ -343,7 +348,7 @@ void CameraController::MotionCamera(float elapsedTime)
 				set = true;
 				float	value = motionData[i + 1].time - motionData[i].time;
 				value = (motionTimer - motionData[i].time) / value;
-				// ŠÔ‚É‚æ‚Á‚ÄˆÊ’u‚ÌŠ„‚èo‚µ‚ğ•Ï‚¦‚éB
+				// æ™‚é–“ã«ã‚ˆã£ã¦ä½ç½®ã®å‰²ã‚Šå‡ºã—ã‚’å¤‰ãˆã‚‹ã€‚
 				newPosition = motionData[i].position;
 				newPosition.x += (motionData[i + 1].position.x - motionData[i].position.x) * value;
 				newPosition.y += (motionData[i + 1].position.y - motionData[i].position.y) * value;
@@ -356,7 +361,7 @@ void CameraController::MotionCamera(float elapsedTime)
 				target = newTarget;
 				break;
 			}
-			// ˆê•”ƒ‚[ƒVƒ‡ƒ“‚ğ”ò‚Î‚·
+			// ä¸€éƒ¨ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é£›ã°ã™
 			if (motionData[i].time <= motionTimer && motionTimer < motionData[i + 1].time && motionData[i].setSkipMoveCheck)
 			{
 				newPosition = motionData[i].position;
@@ -369,7 +374,7 @@ void CameraController::MotionCamera(float elapsedTime)
 		}
 		if (!set)
 		{
-			// ˆÊ’u‚ğÅŒã‚Ì•”•ª‚É‡‚í‚¹‚éB
+			// ä½ç½®ã‚’æœ€å¾Œã®éƒ¨åˆ†ã«åˆã‚ã›ã‚‹ã€‚
 			if (motionTimer >= motionData[motionData.size() - 1].time)
 			{
 				newPosition = motionData[motionData.size() - 1].position;
@@ -380,20 +385,20 @@ void CameraController::MotionCamera(float elapsedTime)
 		}
 	}
 }
-// ƒtƒŠ[ƒJƒƒ‰‰Šú‰»
+// ãƒ•ãƒªãƒ¼ã‚«ãƒ¡ãƒ©åˆæœŸåŒ–
 void CameraController::OnFreeSelectMode(void* data)
 {
 	MessageData::CAMERACHANGEFREESELECTMODEDATA* p = static_cast<MessageData::CAMERACHANGEFREESELECTMODEDATA*>(data);
 	if (this->mode != Mode::FreeSelectCamera)
 	{
-		// Šp“xZo
+		// è§’åº¦ç®—å‡º
 		DirectX::XMFLOAT3	v;
 		v.x = newPosition.x - newTarget.x;
 		v.y = newPosition.y - newTarget.y;
 		v.z = newPosition.z - newTarget.z;
 		angle.y = atan2f(v.x, v.z) + DirectX::XM_PI;
 		angle.x = atan2f(v.y, v.z);
-		//	Šp“x‚Ì³‹K‰»
+		//	è§’åº¦ã®æ­£è¦åŒ–
 		angle.y = atan2f(sinf(angle.y), cosf(angle.y));
 		angle.x = atan2f(sinf(angle.x), cosf(angle.x));
 	}
@@ -401,22 +406,22 @@ void CameraController::OnFreeSelectMode(void* data)
 	this->newTarget = p->target;
 	this->newTarget.y += 0.01f;
 }
-// ƒtƒŠ[ƒJƒƒ‰‰Šú‰»
+// ãƒ•ãƒªãƒ¼ã‚«ãƒ¡ãƒ©åˆæœŸåŒ–
 void CameraController::OnFreeMode(void* data)
 {
 	MessageData::CAMERACHANGEFREEMODEDATA* p = static_cast<MessageData::CAMERACHANGEFREEMODEDATA*>(data);
 	if (this->mode != Mode::FreeCamera)
 	{
-		// Šp“xZo
+		// è§’åº¦ç®—å‡º
 		DirectX::XMFLOAT3	v;
 		v.x = newPosition.x - newTarget.x;
 		v.y = newPosition.y - newTarget.y;
 		v.z = newPosition.z - newTarget.z;
 		angle.y = atan2f(v.x, v.z) + DirectX::XM_PI;
-		// C³“_
+		// ä¿®æ­£ç‚¹
 		angle.x = 0.0f;
 		//
-		//	Šp“x‚Ì³‹K‰»
+		//	è§’åº¦ã®æ­£è¦åŒ–
 		angle.y = atan2f(sinf(angle.y), cosf(angle.y));
 
 	}
@@ -424,7 +429,7 @@ void CameraController::OnFreeMode(void* data)
 	this->newTarget = p->target;
 	this->newTarget.y += 0.01f;
 }
-// ƒƒbƒNƒIƒ“‰Šú‰»
+// ãƒ­ãƒƒã‚¯ã‚ªãƒ³åˆæœŸåŒ–
 void CameraController::OnLockonMode(void* data)
 {
 	MessageData::CAMERACHANGELOCKONMODEDATA* p = static_cast<MessageData::CAMERACHANGELOCKONMODEDATA*>(data);
@@ -437,7 +442,7 @@ void CameraController::OnLockonMode(void* data)
 	targetWork[0].y += 0.01f;
 	targetWork[1].y += 0.01f;
 }
-// “GUŒ‚’†ƒƒbƒNƒIƒ“‰Šú‰»
+// æ•µæ”»æ’ƒä¸­ãƒ­ãƒƒã‚¯ã‚ªãƒ³åˆæœŸåŒ–
 void CameraController::OnLockonTopHeightMode(void* data)
 {
 	MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA* p = static_cast<MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA*>(data);
@@ -450,7 +455,7 @@ void CameraController::OnLockonTopHeightMode(void* data)
 	targetWork[0].y += 0.01f;
 	targetWork[1].y += 0.01f;
 }
-// ƒ‚[ƒVƒ‡ƒ“ƒJƒƒ‰‰Šú‰»
+// ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚«ãƒ¡ãƒ©åˆæœŸåŒ–
 void CameraController::OnMotionMode(void* data)
 {
 	MessageData::CAMERACHANGEMOTIONMODEDATA* p = static_cast<MessageData::CAMERACHANGEMOTIONMODEDATA*>(data);
@@ -461,7 +466,7 @@ void CameraController::OnMotionMode(void* data)
 
 	this->motionData = p->data;
 }
-// —h‚ç‚·‰Šú‰»
+// æºã‚‰ã™åˆæœŸåŒ–
 void CameraController::OnShake(void* data)
 {
 	MessageData::CAMERASHAKEDATA* p = static_cast<MessageData::CAMERASHAKEDATA*>(data);
@@ -471,7 +476,7 @@ void CameraController::OnShake(void* data)
 
 float CameraController::CalcSide(DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2)
 {
-	// ŠOÏ‚ğ—p‚¢‚Ä‰¡²‚ÌƒYƒŒ•ûŒüZo
+	// å¤–ç©ã‚’ç”¨ã„ã¦æ¨ªè»¸ã®ã‚ºãƒ¬æ–¹å‘ç®—å‡º
 	DirectX::XMFLOAT2	v;
 	v.x = position.x - target.x;
 	v.y = position.z - target.z;
@@ -485,6 +490,173 @@ float CameraController::CalcSide(DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2)
 	n.x /= l;
 	n.y /= l;
 	return	((v.x * n.y) - (v.y * n.x) < 0) ? +1.0f : -1.0f;
+}
+
+// ãƒ­ãƒƒã‚¯ã‚ªãƒ³ã‚«ãƒ¡ãƒ©å¤‰æ›´
+void CameraController::Lockon()
+{
+	int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
+
+	// å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
+	auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
+	if (!playerId)
+		return;
+
+	// å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±
+	auto playerMain = playerId->GetComponent<Player>();
+	auto playermodelControllId = playerId->GetComponent<ModelControll>();
+	if (!playerMain || !playermodelControllId)
+		return;
+
+	CameraState oldLockonState = lockonState;
+	DirectX::XMFLOAT3 oldLockonCharacter = lockonCharactor;
+	lockonState = CameraState::NotLockOn;
+	lockonCharactor = { 0,0,0 };
+
+	// é€šå¸¸ã‚«ãƒ¡ãƒ©ãªã‚‰è¶³å…ƒã‚’é€ã‚‹ã€‚
+	if (!playerMain->GetRockCheck())
+	{
+		Model::Node* PRock = playermodelControllId->GetModel()
+			->FindNode("mixamorig:Neck");
+		DirectX::XMFLOAT3 pPosition =
+		{
+					PRock->worldTransform._41,
+					PRock->worldTransform._42,
+					PRock->worldTransform._43
+		};
+		MessageData::CAMERACHANGEFREEMODEDATA	p = { pPosition };
+		Messenger::Instance().SendData(MessageData::CAMERACHANGEFREEMODE, &p);
+		return;
+	}
+
+	EnemyManager& enemyManager = EnemyManager::Instance();
+	// ã‚¨ãƒãƒŸãƒ¼ã®æ•°
+	int enemyCount = enemyManager.GetEnemyCount();
+	// ã‚¨ãƒãƒŸãƒ¼ãŒä¸€äººã§ã‚‚ç”Ÿãã¦ã„ãŸã‚‰
+	if (enemyCount <= 0) return;
+	// ã‚¨ãƒãƒŸãƒ¼ã®å®‰å…¨â˜‘
+	auto enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
+	if (!enemyShader) return;
+
+	auto enemyBoss = enemyShader->GetComponent<EnemyBoss>();
+	auto enemyModel = enemyShader->GetComponent<ModelControll>();
+
+	if (!enemyBoss || !enemyModel)return;
+
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼è…°ãƒ­ãƒƒã‚¯ã‚ªãƒ³ãƒ¢ãƒ¼ãƒ‰
+	Model::Node* PRock = playermodelControllId->GetModel()->
+		FindNode("mixamorig:Hips");
+	DirectX::XMFLOAT3 pPosition;
+	pPosition = enemyModel->GetModel()->ConvertLocalToWorld(PRock);
+	pPosition.z *= 1.1f;
+	DirectX::XMVECTOR p, t, v;
+	switch (oldLockonState)
+	{
+		// ãƒãƒ¼ãƒãƒ«ã‚«ãƒ¡ãƒ©
+	case	CameraState::NotLockOn:
+	{
+		// ä¸€ç•ªè¿‘ã„è·é›¢ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã‚’æ¤œç´¢
+		float	length1, length2;
+
+		Model::Node* characterBorn = enemyModel->GetModel()->FindNode("shoulder");
+		// æ•µä½ç½®
+		DirectX::XMFLOAT3 character;
+
+		character = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
+		// ãƒ­ãƒƒã‚¯ã‚ªãƒ³
+		if (lockonState != CameraState::NotLockOn)
+		{
+			p = DirectX::XMLoadFloat3(&pPosition);
+			t = DirectX::XMLoadFloat3(&lockonCharactor);
+			v = DirectX::XMVectorSubtract(t, p);
+			DirectX::XMStoreFloat(&length2, DirectX::XMVector3LengthSq(v));
+			p = DirectX::XMLoadFloat3(&pPosition);
+			t = DirectX::XMLoadFloat3(&character);
+			v = DirectX::XMVectorSubtract(t, p);
+			DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
+			if (length1 < length2)
+			{
+				lockonCharactor = character;
+			}
+		}
+		// ãƒãƒ¼ãƒãƒ«
+		else
+		{
+			p = DirectX::XMLoadFloat3(&pPosition);
+			t = DirectX::XMLoadFloat3(&character);
+			v = DirectX::XMVectorSubtract(t, p);
+			DirectX::XMStoreFloat(&length1, DirectX::XMVector3LengthSq(v));
+			lockonCharactor = character;
+			lockonState = CameraState::LockOn;
+		}
+
+		break;
+	}
+	// ãƒ­ãƒƒã‚¯ã‚ªãƒ³
+	case	CameraState::LockOn:
+	{
+		// ãƒœãƒ¼ãƒ³åå–å¾—
+		Model::Node* characterBorn = enemyModel->GetModel()->FindNode(PlayerConfig::bornWaistPoint);
+		// æ•µä½ç½®
+		DirectX::XMFLOAT3 character;
+
+		character = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
+
+		// ã‚¨ãƒãƒŸãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆ
+		int stateEnemyIndex = enemyBoss->GetStateMachine()->GetStateIndex();
+		// ã‚¨ãƒãƒŸãƒ¼ã®ç‰¹å®šã‚¹ãƒ†ãƒ¼ãƒˆãªã‚‰ã‚«ãƒ¡ãƒ©æ›´æ–°ã—ãªã„
+		if (stateEnemyIndex == (int)EnemyBoss::State::Jump ||
+			stateEnemyIndex == (int)EnemyBoss::State::Attack ||
+			stateEnemyIndex == (int)EnemyBoss::State::Wander
+			)
+		{
+			lockonState = CameraState::AttackLock;
+		}
+		// é€šå¸¸ãƒ­ãƒƒã‚¯ã‚ªãƒ³ã«
+		else
+		{
+			lockonState = CameraState::LockOn;
+		}
+		lockonCharactor = character;
+		break;
+	}
+	// æ•µã®æ”»æ’ƒãƒ­ãƒƒã‚¯ã‚ªãƒ³
+	case CameraState::AttackLock:
+	{
+		// æ•µæ”»æ’ƒãƒ­ãƒƒã‚¯ã‚ªãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆ
+		lockonState = CameraState::AttackLock;
+
+		// ãƒœãƒ¼ãƒ³åå–å¾—
+		Model::Node* characterBorn = enemyModel->GetModel()->FindNode(PlayerConfig::bornWaistPoint);
+
+		// æ•µä½ç½®
+		lockonCharactor = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
+
+		// æ•µã‚¹ãƒ†ãƒ¼ãƒˆ
+		int stateEnemyIndex = enemyBoss->GetStateMachine()->GetStateIndex();
+
+		// ç‰¹å®šã®è¡Œå‹•ä»¥å¤–ãªã‚‰é€šå¸¸ãƒ­ãƒƒã‚¯ã‚ªãƒ³ã«
+		if (stateEnemyIndex != (int)EnemyBoss::State::Jump &&
+			stateEnemyIndex != (int)EnemyBoss::State::Attack)
+		{
+			lockonState = CameraState::LockOn;
+		}
+
+		break;
+	}
+	}
+	// ã‚¹ãƒ†ãƒ¼ãƒˆãŒãƒ­ãƒƒã‚¯ã‚ªãƒ³ãªã‚‰ã‚«ãƒ¡ãƒ©ã«ãƒ¢ãƒ¼ãƒ‰ã‚’é€ã‚‹ã€‚
+	if (lockonState == CameraState::LockOn)
+	{
+		MessageData::CAMERACHANGELOCKONMODEDATA	p = { pPosition, lockonCharactor };
+		Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONMODE, &p);
+	}
+	// ã‚¹ãƒ†ãƒ¼ãƒˆãŒæ•µæ”»æ’ƒãƒ­ãƒƒã‚¯ã‚ªãƒ³ãªã‚‰ã‚«ãƒ¡ãƒ©ã«ãƒ¢ãƒ¼ãƒ‰ã‚’é€ã‚‹ã€‚
+	if (lockonState == CameraState::AttackLock)
+	{
+		MessageData::CAMERACHANGELOCKONHEIGHTMODEDATA	p = { pPosition, lockonCharactor };
+		Messenger::Instance().SendData(MessageData::CAMERACHANGELOCKONTOPHEIGHTMODE, &p);
+	}
 }
 
 

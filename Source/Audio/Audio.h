@@ -22,6 +22,7 @@ public:
 	}
 	// 再生開始
 	void Play(AudioParam param);
+	void Play(const std::string& filename);
 
 	// フェードアウト再生開始
 	void PlayFadeOut(AudioParam param);

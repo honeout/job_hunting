@@ -119,10 +119,16 @@ private:
 
 	// コマンド魔法差
 	DirectX::XMFLOAT2 commandMagicOffset = { 280,79 };
-
+	
+	// 魔法コマンド位置の補正Y軸一つ一つ
 	float commandMagicOffsetY = 10.0f;
+	
 	// コマンドスペシャル差
-	DirectX::XMFLOAT2 commandSpecialOffset = { 0,166 };
+	DirectX::XMFLOAT2 commandSpecialOffset = { 280,166 };
+	
+	// 特殊技コマンド位置の補正Y軸一つ一つ
+	float commandSpecialOffsetY = 86.0f;
+
 	// コマンドボタン差
 	DirectX::XMFLOAT2 commandButtonOffset = {80,42};
 

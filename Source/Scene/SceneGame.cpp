@@ -158,6 +158,9 @@ void SceneGame::Update(float elapsedTime)
 	// カメラ更新
 	cameraControlle->Update(elapsedTime);
 
+	// 攻撃出来るか距離をUIで分かるように
+	UiManager::Instance().AttackCheckUI();
+
 	// エフェクト更新処理
 	EffectManager::Instance().Update(dlayTime);
 
@@ -183,21 +186,20 @@ void SceneGame::Update(float elapsedTime)
 		UiManager::Instance().GetUiesCount() <= 5)return;
 
 	// ゲームオーバー時間制限
-	std::weak_ptr<UiTime> uiTime = UiManager::Instance().GetUies((int)UiManager::UiCount::Time)->GetComponent<UiTime>();
-	if (!uiTime.lock()->GetTimeUp()) return;
+	if (!UiManager::Instance().GetTimeUp((int)UiManager::UiCount::Time))return;
 
 	// フェードアウト開始
 	if (!isTimeUp)
 	{
 		AudioParam param;
 		Audio::Instance().PlayFadeOut(param);
+		colorGradingData.brigthness = 3.0f;
 		isTimeUp = true;
 	}
 
 	// フェードアウト
 	if (!Audio::Instance().AllUpdateFadeOut(elapsedTime)) return;
 
-	colorGradingData.brigthness = 3.0f;
 	// ゲームオーバー
 	SceneManager::Instance().ChangeScene(new SceneGameOver);
 }
@@ -272,10 +274,6 @@ void SceneGame::Render()
 			ImGui::SliderFloat2("debugPush2Scale", &debugPush2Scale.x, 0.0f, 200.1f);
 			ImGui::SliderFloat2("debugShortCutScale", &debugShortCutScale.x, 0.0f, 200.1f);
 			ImGui::SliderFloat2("debugShortPushScale", &debugShortPushScale.x, 0.0f, 200.1f);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->GetComponent<TransForm2D>()->SetPosition(debugShortPushPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCount::PushShort)->GetComponent<TransForm2D>()->SetScale(debugShortPushScale);
 
 			ImGui::TreePop();
 		}
@@ -362,6 +360,7 @@ void SceneGame::Render3DScene()
 	vp.MaxDepth = 1.0f;
 	dc->RSSetViewports(1, &vp);
 
+
 	// 描画処理
 	RenderContext rc;
 	rc.deviceContext = dc;
@@ -385,6 +384,8 @@ void SceneGame::Render3DScene()
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
+	// ロックオン
+	UiManager::Instance().RockOnUI(dc,rc.view, rc.projection);
 
 	// 3Dモデル描画
 	{
@@ -1014,7 +1015,7 @@ void SceneGame::InitializeComponent()
 		if (!transform2D) return;
 
 		DirectX::XMFLOAT2 pos;
-		pos = { commandPos.x + commandSpecialOffset.x, commandPos.y + commandSpecialOffset.y };
+		pos = { commandPos.x, commandPos.y + commandSpecialOffset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
 		DirectX::XMFLOAT2 texPos = { 0, 0 };
@@ -1432,7 +1433,7 @@ void SceneGame::InitializeComponent()
 		auto transform2D = actor->GetComponent<TransForm2D>();
 		// 安全チェック
 		if (!transform2D) return;
-		DirectX::XMFLOAT2 pos = { commandPos.x + commandMagicOffset.x,
+		DirectX::XMFLOAT2 pos = { commandPos.x + commandSpecialOffset.x,
 	commandPos.y + commandSpecialOffset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
@@ -1443,7 +1444,7 @@ void SceneGame::InitializeComponent()
 		DirectX::XMFLOAT2 scale = { 160,89 };
 		transform2D->SetScale(commandSize);
 		// 元の大きさ
-		transform2D->SetTexScale(commandSUnelectTexScale);
+		transform2D->SetTexScale(CommandConfig::commandSelectTexScale);
 
 		actor->AddComponent<Ui>();
 		// 描画チェック
@@ -1472,8 +1473,8 @@ void SceneGame::InitializeComponent()
 		// 位置　角度　スケール情報
 		auto transform2D = actor->GetComponent<TransForm2D>();
 		if (!transform2D) return;
-		DirectX::XMFLOAT2 pos = { commandPos.x + commandMagicOffset.x,
-	commandPos.y + commandMagicOffset.y + commandSpecialOffset.y };
+		DirectX::XMFLOAT2 pos = { commandPos.x + commandSpecialOffset.x,
+	commandPos.y + commandSpecialOffsetY + commandSpecialOffset.y };
 		transform2D->SetPosition(pos);
 		// 元の位置
 		transform2D->SetTexPosition(commandUnSelectTexPos);
@@ -1483,7 +1484,7 @@ void SceneGame::InitializeComponent()
 		DirectX::XMFLOAT2 scale = { 160,89 };
 		transform2D->SetScale(commandSize);
 		// 元の大きさ
-		transform2D->SetTexScale(commandSUnelectTexScale);
+		transform2D->SetTexScale(CommandConfig::commandSelectTexScale);
 
 		actor->AddComponent<Ui>();
 		// 描画チェック

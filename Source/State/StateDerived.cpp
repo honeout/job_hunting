@@ -55,6 +55,9 @@ void WanderState::Enter()
 	upOnLading = false;
 	// 煙エフェクト
 	smorker = std::make_unique<Effect>("Data/Effect/smorkeDash.efk");
+
+	// 音初期化
+	paramSe = AudioParam::Se();
 }
 
 // 徘徊ステートで実行するメソッド
@@ -151,7 +154,8 @@ void WanderState::Execute(float elapsedTime)
 		if (isLightSmorkEffect)
 		{
 			// 足音
-			enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+			paramSe.filename = AudioConfig::audioLanding;
+			Audio::Instance().Play(paramSe);
 			smorker->Play(bossRightFootPosition, scaleEffect);
 
 		}
@@ -166,7 +170,8 @@ void WanderState::Execute(float elapsedTime)
 		if (isLeftSmorkEffect)
 		{
 			// 足音
-			enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+			paramSe.filename = AudioConfig::audioLanding;
+			Audio::Instance().Play(paramSe);
 			smorker->Play(bossLeftFootPosition, scaleEffect);
 		}
 	}
@@ -188,7 +193,8 @@ void WanderState::Exit()
 	// 連続攻撃
 	attackCount = attackCountMin;
 	// 斬撃音
-	enemyid->PlaySe("Data/Audio/SE/slash.wav");
+	paramSe.filename = AudioConfig::audioDealtDamage;
+	Audio::Instance().Play(paramSe);
 }
 
 // 初期化
@@ -383,6 +389,9 @@ void JumpState::Enter()
 
 	// 煙発射確認
 	isRightSmorkerEffect = true;
+
+	// 初期化
+	paramSe = AudioParam::Se();
 }
 
 // 後変更
@@ -433,7 +442,8 @@ void JumpState::Execute(float elapsedTime)
 		Messenger::Instance().SendData(MessageData::CAMERASHAKE, &cameraShakeData);
 
 		// 足音
-		enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+		paramSe.filename = AudioConfig::audioLanding;
+		Audio::Instance().Play(paramSe);
 		return;
 	}
 	// playerを狙う
@@ -471,7 +481,8 @@ void JumpState::Execute(float elapsedTime)
 		Messenger::Instance().SendData(MessageData::CAMERASHAKE, &cameraShakeData);
 
 		// 足音
-		enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+		paramSe.filename = AudioConfig::audioLanding;
+		Audio::Instance().Play(paramSe);
 	}
 }
 // 終了処理
@@ -527,6 +538,8 @@ void AttackState::Enter()
 	// エフェクト放つ
 	isRightSmorkEffect = true;
 	isLeftSmorkEffect = true;
+	// 初期化
+	paramSe = AudioParam::Se();
 }
 
 // update
@@ -575,9 +588,11 @@ void AttackState::Execute(float elapsedTime)
 		animationTime - FLT_EPSILON <= 2.4f + FLT_EPSILON && !chargeInitilize)
 	{
 		// ジャンプ音
-		enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+		paramSe.filename = AudioConfig::audioLanding;
+		Audio::Instance().Play(paramSe);
 		// チャージ音
-		enemyid->PlaySe("Data/Audio/SE/charge sound enemy.wav");
+		paramSe.filename = AudioConfig::audioCharge;
+		Audio::Instance().Play(paramSe);
 		charge->Play(bossEyePosition);
 		chargeCompleate->Play(bossEyePosition);
 		// チャージ中
@@ -633,7 +648,8 @@ void AttackState::Execute(float elapsedTime)
 		if (isLeftSmorkEffect && animationTime >= 0.4f && animationTime <= 0.7f)
 		{
 			// ジャンプ音
-			enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+			paramSe.filename = AudioConfig::audioLanding;
+			Audio::Instance().Play(paramSe);
 			// 煙エフェクト
 			smorker->Play(bossLeftFootPosition, scaleEffect);
 			// 左足エフェクト
@@ -644,7 +660,8 @@ void AttackState::Execute(float elapsedTime)
 		if (isRightSmorkEffect && animationTime >= 2.4f && animationTime <= 2.7f)
 		{
 			// ジャンプ音
-			enemyid->PlaySe("Data/Audio/SE/Enemy Landing.wav");
+			paramSe.filename = AudioConfig::audioLanding;
+			Audio::Instance().Play(paramSe);
 			// 煙エフェクト
 			smorker->Play(bossRightFootPosition, scaleEffect);
 			// 右足エフェクト
@@ -679,7 +696,8 @@ void AttackState::Exit()
 
 	std::shared_ptr<EnemyBoss> enemyid = sharedId->GetComponent<EnemyBoss>();
 	// ダッシュ停止
-	enemyid->StopSe("Data/Audio/SE/Enemy Landing.wav");
+	paramSe.filename = AudioConfig::audioLanding;
+	Audio::Instance().Stop(paramSe);
 	chargeInitilize = false;
 	if (charge->GetEfeHandle())
 		charge->Stop(charge->GetEfeHandle());
@@ -698,7 +716,9 @@ void DamageState::Enter()
 	std::shared_ptr<EnemyBoss> enemyid = sharedId->GetComponent<EnemyBoss>();
 
 	// 衝撃波音
-	enemyid->PlaySe("Data/Audio/SE/blow.wav");
+		// 斬撃音
+	paramSe.filename = AudioConfig::audioCoveredDamage;
+	Audio::Instance().Play(paramSe);
 	modelAnim.index = EnemyBoss::Animation::Anim_Die;
 	modelAnim.loop = true;
 	modelAnim.currentanimationseconds = 2.5f;
@@ -1066,9 +1086,6 @@ void PlayerIdleState::Execute(float elapsedTime)
 	// 最初のカメラ演出中なら何も出来ない
 	if (playerid->GetIsCameraInitialEffect()) return;
 
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
-
 	// 移動入力処理
 	if (playerid->InputMove())
 	{
@@ -1099,8 +1116,13 @@ void PlayerMovestate::Enter()
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
+
+	// 初期化
+	paramSe = AudioParam::Se();
+
 	// se足音再生
-	playerid->PlayLoopSe("Data/Audio/SE/footsteps.wav");
+	paramSe.filename = AudioConfig::audioMove;
+	Audio::Instance().Play(paramSe);
 
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	modelAnim.index = Player::Anim_Running;
@@ -1128,8 +1150,6 @@ void PlayerMovestate::Execute(float elapsedTime)
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	// 移動値
 	playerid->GetMoveVec(elapsedTime);
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
 	// 移動入力処理
 	if (!playerid->InputMove())
 	{
@@ -1155,7 +1175,8 @@ void PlayerMovestate::Exit()
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	//se再生削除
-	playerid->StopSe("Data/Audio/SE/footsteps.wav");
+	paramSe.filename = AudioConfig::audioMove;
+	Audio::Instance().Stop(paramSe);
 }
 
 // プレイヤージャンプ
@@ -1177,6 +1198,12 @@ void PlayerJumpState::Enter()
 	playerid->SetUpdateAnim(Player::UpAnim::Normal);
 	// 落ちる
 	moveid->SetStopMove(false);
+
+	// 初期化
+	paramSe = AudioParam::Se();
+	// seジャンプ再生
+	paramSe.filename = AudioConfig::audioJump;
+	Audio::Instance().Play(paramSe);
 }
 
 void PlayerJumpState::Execute(float elapsedTime)
@@ -1189,9 +1216,6 @@ void PlayerJumpState::Execute(float elapsedTime)
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	auto model = sharedId->GetComponent<ModelControll>();
-	
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
 
 	// アニメーション時間
 	float modelAnimTime = model->GetModel()->GetCurrentANimationSeconds();
@@ -1235,7 +1259,8 @@ void PlayerJumpState::Exit()
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 
 	// ジャンプse再生
-	playerid->PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
+	paramSe.filename = AudioConfig::audioJump;
+	Audio::Instance().Play(paramSe);
 }
 // プレイヤー着地
 void PlayerLandState::Enter()
@@ -1254,8 +1279,11 @@ void PlayerLandState::Enter()
 	// アニメーションルール
 	playerid->SetUpdateAnim(Player::UpAnim::Normal);
 
-	// ジャンプse再生
-	playerid->PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
+	// 初期化
+	paramSe = AudioParam::Se();
+	// seジャンプ再生
+	paramSe.filename = AudioConfig::audioJump;
+	Audio::Instance().Play(paramSe);
 }
 
 void PlayerLandState::Execute(float elapsedTime)
@@ -1267,8 +1295,6 @@ void PlayerLandState::Execute(float elapsedTime)
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
 
 	// 回避
 	if (playerid->InputAvoidance())
@@ -1304,8 +1330,12 @@ void PlayerJumpFlipState::Enter()
 	// アニメーションルール
 	playerid->SetUpdateAnim(Player::UpAnim::Normal);
 
-	// ジャンプse再生
-	playerid->PlaySe("Data/Audio/SE/Enemy walking attackk hit.wav");
+	// 初期化
+	paramSe = AudioParam::Se();
+
+	// seジャンプ再生
+	paramSe.filename = AudioConfig::audioJump;
+	Audio::Instance().Play(paramSe);
 }
 
 void PlayerJumpFlipState::Execute(float elapsedTime)
@@ -1319,9 +1349,6 @@ void PlayerJumpFlipState::Execute(float elapsedTime)
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	// model時間
 	float modelAnimTime = model->GetCurrentANimationSeconds();
-
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
 
 	// ジャンプまでの時間
 	if (modelAnimTime <= animTime)
@@ -1355,8 +1382,10 @@ void PlayerJumpFlipState::Exit()
 		return;
 
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
+
 	// seジャンプ停止
-	playerid->StopSe("Data/Audio/SE/Enemy walking attackk hit.wav");
+	paramSe.filename = AudioConfig::audioJump;
+	Audio::Instance().Play(paramSe);
 }
 // プレイヤー初撃
 void PlayerQuickJabState::Enter()
@@ -1421,8 +1450,6 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	std::shared_ptr<Transform> transformid = sharedId->GetComponent<Transform>();
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
 
 	if (playerid->InputAttack() &&
 		playerid->GetSelectCheck() ==
@@ -1517,7 +1544,8 @@ void PlayerQuickJabState::Execute(float elapsedTime)
 			if (isHomingStartCheck)
 			{
 				// Seテレポート再生
-				playerid->PlaySe("Data/Audio/SE/telleport.wav");
+				paramSe.filename = AudioConfig::audioTelleport;
+				Audio::Instance().Play(paramSe);
 				// エフェクト
 				tellePort->Play(transformid->GetPosition());
 				// ホーミング一回のみのため
@@ -1720,8 +1748,6 @@ void PlayerSideCutState::Execute(float elapsedTime)
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	std::shared_ptr<Transform> transformid = sharedId->GetComponent<Transform>();
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
 
 	// 連続ボタン確認
 	if (playerid->InputAttack() &&
@@ -1851,8 +1877,6 @@ void PlayerCycloneStrikeState::Execute(float elapsedTime)
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	std::shared_ptr<Transform> transformid = sharedId->GetComponent<Transform>();
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
 	// 回避
 	if (playerid->InputAvoidance() && playerid->InputMove())
 	{
@@ -2017,8 +2041,12 @@ void PlayerSpecialAttackState::Enter()
 	// フラッシュ
 	flashOn = true;
 
+	// 初期化
+	paramSe = AudioParam::Se();
+
 	// 雷音
-	playerid->PlaySe("Data/Audio/SE/thunder.wav");
+	paramSe.filename = AudioConfig::audioThunder;
+	Audio::Instance().Play(paramSe);
 
 	// 回転許可
 	isRotate = true;
@@ -2145,7 +2173,8 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			lightning->Stop(lightning->GetEfeHandle());
 			loopSe = true;
 			// se雷停止
-			playerid->StopSe("Data/Audio/SE/thunder.wav");
+			paramSe.filename = AudioConfig::audioThunder;
+			Audio::Instance().Stop(paramSe);
 		}
 	}
 	else
@@ -2199,7 +2228,8 @@ void PlayerSpecialAttackState::Execute(float elapsedTime)
 			lightningAttack->Play(pPosition);
 
 			// se雷再生
-			playerid->PlaySe("Data/Audio/SE/Special Move Thunder.wav");
+			paramSe.filename = AudioConfig::audioThunderSpecial;
+			Audio::Instance().Play(paramSe);
 
 			if (enemyHpId->ApplyDamage(10, 0.5f)) 
 			{
@@ -2280,8 +2310,12 @@ void PlayerMagicState::Enter()
 	std::shared_ptr<Transform> transformid = sharedId->GetComponent<Transform>();
 	std::shared_ptr<Mp> mpId = sharedId->GetComponent<Mp>();
 
+	// 初期化
+	paramSe = AudioParam::Se();
+
 	// seチャージ再生
-	playerid->PlaySe("Data/Audio/SE/charge sound enemy.wav");
+	paramSe.filename = AudioConfig::audioCharge;
+	Audio::Instance().Play(paramSe);
 
 	// エフェクト
 	charge = std::make_unique<Effect>("Data/Effect/magicCharge.efk");
@@ -2358,8 +2392,6 @@ void PlayerMagicState::Execute(float elapsedTime)
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
 	std::shared_ptr<Movement> moveid = sharedId->GetComponent<Movement>();
 	std::shared_ptr<Transform> transformid = sharedId->GetComponent<Transform>();
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
 	// 任意のアニメーション再生区間でのみ衝突判定処理をする
 	float animationTime = model->GetCurrentANimationSeconds();
 
@@ -2394,7 +2426,8 @@ void PlayerMagicState::Execute(float elapsedTime)
 		!magicStart)
 	{
 		// チャージse停止
-		playerid->StopSe("Data/Audio/SE/charge sound enemy.wav");
+		paramSe.filename = AudioConfig::audioCharge;
+		Audio::Instance().Stop(paramSe);
 
 		// エフェクト再生してたら停止
 		if (charge->GetEfeHandle())
@@ -2527,7 +2560,8 @@ void PlayerMagicState::Execute(float elapsedTime)
 		}
 
 		// 火音
-		playerid->PlaySe("Data/Audio/SE/flame flight.wav");
+		paramSe.filename = AudioConfig::audioFire;
+		Audio::Instance().Play(paramSe);
 
 		// ため終わりまで撃つ
 		if (magicCharge <= magicChargeEnd)
@@ -2545,7 +2579,8 @@ void PlayerMagicState::Execute(float elapsedTime)
 
 
 		// 雷音
-		playerid->PlaySe("Data/Audio/SE/thunder.wav");
+		paramSe.filename = AudioConfig::audioThunder;
+		Audio::Instance().Play(paramSe);
 
 		// 雷発射
 		playerid->InputMagicLightning();
@@ -2564,9 +2599,10 @@ void PlayerMagicState::Execute(float elapsedTime)
 		// 時間
 		if (animationTime <= 0.5f)return;
 
-
 		// se氷再生
-		playerid->PlaySe("Data/Audio/SE/ice launch.wav");
+		paramSe.filename = AudioConfig::audioIce;
+		Audio::Instance().Play(paramSe);
+
 
 		// １発
 		if (magicCharge <= magicChargeEnd)
@@ -2605,7 +2641,8 @@ void PlayerMagicState::Execute(float elapsedTime)
 		if (animationTime <= 1.1f)return;
 
 		// se回復再生
-		playerid->PlaySe("Data/Audio/SE/maou_se_magical11.wav");
+		paramSe.filename = AudioConfig::audioHeale;
+		Audio::Instance().Play(paramSe);
 		// 回復発動
 		playerid->InputMagicHealing();
 		playerid->GetStateMachine()->ChangeState((int)Player::State::Idle);
@@ -2680,8 +2717,11 @@ void PlayerSpecialMagicState::Enter()
 				pHPosiiton->worldTransform._42,
 				pHPosiiton->worldTransform._43
 	};
+	// 音初期化
+	paramSe = AudioParam::Se();
 	// 火音
-	playerid->PlaySe("Data/Audio/SE/flame flight.wav");
+	paramSe.filename = AudioConfig::audioFire;
+	Audio::Instance().Play(paramSe);
 	fire->Play(pPosition);
 	// 落ちるの停止
 	bool stopFall = true;
@@ -2835,7 +2875,8 @@ void PlayerSpecialMagicState::Execute(float elapsedTime)
 				InputSpecialMagicframe();
 
 			// se炎再生
-			playerid->PlaySe("Data/Audio/SE/Special Move Flame.wav");
+			paramSe.filename = AudioConfig::audioFireMove;
+			Audio::Instance().Play(paramSe);
 		}
 	}
 	// ダメージ判定
@@ -2936,8 +2977,6 @@ void PlayerDamageState::Execute(float elapsedTime)
 	// コンポネント取得
 	std::shared_ptr<Player> playerid = sharedId->GetComponent<Player>();
 	Model* model = sharedId->GetComponent<ModelControll>()->GetModel();
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
 	if (!model->IsPlayAnimation())
 	{
 		playerid->GetStateMachine()->ChangeState(static_cast<int>(Player::State::Idle));
@@ -3054,8 +3093,11 @@ void PlayerAvoidanceState::Enter()
 	bool stopFall = true;
 	moveid->SetStopFall(stopFall);
 
+	// 音Se
+	AudioParam paramSe;
 	// ダッシュse再生
-	playerid->PlaySe("Data/Audio/SE/hit stop.wav");
+	paramSe.filename = AudioConfig::audioDush;
+	Audio::Instance().Play(paramSe);
 
 	// エフェクト設定
 	wind = std::make_unique<Effect>("Data/Effect/dashu.efk");
@@ -3089,8 +3131,6 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 	// 動き自由
 	bool stopMove = false;
 	moveid->SetStopMove(stopMove);
-	// ロックオン処理
-	playerid->UpdateCameraState(elapsedTime);
 	// 転がりダッシュ
 	DirectX::XMFLOAT3 dir;
 	dir.x = sinf(transformid->GetAngle().y);
@@ -3117,13 +3157,13 @@ void PlayerAvoidanceState::Execute(float elapsedTime)
 		moveid->Turn(rotateVec, rotateSpeed, elapsedTime);
 	}
 	// 地上ダッシュ
-	if (animationTime >= 0.7f && animationTime <= 0.75f)
+	if (animationTime >= 0.7f && animationTime <= 0.8f)
 	{
 		DirectX::XMFLOAT3 impulse =
 		{
-			dir.x * speed,
+			dir.x * (speed * elapsedTime),
 			0,
-			dir.z * speed,
+			dir.z * (speed * elapsedTime),
 		};
 		moveid->AddImpulse(impulse, impactInitialize);
 		impactInitialize = false;
@@ -3285,6 +3325,8 @@ void PlayerTitlePushState::Enter()
 
 	// 放つ雷
 	isLightningFire = true;
+	// 初期化
+	paramSe = AudioParam::Se();
 }
 
 void PlayerTitlePushState::Execute(float elapsedTime)
@@ -3310,7 +3352,8 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 			if (isLightningStart)
 			{
 				// 雷音
-				playerid->PlaySe("Data/Audio/SE/thunder.wav");
+				paramSe.filename = AudioConfig::audioThunder;
+				Audio::Instance().Play(paramSe);
 
 				Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
 				DirectX::XMFLOAT3 pPosition =
@@ -3351,7 +3394,8 @@ void PlayerTitlePushState::Execute(float elapsedTime)
 			if (isLightningFire)
 			{
 				// seたたきつけ再生
-				playerid->PlaySe("Data/Audio/SE/Special Move Thunder.wav");
+				paramSe.filename = AudioConfig::audioThunder;
+				Audio::Instance().Play(paramSe);
 
 				Model::Node* pHPosiiton = model->FindNode("mixamorig:LeftHand");
 				DirectX::XMFLOAT3 pPosition =

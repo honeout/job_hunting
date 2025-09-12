@@ -30,7 +30,8 @@ namespace CommandConfig
     constexpr DirectX::XMFLOAT2 commandUnSelectTexPos = { .0f,0.0f };
 
     // MPバー
-    constexpr float mpBarOffset = 45.0f;
+    constexpr float mpBarOffset = 50.0f;
+    //constexpr float mpBarOffset = 45.0f;
 
     // 魔法チャージ値
     constexpr float commandChargeAdd = 5.0f;
@@ -59,6 +60,10 @@ namespace CommandConfig
     constexpr float specialAttackChargeFirst = 0.8f;
     // 特殊技チャージ矢印3個目開始
     constexpr float specialAttackChargeSecond = 1.2f;
+
+    // -----ターゲット-----
+    // ターゲット位置
+    constexpr DirectX::XMFLOAT2   scereenPositionOffset = { 34.0f,25.0f };
 
 
 
@@ -103,6 +108,9 @@ public:
 
     // ui削除
     void Remove(std::shared_ptr<Actor> ui);
+    
+    // UiTimeUpの有無
+    bool GetTimeUp(int uiNumber);
 
     // UI選択
     void SelectTex();
@@ -145,6 +153,8 @@ public:
 
     // UIポジション更新
     void PositionUpdate(int uiNumber, DirectX::XMFLOAT2 pos);
+    void PositionXUpdate(int uiNumber, float posX);
+    void PositionYUpdate(int uiNumber, float posY);
 
     // UI大きさ更新
     void ScaleUpdate(int uiNumber, DirectX::XMFLOAT2 scale);
@@ -153,6 +163,9 @@ public:
 
     // UI元画像の位置を変える。
     void TexPosUpdate(int uiNumber, DirectX::XMFLOAT2 texPos);
+
+    // フェードアウト
+    void IncrementToAlpha(int uiNumber, float increment);
 
     // UI特殊技入力時
     void InputSpecialAttack();
@@ -166,6 +179,13 @@ public:
     // UI特殊技
     void SpecialUpdate(float elapsedTime);
 
+    // ロックオンUI処理
+    void RockOnUI(ID3D11DeviceContext* dc,
+        const DirectX::XMFLOAT4X4& view,
+        const DirectX::XMFLOAT4X4& projection);
+
+    // 距離でUIを変えるロックオン中
+    void AttackCheckUI();
 public:
     enum class UiCount
     {
@@ -291,6 +311,21 @@ public:
 
     // ui削除
     void Remove(std::shared_ptr<Actor> ui);
+
+    // UI表示
+    void SelectDrawUi(int uiNumber);
+
+    // UI点滅
+    void SelectDrawUi(int uiNumber, float TimeAlpha, float TimeAlphaMax, float elapsedTime);
+
+    // UI非表示
+    void SelectNotDrawUi(int uiNumber);
+
+    // UI魔法の選択
+    void SelectUi(int uiNumber);
+
+    // UI魔法の非選択
+    void UnSelectUi(int uiNumber);
 public:
     enum class UiCountLoading
     {
@@ -310,4 +345,7 @@ private:
     std::vector<std::shared_ptr<Actor>>   uies;
     // 特定ui削除登録
     std::set<std::shared_ptr<Actor>>       removes;
+
+    // 経過時間計算
+    Mathf mathfblinking;
 };

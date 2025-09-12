@@ -21,6 +21,15 @@ class CameraController
 		MotionCamera,	// モーションカメラ
 	};
 
+	// カメラステート
+	enum class CameraState
+	{
+		Normal,
+		NotLockOn,
+		LockOn,
+		AttackLock
+	};
+
 public:
 	CameraController();
 	~CameraController();
@@ -56,6 +65,9 @@ private:
 	void OnShake(void* data);
 	// 横軸のズレ方向算出
 	float CalcSide(DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2);
+
+	// ロックオン
+	void Lockon();
 private:
 	Mode				mode = Mode::FreeSelectCamera;
 	DirectX::XMFLOAT3	position = { -0.026f, -2.189f, -17.144f };
@@ -74,6 +86,13 @@ private:
 	DirectX::XMFLOAT3	targetWork[2] = { { 0, 0, 0 }, { 0, 0, 0 } };	// 0 : 座標, 1 : 注視点
 	float				lengthLimit[2] = { 6, 8 };
 	float				sideValue = 1;
+
+	// ロックオン処理キャラの位置
+	DirectX::XMFLOAT3 lockonCharactor = { 0.0f,0.0f,0.0f };
+	// ロックオンのステート
+	CameraState			lockonState = CameraState::NotLockOn;
+
+
 	// モーションカメラ
 	float				motionTimer = 0;
 	std::vector<CameraMotionData>	motionData;

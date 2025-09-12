@@ -167,24 +167,9 @@ void SceneGameOver::Update(float elapsedTime)
 		SetSlowState(elapsedTime);
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
 
-	std::shared_ptr<Ui> uiId = UiManager::Instance().GetUies(0)->GetComponent<Ui>();
-	if (!uiId) return;
-	uiId->IncrementToAlpha(0.01f);
-	
-	if (gamePad.GetButtonDown() & GamePad::BTN_B)
-	{
-		// 描画許可
-		isDrawButton = true;
-		// ボタンを押す描画許可
-		UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
-			GetComponent<Ui>()->SetDrawCheck(isDrawButton);
+	UiManager::Instance().IncrementToAlpha((int)UiManager::UiCountGameOver::GameOverSprite
+	,0.01f);
 
-		PushPos = selectPush == (int) Select::Title ? titlePos : reStartPos;
-
-		// UI ボタンを押す
-		UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
-			GetComponent<TransForm2D>()->SetPosition(PushPos);
-	}
 	SelectScene(elapsedTime);
 }
 
@@ -792,7 +777,7 @@ void SceneGameOver::InitializeComponent()
 void SceneGameOver::SetSlowState(float elapsedTime)
 {
 }
-
+// UI選択関係
 void SceneGameOver::SelectScene(float elapsedTime)
 {
 	int uiManagerMax = UiManager::Instance().GetUiesCount();
@@ -810,33 +795,23 @@ void SceneGameOver::SelectScene(float elapsedTime)
 	{
 		// 位置
 		{
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Select)->
-				GetComponent<TransForm2D>()->SetPosition(titlePos);
-
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((titlePos.y + buttonOffset));
+			UiManager::Instance().PositionYUpdate(
+				(int)UiManager::UiCountGameCler::Push, (titlePos.y + buttonOffset));
 
 			// 選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaSelect);
+			UiManager::Instance().SelectDrawUi((int)UiManager::UiCountGameOver::Title);
 
 			// 選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandSelectTexPos);
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountGameOver::Title,
+				commandSelectTexPos);
 
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSelectTexScale);
 
 			// 非選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaUnSelect);
+			UiManager::Instance().UnSelectUi((int)UiManager::UiCountGameOver::ReStart);
 			// 非選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandUnSelectTexPos);
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountGameOver::ReStart,
+				commandUnSelectTexPos);
 
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSUnelectTexScale);
 		}
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
 		{
@@ -850,34 +825,20 @@ void SceneGameOver::SelectScene(float elapsedTime)
 	{
 		// 位置
 		{
-			// UI ボタンを押す
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Select)->
-				GetComponent<TransForm2D>()->SetPosition(reStartPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((reStartPos.y + buttonOffset));
-
-
+			UiManager::Instance().PositionYUpdate(
+				(int)UiManager::UiCountGameCler::Push, (reStartPos.y + buttonOffset));
 			// 選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaSelect);
+			UiManager::Instance().SelectDrawUi((int)UiManager::UiCountGameOver::ReStart);
 
 			// 選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandSelectTexPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::ReStart)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSelectTexScale);
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountGameOver::ReStart,
+				commandSelectTexPos);
 
 			// 非選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaUnSelect);
+			UiManager::Instance().UnSelectUi((int)UiManager::UiCountGameOver::Title);
 			// 非選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandUnSelectTexPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameOver::Title)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSUnelectTexScale);
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountGameOver::Title,
+				commandUnSelectTexPos);
 		}
 		int playerCount = PlayerManager::Instance().GetPlayerCount();
 

@@ -7,7 +7,10 @@
 // コンストラクタ
 HP::HP()
 {
+    // hp限界判定
     dead = false;
+    // 開始
+    deadStart = false;
 }
 
 // デストラクタ

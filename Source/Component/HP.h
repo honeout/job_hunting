@@ -94,6 +94,17 @@ public:
 
 	// 耐久力追加されてるかどうか
 	bool GetIsBonusHpActive() { return isBonusHpActive; }
+
+	// 死亡判定一度だけ
+	inline bool DeadStart() {
+		// 開始
+		if (dead && !deadStart)
+		{
+			deadStart = true;
+			return true;
+		}
+		return false;
+	}
 private:
 	// 最大値HP
 	int          maxHealth = 5;
@@ -149,4 +160,7 @@ private:
 
 	// ダメージが設定された限界を超えたこと
 	bool isOverDamageRule = false;
+
+	// 限界来たので開始
+	bool deadStart = false;
 };

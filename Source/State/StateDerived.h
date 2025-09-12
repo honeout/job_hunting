@@ -59,6 +59,9 @@ private:
 	bool isLightSmorkEffect = true;
 	// エフェクト再生
 	bool isLeftSmorkEffect = true;
+
+	// 音Se
+	AudioParam paramSe;
 };
 
 // 待機ステートオブジェクト
@@ -177,6 +180,9 @@ private:
 
 	// 右足煙エフェクト発射確認
 	bool isRightSmorkerEffect = true;
+
+	// 音の計算
+	AudioParam paramSe;
 };
 
 
@@ -249,6 +255,9 @@ private:
 	bool isRightSmorkEffect;
 	// 左足エフェクト
 	bool isLeftSmorkEffect;
+
+	// 音Se
+	AudioParam paramSe;
 };
 
 // ダメージステートオブジェクト
@@ -272,6 +281,8 @@ private:
 	float				stateTimerEnd = 0.0f;
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
+	// 音Se
+	AudioParam paramSe;
 };
 
 // 混乱ステートオブジェクト
@@ -454,6 +465,9 @@ private:
 
 	// 描画
 	int isPlayerDrawCheck;
+
+	// 音の計算
+	AudioParam paramSe;
 };
 
 // ジャンプステートオブジェクト
@@ -480,6 +494,9 @@ private:
 
 	// アニメーションジャンプ　する瞬間の時間
 	float animTime = 0.15f;
+
+	// 音Se
+	AudioParam paramSe;
 };
 
 // 着地ステートオブジェクト
@@ -503,6 +520,8 @@ private:
 
 	// アニメーションルール
 	Model::ModelAnim modelAnim;
+	// 音Se
+	AudioParam paramSe;
 };
 
 // ジャンプ中ステートオブジェクト
@@ -529,11 +548,12 @@ private:
 
 	// 回転スピード
 	float turnSpeed = DirectX::XMConvertToRadians(720);
-	// 音楽情報
-	AudioParam audioParam;
-
+	
 	// アニメーションジャンプ　する瞬間の時間
 	float animTime = 0.17f;
+
+	// 音Se
+	AudioParam paramSe;
 };
 
 
@@ -627,6 +647,10 @@ private:
 	bool              isEnemyHit;
 	bool              EnemyHit;
 	bool              EnemySafe;
+
+
+	// 音の計算
+	AudioParam paramSe;
 };
 
 // 攻撃ステートオブジェクト
@@ -852,6 +876,8 @@ private:
 
 	// 最大の回転
 	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
+	// 音Se
+	AudioParam paramSe;
 };
 
 // 魔法ステートオブジェクト
@@ -871,9 +897,6 @@ public:
 private:
 	std::unique_ptr<Effect> charge;
 	std::unique_ptr<Effect> chargeComplet;
-
-	// se再生情報
-	AudioParam seParam;
 
 	// 回復魔法
 	std::unique_ptr<Effect> heale;
@@ -939,8 +962,8 @@ private:
 	// 氷連射動き開始
 	bool iceMagicMoveCheck = true;
 
-	// 音情報
-	AudioParam audioParam;
+	// 音Se
+	AudioParam paramSe;
 };
 
 // 近接必殺技ステートオブジェクト
@@ -1009,8 +1032,8 @@ private:
 	// 最大の回転
 	DirectX::XMFLOAT2 angleRange = { 0.9f,0.9f };
 
-	// 音情報
-	AudioParam audioParam;
+	// 音Se
+	AudioParam paramSe;
 };
 
 // よろけステートオブジェクト
@@ -1063,7 +1086,7 @@ private:
 	float				stateTimer = 0.0f;
 
 	float               moveSpeed = 10.0f;
-	float               speed = 4.5f;
+	float               speed = 330.5f;
 	float               flySpeed = 3.0f;
 
 	float				rotateSpeed = 2.0f;
@@ -1075,6 +1098,8 @@ private:
 	float addHeight = 1.0f;
 	// 回転ベクトル
 	DirectX::XMFLOAT3 rotateVec;
+	// 音Se
+	AudioParam paramSe;
 };
 
 // 反射ステートオブジェクト
@@ -1207,6 +1232,8 @@ private:
 
 	bool isLightningStart = true;
 	bool isLightningFire = true;
+	// 音Se
+	AudioParam paramSe;
 };
 
 // プレイヤークリア用待機ステートオブジェクト

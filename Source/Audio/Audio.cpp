@@ -74,6 +74,24 @@ void Audio::Play(AudioParam param)
 	audio->Play();
 }
 
+void Audio::Play(const std::string& filename)
+{
+	AudioParam param;
+	// 音の大きさ
+	param.volume = 0.8f;
+	param.filename = filename;
+
+
+	// リソース作成
+	AudioResourceManager& audioResourceManager = AudioResourceManager::Instance();
+	std::shared_ptr<AudioResource> resource = audioResourceManager.LoadAudioResource(param.filename.c_str());
+
+	// オーディオソース作成
+	AudioSource* audio = audio_source_pool.emplace_back(new AudioSource(this->xaudio, resource, param));
+
+	audio->Play();
+}
+
 // フェードアウト再生開始
 void Audio::PlayFadeOut(AudioParam param)
 {

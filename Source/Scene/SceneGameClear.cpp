@@ -240,9 +240,6 @@ void SceneGameClear::Render()
 
 		ActorManager::Instance().Render(rc, shaderUi);
 	}
-
-	// カメラパラメータ設定
-	//cameraControlle->OnGUI();
 }
 
 void SceneGameClear::Render3DScene()
@@ -768,34 +765,25 @@ void SceneGameClear::SelectScene(float elapsedTime)
 
 		// 大きさ変わる選択
 		{
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Select)->
-				GetComponent<TransForm2D>()->SetPosition(exitPos);
+			/*UiManager::Instance().PositionUpdate(
+				(int)UiManager::UiCountGameCler::Select,exitPos);*/
 
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((exitPos.y + buttonPosYAdd));
+			UiManager::Instance().PositionYUpdate(
+				(int)UiManager::UiCountGameCler::Push, (exitPos.y + buttonPosYAdd));
 
 			// 選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaSelect);
+			UiManager::Instance().SelectDrawUi((int)UiManager::UiCountGameCler::Start);
 
 			// 選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandSelectTexPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSelectTexScale);
-
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountGameCler::Start,
+				commandSelectTexPos);
 
 			// 非選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaUnSelect);
-			// 非選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandUnSelectTexPos);
+			UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCountGameCler::Title);
 
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSUnelectTexScale);
+			// 非選択
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountGameCler::Title,
+				commandUnSelectTexPos);
 		}
 
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
@@ -810,34 +798,21 @@ void SceneGameClear::SelectScene(float elapsedTime)
 	{
 		// 位置
 		{
-			// UI ボタンを押す
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Select)->
-				GetComponent<TransForm2D>()->SetPosition(startPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((startPos.y + buttonPosYAdd));
+			UiManager::Instance().PositionYUpdate(
+				(int)UiManager::UiCountGameCler::Push, (startPos.y + buttonPosYAdd));
 
 			// 選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaSelect);
+			UiManager::Instance().SelectDrawUi((int)UiManager::UiCountGameCler::Title);
 
 			// 選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandSelectTexPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Title)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSelectTexScale);
-
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountGameCler::Title,
+				commandSelectTexPos);
 
 			// 非選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaUnSelect);
+			UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCountGameCler::Start);
 			// 非選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandUnSelectTexPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountGameCler::Start)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSUnelectTexScale);
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountGameCler::Start
+			, commandUnSelectTexPos);
 		}
 
 		int playerCount = PlayerManager::Instance().GetPlayerCount();

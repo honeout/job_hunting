@@ -11,6 +11,7 @@
 #include "State\StateMachine.h"
 #include "Stage\StageMain.h"
 #include "Effect\Effect.h"
+#include "Math\Mathf.h"
 
 // 定数定義
 namespace EnemyConfig
@@ -150,14 +151,6 @@ public:
     // アニメーションの再生や状態切り替え
     void UpdateAnimation(float elapsedTime);
 
-    // SE再生
-    void InputSe(AudioParam param);
-
-    // SE再生同じ
-    void PlaySe(const std::string& filename);
-    // Se停止
-    void StopSe(const std::string& filename);
-
     // 当たり判定衝撃波
     void CollisionImpactVsPlayer();
 
@@ -193,6 +186,11 @@ public:
     // 外部で初期化するための処置
     void StateMachineCreate() { stateMachine = std::make_unique<StateMachine>(); }
 
+    // ステートを読み取る
+    int stateMachineIndex() { return GetStateMachine()->GetStateIndex(); }
+
+    // ステート変える
+    void changeState(int changeState) { stateMachine->ChangeState(changeState); }
 public:
     // クリア用のステート
     enum class ClearState
@@ -423,8 +421,8 @@ private:
     // エフェクト混乱状態
     std::unique_ptr<Effect> confusionEffect;
 
-    // seの音の大きさ
-    float seVolume = 0.8f;
+    // 音の計算
+    AudioParam paramSe;
 
     // どのステートで動くか
     State state = State::Wander;
@@ -435,6 +433,9 @@ private:
 
     // アップデート再生上半身下半身別
     UpAnim  updateanim = UpAnim::Normal;
+
+    // あらゆる計算
+    Mathf mathfPintch;
 
     // 縄張り半径
     float territoryRange = 10.0f;

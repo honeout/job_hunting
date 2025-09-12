@@ -1,15 +1,11 @@
-#include "UiManager.h"
+ï»¿#include "UiManager.h"
+#include "UiTime.h"
+
 #include "Character\Player.h"
+#include "Component\Collision.h"
 
 void UiManager::Update(float elapsedTime)
 {
-    //for (auto ui : uies)
-    //{
-    //    if (ui->GetComponent<Ui>())
-    //    {
-
-    //    }
-    //}
 }
 
 void UiManager::Register(std::shared_ptr<Actor> ui)
@@ -27,17 +23,39 @@ void UiManager::Remove(std::shared_ptr<Actor> ui)
     removes.insert(ui);
 }
 
+// UiTimeUpã®æœ‰ç„¡
+bool UiManager::GetTimeUp(int uiNumber)
+{
+    if (UiManager::Instance().GetUiesCount() < 1)
+        return false;
 
-// UI‘I‘ğ
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(uiNumber);
+    if (!sharedUiSpecialShurashuId)
+        return false;
+
+    // æŠ€ç¢ºå®š
+    auto uiIdSpecialTime = sharedUiSpecialShurashuId->GetComponent<UiTime>();
+
+    if (!uiIdSpecialTime)
+        return false;
+
+    if (uiIdSpecialTime->GetTimeUp())
+        return true;
+
+    return false;
+}
+
+// UIé¸æŠ
 void UiManager::SelectTex()
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(
         (int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
     if (!sharedUiSpecialShurashuId)
         return;
 
-    // ‹ZŠm’è
+    // æŠ€ç¢ºå®š
     std::shared_ptr<Ui> uiIdSpecialShurashu = sharedUiSpecialShurashuId->GetComponent<Ui>();
     std::shared_ptr<TransForm2D> uiIdSpecialShurashuTransForm2D = sharedUiSpecialShurashuId->GetComponent<TransForm2D>();
     bool drawCheck = false;
@@ -46,282 +64,282 @@ void UiManager::SelectTex()
     pos = { uiIdSpecialShurashuTransForm2D->GetPosition() };
 }
 
-// “ü—ÍUI
+// å…¥åŠ›UI
 void UiManager::InputAttack()
 {
     int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN ƒvƒŒƒCƒ„[
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
     auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
     if (!playerId)
         return;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN ƒvƒŒƒCƒ„[‚Ìî•ñ
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±
     auto playerMain = playerId->GetComponent<Player>();
     if (!playerMain)
         return;
 
-    // ƒRƒ}ƒ“ƒhUI@‘I‘ğ’† UŒ‚‘I‚Ô
+    // ã‚³ãƒãƒ³ãƒ‰UIã€€é¸æŠä¸­ æ”»æ’ƒé¸ã¶
     if (playerMain->GetSelectCheck() == (int)Player::CommandAttack::Attack)
     {
-        // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒhUI@UŒ‚
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰UIã€€æ”»æ’ƒ
         auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack);
         if (!sharedUiComandoAttackId)
             return;
         auto uiIdAttackUi = sharedUiComandoAttackId->GetComponent<Ui>();
         auto uiIdAttackTransform2D = sharedUiComandoAttackId->GetComponent<TransForm2D>();
 
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdAttackUi && !uiIdAttackTransform2D) return;
 
-        // Œ³‰æ‘œ‚Ì‘I‘ğó‘Ô‚ÌêŠ
+        // å…ƒç”»åƒã®é¸æŠçŠ¶æ…‹ã®å ´æ‰€
         uiIdAttackTransform2D->SetTexPosition(CommandConfig::commandSelectTexScale);
 
-        // ”ñ‘I‘ğ—pƒAƒ‹ƒtƒ@’l
+        // éé¸æŠç”¨ã‚¢ãƒ«ãƒ•ã‚¡å€¤
         uiIdAttackUi->SetAlpha(CommandConfig::commandAlphaSelect);
     }
-    // ƒRƒ}ƒ“ƒhUI@”ñ‘I‘ğ UŒ‚
+    // ã‚³ãƒãƒ³ãƒ‰UIã€€éé¸æŠ æ”»æ’ƒ
     else
     {
-        // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒhUI@UŒ‚
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰UIã€€æ”»æ’ƒ
         auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack);
         if (!sharedUiComandoAttackId)
             return;
         auto uiIdAttackUi = sharedUiComandoAttackId->GetComponent<Ui>();
         auto uiIdAttackTransform2D = sharedUiComandoAttackId->GetComponent<TransForm2D>();
 
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdAttackUi && !uiIdAttackTransform2D) return;
 
-        // Œ³‰æ‘œ‚Ì”ñ‘I‘ğó‘Ô‚ÌêŠ
+        // å…ƒç”»åƒã®éé¸æŠçŠ¶æ…‹ã®å ´æ‰€
         uiIdAttackTransform2D->SetTexPosition(CommandConfig::commandUnSelectTexScale);
 
-        // ”ñ‘I‘ğ—pƒAƒ‹ƒtƒ@’l
+        // éé¸æŠç”¨ã‚¢ãƒ«ãƒ•ã‚¡å€¤
         uiIdAttackUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
     }
 }
 
-// UI–‚–@“ü—Í
+// UIé­”æ³•å…¥åŠ›æ™‚
 void UiManager::InputMagic()
 {
     int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN ƒvƒŒƒCƒ„[
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
     auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
     if (!playerId)
         return;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN ƒvƒŒƒCƒ„[‚Ìî•ñ
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±
     auto playerMain = playerId->GetComponent<Player>();
     if (!playerMain)
         return;
 
-    //  ƒRƒ}ƒ“ƒhUI@‘I‘ğ’† –‚–@‘I‚ñ‚¾
+    //  ã‚³ãƒãƒ³ãƒ‰UIã€€é¸æŠä¸­ é­”æ³•é¸ã‚“ã æ™‚
     if (playerMain->GetSelectCheck() == (int)Player::CommandAttack::Magic)
     {
-        // ˆÀ‘Sƒ`ƒFƒbƒN ƒRƒ}ƒ“ƒhUI@–‚–@
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ã‚³ãƒãƒ³ãƒ‰UIã€€é­”æ³•
         auto sharedUiComandoMagickId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick);
         if (!sharedUiComandoMagickId)
             return;
         auto uiIdMagicUi = sharedUiComandoMagickId->GetComponent<Ui>();
         auto uiIdMagickTransform2D = sharedUiComandoMagickId->GetComponent<TransForm2D>();
 
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdMagicUi && !uiIdMagickTransform2D) return;
 
-        // Œ³‰æ‘œ‚Ì‘I‘ğó‘Ô‚ÌêŠ
+        // å…ƒç”»åƒã®é¸æŠçŠ¶æ…‹ã®å ´æ‰€
         uiIdMagickTransform2D->SetTexPosition(CommandConfig::commandSelectTexScale);
 
-        // ”ñ‘I‘ğ—pƒAƒ‹ƒtƒ@’l
+        // éé¸æŠç”¨ã‚¢ãƒ«ãƒ•ã‚¡å€¤
         uiIdMagicUi->SetAlpha(CommandConfig::commandAlphaSelect);
     }
-    //  ƒRƒ}ƒ“ƒhUI@”ñ‘I‘ğ –‚–@
+    //  ã‚³ãƒãƒ³ãƒ‰UIã€€éé¸æŠ é­”æ³•
     else
     {
-        // ˆÀ‘Sƒ`ƒFƒbƒN ƒRƒ}ƒ“ƒhUI@–‚–@
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ã‚³ãƒãƒ³ãƒ‰UIã€€é­”æ³•
         auto sharedUiComandoMagickId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick);
         if (!sharedUiComandoMagickId)
             return;
         auto uiIdMagicUi = sharedUiComandoMagickId->GetComponent<Ui>();
         auto uiIdMagickTransform2D = sharedUiComandoMagickId->GetComponent<TransForm2D>();
 
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdMagicUi && !uiIdMagickTransform2D) return;
 
-        // Œ³‰æ‘œ‚Ì”ñ‘I‘ğó‘Ô‚ÌêŠ
+        // å…ƒç”»åƒã®éé¸æŠçŠ¶æ…‹ã®å ´æ‰€
         uiIdMagickTransform2D->SetTexPosition(CommandConfig::commandUnSelectTexScale);
 
-        // ”ñ‘I‘ğ—pƒAƒ‹ƒtƒ@’l
+        // éé¸æŠç”¨ã‚¢ãƒ«ãƒ•ã‚¡å€¤
         uiIdMagicUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
     }
 }
 
-// UI•\¦
+// UIè¡¨ç¤º
 void UiManager::SelectDrawUi(int uiNumber)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandUi)
         return;
 
-    // •`‰æ
+    // æç”»
     commandUi->SetDrawCheck(CommandConfig::draw);
-    // “§–¾“x100“
+    // é€æ˜åº¦100ï¼…
     commandUi->SetAlpha(CommandConfig::commandAlphaSelect);
 }
 
-// UI“_–Å
+// UIç‚¹æ»…
 void UiManager::SelectDrawUi(int uiNumber, float TimeAlphaValue, float TimeAlphaMax, float elapsedTime)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandUi)
         return;
 
-    // •`‰æ
+    // æç”»
     commandUi->SetDrawCheck(CommandConfig::draw);
 
-    // “_“”ˆ—
+    // ç‚¹ç¯å‡¦ç†
     if (mathfblinking.UpdateElapsedTime(TimeAlphaMax, elapsedTime))
         TimeAlpha = TimeAlpha < TimeAlphaMax ? 1.0f : 0.0f;
 
 
-    //// “_“”ˆ—
+    //// ç‚¹ç¯å‡¦ç†
     //if (mathfblinking.UpdateElapsedTime(TimeAlphaMax,elapsedTime))
     //    TimeAlpha += TimeAlphaValue < CommandConfig::commandAlphaValueMin ? TimeAlphaValue * elapsedTime: TimeAlphaMax;
     //else
     //    TimeAlpha -= TimeAlphaValue > TimeAlphaMax ? TimeAlphaValue * elapsedTime: 0.0f;
 
-    // “_–Å
+    // ç‚¹æ»…
     commandUi->SetAlpha(TimeAlpha);
 }
 
-// UI”ñ•\¦
+// UIéè¡¨ç¤º
 void UiManager::SelectNotDrawUi(int uiNumber)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandUi)
         return;
 
-    // •`‰æ‚µ‚Ä‚¢‚È‚¢
+    // æç”»ã—ã¦ã„ãªã„
     commandUi->SetDrawCheck(CommandConfig::unDraw);
 }
 
-// UI–‚–@‚Ì‘I‘ğ
+// UIé­”æ³•ã®é¸æŠ
 void UiManager::SelectUi(int uiNumber)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi)
         return;
-    // ƒVƒ‡[ƒgƒJƒbƒg
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
     commandTransform->SetTexPosition(CommandConfig::commandSelectTexPos);
-    // •`‰æ‚µ‚Ä‚¢‚È‚¢
+    // æç”»ã—ã¦ã„ãªã„
     commandUi->SetDrawCheck(CommandConfig::draw);
-    // “§‚©‚µƒIƒt
+    // é€ã‹ã—ã‚ªãƒ•
     commandUi->SetAlpha(CommandConfig::commandAlphaSelect);
 }
 
-// UI”ñ‘I‘ğ
+// UIéé¸æŠ
 void UiManager::UnSelectUi(int uiNumber)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi)
         return;
-    // ƒVƒ‡[ƒgƒJƒbƒg
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
     commandTransform->SetTexPosition(CommandConfig::commandUnSelectTexPos);
-    // •`‰æ‚µ‚Ä‚¢‚È‚¢
+    // æç”»ã—ã¦ã„ãªã„
     commandUi->SetDrawCheck(CommandConfig::draw);
-    // “§‚©‚µƒIƒ“
+    // é€ã‹ã—ã‚ªãƒ³
     commandUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
 }
 
-// ƒVƒ‡[ƒgƒJƒbƒgƒL[‘I‘ğ
+// ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚­ãƒ¼é¸æŠ
 void UiManager::SelectShortCutUi(int uiNumber)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi)
         return;
-    // ƒVƒ‡[ƒgƒJƒbƒg
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
     commandTransform->SetTexPosition(CommandConfig::commandShortCutTexScale);
-    // •`‰æ‚µ‚Ä‚¢‚È‚¢
+    // æç”»ã—ã¦ã„ãªã„
     commandUi->SetDrawCheck(CommandConfig::draw);
-    // “§‚©‚µƒIƒt
+    // é€ã‹ã—ã‚ªãƒ•
     commandUi->SetAlpha(CommandConfig::commandAlphaSelect);
 }
 
-// ƒVƒ‡[ƒgƒJƒbƒgƒL[”ñ‘I‘ğ
+// ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚­ãƒ¼éé¸æŠ
 void UiManager::UnSelectShortCutUi(int uiNumber)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi)
         return;
-    // ƒVƒ‡[ƒgƒJƒbƒg
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
     commandTransform->SetTexPosition(CommandConfig::commandShortCutTexScale);
-    // •`‰æ‚µ‚Ä‚¢‚È‚¢
+    // æç”»ã—ã¦ã„ãªã„
     commandUi->SetDrawCheck(CommandConfig::draw);
-    // “§‚©‚µƒIƒ“
+    // é€ã‹ã—ã‚ªãƒ³
     commandUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
 }
 
-// Ui–‚–@ƒ`ƒƒ[ƒW“®ìŠJn
+// Uié­”æ³•ãƒãƒ£ãƒ¼ã‚¸å‹•ä½œé–‹å§‹
 void UiManager::StartMagicUiCharge(int uiCommandNumber ,int uiNumber, int uiFrameNumber, int chargeNumber,float elapsedTime)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒNƒvƒŒƒCƒ„[
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
     auto playerid = PlayerManager::Instance().GetPlayer(0);
     
     if (!playerid) 
         return;
     auto playerMain = playerid->GetComponent<Player>();
     auto playerMp = playerid->GetComponent<Mp>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!playerMain || !playerMp)
         return;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandMagicId = UiManager::Instance().GetUies(uiCommandNumber);
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
     auto sharedUiFrameCommandId = UiManager::Instance().GetUies(uiFrameNumber);
@@ -336,50 +354,51 @@ void UiManager::StartMagicUiCharge(int uiCommandNumber ,int uiNumber, int uiFram
     auto commandFrameUi = sharedUiFrameCommandId->GetComponent<Ui>();
     auto commandChargeTransform = sharedUiChargeCommandId->GetComponent<TransForm2D>();
     auto commandChargeUi = sharedUiChargeCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi || !commandFrameTransform || !commandFrameUi || !commandChargeTransform || !commandChargeUi)
         return;
 
-    // mpØ‚ê
+    // mpåˆ‡ã‚Œ
     if (playerMp->GetMpEmpth())
     {
-        // –‚–@ƒ`ƒƒ[ƒWƒIƒt
+        // é­”æ³•ãƒãƒ£ãƒ¼ã‚¸ã‚ªãƒ•
         playerMain->SetIsMagicChageEnd(false);
-        // –‚–@
+        // é­”æ³•
         StartMagicUiFire(uiNumber, uiFrameNumber, chargeNumber);
         return;
     }
 
-    // ƒQ[ƒW—­‚ß
+    // ã‚²ãƒ¼ã‚¸æºœã‚
     commandPushUiChargeTime += PlayerConfig::commandChargeAdd * elapsedTime;
 
-    // ƒQ[ƒW‚Ì‰¡Å‘å’l
+    // ã‚²ãƒ¼ã‚¸ã®æ¨ªæœ€å¤§å€¤
     float gaugeSize = commandMagicTransform->GetScale().x - CommandConfig::mpBarOffset;
 
-    // —­‚ß
+    // æºœã‚
     float gaugeWidth = gaugeSize * commandPushUiChargeTime * 0.08f;
 
-    // ƒRƒ}ƒ“ƒhˆÊ’u
+    // ã‚³ãƒãƒ³ãƒ‰ä½ç½®
     DirectX::XMFLOAT2 pos = commandMagicTransform->GetPosition();
 
-    // ˆÊ’u•â³
+    // ä½ç½®è£œæ­£
     commandTransform->SetPosition(pos);
     commandFrameTransform->SetPosition(pos);
     commandChargeTransform->SetPosition(pos);
 
-    // •`‰æ
+    // ã‚¹ã‚±ãƒ¼ãƒ«å¤‰æ›´
+    commandTransform->SetScaleX(gaugeSize);
+    commandFrameTransform->SetScaleX(gaugeWidth);
+    commandChargeTransform->SetScaleX(gaugeSize);
+
+    // æç”»
     commandUi->SetDrawCheck(CommandConfig::draw);
     commandFrameUi->SetDrawCheck(CommandConfig::draw);
     commandChargeUi->SetDrawCheck(CommandConfig::draw);
 
-    // ƒVƒ‡[ƒgƒJƒbƒg
-    commandFrameTransform->SetScaleX(gaugeWidth);
-    commandChargeTransform->SetScaleX(gaugeSize);
-
-    // “§‚©‚µƒIƒt
+    // é€ã‹ã—ã‚ªãƒ•
     commandFrameUi->SetAlpha(CommandConfig::commandAlphaSelect);
 
-    // –‚–@ƒ`ƒƒ[ƒWŠ®—¹
+    // é­”æ³•ãƒãƒ£ãƒ¼ã‚¸å®Œäº†
     if (gaugeWidth >= CommandConfig::chargeMagicGaugeWidthMax)
     {
         playerMain->SetIsMagicChageEnd(true);
@@ -387,13 +406,13 @@ void UiManager::StartMagicUiCharge(int uiCommandNumber ,int uiNumber, int uiFram
     }
 }
 
-// Ui–‚–@ƒ`ƒƒ[ƒW“®ì”­Ë
+// Uié­”æ³•ãƒãƒ£ãƒ¼ã‚¸å‹•ä½œç™ºå°„
 void UiManager::StartMagicUiFire(int uiNumber, int uiFrameNumber, int chargeNumber)
 {
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     commandPushUiChargeTime = 0.0f;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
     auto sharedUiFrameCommandId = UiManager::Instance().GetUies(uiFrameNumber);
     auto sharedUiChargeCommandId = UiManager::Instance().GetUies(chargeNumber);
@@ -403,7 +422,7 @@ void UiManager::StartMagicUiFire(int uiNumber, int uiFrameNumber, int chargeNumb
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
     auto commandFrameUi = sharedUiFrameCommandId->GetComponent<Ui>();
     auto commandChargeUi = sharedUiChargeCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandUi ||!commandFrameUi || !commandChargeUi)
         return;
 
@@ -412,162 +431,221 @@ void UiManager::StartMagicUiFire(int uiNumber, int uiFrameNumber, int chargeNumb
     commandChargeUi->SetDrawCheck(CommandConfig::unDraw);
 }
 
-// UIƒVƒFƒCƒN
+// UIã‚·ã‚§ã‚¤ã‚¯
 void UiManager::ShakeModeTyme(int uiNumber, bool& shakeMode)
 {
-    // ƒVƒFƒCƒN‚Ì—L–³
+    // ã‚·ã‚§ã‚¤ã‚¯ã®æœ‰ç„¡
     if (!shakeMode) return;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi)
         return;
 
-    // •`‰æ‚µ‚Ä‚¢‚é
+    // æç”»ã—ã¦ã„ã‚‹
     commandUi->SetDrawCheck(CommandConfig::draw);
-    // “§‚©‚µƒIƒ“
+    // é€ã‹ã—ã‚ªãƒ³
     commandUi->SetAlpha(CommandConfig::commandAlphaSelect);
 
-    // —h‚ê
+    // æºã‚Œ
     if (shakeMode)
     {
         commandTransform->Shake();
     }
-    //@‰Šú‰»
+    //ã€€åˆæœŸåŒ–
     if (commandTransform->GetShakeEnd())
     {
         shakeMode = false;
     }
 }
 
-// UIƒ|ƒWƒVƒ‡ƒ“XV
+// UIãƒã‚¸ã‚·ãƒ§ãƒ³æ›´æ–°
 void UiManager::PositionUpdate(int uiNumber, DirectX::XMFLOAT2 pos)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi)
         return;
 
-    // ƒVƒ‡[ƒgƒJƒbƒg
-    commandTransform->SetTexPosition(pos);
-    // •`‰æ‚µ‚Ä‚¢‚È‚¢
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
+    commandTransform->SetPosition(pos);
+    // æç”»ã—ã¦ã„ãªã„
     commandUi->SetDrawCheck(CommandConfig::draw);
-    // “§‚©‚µƒIƒ“
+    // é€ã‹ã—ã‚ªãƒ³
     commandUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
 }
 
-// UI‘å‚«‚³XV
+void UiManager::PositionXUpdate(int uiNumber, float posX)
+{
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    if (!commandTransform || !commandUi)
+        return;
+
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
+    commandTransform->SetPositionX(posX);
+    // æç”»ã—ã¦ã„ãªã„
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // é€ã‹ã—ã‚ªãƒ³
+    commandUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
+}
+
+void UiManager::PositionYUpdate(int uiNumber, float posY)
+{
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    if (!commandTransform || !commandUi)
+        return;
+
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
+    commandTransform->SetPositionY(posY);
+    // æç”»ã—ã¦ã„ãªã„
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // é€ã‹ã—ã‚ªãƒ³
+    commandUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
+}
+
+// UIå¤§ãã•æ›´æ–°
 void UiManager::ScaleUpdate(int uiNumber, DirectX::XMFLOAT2 scale)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi)
         return;
 
-    // ƒVƒ‡[ƒgƒJƒbƒg
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
     commandTransform->SetScale(scale);
-    // •`‰æ‚µ‚Ä‚¢‚È‚¢
+    // æç”»ã—ã¦ã„ãªã„
     commandUi->SetDrawCheck(CommandConfig::draw);
 }
 
-// UI‘å‚«‚³X
+// UIå¤§ãã•X
 void UiManager::ScaleUpdateX(int uiNumber, float scaleX)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi)
         return;
 
-    // ƒVƒ‡[ƒgƒJƒbƒg
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
     commandTransform->SetScaleX(scaleX);
-    // •`‰æ‚µ‚Ä‚¢‚È‚¢
+    // æç”»ã—ã¦ã„ãªã„
     commandUi->SetDrawCheck(CommandConfig::draw);
 }
 
-// UI‘å‚«‚³Y
+// UIå¤§ãã•Y
 void UiManager::ScaleUpdateY(int uiNumber, float scaleY)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi)
         return;
 
-    // ƒVƒ‡[ƒgƒJƒbƒg
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
     commandTransform->SetScaleY(scaleY);
-    // •`‰æ‚µ‚Ä‚¢‚È‚¢
+    // æç”»ã—ã¦ã„ãªã„
     commandUi->SetDrawCheck(CommandConfig::draw);
 }
 
-// UIŒ³‰æ‘œ‚ÌˆÊ’u‚ğ•Ï‚¦‚éB
+// UIå…ƒç”»åƒã®ä½ç½®ã‚’å¤‰ãˆã‚‹ã€‚
 void UiManager::TexPosUpdate(int uiNumber, DirectX::XMFLOAT2 texPos)
 {
-    // ˆÀ‘Sƒ`ƒFƒbƒN@ƒRƒ}ƒ“ƒh ƒVƒ‡[ƒgƒJƒbƒg@–‚–@@‰Î
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
     auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
     auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
     auto commandUi = sharedUiCommandId->GetComponent<Ui>();
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     if (!commandTransform || !commandUi)
         return;
 
-    // •`‰æ‚µ‚Ä‚¢‚È‚¢
+    // æç”»ã—ã¦ã„ãªã„
     commandUi->SetDrawCheck(CommandConfig::draw);
 
-    // Œ³‰æ‘œˆÊ’u
+    // å…ƒç”»åƒä½ç½®
     commandTransform->SetTexPosition(texPos);
 }
 
-// ƒRƒ}ƒ“ƒhUI@‘I‘ğ’† •KE‹Z‘I‚Ô
+// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ
+void UiManager::IncrementToAlpha(int uiNumber, float increment)
+{
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    if (!commandUi)
+        return;
+    // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ
+    commandUi->IncrementToAlpha(increment);
+}
+
+// ã‚³ãƒãƒ³ãƒ‰UIã€€é¸æŠä¸­ å¿…æ®ºæŠ€é¸ã¶
 void UiManager::InputSpecialAttack()
 {
     int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN ƒvƒŒƒCƒ„[
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
     auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
     if (!playerId)
         return;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN ƒvƒŒƒCƒ„[‚Ìî•ñ
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±
     auto playerMain = playerId->GetComponent<Player>();
     if (!playerMain)
         return;
 
-    // ƒRƒ}ƒ“ƒhUI@‘I‘ğ’† •KE‹Z‘I‚Ô
+    // ã‚³ãƒãƒ³ãƒ‰UIã€€é¸æŠä¸­ å¿…æ®ºæŠ€é¸ã¶
     if (playerMain->GetSelectCheck() == (int)Player::CommandAttack::Special)
     {
-        // ˆÀ‘Sƒ`ƒFƒbƒN ƒRƒ}ƒ“ƒhUI@•KE‹Z
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ã‚³ãƒãƒ³ãƒ‰UIã€€å¿…æ®ºæŠ€
         auto sharedUiSpecialId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
         if (!sharedUiSpecialId)
             return;
@@ -575,24 +653,24 @@ void UiManager::InputSpecialAttack()
         auto uiIdSpecialTransform2D = sharedUiSpecialId->GetComponent<TransForm2D>();
         if (!uiIdSpecialUi && !uiIdSpecialTransform2D) return;
 
-        // ‘I‘ğ
+        // é¸æŠ
         uiIdSpecialTransform2D->SetTexPosition(CommandConfig::commandSelectTexScale);
 
-        // ƒRƒ}ƒ“ƒh‘I‘ğ”»’f@“§–¾“x
+        // ã‚³ãƒãƒ³ãƒ‰é¸æŠåˆ¤æ–­ã€€é€æ˜åº¦
         float selectAlpha = CommandConfig::commandAlphaSelect;
 
-        // “Áê‹ZUI‘I‘ğ•s‰Â aŒ‚
+        // ç‰¹æ®ŠæŠ€UIé¸æŠä¸å¯ æ–¬æ’ƒ
         if (!playerMain->GetSpecialAttack((int)Player::SpecialAttackType::Attack) &&
             !playerMain->GetSpecialAttack((int)Player::SpecialAttackType::MagicFire))
             selectAlpha = CommandConfig::commandAlphaUnSelect;
 
-        // ‘I‘ğ•s‰Â‚©‚Ç‚¤‚©
+        // é¸æŠä¸å¯ã‹ã©ã†ã‹
         uiIdSpecialUi->SetAlpha(selectAlpha);
     }
-    //  ƒRƒ}ƒ“ƒhUI@”ñ‘I‘ğ •KE‹Z
+    //  ã‚³ãƒãƒ³ãƒ‰UIã€€éé¸æŠ å¿…æ®ºæŠ€
     else
     {
-        // ˆÀ‘Sƒ`ƒFƒbƒN ƒRƒ}ƒ“ƒhUI@•KE‹Z
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ã‚³ãƒãƒ³ãƒ‰UIã€€å¿…æ®ºæŠ€
         auto sharedUiSpecialId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
         if (!sharedUiSpecialId)
             return;
@@ -600,73 +678,73 @@ void UiManager::InputSpecialAttack()
         auto uiIdSpecialTransform2D = sharedUiSpecialId->GetComponent<TransForm2D>();
         if (!uiIdSpecialUi && !uiIdSpecialTransform2D) return;
 
-        // ‘I‘ğ
+        // é¸æŠ
         uiIdSpecialTransform2D->SetTexPosition(CommandConfig::commandUnSelectTexScale);
 
-        // ‘I‘ğ•s‰Â‚©‚Ç‚¤‚©
+        // é¸æŠä¸å¯ã‹ã©ã†ã‹
         uiIdSpecialUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
     }
 }
 
-// ƒRƒ}ƒ“ƒh‘I‘ğ •KE‹Z
+// ã‚³ãƒãƒ³ãƒ‰é¸æŠ å¿…æ®ºæŠ€
 void UiManager::SelectSpecialAttack()
 {
     int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN ƒvƒŒƒCƒ„[
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
     auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
     if (!playerId)
         return;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN ƒvƒŒƒCƒ„[‚Ìî•ñ
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±
     auto playerMain = playerId->GetComponent<Player>();
     if (!playerMain)
         return;
 
-    // ƒRƒ}ƒ“ƒh‘I‘ğ •KE‹Z
+    // ã‚³ãƒãƒ³ãƒ‰é¸æŠ å¿…æ®ºæŠ€
     if (playerMain->GetSpecialAction())
     {
-        // ˆÀ‘Sƒ`ƒFƒbƒN ƒRƒ}ƒ“ƒhaŒ‚
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ã‚³ãƒãƒ³ãƒ‰æ–¬æ’ƒ
         auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
         if (!sharedUiComandoAttackId)
             return;
-        // ƒRƒ}ƒ“ƒh@•KE‹ZaŒ‚•\¦‚·‚é‚©
+        // ã‚³ãƒãƒ³ãƒ‰ã€€å¿…æ®ºæŠ€æ–¬æ’ƒè¡¨ç¤ºã™ã‚‹ã‹
         auto uiIdSpecialComandoAttack = sharedUiComandoAttackId->GetComponent<Ui>();
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdSpecialComandoAttack) return;
 
-        // ˆÀ‘Sƒ`ƒFƒbƒN ƒRƒ}ƒ“ƒh–‚–@‰Š
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ã‚³ãƒãƒ³ãƒ‰é­”æ³•ç‚
         auto sharedUiCommandSpecialFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
         if (!sharedUiCommandSpecialFireId)
             return;
-        // ƒRƒ}ƒ“ƒh@•KE‹Z–‚–@‰Š•\¦‚·‚é‚©
+        // ã‚³ãƒãƒ³ãƒ‰ã€€å¿…æ®ºæŠ€é­”æ³•ç‚è¡¨ç¤ºã™ã‚‹ã‹
         auto uiIdSpecialComandoFire = sharedUiCommandSpecialFireId->GetComponent<Ui>();
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdSpecialComandoFire) return;
 
         uiIdSpecialComandoAttack->SetDrawCheck(CommandConfig::draw);
         uiIdSpecialComandoFire->SetDrawCheck(CommandConfig::draw);
     }
-    // ƒRƒ}ƒ“ƒh”ñ‘I‘ğ •KE‹Z
+    // ã‚³ãƒãƒ³ãƒ‰éé¸æŠ å¿…æ®ºæŠ€
     else
     {
-        // ˆÀ‘Sƒ`ƒFƒbƒN ƒRƒ}ƒ“ƒhaŒ‚
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ã‚³ãƒãƒ³ãƒ‰æ–¬æ’ƒ
         auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
         if (!sharedUiComandoAttackId)
             return;
         auto uiIdAttack = sharedUiComandoAttackId->GetComponent<Ui>();
 
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdAttack)
             return;
 
-        // ˆÀ‘Sƒ`ƒFƒbƒN ƒRƒ}ƒ“ƒh–‚–@‰Š
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ã‚³ãƒãƒ³ãƒ‰é­”æ³•ç‚
         auto sharedUiComandoFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
         if (!sharedUiComandoFireId)
             return;
         auto uiIdAttackCheck = sharedUiComandoFireId->GetComponent<Ui>();
 
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdAttackCheck)
             return;
 
@@ -675,17 +753,17 @@ void UiManager::SelectSpecialAttack()
     }
 }
 
-// “Áê‹Z—­‚Ü‚Á‚½
+// ç‰¹æ®ŠæŠ€æºœã¾ã£ãŸ
 void UiManager::SpecialAttackCharge(float elapsedTime)
 {
     int uiCount = UiManager::Instance().GetUiesCount();
 
-    // uiCountÅ‘å’l
+    // uiCountæœ€å¤§å€¤
     int uiCountMax = 5;
 
-    // ui–³‚©‚Á‚½‚ç
+    // uiç„¡ã‹ã£ãŸã‚‰
     if (uiCount <= uiCountMax) return;
-    // ˆÀ‘Sƒ`ƒFƒbƒN
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
     auto sharedUiSpecialChargeFurstId = UiManager::Instance().GetUies(
         (int)UiManager::UiCount::PlayerCommandSpeciulCharge01);
     auto sharedUiSpecialChargeSecondId = UiManager::Instance().GetUies(
@@ -699,7 +777,7 @@ void UiManager::SpecialAttackCharge(float elapsedTime)
     auto uiIdSpecialChargeSecond = sharedUiSpecialChargeSecondId->GetComponent<Ui>();
     auto uiIdSpecialChargeSerde = sharedUiSpecialChargeSerdeId->GetComponent<Ui>();
 
-    //// ˆê“x”­“®‚·‚é‚Æ‰Šú‰»
+    //// ä¸€åº¦ç™ºå‹•ã™ã‚‹ã¨åˆæœŸåŒ–
     bool drawCheck = CommandConfig::unDraw;
     uiIdSpecialChargeFurst->SetDrawCheck(drawCheck);
     uiIdSpecialChargeSecond->SetDrawCheck(drawCheck);
@@ -707,170 +785,170 @@ void UiManager::SpecialAttackCharge(float elapsedTime)
 
 }
 
-// UI“Áê‹Z
+// UIç‰¹æ®ŠæŠ€
 void UiManager::SpecialUpdate(float elapsedTime)
 {
     int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN ƒvƒŒƒCƒ„[
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
     auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
     if (!playerId)
         return;
 
-    // ˆÀ‘Sƒ`ƒFƒbƒN ƒvƒŒƒCƒ„[‚Ìî•ñ
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±
     auto playerMain = playerId->GetComponent<Player>();
     if (!playerMain)
         return;
 
-    // •KE‹Z‚ğ‘I‘ğ‚µ‚Ä‚¢‚È‚¢‚Æ‚«
+    // å¿…æ®ºæŠ€ã‚’é¸æŠã—ã¦ã„ãªã„ã¨ã
     if (!playerMain->GetSpecialAction())
     {
-        // ˆÀ‘Sƒ`ƒFƒbƒN UIƒRƒ}ƒ“ƒh@“_–Å—p
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯ UIã‚³ãƒãƒ³ãƒ‰ã€€ç‚¹æ»…ç”¨
         auto sharedUiCommandSpecialUnCheckId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpecial);
         if (!sharedUiCommandSpecialUnCheckId)
             return;
 
-        // UIƒRƒ}ƒ“ƒh@“_–Å—p •\¦A”ñ•\¦Ø‚è‘Ö‚¦—p
+        // UIã‚³ãƒãƒ³ãƒ‰ã€€ç‚¹æ»…ç”¨ è¡¨ç¤ºã€éè¡¨ç¤ºåˆ‡ã‚Šæ›¿ãˆç”¨
         auto uiIdSpecialUnCheckUi = sharedUiCommandSpecialUnCheckId->GetComponent<Ui>();
         auto uiIdSpecialUnCheckTransform2D = sharedUiCommandSpecialUnCheckId->GetComponent<TransForm2D>();
 
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdSpecialUnCheckUi && !uiIdSpecialUnCheckTransform2D)
             return;
 
-        // “Áê‹Z—­‚Ü‚Á‚Ä–³‚©‚Á‚½‚ç ƒRƒ}ƒ“ƒhUI“_–Å‚µ‚È‚¢
+        // ç‰¹æ®ŠæŠ€æºœã¾ã£ã¦ç„¡ã‹ã£ãŸã‚‰ ã‚³ãƒãƒ³ãƒ‰UIç‚¹æ»…ã—ãªã„
         if (!playerMain->GetSpecialAttack((int)Player::SpecialAttackType::Attack) &&
             !playerMain->GetSpecialAttack((int)Player::SpecialAttackType::MagicFire))
         {
-            // UI”ñ•\¦
+            // UIéè¡¨ç¤º
             uiIdSpecialUnCheckUi->SetAlpha(PlayerConfig::halfAlpha);
             return;
         }
         
-        // “ÁêUŒ‚‚½‚Ü‚Á‚½ ’m‚ç‚¹‚é‚½‚ß‚É ƒRƒ}ƒ“ƒhUI“_–Å
+        // ç‰¹æ®Šæ”»æ’ƒãŸã¾ã£ãŸ çŸ¥ã‚‰ã›ã‚‹ãŸã‚ã« ã‚³ãƒãƒ³ãƒ‰UIç‚¹æ»…
         if (!mathfSpecial.UpdateElapsedTime(timeElapsedHintMax, elapsedTime))return;
 
-        // “_–Å
+        // ç‚¹æ»…
         isUiSpecilDrawCheck = isUiSpecilDrawCheck ? false : true;
 
-        // “_–Å—p@ƒRƒ}ƒ“ƒh•ÏŠ·’l Œ³‰æ‘œ
+        // ç‚¹æ»…ç”¨ã€€ã‚³ãƒãƒ³ãƒ‰å¤‰æ›å€¤ å…ƒç”»åƒ
         DirectX::XMFLOAT2 blinkTexPos = isUiSpecilDrawCheck ? CommandConfig::commandSelectTexScale : CommandConfig::commandUnSelectTexScale;
 
-        // ‘I‘ğA”ñ‘I‘ğ
+        // é¸æŠã€éé¸æŠ
         uiIdSpecialUnCheckTransform2D->SetTexPosition(blinkTexPos);
         return;
     }
 
-    // ƒRƒ}ƒ“ƒh@•KE‹Z‘I‘ğ’†
+    // ã‚³ãƒãƒ³ãƒ‰ã€€å¿…æ®ºæŠ€é¸æŠä¸­
     switch (playerMain->GetSpecialAttackNum())
     {
     case (int)Player::SpecialAttackType::Attack:
     {
-        // •KE‹ZØ‚è‚Â‚¯
+        // å¿…æ®ºæŠ€åˆ‡ã‚Šã¤ã‘
         auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!sharedUiSpecialShurashuId)
             return;
 
-        // ƒRƒ}ƒ“ƒhUIaŒ‚@ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+        // ã‚³ãƒãƒ³ãƒ‰UIæ–¬æ’ƒã€€ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
         auto uiIdSpecialAttackTransForm2D = sharedUiSpecialShurashuId->GetComponent<TransForm2D>();
         auto uiIdSpecialAttack = sharedUiSpecialShurashuId->GetComponent<Ui>();
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdSpecialAttack || !uiIdSpecialAttackTransForm2D)
             return;
 
-        // •KE‹Z‰Š
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å¿…æ®ºæŠ€ç‚
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         auto sharedUiCommandSpeciulFrameId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulFrame);
         if (!sharedUiCommandSpeciulFrameId)
             return;
 
-        // ƒRƒ}ƒ“ƒhUI‰Î@ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+        // ã‚³ãƒãƒ³ãƒ‰UIç«ã€€ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
         auto uiIdSpecialFireTransForm2D = sharedUiCommandSpeciulFrameId->GetComponent<TransForm2D>();
         auto uiIdSpecialFire = sharedUiCommandSpeciulFrameId->GetComponent<Ui>();
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdSpecialFireTransForm2D || !uiIdSpecialFire)
             return;
 
         float pos = uiIdSpecialAttackTransForm2D->GetPosition().y + PlayerConfig::offset;
-        
-        // ƒRƒ}ƒ“ƒh‘I‘ğ”»’f@“§–¾“x
+
+        // ã‚³ãƒãƒ³ãƒ‰é¸æŠåˆ¤æ–­ã€€é€æ˜åº¦
         float selectAlpha = CommandConfig::commandAlphaSelect;
-        // ƒRƒ}ƒ“ƒh”ñ‘I‘ğ”»’f@“§–¾“x
+        // ã‚³ãƒãƒ³ãƒ‰éé¸æŠåˆ¤æ–­ã€€é€æ˜åº¦
         if (!playerMain->GetSpecialAttack((int)Player::SpecialAttackType::Attack))
             selectAlpha = CommandConfig::commandAlphaUnSelect;
 
-        // •KE‹ZƒRƒ}ƒ“ƒhØ‚è‚Â‚¯ ‘I‘ğƒRƒ}ƒ“ƒh‚É•ÏX
+        // å¿…æ®ºæŠ€ã‚³ãƒãƒ³ãƒ‰åˆ‡ã‚Šã¤ã‘ é¸æŠã‚³ãƒãƒ³ãƒ‰ã«å¤‰æ›´
         uiIdSpecialAttackTransForm2D->SetTexPosition(CommandConfig::commandSelectTexPos);
 
-        // ”ñ‘I‘ğƒRƒ}ƒ“ƒh‚É•ÏX ‰Š
+        // éé¸æŠã‚³ãƒãƒ³ãƒ‰ã«å¤‰æ›´ ç‚
         uiIdSpecialFireTransForm2D->SetTexPosition(CommandConfig::commandUnSelectTexPos);
 
-        // ”ñ‘I‘ğó‘Ô”¼“§–¾
+        // éé¸æŠçŠ¶æ…‹åŠé€æ˜
         uiIdSpecialFire->SetAlpha(CommandConfig::commandAlphaUnSelect);
-        // ‘I‘ğó‘Ô•s“§–¾
+        // é¸æŠçŠ¶æ…‹ä¸é€æ˜
         uiIdSpecialAttack->SetAlpha(selectAlpha);
         break;
     }
     case (int)Player::SpecialAttackType::MagicFire:
     {
-        // •KE‹Z‰Š
+        // å¿…æ®ºæŠ€ç‚
         auto sharedUiCommandSpeciulFrameId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulFrame);
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!sharedUiCommandSpeciulFrameId)
             return;
 
-        // ƒRƒ}ƒ“ƒhUI‰Î@ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+        // ã‚³ãƒãƒ³ãƒ‰UIç«ã€€ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
         auto uiIdSpecialFireTransForm2D = sharedUiCommandSpeciulFrameId->GetComponent<TransForm2D>();
         auto uiIdSpecialFire = sharedUiCommandSpeciulFrameId->GetComponent<Ui>();
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdSpecialFireTransForm2D || !uiIdSpecialFire)
             return;
 
-        // •KE‹ZØ‚è‚Â‚¯
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å¿…æ®ºæŠ€åˆ‡ã‚Šã¤ã‘
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
         if (!sharedUiSpecialShurashuId)
             return;
 
-        // ƒRƒ}ƒ“ƒhUIaŒ‚@ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+        // ã‚³ãƒãƒ³ãƒ‰UIæ–¬æ’ƒã€€ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
         auto uiIdSpecialAttackTransForm2D = sharedUiSpecialShurashuId->GetComponent<TransForm2D>();
         auto uiIdSpecialAttack = sharedUiSpecialShurashuId->GetComponent<Ui>();
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdSpecialAttackTransForm2D || !uiIdSpecialAttack)
             return;
 
         float pos = uiIdSpecialFireTransForm2D->GetPosition().y + PlayerConfig::offset;
 
-        // ƒRƒ}ƒ“ƒh‘I‘ğ”»’f@“§–¾“x
+        // ã‚³ãƒãƒ³ãƒ‰é¸æŠåˆ¤æ–­ã€€é€æ˜åº¦
         float selectAlpha = CommandConfig::commandAlphaSelect;
-        // ƒRƒ}ƒ“ƒh”ñ‘I‘ğ”»’f@“§–¾“x
+        // ã‚³ãƒãƒ³ãƒ‰éé¸æŠåˆ¤æ–­ã€€é€æ˜åº¦
         if (!playerMain->GetSpecialAttack((int)Player::SpecialAttackType::MagicFire))
             selectAlpha = CommandConfig::commandAlphaUnSelect;
 
-        // ”ñ‘I‘ğ‘I‘ğƒRƒ}ƒ“ƒh‚É•ÏX
+        // éé¸æŠé¸æŠã‚³ãƒãƒ³ãƒ‰ã«å¤‰æ›´
         uiIdSpecialAttackTransForm2D->SetTexPosition(CommandConfig::commandUnSelectTexPos);
 
-        // ‘I‘ğƒRƒ}ƒ“ƒh‚É•ÏX ‰Š
+        // é¸æŠã‚³ãƒãƒ³ãƒ‰ã«å¤‰æ›´ ç‚
         uiIdSpecialFireTransForm2D->SetTexPosition(CommandConfig::commandSelectTexPos);
 
-        // ‘I‘ğó‘Ô•s“§–¾
+        // é¸æŠçŠ¶æ…‹ä¸é€æ˜
         uiIdSpecialFire->SetAlpha(selectAlpha);
-        // ”ñ‘I‘ğó‘Ô”¼“§–¾
+        // éé¸æŠçŠ¶æ…‹åŠé€æ˜
         uiIdSpecialAttack->SetAlpha(CommandConfig::commandAlphaUnSelect);
         break;
     }
     case (int)Player::SpecialAttackType::MagicIce:
     {
-        // À‘•‘O
+        // å®Ÿè£…å‰
 
-        // •X
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // æ°·
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         auto sharedUiCommandSpeciulIceId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulIce);
         if (!sharedUiCommandSpeciulIceId)
@@ -878,7 +956,7 @@ void UiManager::SpecialUpdate(float elapsedTime)
 
         auto uiIdSpecialIce = sharedUiCommandSpeciulIceId->GetComponent<Ui>();
         auto uiIdSpecialIceTransForm2D = sharedUiCommandSpeciulIceId->GetComponent<TransForm2D>();
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdSpecialIce || !uiIdSpecialIceTransForm2D)
             return;
 
@@ -886,10 +964,10 @@ void UiManager::SpecialUpdate(float elapsedTime)
     }
     case (int)Player::SpecialAttackType::MagicThander:
     {
-        // À‘•‘O
+        // å®Ÿè£…å‰
 
-        // —‹
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // é›·
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         auto sharedUiCommandSpeciulThanderId = UiManager::Instance().GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulThander);
         if (!sharedUiCommandSpeciulThanderId)
@@ -897,12 +975,181 @@ void UiManager::SpecialUpdate(float elapsedTime)
 
         auto uiIdSpecialThander = sharedUiCommandSpeciulThanderId->GetComponent<Ui>();
         auto uiIdSpecialThanderTransForm2D = sharedUiCommandSpeciulThanderId->GetComponent<TransForm2D>();
-        // ˆÀ‘Sƒ`ƒFƒbƒN
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
         if (!uiIdSpecialThander || !uiIdSpecialThanderTransForm2D)
             return;
 
         break;
     }
+    }
+}
+
+// ãƒ­ãƒƒã‚¯ã‚ªãƒ³UIå‡¦ç†
+void UiManager::RockOnUI(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
+{
+    // ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆ ç”»é¢ã®ã‚µã‚¤ã‚ºç­‰
+    // ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã¨ã¯2Dã®ç”»é¢ã«æç”»ç¯„å›²ã®æŒ‡å®š(ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°æŒ‡å®šã‚‚å‡ºæ¥ã‚‹)ä½ç½®ã‚’æŒ‡å®š
+    D3D11_VIEWPORT viewport;
+    UINT numViewports = 1;
+    // ãƒ©ã‚¹ã‚¿ãƒ©ã‚¤ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆã«ãƒã‚¤ãƒ³ãƒ‰ã•ã‚Œã¦ã„ã‚‹ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆé…åˆ—ã‚’å–å¾—
+    dc->RSGetViewports(&numViewports, &viewport);
+    // å¤‰æ›è¡Œåˆ—
+    DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&view);
+    DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
+    // ãƒ­ãƒ¼ã‚«ãƒ«ã‹ã‚‰ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¡Œãã¨ãã«ã„ã‚‹å¥´ç›¸æ‰‹ã®ãƒã‚¸ã‚·ãƒ§ãƒ³ã‚’æ¸¡ã™ã€‚
+    DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
+
+    int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
+
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
+    auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
+    if (!playerId)
+        return;
+
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±
+    auto playerMain = playerId->GetComponent<Player>();
+    if (!playerMain)
+        return;
+
+    // å…¨ã¦ã®æ•µã®é ­ä¸Šã«HPã‚²ãƒ¼ã‚¸ã‚’è¡¨ç¤º
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    // ã‚¨ãƒãƒŸãƒ¼ã®æ•°
+    int enemyCount = enemyManager.GetEnemyCount();
+    // ã‚¨ãƒãƒŸãƒ¼ãŒä¸€äººã§ã‚‚ç”Ÿãã¦ã„ãŸã‚‰
+    if (enemyCount <= 0) return;
+    // ã‚¨ãƒãƒŸãƒ¼ã®å®‰å…¨â˜‘
+    auto enemyShader = enemyManager.GetEnemy((int)EnemyManager::EnemyType::Boss);
+    if (!enemyShader) return;
+
+    auto enemyBoss = enemyShader->GetComponent<EnemyBoss>();
+    auto enemyModel = enemyShader->GetComponent<ModelControll>();
+    if (!enemyBoss || !enemyModel) return;
+
+    Model::Node* characterBorn = enemyModel->GetModel()->FindNode("boss_right_eye");
+    // ã‚¨ãƒãƒŸãƒ¼è…°ä½ç½®
+    DirectX::XMFLOAT3 enemyPosition;
+
+    enemyPosition = enemyModel->GetModel()->ConvertLocalToWorld(characterBorn);
+
+    // ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
+    DirectX::XMVECTOR enemyPositionVe = DirectX::XMLoadFloat3(&enemyPosition);
+    // ã‚²ãƒ¼ã‚¸æç”» // ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã«
+    DirectX::XMVECTOR screenPositionVe = DirectX::XMVector3Project(
+        enemyPositionVe,
+        viewport.TopLeftX,
+        viewport.TopLeftY,
+        viewport.Width,
+        viewport.Height,
+        viewport.MinDepth,
+        viewport.MaxDepth,
+        Projection,
+        View,
+        World
+    );
+    // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™
+    DirectX::XMFLOAT3 scereenPosition;
+    DirectX::XMStoreFloat3(&scereenPosition, screenPositionVe);
+    // å¿…æ®ºæŠ€ãŒã§ã¦ã„ãªã‹ã£ãŸã‚‰ãƒ­ãƒƒã‚¯ã‚ªãƒ³
+    if (playerMain->GetRockCheck() || !playerMain->GetSpecialRockOff())
+    {
+        UiManager::Instance().PositionUpdate((int)UiManager::UiCount::Sight,
+            {
+                scereenPosition.x,
+                scereenPosition.y
+            });
+
+        UiManager::Instance().PositionUpdate((int)UiManager::UiCount::SightCheck,
+            {
+                scereenPosition.x - CommandConfig::scereenPositionOffset.x,
+                scereenPosition.y - CommandConfig::scereenPositionOffset.y
+            });
+    }
+    // å¿…æ®ºæŠ€ä¸­ãƒ­ãƒƒã‚¯ã‚ªãƒ³ç³»UIã‚’æ¶ˆã™ã€‚
+    if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f || !playerMain->GetRockCheck()|| playerMain->GetSpecialRockOff())
+    {
+        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::Sight);
+        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
+        return;
+    }
+}
+
+// è·é›¢ã§UIã‚’å¤‰ãˆã‚‹ãƒ­ãƒƒã‚¯ã‚ªãƒ³ä¸­
+void UiManager::AttackCheckUI()
+{
+    int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
+
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
+    auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
+    if (!playerId)
+        return;
+
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±
+    auto playerMain = playerId->GetComponent<Player>();
+    auto playerTransform = playerId->GetComponent<Transform>();
+    if (!playerMain || !playerTransform)
+        return;
+
+    // uiç„¡ã‹ã£ãŸã‚‰
+    if ( !playerMain->GetRockCheck() || playerMain->GetSpecialRockOff()) return;
+    EnemyManager& enemyManager = EnemyManager::Instance();
+    int enemyCount = enemyManager.GetEnemyCount();
+    for (int i = 0; i < enemyCount; ++i)
+    {
+        auto enemy = enemyManager.GetEnemy(i);
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+        if (!enemy) return;
+
+        auto enemyTransform = enemy->GetComponent<Transform>();
+        // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+        if (!enemyTransform)return;
+        DirectX::XMVECTOR playerPosition =
+            DirectX::XMLoadFloat3(&playerTransform->GetPosition());
+        DirectX::XMFLOAT3 enemyPosition = enemyTransform->GetPosition();
+        DirectX::XMVECTOR enemyPositionXM =
+            DirectX::XMLoadFloat3(&enemyPosition);
+        DirectX::XMVECTOR LengthSq =
+            DirectX::XMVectorSubtract(playerPosition, enemyPositionXM);
+        LengthSq = DirectX::XMVector3LengthSq(LengthSq);
+        float lengthSq;
+        DirectX::XMStoreFloat(&lengthSq, LengthSq);
+        switch (playerMain->GetSelectCheck())
+        {
+            // è¿‘è·é›¢ã®æ™‚ã®å°„ç¨‹è·é›¢ã«ã‚ˆã‚‹UIè¡¨ç¤º
+        case (int)Player::CommandAttack::Attack:
+        {
+            // å½“ãŸã‚Šåˆ¤å®šè·é›¢
+            if (lengthSq < PlayerConfig::attackCheckRange)
+            {
+                // æç”»ãƒ­ãƒƒã‚¯ã‚ªãƒ³
+                UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::SightCheck);
+            }
+            else
+            {
+                // éè¡¨ç¤ºãƒ­ãƒƒã‚¯ã‚ªãƒ³
+                UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
+            }
+
+            break;
+        }
+        // é­”æ³•ã®æ™‚ã®å°„ç¨‹è·é›¢ã«ã‚ˆã‚‹UIè¡¨ç¤º
+        case (int)Player::CommandAttack::Magic:
+        {
+            if (lengthSq < PlayerConfig::magicRangeLength)
+            {
+                // æç”»ãƒ­ãƒƒã‚¯ã‚ªãƒ³
+                UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::SightCheck);
+            }
+            else
+            {
+                // éè¡¨ç¤ºãƒ­ãƒƒã‚¯ã‚ªãƒ³
+                UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
+            }
+
+            break;
+        }
+        default:
+            break;
+        }
     }
 }
 
@@ -920,3 +1167,101 @@ void UiLoadingManager::Remove(std::shared_ptr<Actor> ui)
 {
     removes.insert(ui);
 }
+
+void UiLoadingManager::SelectDrawUi(int uiNumber)
+{
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    if (!commandUi)
+        return;
+
+    // æç”»
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // é€æ˜åº¦100ï¼…
+    commandUi->SetAlpha(CommandConfig::commandAlphaSelect);
+}
+
+void UiLoadingManager::SelectDrawUi(int uiNumber, float TimeAlpha, float TimeAlphaMax, float elapsedTime)
+{
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    if (!commandUi)
+        return;
+
+    // æç”»
+    commandUi->SetDrawCheck(CommandConfig::draw);
+
+    // ç‚¹ç¯å‡¦ç†
+    if (mathfblinking.UpdateElapsedTime(TimeAlphaMax, elapsedTime))
+        TimeAlpha = TimeAlpha < TimeAlphaMax ? 1.0f : 0.0f;
+
+    // ç‚¹æ»…
+    commandUi->SetAlpha(TimeAlpha);
+}
+
+void UiLoadingManager::SelectNotDrawUi(int uiNumber)
+{
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    if (!commandUi)
+        return;
+
+    // æç”»ã—ã¦ã„ãªã„
+    commandUi->SetDrawCheck(CommandConfig::unDraw);
+}
+
+void UiLoadingManager::SelectUi(int uiNumber)
+{
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    if (!commandTransform || !commandUi)
+        return;
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
+    commandTransform->SetTexPosition(CommandConfig::commandSelectTexPos);
+    // æç”»ã—ã¦ã„ãªã„
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // é€ã‹ã—ã‚ªãƒ•
+    commandUi->SetAlpha(CommandConfig::commandAlphaSelect);
+}
+
+void UiLoadingManager::UnSelectUi(int uiNumber)
+{
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯ã€€ã‚³ãƒãƒ³ãƒ‰ ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€€é­”æ³•ã€€ç«
+    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+
+    if (!sharedUiCommandId)
+        return;
+    auto commandTransform = sharedUiCommandId->GetComponent<TransForm2D>();
+    auto commandUi = sharedUiCommandId->GetComponent<Ui>();
+    // å®‰å…¨ãƒã‚§ãƒƒã‚¯
+    if (!commandTransform || !commandUi)
+        return;
+    // ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ
+    commandTransform->SetTexPosition(CommandConfig::commandUnSelectTexPos);
+    // æç”»ã—ã¦ã„ãªã„
+    commandUi->SetDrawCheck(CommandConfig::draw);
+    // é€ã‹ã—ã‚ªãƒ³
+    commandUi->SetAlpha(CommandConfig::commandAlphaUnSelect);
+}
+

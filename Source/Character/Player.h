@@ -32,6 +32,9 @@ namespace PlayerConfig
     constexpr const char* bornDownerStartPoint = "mixamorig:LeftUpLeg";
     // 下半身エンド再生停止場所
     constexpr const char* bornDownerEndPoint = "mixamorig:RightToe_End";
+    // 腰のボーン名
+    constexpr const char* bornWaistPoint = "body2";
+
 
     // -----衝突判定・サイズ-----
     // 身長
@@ -82,6 +85,9 @@ namespace PlayerConfig
     // 攻撃補助範囲
     constexpr float attackCheckRange = 10.0f;
 
+    // 魔法の射程当たる距離
+    constexpr float magicRangeLength = 470;
+
     // 連続攻撃回数
     constexpr int attackNumberSaveMax = 15;
 
@@ -108,7 +114,7 @@ namespace PlayerConfig
     constexpr float timeElapsedMin = 0.0f;
 
     // 経過時間関数の最大値
-    constexpr float timeElapsedHintMax = 1.0f;
+    constexpr float timeElapsedHintMax = 4.0f;
 
     // しっかり描画
     constexpr float onAlpha = 1.0f;
@@ -165,6 +171,10 @@ namespace PlayerConfig
     constexpr float currentCameraEffectInitialTimeMax = 0.5f;
     // 時間
     constexpr float cameraEffectSpeed = 1.0f;
+
+    // ------関数------------
+
+
 };
 
 // プレイヤー
@@ -220,20 +230,6 @@ public:
 
     // 最初のカメラ演出
     void UpdateCameraInitialEffect(float elapsedTime);
- 
-    // SE再生
-    void InputSe(AudioParam param);
-    // SE再生同じ
-    void PlaySe(const std::string& filename);
-
-    // SE再生ループ
-    void PlayLoopSe(const std::string& filename);
-
-    // se停止
-    void StopSe(const std::string& filename);
-
-    // カメラ切り替え処理
-    void UpdateCameraState(float elapsedTime);
 
     // 当たり判定パーツ事
     bool CheckAllPartsCollision(DirectX::XMFLOAT3 pos, float rudius);
@@ -277,11 +273,6 @@ public:
 
     // ロックオン入力
     bool InputRockOn();
-
-    // ロックオンのUIを出す
-    void RockOnUI(ID3D11DeviceContext* dc,
-        const DirectX::XMFLOAT4X4& view,
-        const DirectX::XMFLOAT4X4& projection);
 
     // 攻撃方法選択
     bool InputSelectCheck();
@@ -346,13 +337,33 @@ public:
 
     void InputSpecialMagicframe();
 
-    void AttackCheckUI();
+    // ------判定------------
+    // 行動する再に一定のステートではなかったら出来る
+    inline bool CanChangeState() {
+        // 変更可能
+        if (
+            stateMachineIndex() != static_cast<int>(Player::State::QuickJab) &&
+            stateMachineIndex()  != static_cast<int>(Player::State::SideCut) &&
+            stateMachineIndex()  != static_cast<int>(Player::State::CycloneStrike) &&
+            stateMachineIndex() != static_cast<int>(Player::State::Magic) &&
+            stateMachineIndex()  != static_cast<int>(Player::State::Damage) &&
+            stateMachineIndex()  != static_cast<int>(Player::State::Death))
+            return true;
+        // 変更不可能
+        return false;
+    };
 
     DirectX::XMFLOAT3 GetForwerd(DirectX::XMFLOAT3 angle);
 
     StateMachine* GetStateMachine() { return stateMachine.get(); }
     // 外部で初期化するための処置
     void StateMachineCreate() { stateMachine = std::make_unique<StateMachine>(); }
+
+    // ステートを読み取る
+    int stateMachineIndex() { return GetStateMachine()->GetStateIndex(); }
+
+    // ステート変える
+    void changeState(int changeState) { stateMachine->ChangeState(changeState); }
 
     // 攻撃方法変更
     void SetSelectCheck(int selectCheck) { this->selectCheck = selectCheck; }
@@ -461,14 +472,6 @@ public:
 
     };
 
-    // カメラステート
-    enum class CameraState
-    {
-        Normal,
-        NotLockOn,
-        LockOn,
-        AttackLock
-    };
 
     // アニメ
     enum Animation
@@ -555,9 +558,9 @@ public:
     // 回転確認
     void SetAngleCheck(bool angleCheck) { this->angleCheck = angleCheck; }
 
-    void SetLockOnState(CameraState lockonState) { this->lockonState = lockonState; }
+    //void SetLockOnState(CameraState lockonState) { this->lockonState = lockonState; }
 
-    CameraState GetLockOnState() const { return lockonState; }
+    //CameraState GetLockOnState() const { return lockonState; }
 
     // ロックオン入力確認
     void SetRockCheck(bool rockCheck) { this->rockCheck = rockCheck; }
@@ -584,8 +587,9 @@ public:
     void SetEndState(bool endState) { this->endState = endState; }
     bool GetEndState() { return endState; }
 
-    // 必殺技中のロックオフ
+    // 必殺技中のロックオフ取得
     void SetSpecialRockOff(bool specialRockOff) { this->specialRockOff = specialRockOff; }
+    bool GetSpecialRockOff() { return this->specialRockOff; }
 
     // 空中行動許可確認
     void SetAreAttackState(int areAttackState) { this->areAttackState = areAttackState; }
@@ -610,11 +614,6 @@ public:
 
     // 描画するかどうか
     void SetPlayeDrawCheck(int isPlayerDrawCheck) { this->isPlayerDrawCheck = isPlayerDrawCheck; }
-
-    // Ui魔法チャージ動作開始
-    void StartMagicUiCharge(DirectX::XMFLOAT2& pos, float& gaugeSizeMax, float elapsedTime);
-    // Ui魔法チャージ動作発射
-    void StartMagicUiFire();
 private:
     // 構造体
     struct SpecialAttack
@@ -639,6 +638,9 @@ private:
 
     // 速度
     DirectX::XMFLOAT3 velocity = { 0,0,0 };
+
+    // 音の計算
+    AudioParam paramSe;
 
     // 空中行動許可
     bool isAreAttack = false;
@@ -690,8 +692,8 @@ private:
     State                   state = State::Idle;
     State                   stated = State::Idle;
 
-    CameraState            cameraState = CameraState::Normal;
-    CameraState			lockonState = CameraState::NotLockOn;
+    //CameraState            cameraState = CameraState::Normal;
+    //CameraState			lockonState = CameraState::NotLockOn;
 
     DirectX::XMFLOAT3 lockonCharactor = { 0.0f,0.0f,0.0f };
 
@@ -852,8 +854,6 @@ private:
     // ボタン押したかのチェック
     bool buttonRock = false;
 
-    // 魔法の射程当たる距離
-    float magicRangeLength = 470;
 
     // 魔法消費量
     int magicConsumption = 5;
@@ -992,14 +992,10 @@ private:
 
     /////////////////////// SE 再生関係
     
-    // se再生情報
-    AudioParam seParam;
-    
     // アニメーションのループ再生
     bool isLoopAnim = true;
 
-    // seの音の大きさ
-    float seVolume = 0.8f;
+
     /////////////////////// 
 
     // 最初のカメラ演出の有無について

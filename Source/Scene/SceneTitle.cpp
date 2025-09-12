@@ -201,9 +201,6 @@ void SceneTitle::Update(float elapsedTime)
 
 		// 描画許可
 		isDrawButton = true;
-		// ボタンを押す描画許可
-		UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
-			GetComponent<Ui>()->SetDrawCheck(isDrawButton);
 	}
 	// 演出停止
 	if (playerIdMain->GetEndState())
@@ -1007,35 +1004,19 @@ void SceneTitle::SelectScene(float elapsedTime)
 	{
 		// 位置選択
 		{
-
-				// UI ボタンを押す
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
-				GetComponent<TransForm2D>()->SetPosition({ startPos.x ,startPos.y  });
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((startPos.y + buttonOffset));
+			UiManager::Instance().PositionYUpdate(
+				(int)UiManager::UiCountGameCler::Push, (startPos.y + buttonOffset));
 
 			// 選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaSelect);
+			UiManager::Instance().SelectDrawUi((int)UiManager::UiCountTitle::Start);
 
 			// 選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandSelectTexPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSelectTexScale);
-
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountTitle::Start, commandSelectTexPos);
 
 			// 非選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaUnSelect);
+			UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCountTitle::Exit);
 			// 非選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandUnSelectTexPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSUnelectTexScale);
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountTitle::Exit, commandUnSelectTexPos);
 
 		}
 		break;
@@ -1044,36 +1025,22 @@ void SceneTitle::SelectScene(float elapsedTime)
 	{
 		// 大きさ変わる選択
 		{
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Select)->
-				GetComponent<TransForm2D>()->SetPosition({ exitPos.x  ,exitPos.y });
-
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Push)->
-				GetComponent<TransForm2D>()->SetPositionY((exitPos.y  + buttonOffset));
+			UiManager::Instance().PositionYUpdate(
+				(int)UiManager::UiCountGameCler::Push, (exitPos.y + buttonOffset));
 
 
 			// 選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaSelect);
+			UiManager::Instance().SelectDrawUi((int)UiManager::UiCountTitle::Exit);
 
 			// 選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandSelectTexPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Exit)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSelectTexScale);
-
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountTitle::Exit, 
+				commandSelectTexPos);
 
 			// 非選択透明度
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<Ui>()
-				->SetAlpha(commandAlphaUnSelect);
+			UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCountTitle::Start);
+
 			// 非選択
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<TransForm2D>()
-				->SetTexPosition(commandUnSelectTexPos);
-
-			UiManager::Instance().GetUies((int)UiManager::UiCountTitle::Start)->GetComponent<TransForm2D>()
-				->SetTexScale(commandSUnelectTexScale);
-
+			UiManager::Instance().TexPosUpdate((int)UiManager::UiCountTitle::Start, commandUnSelectTexPos);
 		}
 
 		if (gamePad.GetButtonDown() & anyButton)// ロードの次ゲームという書き方
