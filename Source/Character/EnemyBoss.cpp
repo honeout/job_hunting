@@ -862,39 +862,14 @@ void EnemyBoss::UiControlle(float elapsedTime)
 
     if (UiManager::Instance().GetUiesCount() <= uiCountMax)return;
 
-    // ゲージの大きさ
-    float gaugeWidth = mathfPintch.LinearInterpolate((float)hpId->GetHealth(), (float)hpId->GetMaxHealth(), EnemyConfig::lerpSpeed, elapsedTime);
-    // 大きさ補正
-    gaugeWidth *= EnemyConfig::gaugeScale;
-
-
-    // hpバー最低値
-    if (gaugeWidth <= gaugeWidthMin)
-        gaugeWidth = gaugeWidthMin;
-
-    // 経過時間
-    if (onDamageTime > EnemyConfig::onDamageTimeMin)
-    {
-        // ダメージ食らってる時のUI
-        UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::EnemyHp, EnemyConfig::texDamagePos);
-        onDamageTime -= EnemyConfig::onDamageTimeValue * elapsedTime;
-    }
-    // ダメ終了
-    else
-    {
-        // ダメージ食らっていない時のUI
-        UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::EnemyHp, EnemyConfig::texNoDamagePos);
-    }
-    // ダメージ食らった瞬間
-    if (hpId->OnDamaged())
-    {
-        // ダメージ食らった時間を継続
-        onDamageTime = EnemyConfig::onDamageTimeMax;
-    }
-
-    // hpバー
-    // hpゲージUI　変える
-    UiManager::Instance().ScaleUpdateX((int)UiManager::UiCount::EnemyHPBar, gaugeWidth);
+    // hpゲージ処理
+    UiManager::Instance().UiHpControlleGauge(
+        (int)UiManager::UiCount::EnemyHp,
+        (int)UiManager::UiCount::EnemyHPBar,
+        CommandConfig::texEnemyNoDamagePos,
+        CommandConfig::texEnemyDamagePos,
+        hpId,
+        elapsedTime);
 
     bool checkDraw = false;
     switch (hpId->GetLife())

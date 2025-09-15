@@ -1,9 +1,14 @@
 #pragma once
 #include <vector>
+#include <set>
+#include <memory>
+#include "Component\HP.h"
+#include "Component\Mp.h"
 #include "Component\Actor.h"
 #include "Ui.h"
 #include "Math\Mathf.h"
-#include <set>
+#include "Audio/AudioSource.h"
+
 
 namespace CommandConfig
 {
@@ -12,9 +17,14 @@ namespace CommandConfig
     // コマンド基画像大きさ
 
     // コマンドHP元画像の位置　通常
-    constexpr DirectX::XMFLOAT2 texNoDamagePos = { 0.0f, 0.0f };
+    constexpr DirectX::XMFLOAT2 texPlayerNoDamagePos = { 0.0f, 0.0f };
     // コマンドHP元画像の位置　ダメージ
-    constexpr DirectX::XMFLOAT2 texDamagePos = { 0.0f, 103.0f };
+    constexpr DirectX::XMFLOAT2 texPlayerDamagePos = { 0.0f, 103.0f };
+    // hp位置元の画像
+    // ダメージ用
+    constexpr DirectX::XMFLOAT2 texEnemyDamagePos = { 0.0f, 0.0f };
+    // 通量用
+    constexpr DirectX::XMFLOAT2 texEnemyNoDamagePos = { 0.0f, 113.0f };
 
     // 非選択
     constexpr DirectX::XMFLOAT2 commandUnSelectTexScale = { .0f,.0f };
@@ -29,6 +39,18 @@ namespace CommandConfig
     // 非選択コマンド基画像位置
     constexpr DirectX::XMFLOAT2 commandUnSelectTexPos = { .0f,0.0f };
 
+    // HPバー色変化用
+    constexpr DirectX::XMFLOAT2 hpBarGreenwTexPos = { 0,00 };
+    constexpr DirectX::XMFLOAT2 hpBarYerowTexPos = { 0,76.5f };
+    constexpr DirectX::XMFLOAT2 hpBarRedTexPos = { 0,152 };
+
+    // -----コマンド変更値-----
+    // スケール
+    constexpr float gaugeScaleMax = 4.0f;
+
+    // ゲージの減るスピード
+    constexpr float lerpSpeed = 3.1f;
+
     // MPバー
     constexpr float mpBarOffset = 50.0f;
     //constexpr float mpBarOffset = 45.0f;
@@ -38,6 +60,10 @@ namespace CommandConfig
 
     // チャージ最大値
     constexpr float chargeMagicGaugeWidthMax = 260.0f;
+
+    // バー関係の最低値
+    constexpr float gaugeWidthMin = 0.0f;
+
     // -----コマンドアルファ-----
     // 透明度０
     constexpr float commandAlphaSelect = 1.0f;
@@ -47,7 +73,12 @@ namespace CommandConfig
     constexpr float commandAlphaValue = 1.0f;
     constexpr float commandAlphaValueMax = 1.0f;
     constexpr float commandAlphaValueMin = 0.0f;
-    
+
+    // 経過時間
+    constexpr float timeValue = 1.0f;
+    constexpr float timeMin = 0.0f;
+    constexpr float timeMax = 1.0f;
+
     // -----描画設定----- 
     // 描画
     constexpr bool draw = true;
@@ -64,9 +95,6 @@ namespace CommandConfig
     // -----ターゲット-----
     // ターゲット位置
     constexpr DirectX::XMFLOAT2   scereenPositionOffset = { 34.0f,25.0f };
-
-
-
 };
 
 // uiマネージャー
@@ -179,6 +207,24 @@ public:
     // UI特殊技
     void SpecialUpdate(float elapsedTime);
 
+    // 魔法コマンド選択と入力
+    void InputSelectMagicCommand();
+
+    // 必殺技チャージUI
+    void SpecialChargeChack(float elapsedTime);
+
+    // ピンチコマンドゲージ処理
+    bool PinchModeCommandGage(int uiNumber, std::shared_ptr<HP> hpid, float elapsedTime);
+
+    // UI HPゲージ
+    void UiHpControlleGauge(int uiNumber,int uiNumberGage, 
+        DirectX::XMFLOAT2 texNoDamagePos,
+        DirectX::XMFLOAT2 texDamagePos,
+        std::shared_ptr<HP> hpId, float elapsedTime);
+
+    // UI MPゲージ
+    void UiMpControlleGauge(int uiNumberGage, std::shared_ptr<Mp> mpId, float elapsedTime);
+
     // ロックオンUI処理
     void RockOnUI(ID3D11DeviceContext* dc,
         const DirectX::XMFLOAT4X4& view,
@@ -269,6 +315,10 @@ private:
     Mathf mathfSpecial;
     // ライト経過時間計算
     Mathf mathfblinking;
+    // ピンチ用経過時間計算
+    Mathf mathfPintch;
+    // mp用経過時間計算
+    Mathf mathfMp;
 
     // 経過時間ヒント最大値
     float timeElapsedHintMax = 1.0f;
@@ -278,6 +328,9 @@ private:
 
     // UI操作用
     float commandPushUiChargeTime = 0.0f;
+
+    // 時間経過ダメージ用
+    float timeDamageValue = 0.0f;
 };
 
 

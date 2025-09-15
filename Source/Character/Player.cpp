@@ -918,112 +918,13 @@ bool Player::InputSelectMagicCheck()
         // 炎に
         selectMagicCheck = (int)CommandMagic::Heale;
     }
-    ///////////////////////////
-    // ショートカットキー
-
-      // ショートカットキー炎選択
-    if (InputShortCutkeyMagic() &&
-        gamePad.GetButton() & GamePad::BTN_B)
-    {
-        // コマンドショートカット火
-        UiManager::Instance().SelectShortCutUi((int)UiManager::UiCount::PlayerCommandFire);
-    }
-    // ショートカットキー雷選択
-    if (InputShortCutkeyMagic() &&
-        gamePad.GetButton() & GamePad::BTN_X)
-    {
-        // コマンドショートカット雷
-        UiManager::Instance().SelectShortCutUi((int)UiManager::UiCount::PlayerCommandRigtning);
-    }
-    // ショートカットキー氷選択
-    if (InputShortCutkeyMagic() &&
-        gamePad.GetButton() & GamePad::BTN_A)
-    {
-        // コマンドショートカット氷
-        UiManager::Instance().SelectShortCutUi((int)UiManager::UiCount::PlayerCommandIce);
-    }
-    // ショートカットキー回復選択
-    if (InputShortCutkeyMagic() &&
-        gamePad.GetButton() & GamePad::BTN_Y)
-    {
-        // コマンドショートカット回復
-        UiManager::Instance().SelectShortCutUi((int)UiManager::UiCount::PlayerCommandHeale);
-    }
-
-    /////////////////////////
-
-    // コマンド魔法選択では無かったら
-    if (!magicAction)
-    {
-        selectMagicCheck = (int)CommandMagic::Normal;
-    }
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
     if (uiCount <= uiCountMax) return false;
-    // UI設定 コマンド選択　魔法　炎 
-    if (selectMagicCheck == (int)CommandMagic::Fire && magicAction&&
-        !InputShortCutkeyMagic())
-    {
-        UiManager::Instance().SelectUi((int)UiManager::UiCount::PlayerCommandFire);
-    }
-    // UI設定 コマンド 非選択　魔法　炎 
-    else if (!InputShortCutkeyMagic())
-    {
-        UiManager::Instance().UnSelectUi((int)UiManager::UiCount::PlayerCommandFire);
-    }
-    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
-    if (!magicAction)
-    {
-        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandFire);
-    }
-    // UI設定 コマンド選択　魔法　雷 
-    if (selectMagicCheck == (int)CommandMagic::Thander && magicAction &&
-        !InputShortCutkeyMagic())
-    {
-        UiManager::Instance().SelectUi((int)UiManager::UiCount::PlayerCommandRigtning);
-    }
-    // UI設定 コマンド 非選択　魔法　雷 
-    else if (!InputShortCutkeyMagic())
-    {
-        UiManager::Instance().UnSelectUi((int)UiManager::UiCount::PlayerCommandRigtning);
-    }
-    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
-    if (!magicAction)
-    {
-        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandRigtning);
-    }
-    // UI設定 氷
-    if (selectMagicCheck == (int)CommandMagic::Ice && magicAction &&
-        !InputShortCutkeyMagic())
-    {
-        UiManager::Instance().SelectUi((int)UiManager::UiCount::PlayerCommandIce);
-    }
-    // UI設定 コマンド 非選択　魔法　氷
-    else if (!InputShortCutkeyMagic())
-    {
-        UiManager::Instance().UnSelectUi((int)UiManager::UiCount::PlayerCommandIce);
-    }
-    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
-    if (!magicAction)
-    {
-        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandIce);
-    }
-    // UI設定 回復
-    if (selectMagicCheck == (int)CommandMagic::Heale && magicAction &&
-        !InputShortCutkeyMagic())
-    {
-        UiManager::Instance().SelectUi((int)UiManager::UiCount::PlayerCommandHeale);
-    }
-    // UI設定 コマンド 非選択　魔法　回復 
-    else if (!InputShortCutkeyMagic())
-    {
-        UiManager::Instance().UnSelectUi((int)UiManager::UiCount::PlayerCommandHeale);
-    }
-    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
-    if (!magicAction)
-    {
-        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandHeale);
-    }
+
+    // コマンドUI
+    UiManager::Instance().InputSelectMagicCommand();
+   
     return false;
 }
 
@@ -1249,57 +1150,8 @@ bool Player::InputSpecialAttackCharge(float elapsedTime)
         specialAttackTime = false;
     }
     
-    // 消す
-    if (specialAttackCharge < 0.4f)
-{
-    // チャージ矢印1
-    UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge01);
-    // チャージ矢印2
-    UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge02);
-    // チャージ矢印3
-    UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge03);
-}
-
-    // チャージたまる
-    // チャージを見やすく
-    if (specialAttackCharge >= CommandConfig::specialAttackChargeStart && specialAttackCharge <= CommandConfig::specialAttackChargeFirst)
-    {
-        // チャージ矢印
-        UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge01,
-            CommandConfig::commandAlphaValue, CommandConfig::commandAlphaValueMax, elapsedTime);
-    }
-    // コマンド点灯　alpha100%
-    else if(specialAttackCharge > CommandConfig::specialAttackChargeFirst)
-    {
-        // チャージ矢印
-        UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge01);
-    }
-    // チャージを見やすく
-    if (specialAttackCharge > CommandConfig::specialAttackChargeFirst && specialAttackCharge <= CommandConfig::specialAttackChargeSecond)
-    {
-        // チャージ矢印
-        UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge02,
-            CommandConfig::commandAlphaValue, CommandConfig::commandAlphaValueMax, elapsedTime);
-    }
-    // コマンド点灯　alpha100%
-    else if (specialAttackCharge > CommandConfig::specialAttackChargeSecond)
-    {
-        // チャージ矢印
-        UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge02);
-    }
-    // チャージを見やすく
-    if (specialAttackCharge > CommandConfig::specialAttackChargeSecond)
-    {
-        // チャージ矢印
-        UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge03,
-            CommandConfig::commandAlphaValue, CommandConfig::commandAlphaValueMax, elapsedTime);
-    }
-    // コマンド点灯　alpha100%
-    else if (specialAttackCharge >= PlayerConfig::specialAttackChargeMax)
-    {
-        // チャージ矢印
-        UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge03);
-    }
+    // 特殊チャージ矢印描画
+    UiManager::Instance().SpecialChargeChack(elapsedTime);
     return false;
 }
 
@@ -2133,21 +1985,9 @@ void Player::PinchMode(float elapsedTime)
     if (!hpId)
         return;
 
-    // HP変化色
-    UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::PlayerHPBar, PlayerConfig::hpBarGreenwTexPos);
-    // hp半分
-    if (hpId->HealthHalf() && !hpId->GetDead())
-    {
-        // HP変化色
-        UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::PlayerHPBar,PlayerConfig::hpBarYerowTexPos );
-    }
-
     // hp が一定以下なら
-    if (hpId->HealthPinch() && !hpId->GetDead())
+    if (UiManager::Instance().PinchModeCommandGage((int)UiManager::UiCount::PlayerHPBar,hpId, elapsedTime))
     {
-        // HP変化色
-        UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::PlayerHPBar, PlayerConfig::hpBarRedTexPos);
-
         // 一定時間で描画
         if (mathfPintch.UpdateElapsedTime(timeElapsedHintMax, elapsedTime))
         {
@@ -3005,70 +2845,19 @@ void Player::UiControlleGauge(float elapsedTime)
     int uiCount = UiManager::Instance().GetUiesCount();
     // ui無かったら
     if (uiCount <= uiCountMax) return;
-
-    // hpゲージ操作用
-    float gaugeWidth;
-
-    // ゲージの大きさ
-    gaugeWidth = mathfPintch.LinearInterpolate((float)hpId->GetHealth(), (float)hpId->GetMaxHealth(), PlayerConfig::lerpSpeed, elapsedTime);
-    // 大きさ補正
-    gaugeWidth *= PlayerConfig::gaugeScale;
-
-    // hpバー最低値
-    if (gaugeWidth <= gaugeWidthMin)
-        gaugeWidth = gaugeWidthMin;
-
-    // 経過時間
-    if (onDamageTime > PlayerConfig::onDamageTimeMin)
-    {
-        UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::PlayerHp, PlayerConfig::texDamagePos);
-        // ダメージ食らってる時のUI
-        onDamageTime -= PlayerConfig::onDamageTimeValue * elapsedTime;
-    }
-    // ダメ終了
-    else
-    {
-        // ダメージ食らっていない時のUI
-        UiManager::Instance().TexPosUpdate((int)UiManager::UiCount::PlayerHp, CommandConfig::texNoDamagePos);
-    }
-    // ダメージ食らった瞬間
-    if (hpId->OnDamaged())
-    {
-        // ダメージ食らった時間を継続
-        onDamageTime = PlayerConfig::onDamageTimeMax;
-    }
-
-    // hpゲージUI　変える
-    UiManager::Instance().ScaleUpdateX((int)UiManager::UiCount::PlayerHPBar, gaugeWidth);
-
-    // ゲージの大きさ
-    gaugeWidth = mathfPintch.LinearInterpolate((float)mpId->GetMagic(), (float)mpId->GetMaxMagic(), PlayerConfig::lerpSpeed, elapsedTime);
-    // 大きさ補正
-    gaugeWidth *= PlayerConfig::gaugeScale;
-
-    // mpバー最低値
-    if (gaugeWidth <= gaugeWidthMin)
-        gaugeWidth = gaugeWidthMin;
-
-    // mpゲージUI　変える
-    UiManager::Instance().ScaleUpdateX((int)UiManager::UiCount::Mp, gaugeWidth);
-
-    // mp透けていない
-    mpUiAlpha = PlayerConfig::onAlpha;
-
-    // mp切れ
-    if (mpId->GetMpEmpth())
-    {
-        // mp透けてる
-        mpUiAlpha = PlayerConfig::halfAlpha;
-    }
-
-    // 透明度設定
-    UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::Mp);
-
-    // 揺れ
-    UiManager::Instance().ShakeModeTyme((int)UiManager::UiCount::PlayerHp, shakeMode);
-    UiManager::Instance().ShakeModeTyme((int)UiManager::UiCount::PlayerHPBar, shakeMode);
+    // hpゲージ処理
+    UiManager::Instance().UiHpControlleGauge(
+        (int)UiManager::UiCount::PlayerHp,
+        (int)UiManager::UiCount::PlayerHPBar,
+        CommandConfig::texPlayerNoDamagePos,
+        CommandConfig::texPlayerDamagePos,
+        hpId,
+        elapsedTime);
+    // mpゲージ処理
+    UiManager::Instance().UiMpControlleGauge(
+        (int)UiManager::UiCount::Mp,
+        mpId,
+        elapsedTime);
 }
 
 // 後変更

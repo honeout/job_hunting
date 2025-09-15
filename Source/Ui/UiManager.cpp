@@ -3,6 +3,8 @@
 
 #include "Character\Player.h"
 #include "Component\Collision.h"
+#include "Component\HP.h"
+#include "Input/Input.h"
 
 void UiManager::Update(float elapsedTime)
 {
@@ -26,11 +28,11 @@ void UiManager::Remove(std::shared_ptr<Actor> ui)
 // UiTimeUpの有無
 bool UiManager::GetTimeUp(int uiNumber)
 {
-    if (UiManager::Instance().GetUiesCount() < 1)
+    if (GetUiesCount() < 1)
         return false;
 
     // 安全チェック
-    auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiSpecialShurashuId = GetUies(uiNumber);
     if (!sharedUiSpecialShurashuId)
         return false;
 
@@ -50,7 +52,7 @@ bool UiManager::GetTimeUp(int uiNumber)
 void UiManager::SelectTex()
 {
     // 安全チェック
-    auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(
+    auto sharedUiSpecialShurashuId = GetUies(
         (int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
     if (!sharedUiSpecialShurashuId)
         return;
@@ -83,7 +85,7 @@ void UiManager::InputAttack()
     if (playerMain->GetSelectCheck() == (int)Player::CommandAttack::Attack)
     {
         // 安全チェック　コマンドUI　攻撃
-        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack);
+        auto sharedUiComandoAttackId = GetUies((int)UiManager::UiCount::PlayerCommandAttack);
         if (!sharedUiComandoAttackId)
             return;
         auto uiIdAttackUi = sharedUiComandoAttackId->GetComponent<Ui>();
@@ -102,7 +104,7 @@ void UiManager::InputAttack()
     else
     {
         // 安全チェック　コマンドUI　攻撃
-        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandAttack);
+        auto sharedUiComandoAttackId = GetUies((int)UiManager::UiCount::PlayerCommandAttack);
         if (!sharedUiComandoAttackId)
             return;
         auto uiIdAttackUi = sharedUiComandoAttackId->GetComponent<Ui>();
@@ -138,7 +140,7 @@ void UiManager::InputMagic()
     if (playerMain->GetSelectCheck() == (int)Player::CommandAttack::Magic)
     {
         // 安全チェック コマンドUI　魔法
-        auto sharedUiComandoMagickId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick);
+        auto sharedUiComandoMagickId = GetUies((int)UiManager::UiCount::PlayerCommandMagick);
         if (!sharedUiComandoMagickId)
             return;
         auto uiIdMagicUi = sharedUiComandoMagickId->GetComponent<Ui>();
@@ -157,7 +159,7 @@ void UiManager::InputMagic()
     else
     {
         // 安全チェック コマンドUI　魔法
-        auto sharedUiComandoMagickId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandMagick);
+        auto sharedUiComandoMagickId = GetUies((int)UiManager::UiCount::PlayerCommandMagick);
         if (!sharedUiComandoMagickId)
             return;
         auto uiIdMagicUi = sharedUiComandoMagickId->GetComponent<Ui>();
@@ -178,7 +180,7 @@ void UiManager::InputMagic()
 void UiManager::SelectDrawUi(int uiNumber)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -197,7 +199,7 @@ void UiManager::SelectDrawUi(int uiNumber)
 void UiManager::SelectDrawUi(int uiNumber, float TimeAlphaValue, float TimeAlphaMax, float elapsedTime)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -228,7 +230,7 @@ void UiManager::SelectDrawUi(int uiNumber, float TimeAlphaValue, float TimeAlpha
 void UiManager::SelectNotDrawUi(int uiNumber)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -245,7 +247,7 @@ void UiManager::SelectNotDrawUi(int uiNumber)
 void UiManager::SelectUi(int uiNumber)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -266,7 +268,7 @@ void UiManager::SelectUi(int uiNumber)
 void UiManager::UnSelectUi(int uiNumber)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -287,7 +289,7 @@ void UiManager::UnSelectUi(int uiNumber)
 void UiManager::SelectShortCutUi(int uiNumber)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -308,7 +310,7 @@ void UiManager::SelectShortCutUi(int uiNumber)
 void UiManager::UnSelectShortCutUi(int uiNumber)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -340,10 +342,10 @@ void UiManager::StartMagicUiCharge(int uiCommandNumber ,int uiNumber, int uiFram
         return;
 
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandMagicId = UiManager::Instance().GetUies(uiCommandNumber);
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
-    auto sharedUiFrameCommandId = UiManager::Instance().GetUies(uiFrameNumber);
-    auto sharedUiChargeCommandId = UiManager::Instance().GetUies(chargeNumber);
+    auto sharedUiCommandMagicId = GetUies(uiCommandNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
+    auto sharedUiFrameCommandId = GetUies(uiFrameNumber);
+    auto sharedUiChargeCommandId = GetUies(chargeNumber);
 
     if (!sharedUiCommandMagicId ||!sharedUiCommandId|| !sharedUiFrameCommandId || !sharedUiChargeCommandId)
         return;
@@ -413,9 +415,9 @@ void UiManager::StartMagicUiFire(int uiNumber, int uiFrameNumber, int chargeNumb
     commandPushUiChargeTime = 0.0f;
 
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
-    auto sharedUiFrameCommandId = UiManager::Instance().GetUies(uiFrameNumber);
-    auto sharedUiChargeCommandId = UiManager::Instance().GetUies(chargeNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
+    auto sharedUiFrameCommandId = GetUies(uiFrameNumber);
+    auto sharedUiChargeCommandId = GetUies(chargeNumber);
 
     if (!sharedUiCommandId || !sharedUiFrameCommandId || !sharedUiChargeCommandId)
         return;
@@ -438,7 +440,7 @@ void UiManager::ShakeModeTyme(int uiNumber, bool& shakeMode)
     if (!shakeMode) return;
 
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -469,7 +471,7 @@ void UiManager::ShakeModeTyme(int uiNumber, bool& shakeMode)
 void UiManager::PositionUpdate(int uiNumber, DirectX::XMFLOAT2 pos)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -490,7 +492,7 @@ void UiManager::PositionUpdate(int uiNumber, DirectX::XMFLOAT2 pos)
 void UiManager::PositionXUpdate(int uiNumber, float posX)
 {
     // 安全チェック
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -511,7 +513,7 @@ void UiManager::PositionXUpdate(int uiNumber, float posX)
 void UiManager::PositionYUpdate(int uiNumber, float posY)
 {
     // 安全チェック
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -533,7 +535,7 @@ void UiManager::PositionYUpdate(int uiNumber, float posY)
 void UiManager::ScaleUpdate(int uiNumber, DirectX::XMFLOAT2 scale)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -553,7 +555,7 @@ void UiManager::ScaleUpdate(int uiNumber, DirectX::XMFLOAT2 scale)
 void UiManager::ScaleUpdateX(int uiNumber, float scaleX)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -573,7 +575,7 @@ void UiManager::ScaleUpdateX(int uiNumber, float scaleX)
 void UiManager::ScaleUpdateY(int uiNumber, float scaleY)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -593,7 +595,7 @@ void UiManager::ScaleUpdateY(int uiNumber, float scaleY)
 void UiManager::TexPosUpdate(int uiNumber, DirectX::XMFLOAT2 texPos)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -614,7 +616,7 @@ void UiManager::TexPosUpdate(int uiNumber, DirectX::XMFLOAT2 texPos)
 void UiManager::IncrementToAlpha(int uiNumber, float increment)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -646,7 +648,7 @@ void UiManager::InputSpecialAttack()
     if (playerMain->GetSelectCheck() == (int)Player::CommandAttack::Special)
     {
         // 安全チェック コマンドUI　必殺技
-        auto sharedUiSpecialId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
+        auto sharedUiSpecialId = GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
         if (!sharedUiSpecialId)
             return;
         auto uiIdSpecialUi = sharedUiSpecialId->GetComponent<Ui>();
@@ -671,7 +673,7 @@ void UiManager::InputSpecialAttack()
     else
     {
         // 安全チェック コマンドUI　必殺技
-        auto sharedUiSpecialId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
+        auto sharedUiSpecialId = GetUies((int)UiManager::UiCount::PlayerCommandSpecial);
         if (!sharedUiSpecialId)
             return;
         auto uiIdSpecialUi = sharedUiSpecialId->GetComponent<Ui>();
@@ -705,7 +707,7 @@ void UiManager::SelectSpecialAttack()
     if (playerMain->GetSpecialAction())
     {
         // 安全チェック コマンド斬撃
-        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
+        auto sharedUiComandoAttackId = GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
         if (!sharedUiComandoAttackId)
             return;
         // コマンド　必殺技斬撃表示するか
@@ -714,7 +716,7 @@ void UiManager::SelectSpecialAttack()
         if (!uiIdSpecialComandoAttack) return;
 
         // 安全チェック コマンド魔法炎
-        auto sharedUiCommandSpecialFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
+        auto sharedUiCommandSpecialFireId = GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
         if (!sharedUiCommandSpecialFireId)
             return;
         // コマンド　必殺技魔法炎表示するか
@@ -729,7 +731,7 @@ void UiManager::SelectSpecialAttack()
     else
     {
         // 安全チェック コマンド斬撃
-        auto sharedUiComandoAttackId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
+        auto sharedUiComandoAttackId = GetUies((int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
         if (!sharedUiComandoAttackId)
             return;
         auto uiIdAttack = sharedUiComandoAttackId->GetComponent<Ui>();
@@ -739,7 +741,7 @@ void UiManager::SelectSpecialAttack()
             return;
 
         // 安全チェック コマンド魔法炎
-        auto sharedUiComandoFireId = UiManager::Instance().GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
+        auto sharedUiComandoFireId = GetUies((int)UiManager::UiCount::PlayerCommandSpeciulFrame);
         if (!sharedUiComandoFireId)
             return;
         auto uiIdAttackCheck = sharedUiComandoFireId->GetComponent<Ui>();
@@ -756,7 +758,7 @@ void UiManager::SelectSpecialAttack()
 // 特殊技溜まった
 void UiManager::SpecialAttackCharge(float elapsedTime)
 {
-    int uiCount = UiManager::Instance().GetUiesCount();
+    int uiCount = GetUiesCount();
 
     // uiCount最大値
     int uiCountMax = 5;
@@ -764,11 +766,11 @@ void UiManager::SpecialAttackCharge(float elapsedTime)
     // ui無かったら
     if (uiCount <= uiCountMax) return;
     // 安全チェック
-    auto sharedUiSpecialChargeFurstId = UiManager::Instance().GetUies(
+    auto sharedUiSpecialChargeFurstId = GetUies(
         (int)UiManager::UiCount::PlayerCommandSpeciulCharge01);
-    auto sharedUiSpecialChargeSecondId = UiManager::Instance().GetUies(
+    auto sharedUiSpecialChargeSecondId = GetUies(
         (int)UiManager::UiCount::PlayerCommandSpeciulCharge02);
-    auto sharedUiSpecialChargeSerdeId = UiManager::Instance().GetUies(
+    auto sharedUiSpecialChargeSerdeId = GetUies(
         (int)UiManager::UiCount::PlayerCommandSpeciulCharge03);
     if (!sharedUiSpecialChargeFurstId && !sharedUiSpecialChargeSecondId && !sharedUiSpecialChargeSerdeId)
         return;
@@ -804,7 +806,7 @@ void UiManager::SpecialUpdate(float elapsedTime)
     if (!playerMain->GetSpecialAction())
     {
         // 安全チェック UIコマンド　点滅用
-        auto sharedUiCommandSpecialUnCheckId = UiManager::Instance().GetUies(
+        auto sharedUiCommandSpecialUnCheckId = GetUies(
             (int)UiManager::UiCount::PlayerCommandSpecial);
         if (!sharedUiCommandSpecialUnCheckId)
             return;
@@ -846,7 +848,7 @@ void UiManager::SpecialUpdate(float elapsedTime)
     case (int)Player::SpecialAttackType::Attack:
     {
         // 必殺技切りつけ
-        auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(
+        auto sharedUiSpecialShurashuId = GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
         // 安全チェック
         if (!sharedUiSpecialShurashuId)
@@ -861,7 +863,7 @@ void UiManager::SpecialUpdate(float elapsedTime)
 
         // 必殺技炎
         // 安全チェック
-        auto sharedUiCommandSpeciulFrameId = UiManager::Instance().GetUies(
+        auto sharedUiCommandSpeciulFrameId = GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulFrame);
         if (!sharedUiCommandSpeciulFrameId)
             return;
@@ -896,7 +898,7 @@ void UiManager::SpecialUpdate(float elapsedTime)
     case (int)Player::SpecialAttackType::MagicFire:
     {
         // 必殺技炎
-        auto sharedUiCommandSpeciulFrameId = UiManager::Instance().GetUies(
+        auto sharedUiCommandSpeciulFrameId = GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulFrame);
         // 安全チェック
         if (!sharedUiCommandSpeciulFrameId)
@@ -911,7 +913,7 @@ void UiManager::SpecialUpdate(float elapsedTime)
 
         // 必殺技切りつけ
         // 安全チェック
-        auto sharedUiSpecialShurashuId = UiManager::Instance().GetUies(
+        auto sharedUiSpecialShurashuId = GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulShurashu);
         if (!sharedUiSpecialShurashuId)
             return;
@@ -949,7 +951,7 @@ void UiManager::SpecialUpdate(float elapsedTime)
 
         // 氷
         // 安全チェック
-        auto sharedUiCommandSpeciulIceId = UiManager::Instance().GetUies(
+        auto sharedUiCommandSpeciulIceId = GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulIce);
         if (!sharedUiCommandSpeciulIceId)
             return;
@@ -968,7 +970,7 @@ void UiManager::SpecialUpdate(float elapsedTime)
 
         // 雷
         // 安全チェック
-        auto sharedUiCommandSpeciulThanderId = UiManager::Instance().GetUies(
+        auto sharedUiCommandSpeciulThanderId = GetUies(
             (int)UiManager::UiCount::PlayerCommandSpeciulThander);
         if (!sharedUiCommandSpeciulThanderId)
             return;
@@ -982,6 +984,312 @@ void UiManager::SpecialUpdate(float elapsedTime)
         break;
     }
     }
+}
+
+// 魔法コマンド選択と入力
+void UiManager::InputSelectMagicCommand()
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+
+    int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
+
+    // 安全チェック プレイヤー
+    auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
+    if (!playerId)
+        return;
+
+    // 安全チェック プレイヤーの情報
+    auto playerMain = playerId->GetComponent<Player>();
+    if (!playerMain)
+        return;
+    ///////////////////////////
+    // ショートカットキー
+
+    // ショートカットキー炎選択
+    if (playerMain->InputShortCutkeyMagic() &&
+        gamePad.GetButton() & GamePad::BTN_B)
+    {
+        // コマンドショートカット火
+        SelectShortCutUi((int)UiManager::UiCount::PlayerCommandFire);
+    }
+    // ショートカットキー雷選択
+    if (playerMain->InputShortCutkeyMagic() &&
+        gamePad.GetButton() & GamePad::BTN_X)
+    {
+        // コマンドショートカット雷
+        SelectShortCutUi((int)UiManager::UiCount::PlayerCommandRigtning);
+    }
+    // ショートカットキー氷選択
+    if (playerMain->InputShortCutkeyMagic() &&
+        gamePad.GetButton() & GamePad::BTN_A)
+    {
+        // コマンドショートカット氷
+        SelectShortCutUi((int)UiManager::UiCount::PlayerCommandIce);
+    }
+    // ショートカットキー回復選択
+    if (playerMain->InputShortCutkeyMagic() &&
+        gamePad.GetButton() & GamePad::BTN_Y)
+    {
+        // コマンドショートカット回復
+        SelectShortCutUi((int)UiManager::UiCount::PlayerCommandHeale);
+    }
+
+    /////////////////////////
+
+    // コマンド魔法選択では無かったら
+    if (!playerMain->GetMagicAction())
+    {
+        playerMain->SetSelectMagicCheck((int)Player::CommandMagic::Normal);
+    }
+    int uiCount = GetUiesCount();
+
+    // UI設定 コマンド選択　魔法　炎 
+    if (playerMain->GetSelectCheck() == (int)Player::CommandMagic::Fire && 
+        playerMain->GetMagicAction() &&
+        !playerMain->InputShortCutkeyMagic())
+    {
+        SelectUi((int)UiManager::UiCount::PlayerCommandFire);
+    }
+    // UI設定 コマンド 非選択　魔法　炎 
+    else if (!playerMain->InputShortCutkeyMagic())
+    {
+        UnSelectUi((int)UiManager::UiCount::PlayerCommandFire);
+    }
+    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
+    if (!playerMain->GetMagicAction())
+    {
+        SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandFire);
+    }
+    // UI設定 コマンド選択　魔法　雷 
+    if (playerMain->GetSelectMagicCheck() == (int)Player::CommandMagic::Thander 
+        && playerMain->GetMagicAction() &&
+        !playerMain->InputShortCutkeyMagic())
+    {
+        SelectUi((int)UiManager::UiCount::PlayerCommandRigtning);
+    }
+    // UI設定 コマンド 非選択　魔法　雷 
+    else if (!playerMain->InputShortCutkeyMagic())
+    {
+        UnSelectUi((int)UiManager::UiCount::PlayerCommandRigtning);
+    }
+    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
+    if (!playerMain->GetMagicAction())
+    {
+        SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandRigtning);
+    }
+    // UI設定 氷
+    if (playerMain->GetSelectMagicCheck() == (int)Player::CommandMagic::Ice 
+        && playerMain->GetMagicAction() &&
+        !playerMain->InputShortCutkeyMagic())
+    {
+        SelectUi((int)UiManager::UiCount::PlayerCommandIce);
+    }
+    // UI設定 コマンド 非選択　魔法　氷
+    else if (!playerMain->InputShortCutkeyMagic())
+    {
+        UnSelectUi((int)UiManager::UiCount::PlayerCommandIce);
+    }
+    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
+    if (!playerMain->GetMagicAction())
+    {
+        SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandIce);
+    }
+    // UI設定 回復
+    if (playerMain->GetSelectMagicCheck() == (int)Player::CommandMagic::Heale 
+        && playerMain->GetMagicAction() &&
+        !playerMain->InputShortCutkeyMagic())
+    {
+        SelectUi((int)UiManager::UiCount::PlayerCommandHeale);
+    }
+    // UI設定 コマンド 非選択　魔法　回復 
+    else if (!playerMain->InputShortCutkeyMagic())
+    {
+        UnSelectUi((int)UiManager::UiCount::PlayerCommandHeale);
+    }
+    // 魔法を発動していなかったら　ショートカットなら　十字キー操作UI解除
+    if (!playerMain->GetMagicAction())
+    {
+        SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandHeale);
+    }
+}
+
+// 必殺技チャージUI
+void UiManager::SpecialChargeChack(float elapsedTime)
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+
+    int playerKinds = PlayerManager::Instance().GetPlayerCount() - 1;
+
+    // 安全チェック プレイヤー
+    auto playerId = PlayerManager::Instance().GetPlayer(playerKinds);
+    if (!playerId)
+        return;
+
+    // 安全チェック プレイヤーの情報
+    auto playerMain = playerId->GetComponent<Player>();
+    if (!playerMain)
+        return;
+
+    // 消す
+    if (playerMain->GetSpecialAttackCharge() < 0.4f)
+    {
+        // チャージ矢印1
+        SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge01);
+        // チャージ矢印2
+        SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge02);
+        // チャージ矢印3
+        SelectNotDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge03);
+    }
+
+    // チャージたまる
+    // チャージを見やすく
+    if (playerMain->GetSpecialAttackCharge() >= 
+        CommandConfig::specialAttackChargeStart && 
+        playerMain->GetSpecialAttackCharge() <= CommandConfig::specialAttackChargeFirst)
+    {
+        // チャージ矢印
+        SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge01,
+            CommandConfig::commandAlphaValue, CommandConfig::commandAlphaValueMax, elapsedTime);
+    }
+    // コマンド点灯　alpha100%
+    else if (playerMain->GetSpecialAttackCharge() > CommandConfig::specialAttackChargeFirst)
+    {
+        // チャージ矢印
+        SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge01);
+    }
+    // チャージを見やすく
+    if (playerMain->GetSpecialAttackCharge() > CommandConfig::specialAttackChargeFirst && playerMain->GetSpecialAttackCharge() <= CommandConfig::specialAttackChargeSecond)
+    {
+        // チャージ矢印
+        SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge02,
+            CommandConfig::commandAlphaValue, CommandConfig::commandAlphaValueMax, elapsedTime);
+    }
+    // コマンド点灯　alpha100%
+    else if (playerMain->GetSpecialAttackCharge() > CommandConfig::specialAttackChargeSecond)
+    {
+        // チャージ矢印
+        SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge02);
+    }
+    // チャージを見やすく
+    if (playerMain->GetSpecialAttackCharge() > CommandConfig::specialAttackChargeSecond)
+    {
+        // チャージ矢印
+        SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge03,
+            CommandConfig::commandAlphaValue, CommandConfig::commandAlphaValueMax, elapsedTime);
+    }
+    // コマンド点灯　alpha100%
+    else if (playerMain->GetSpecialAttackCharge() >= PlayerConfig::specialAttackChargeMax)
+    {
+        // チャージ矢印
+        SelectDrawUi((int)UiManager::UiCount::PlayerCommandSpeciulCharge03);
+    }
+}
+
+// ピンチコマンドゲージ処理
+bool UiManager::PinchModeCommandGage(int uiNumber,std::shared_ptr<HP> hpid, float elapsedTime)
+{
+    // HP変化色
+    TexPosUpdate(uiNumber, CommandConfig::hpBarGreenwTexPos);
+    // hp半分
+    if (hpid->HealthHalf() && !hpid->GetDead())
+    {
+        // HP変化色
+        TexPosUpdate(uiNumber, CommandConfig::hpBarYerowTexPos);
+        return false;
+    }
+
+    // hp が一定以下なら
+    if (hpid->HealthPinch() && !hpid->GetDead())
+    {
+        // HP変化色
+        TexPosUpdate(uiNumber, CommandConfig::hpBarRedTexPos);
+
+        return true;
+    }
+    return false;
+}
+
+// UI HPゲージ
+void UiManager::UiHpControlleGauge(int uiNumber, int uiNumberGage, 
+    DirectX::XMFLOAT2 texNoDamagePos,
+    DirectX::XMFLOAT2 texDamagePos,
+    std::shared_ptr<HP> hpId, float elapsedTime)
+{
+    // hpゲージ操作用
+    float gaugeWidth;
+
+    // ゲージの大きさ
+    gaugeWidth = mathfPintch.LinearInterpolate((float)hpId->GetHealth(), (float)hpId->GetMaxHealth(), CommandConfig::lerpSpeed, elapsedTime);
+    // 大きさ補正
+    gaugeWidth *= CommandConfig::gaugeScaleMax;
+
+    // hpバー最低値
+    if (gaugeWidth <= CommandConfig::gaugeWidthMin)
+        gaugeWidth = CommandConfig::gaugeWidthMin;
+
+    // 経過時間
+    if (this->timeDamageValue > CommandConfig::timeMin)
+    {
+        // uiの周りをダメージように切り替える。
+        TexPosUpdate(uiNumber, texDamagePos);
+        // ダメージ食らってる時のUI
+        this->timeDamageValue -= CommandConfig::timeValue * elapsedTime;
+
+        // 時間内常に揺らしたい
+        bool shakeMode = true;
+
+        // 揺れ
+        ShakeModeTyme(uiNumber, shakeMode);
+        ShakeModeTyme(uiNumberGage, shakeMode);
+    }
+    // ダメ終了
+    else
+    {
+        // uiの周りをダメージ食らっていない時
+        TexPosUpdate(uiNumber, texNoDamagePos);
+        this->timeDamageValue = 0.0f;
+    }
+    // ダメージ食らった瞬間
+    if (hpId->OnDamaged())
+    {
+        // ダメージ食らった時間を継続
+        this->timeDamageValue = CommandConfig::timeMax;
+    }
+
+    // hpゲージUI　変える
+    ScaleUpdateX(uiNumberGage, gaugeWidth);
+}
+
+// UI MPゲージ
+void UiManager::UiMpControlleGauge(int uiNumberGage, std::shared_ptr<Mp> mpId, float elapsedTime)
+{
+    // mpゲージ操作用
+    float gaugeWidth;
+
+    // ゲージの大きさ
+    gaugeWidth = mathfMp.LinearInterpolate((float)mpId->GetMagic(), (float)mpId->GetMaxMagic(), CommandConfig::lerpSpeed, elapsedTime);
+    // 大きさ補正
+    gaugeWidth *= CommandConfig::gaugeScaleMax;
+    
+    // mpバー最低値
+    if (gaugeWidth <= CommandConfig::gaugeWidthMin)
+        gaugeWidth = CommandConfig::gaugeWidthMin;
+
+    // mpゲージUI　変える
+    ScaleUpdateX((int)UiManager::UiCount::Mp, gaugeWidth);
+
+    // mp透けていない
+    SelectDrawUi((int)UiManager::UiCount::Mp);
+
+    // mp切れ
+    if (mpId->GetMpEmpth())
+    {
+        // mp透けてる
+        SelectNotDrawUi((int)UiManager::UiCount::Mp);
+    }
+
+    // 透明度設定
+    SelectDrawUi((int)UiManager::UiCount::Mp);
 }
 
 // ロックオンUI処理
@@ -1052,13 +1360,13 @@ void UiManager::RockOnUI(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& vie
     // 必殺技がでていなかったらロックオン
     if (playerMain->GetRockCheck() || !playerMain->GetSpecialRockOff())
     {
-        UiManager::Instance().PositionUpdate((int)UiManager::UiCount::Sight,
+        PositionUpdate((int)UiManager::UiCount::Sight,
             {
                 scereenPosition.x,
                 scereenPosition.y
             });
 
-        UiManager::Instance().PositionUpdate((int)UiManager::UiCount::SightCheck,
+        PositionUpdate((int)UiManager::UiCount::SightCheck,
             {
                 scereenPosition.x - CommandConfig::scereenPositionOffset.x,
                 scereenPosition.y - CommandConfig::scereenPositionOffset.y
@@ -1067,8 +1375,8 @@ void UiManager::RockOnUI(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& vie
     // 必殺技中ロックオン系UIを消す。
     if (scereenPosition.z < 0.0f || scereenPosition.z > 1.0f || !playerMain->GetRockCheck()|| playerMain->GetSpecialRockOff())
     {
-        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::Sight);
-        UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
+        SelectNotDrawUi((int)UiManager::UiCount::Sight);
+        SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
         return;
     }
 }
@@ -1121,12 +1429,12 @@ void UiManager::AttackCheckUI()
             if (lengthSq < PlayerConfig::attackCheckRange)
             {
                 // 描画ロックオン
-                UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::SightCheck);
+                SelectDrawUi((int)UiManager::UiCount::SightCheck);
             }
             else
             {
                 // 非表示ロックオン
-                UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
+                SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
             }
 
             break;
@@ -1137,12 +1445,12 @@ void UiManager::AttackCheckUI()
             if (lengthSq < PlayerConfig::magicRangeLength)
             {
                 // 描画ロックオン
-                UiManager::Instance().SelectDrawUi((int)UiManager::UiCount::SightCheck);
+                SelectDrawUi((int)UiManager::UiCount::SightCheck);
             }
             else
             {
                 // 非表示ロックオン
-                UiManager::Instance().SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
+                SelectNotDrawUi((int)UiManager::UiCount::SightCheck);
             }
 
             break;
@@ -1171,7 +1479,7 @@ void UiLoadingManager::Remove(std::shared_ptr<Actor> ui)
 void UiLoadingManager::SelectDrawUi(int uiNumber)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -1189,7 +1497,7 @@ void UiLoadingManager::SelectDrawUi(int uiNumber)
 void UiLoadingManager::SelectDrawUi(int uiNumber, float TimeAlpha, float TimeAlphaMax, float elapsedTime)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -1212,7 +1520,7 @@ void UiLoadingManager::SelectDrawUi(int uiNumber, float TimeAlpha, float TimeAlp
 void UiLoadingManager::SelectNotDrawUi(int uiNumber)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -1228,7 +1536,7 @@ void UiLoadingManager::SelectNotDrawUi(int uiNumber)
 void UiLoadingManager::SelectUi(int uiNumber)
 {
     // 安全チェック　コマンド シ
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
@@ -1248,7 +1556,7 @@ void UiLoadingManager::SelectUi(int uiNumber)
 void UiLoadingManager::UnSelectUi(int uiNumber)
 {
     // 安全チェック　コマンド ショートカット　魔法　火
-    auto sharedUiCommandId = UiManager::Instance().GetUies(uiNumber);
+    auto sharedUiCommandId = GetUies(uiNumber);
 
     if (!sharedUiCommandId)
         return;
