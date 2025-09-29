@@ -251,7 +251,7 @@ void Player::InitStats()
     lightingTimeAlpha = 0.0f;
 
     // カメラ演出するか
-    isCameraInitialEffect = true;
+    isCameraInitialEffect = PlayerConfig::cameraInitialOn;
 
     // カメラ演出現在の時間
     currentCameraEffectInitialTime = 0.0f;
@@ -272,7 +272,7 @@ void Player::InitStats()
     getModel->UpdateAnimation(0.0f, false);
 
     // 死亡判定
-    isDead = false;
+    isDead = PlayerConfig::deadOff;
 
     // シーン変化確認
     isSceneChange = false;
@@ -424,7 +424,7 @@ void Player::UpdateStatus(float elapsedTime)
     if (areAttackState <= PlayerConfig::areAttackStateEnd && !isAreAttack)
     {
         // 攻撃禁止
-        isAreAttack = true;
+        isAreAttack = PlayerConfig::areAttackOn;
     }
 
     // 無敵時間
@@ -440,7 +440,7 @@ void Player::UpdateStatus(float elapsedTime)
     if (hpId->DeadStart())
     {
         // 死亡状態
-        isDead = true;
+        isDead = PlayerConfig::deadOn;
         stateMachine->ChangeState(static_cast<int>(Player::State::Death));
     }
 }
@@ -459,7 +459,7 @@ void Player::UpdatePhysics(float elapsedTime)
     if (movementId->GetOnLadius())
     {
         // 攻撃許可
-        isAreAttack = false;
+        isAreAttack = PlayerConfig::areAttackOff;
         // 攻撃回数
         areAttackState = PlayerConfig::areAttackStateMax;
     }
@@ -475,7 +475,7 @@ void Player::UpdatePhysics(float elapsedTime)
 void Player::UpdateEffects(float elapsedTime)
 {
     // 与ダメエフェ
-    hitEffect->SetScale(hitEffect->GetEfeHandle(), { 1,1,1 });
+    hitEffect->SetScale(hitEffect->GetEfeHandle(), PlayerConfig::effectScale);
 }
 // 当たり判定処理
 void Player::HandleCollisions()
@@ -514,29 +514,29 @@ void Player::UpdateAnimation(float elapsedTime)
     case UpAnim::Normal:
     {
         // アニメーション再生
-        getModel->UpdateAnimation(elapsedTime, true);
+        getModel->UpdateAnimation(elapsedTime, PlayerConfig::animBlendOn);
         break;
     }
     // 部分再生
     case UpAnim::Doble:
     {
         // モデル部分アニメーション更新処理
-        getModel->UpdateUpeerBodyAnimation(elapsedTime, PlayerConfig::bornUpStartPoint, PlayerConfig::bornUpEndPoint, true);
-        getModel->UpdateLowerBodyAnimation(elapsedTime, PlayerConfig::bornDownerStartPoint, PlayerConfig::bornDownerEndPoint, true);
+        getModel->UpdateUpeerBodyAnimation(elapsedTime, PlayerConfig::bornUpStartPoint, PlayerConfig::bornUpEndPoint, PlayerConfig::animBlendOn);
+        getModel->UpdateLowerBodyAnimation(elapsedTime, PlayerConfig::bornDownerStartPoint, PlayerConfig::bornDownerEndPoint, PlayerConfig::animBlendOn);
         break;
     }
     // 複数ブレンド再生
     case UpAnim::Blend:
     {
         // モデル複数ブレンドアニメーション更新処理
-        getModel->Update_blend_animations(elapsedTime, true);
+        getModel->Update_blend_animations(elapsedTime, PlayerConfig::animBlendOn);
         break;
     }
     // 逆再生
     case UpAnim::Reverseplayback:
     {
         // モデル逆再生アニメーション更新処理
-        getModel->ReverseplaybackAnimation(elapsedTime, true);
+        getModel->ReverseplaybackAnimation(elapsedTime, PlayerConfig::animBlendOn);
         break;
     }
     }
@@ -553,8 +553,8 @@ void Player::UpdateCameraInitialEffect(float elapsedTime)
 
     // 演出が終わったら
     if (currentCameraEffectInitialTime > PlayerConfig::currentCameraEffectInitialTimeMax)
-        // 最初のカメラ演出
-        isCameraInitialEffect = false;
+        // 最初のカメラ演出 禁止
+        isCameraInitialEffect = PlayerConfig::cameraInitialOff;
 }
 
 // デバッグプリミティブ描画
@@ -2349,7 +2349,7 @@ bool Player::InputMagicframe()
             actor.lock()->AddComponent<Transform>();
             actor.lock()->GetComponent<Transform>()->SetPosition(position);
             actor.lock()->GetComponent<Transform>()->SetAngle(angle);
-            actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+            actor.lock()->GetComponent<Transform>()->SetScale(projectileConfig::scale);
             actor.lock()->AddComponent<Collision>();
             actor.lock()->AddComponent<BulletFiring>();
             actor.lock()->AddComponent<ProjectileHoming>();
@@ -2366,7 +2366,7 @@ bool Player::InputMagicframe()
             if (!projectile) return false;
             
             // 飛ぶ時間
-            float   lifeTimer = 3.0f;
+            float   lifeTimer = projectileConfig::lifeTimePFire;
             // 発射
             projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
             projectile->GetComponent<ProjectileHoming>()->SetTarget(target);
@@ -2395,7 +2395,7 @@ bool Player::InputMagicIce()
     // 発射位置（プレイヤーの腰当たり)
     DirectX::XMFLOAT3 pos;
     pos.x = position.x;
-    pos.y = position.y + height * 0.5f;// 身長÷位置のｙ
+    pos.y = position.y + height * PlayerConfig::heightHerf;// 身長÷位置のｙ
     pos.z = position.z;
     //ターゲット（デフォルトではプレイヤーの前方）
     DirectX::XMFLOAT3 target;
@@ -2432,7 +2432,7 @@ bool Player::InputMagicIce()
             // 距離が敵のものを入れる少なくする３０なら３０、１００なら１００入れる
             dist = d;
             target = enemyTransform->GetPosition();// 位置を入れる
-            target.y += EnemyConfig::kHeight * 0.5f;// 位置に身長分
+            target.y += EnemyConfig::kHeight * EnemyConfig::kHeightHerf;// 位置に身長分
         }
     }
     // 弾丸初期化
@@ -2445,7 +2445,7 @@ bool Player::InputMagicIce()
         actor.lock()->AddComponent<Transform>();
         actor.lock()->GetComponent<Transform>()->SetPosition(position);
         actor.lock()->GetComponent<Transform>()->SetAngle(angle);
-        actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+        actor.lock()->GetComponent<Transform>()->SetScale(projectileConfig::scale);
         actor.lock()->AddComponent<Collision>();
         actor.lock()->AddComponent<BulletFiring>();
         actor.lock()->AddComponent<ProjectileStraight>();
@@ -2460,7 +2460,7 @@ bool Player::InputMagicIce()
         ProjectileManager::Instance().Register(actor.lock());
         std::weak_ptr<Actor> projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
         // 飛ぶ時間
-        float   lifeTimer = 4.0f;
+        float   lifeTimer = projectileConfig::lifeTimePIce;
 
         // 発射
         projectile.lock()->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
@@ -2535,7 +2535,7 @@ bool Player::InputMagicLightning()
         actor.lock()->AddComponent<Transform>();
         actor.lock()->GetComponent<Transform>()->SetPosition(pos);
         actor.lock()->GetComponent<Transform>()->SetAngle(angle);
-        actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+        actor.lock()->GetComponent<Transform>()->SetScale(projectileConfig::scale);
         actor.lock()->AddComponent<Collision>();
         actor.lock()->AddComponent<BulletFiring>();
         actor.lock()->AddComponent<ProjectileSunder>();
@@ -2546,7 +2546,7 @@ bool Player::InputMagicLightning()
         actor.lock()->SetCheck2d(check2d);
         ProjectileManager::Instance().Register(actor.lock());
         auto projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
-        float   lifeTimer = 0.5f;
+        float   lifeTimer = projectileConfig::lifeTimePLightning;
         // 発射
         projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         projectile->GetComponent<ProjectileSunder>()->SetTarget(target);
@@ -2642,7 +2642,7 @@ void Player::PushMagicFrame(DirectX::XMFLOAT3 angle)
         actor->AddComponent<Transform>();
         actor->GetComponent<Transform>()->SetPosition(position);
         actor->GetComponent<Transform>()->SetAngle(angle);
-        actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+        actor->GetComponent<Transform>()->SetScale(projectileConfig::scale);
         actor->AddComponent<Collision>();
         actor->AddComponent<BulletFiring>();
         actor->AddComponent<ProjectileFullHoming>();
@@ -2656,7 +2656,7 @@ void Player::PushMagicFrame(DirectX::XMFLOAT3 angle)
         ProjectileManager::Instance().Register(actor);
         auto projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
         // 飛ぶ時間
-        float   lifeTimer = 3.0f;
+        float   lifeTimer = projectileConfig::lifeTimePFire;
         // 発射
         projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
         projectile->GetComponent<ProjectileFullHoming>()->SetTarget(target);
@@ -2735,7 +2735,7 @@ void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
     actor->GetComponent<Transform>()->SetPosition(pos);
     actor->GetComponent<Transform>()->SpawnRandomInArea(randomPosMax, randomPosMin);
     actor->GetComponent<Transform>()->SetAngle(angle);
-    actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+    actor->GetComponent<Transform>()->SetScale(projectileConfig::scale);
     pos = actor->GetComponent<Transform>()->GetPosition();
     actor->AddComponent<Collision>();
     actor->AddComponent<BulletFiring>();
@@ -2753,7 +2753,7 @@ void Player::PushMagicIce(DirectX::XMFLOAT3 angle)
     ProjectileManager::Instance().Register(actor);
     auto projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
     // 飛ぶ時間
-    float   lifeTimer = 4.0f;
+    float   lifeTimer = projectileConfig::lifeTimePIce;
     // 発射
     projectile->GetComponent<BulletFiring>()->Lanch(dir, pos, lifeTimer);
 }
@@ -2785,7 +2785,7 @@ void Player::InputSpecialMagicframe()
     actor->AddComponent<Transform>();
     actor->GetComponent<Transform>()->SetPosition(target);
     actor->GetComponent<Transform>()->SetAngle(angle);
-    actor->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(0.01f, 0.01f, 0.01f));
+    actor->GetComponent<Transform>()->SetScale(projectileConfig::scale);
     actor->AddComponent<Collision>();
     actor->AddComponent<BulletFiring>();
     actor->AddComponent<ProjectileTornade>();
@@ -2798,8 +2798,8 @@ void Player::InputSpecialMagicframe()
     auto projectile = ProjectileManager::Instance().GetProjectile(ProjectileManager::Instance().GetProjectileCount() - 1);
     // 安全チェック
     if (!projectile) return;
-    
-    float   lifeTimer = 0.5f;
+    // 寿命
+    float   lifeTimer = projectileConfig::lifeTimePLightning;
     // 発射
     projectile->GetComponent<BulletFiring>()->Lanch(dir, target, lifeTimer);
     projectile->GetComponent<ProjectileTornade>()->SetTarget(target);
@@ -2813,22 +2813,6 @@ DirectX::XMFLOAT3 Player::GetForwerd(DirectX::XMFLOAT3 angle)
     dir.y = 0;
     dir.z = cosf(angle.y);
     return dir;
-}
-
-// 自分の当たり判定有無
-void Player::DmageInvalidJudment(bool invalidJudgment)
-{
-    EnemyManager& enemyManager = EnemyManager::Instance();
-    int enemyCount = enemyManager.GetEnemyCount();
-    for (int i = 0; i < enemyCount; ++i)//float 最大値ないにいる敵に向かう
-    {
-        // 敵との距離判定  敵の数も計測 全ての敵をてに入れる
-        auto enemy = EnemyManager::Instance().GetEnemy(i);
-        // 安全チェック
-        if (!enemy) return;
-
-        enemy->GetComponent<EnemyBoss>()->SetInvalidJudgment(invalidJudgment);
-    }
 }
 
 // 後変更UI動作
@@ -2846,7 +2830,7 @@ void Player::UiControlleGauge(float elapsedTime)
     // ui無かったら
     if (uiCount <= uiCountMax) return;
     // hpゲージ処理
-    UiManager::Instance().UiHpControlleGauge(
+    UiManager::Instance().UiHpControllePlayerGauge(
         (int)UiManager::UiCount::PlayerHp,
         (int)UiManager::UiCount::PlayerHPBar,
         CommandConfig::texPlayerNoDamagePos,
@@ -2917,7 +2901,7 @@ void Player::SpecialApplyDamageInRadius()
 
 
         // ダメージが通ったら消える。TRUEになるから
-        if (!enemyHp->ApplyDamage(applyDamageSpecial, 0.5f)) return;
+        if (!enemyHp->ApplyDamage(applyDamageSpecial, PlayerConfig::invicibleTime)) return;
         // ヒットエフェクト再生
         hitEffect->Play(enemyPosition);
         hitFire->Play(enemyPosition);

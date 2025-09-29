@@ -30,7 +30,7 @@ public:
 	// Ä¶’â~
 	void Stop(AudioParam param);
 
-	// Šù‘¶‚Ì“z‚ğ’â~
+	// Ä¶’â~
 	void Stop(std::string filename);
 
 	// ‰¹‚Ì•â³

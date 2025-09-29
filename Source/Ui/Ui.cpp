@@ -21,10 +21,6 @@ void Ui::Update(float elapsedTime)
 
 void Ui::Render2D(RenderContext& rc, SpriteShader& shader)
 {
-    //// 変換行列
-    //DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&rc.view);
-    //DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&rc.projection);
-
     Graphics& graphics = Graphics::Instance();
     // スケール計算用
     float uiScale = graphics.CalcUIScale();

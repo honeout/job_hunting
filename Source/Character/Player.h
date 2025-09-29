@@ -24,6 +24,7 @@
 // 定数定義
 namespace PlayerConfig
 {
+    // -----ボーン状態-----
     // 上半身スタート再生開始場所
     constexpr const char* bornUpStartPoint = "mixamorig:Hips";
     // 上半身エンド再生停止場所
@@ -39,6 +40,8 @@ namespace PlayerConfig
     // -----衝突判定・サイズ-----
     // 身長
     constexpr float height = 1.0f;
+    // 身長半分
+    constexpr float heightHerf = 0.5f;
 
     // 当たり判定半径
     constexpr float radius = 1.0f;
@@ -46,6 +49,9 @@ namespace PlayerConfig
     // -----プレイヤーの状態-----
     // Hp
     constexpr int health = 50;
+
+    // 無敵時間
+    constexpr float invicibleTime = 0.5f;
 
     // 歩く速度
     constexpr float   moveSpeed = 5.0f;
@@ -74,6 +80,15 @@ namespace PlayerConfig
     constexpr bool onJunp = true;
     constexpr bool unJunp = false;
 
+    // 死亡
+    constexpr bool deadOn = true;
+    // 活きてる
+    constexpr bool deadOff = false;
+
+    // ------カメラ処理-------
+    constexpr bool cameraInitialOn = true;
+    constexpr bool cameraInitialOff = false;
+
     // ------近接攻撃---------
 
     // 空中移動制限限界
@@ -91,8 +106,12 @@ namespace PlayerConfig
     // 連続攻撃回数
     constexpr int attackNumberSaveMax = 15;
 
-     // ------魔法---------
+    // 空中攻撃許可
+    constexpr bool areAttackOn = true;
+    // 空中攻撃不許可
+    constexpr bool areAttackOff = false;
 
+     // ------魔法---------
     // Mp
     constexpr int magicPoint = 50;
 
@@ -127,6 +146,12 @@ namespace PlayerConfig
     constexpr float onDamageTimeValue = 1.0f;
     constexpr float onDamageTimeMin = 0.0f;
     constexpr float onDamageTimeMax = 1.0f;
+
+    //----アニメーション処理------
+    // アニメブレンドオン
+    constexpr bool animBlendOn = true;
+    // アニメブレンドオフ
+    constexpr bool animBlendOff = false;
 
     // ------コマンド---------
 
@@ -172,8 +197,9 @@ namespace PlayerConfig
     // 時間
     constexpr float cameraEffectSpeed = 1.0f;
 
-    // ------関数------------
-
+    // ---エフェクト大きさ------
+    // エフェクト大きさ
+    constexpr DirectX::XMFLOAT3 effectScale = {1.0f,1.0f,1.0f};
 
 };
 
@@ -396,16 +422,8 @@ public:
     // 左手の当たり判定
     float GetLeftHandRadius() const { return leftHandRadius; }
 
-    // ゲット当たり判定無効
-    bool GetInvalidJudgment() const { return invalidJudgment; }
-    // セット当たり判定無効
-    void SetInvalidJudgment(bool invalidJudgment) { this->invalidJudgment = invalidJudgment; }
-
     // カメラ演出するか
     bool GetIsCameraInitialEffect() const { return isCameraInitialEffect; }
-
-    // 自分の当たり判定有無
-    void DmageInvalidJudment(bool invalidJudgment);
 
     //  UI操作
     void UiControlleGauge(float elapsedTime);
@@ -802,9 +820,6 @@ private:
 
     // 移動魔法の
     float magicMoveLength = 1000.0f;
-
-    // 当たり判定無効判定
-    bool invalidJudgment = true;
 
     // 特殊攻撃
     static const int specialAttackNumMax = 4;

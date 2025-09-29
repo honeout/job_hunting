@@ -2296,7 +2296,7 @@ void PlayerSpecialAttackState::Exit()
 	// コマンドを初期化
 	playerid->RemoveUIComando();
 }
-// 火魔法
+// 魔法
 void PlayerMagicState::Enter()
 {
 	// 安全チェック
@@ -2316,6 +2316,7 @@ void PlayerMagicState::Enter()
 	// seチャージ再生
 	paramSe.filename = AudioConfig::audioCharge;
 	Audio::Instance().Play(paramSe);
+
 
 	// エフェクト
 	charge = std::make_unique<Effect>("Data/Effect/magicCharge.efk");
@@ -2400,6 +2401,10 @@ void PlayerMagicState::Execute(float elapsedTime)
 	if (magicCharge < magicChargeMax && playerid->GetIsMagicChageEnd() &&
 		playerid->InputMagick(elapsedTime))
 	{
+		// チャージse停止
+		paramSe.filename = AudioConfig::audioCharge;
+		Audio::Instance().Stop(paramSe);
+
 		// アニメーション際再生
 		{
 			modelAnim.index = Player::Animation::Anim_MagicArch;

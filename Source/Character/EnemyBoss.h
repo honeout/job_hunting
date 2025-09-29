@@ -22,14 +22,56 @@ namespace EnemyConfig
     // 復活数
     constexpr int lifeMin = 0;
 
+    // ダメージ色場調整用
+    constexpr float colorDamageValue = 0.1f;
+    // ダメージ最大値
+    constexpr DirectX::XMFLOAT2 colorDamageGBMax = { 1.0f,1.0f };
+
     // -----衝突判定・サイズ-----
     constexpr float kBaseBodyRadius = 1.2f;
     constexpr float kHitPartRadius = 0.8f;
     constexpr float kUpperBodyRadius = 1.0f;
 
+    // ----  当たり判定  -----
+    // 近距離
+    constexpr float radiusShortAttack = 1.5f;
+    // 衝撃波範囲内側
+    constexpr float radiusInpactInSide = 0.3f;
+    // 衝撃波範囲外側
+    constexpr float radiusInpactOutSide = 0.3f;
+    // 衝撃波範囲高さ
+    constexpr float radiusInpactHeight = 0.3f;
+    // 衝撃波範囲内側
+    constexpr float radiusInpactInSideValue = 0.3f;
+    // 衝撃波範囲外側
+    constexpr float radiusInpactOutSideValue = 0.3f;
+    // 衝撃波範囲高さ
+    constexpr float radiusInpactHeightValue = 0.3f;
+
+    // 吹っ飛ばし値
+    constexpr float inpactPower = 10.0f;
+    // 吹っ飛ばし値高さ
+    constexpr float inpactPowerY = 0.5f;
+    
+    // ----  アニメーション  -----
+    /// アニメーションブレンド有
+    constexpr bool isAnimationBlend = true;
+
+
     // ------ジャンプ設定---------
     constexpr float kMinJumpSpeed = 15.0f;
     constexpr int kMaxJumpCount = 2;
+    // ------当たり判定有無設定---------
+    // 動きあり
+    constexpr bool moveOn = true;
+    // 動きなし
+    constexpr bool moveOff = false;
+    // -----------死亡判定--------------
+    // 死亡
+    constexpr bool deadOn = true;
+    constexpr bool deadOff = false;
+
+
 
     // ------デバッグ描画---------
     constexpr DirectX::XMFLOAT4 kColorMain = { 1,0,0,1 };// 赤
@@ -53,6 +95,9 @@ namespace EnemyConfig
     // 下半身エンド再生停止場所
     constexpr const char* kBornDownerEndPoint = "boss_left_eye";
 
+    // 下半身エンド再生停止場所
+    constexpr const char* kBornrightHand = "boss_right_hand4";
+
     // ------HP設定--------------
     constexpr const int kHealth = 50;
 
@@ -65,9 +110,15 @@ namespace EnemyConfig
     constexpr const int kApplyDamageStamp = 6;
     constexpr const int kApplyDamageImpact = 5;
 
+
     // -----無敵時間--------------
     constexpr float kNuckleInvincibleTime = 0.5f;
     constexpr float kImpactInvincibleTime = 0.5f;
+
+    // 興奮状態
+    constexpr bool  awakeMode = true;
+    // 通常状態
+    constexpr bool  normalMode = false;
 
     //------ゲージ----------------
     // ゲージの大きさ
@@ -76,13 +127,12 @@ namespace EnemyConfig
     // ゲージの減るスピード
     constexpr float lerpSpeed = 3.1f;
 
-    //------UIHP----------------
-    constexpr DirectX::XMFLOAT2 texDamagePos = { 0.0f, 0.0f };
-    constexpr DirectX::XMFLOAT2 texNoDamagePos = { 0.0f, 113.0f };
-    constexpr float onDamageTimeValue = 1.0f;
-    constexpr float onDamageTimeMin = 0.0f;
-    constexpr float onDamageTimeMax = 1.0f;
+    //------シェイク-----------
+    // ブラーの半径
+    constexpr float blerRadius = 300.0f;
 
+    // ブラーの外側
+    constexpr float blerMaskRadius = 200.0f;
     
     // -----デバッグ用------------
     constexpr const float kDebugCylinderHeight = 1.0f;
@@ -97,6 +147,8 @@ namespace EnemyConfig
 
     // 高さ
     constexpr float kHeight = 5.5f;
+    // 高さ半分
+    constexpr float kHeightHerf = 0.5f;
     // 混乱状態高さ
     constexpr float kConFusionHeight = 3.0f;
 };
@@ -153,9 +205,6 @@ public:
 
     // 当たり判定衝撃波
     void CollisionImpactVsPlayer();
-
-    // 衝撃波判定
-    void CollisionInpact();
 
     // 敵覚醒管理
     void ManageAwakeTime(float elapsedTime);
@@ -258,11 +307,6 @@ public:
     }
     // ステートタイマー取得
     float GetStateTimer() { return stateTimer; }
-
-    // ゲット当たり判定無効
-    bool GetInvalidJudgment() const { return invalidJudgment; }
-    // セット当たり判定無効
-    void SetInvalidJudgment(bool Judgment) { invalidJudgment = Judgment; }
 
     // ゲットカウンター
     bool GetCounterJudgment() const { return counterJudgment; }
@@ -474,9 +518,6 @@ private:
     // ステートマシン用
     std::unique_ptr <StateMachine> stateMachine;
 
-    // 当たり判定無効判定
-    bool invalidJudgment = true;
-
     // playerカウンター用
     bool counterJudgment = false;
 
@@ -538,9 +579,6 @@ private:
 
     bool isPlayerStopMove;
     bool isPlayerStopFall;
-
-    // 経過時間ダメージ判定
-    float onDamageTime = 0.0f;
 };
 
 // エネミーマネージャー

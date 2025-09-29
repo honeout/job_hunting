@@ -213,14 +213,7 @@ void UiManager::SelectDrawUi(int uiNumber, float TimeAlphaValue, float TimeAlpha
 
     // 点灯処理
     if (mathfblinking.UpdateElapsedTime(TimeAlphaMax, elapsedTime))
-        TimeAlpha = TimeAlpha < TimeAlphaMax ? 1.0f : 0.0f;
-
-
-    //// 点灯処理
-    //if (mathfblinking.UpdateElapsedTime(TimeAlphaMax,elapsedTime))
-    //    TimeAlpha += TimeAlphaValue < CommandConfig::commandAlphaValueMin ? TimeAlphaValue * elapsedTime: TimeAlphaMax;
-    //else
-    //    TimeAlpha -= TimeAlphaValue > TimeAlphaMax ? TimeAlphaValue * elapsedTime: 0.0f;
+        TimeAlpha = TimeAlpha < TimeAlphaMax ? CommandConfig::alphaMax : CommandConfig::alphaMin;
 
     // 点滅
     commandUi->SetAlpha(TimeAlpha);
@@ -377,7 +370,7 @@ void UiManager::StartMagicUiCharge(int uiCommandNumber ,int uiNumber, int uiFram
     float gaugeSize = commandMagicTransform->GetScale().x - CommandConfig::mpBarOffset;
 
     // 溜め
-    float gaugeWidth = gaugeSize * commandPushUiChargeTime * 0.08f;
+    float gaugeWidth = gaugeSize * commandPushUiChargeTime * CommandConfig::gaugeWidthMax;
 
     // コマンド位置
     DirectX::XMFLOAT2 pos = commandMagicTransform->GetPosition();
@@ -1209,17 +1202,14 @@ bool UiManager::PinchModeCommandGage(int uiNumber,std::shared_ptr<HP> hpid, floa
     return false;
 }
 
-// UI HPゲージ
-void UiManager::UiHpControlleGauge(int uiNumber, int uiNumberGage, 
-    DirectX::XMFLOAT2 texNoDamagePos,
-    DirectX::XMFLOAT2 texDamagePos,
-    std::shared_ptr<HP> hpId, float elapsedTime)
+void UiManager::UiHpControllePlayerGauge(int uiNumber, int uiNumberGage, DirectX::XMFLOAT2 texNoDamagePos, DirectX::XMFLOAT2 texDamagePos, std::shared_ptr<HP> hpId, float elapsedTime)
 {
     // hpゲージ操作用
     float gaugeWidth;
 
     // ゲージの大きさ
     gaugeWidth = mathfPintch.LinearInterpolate((float)hpId->GetHealth(), (float)hpId->GetMaxHealth(), CommandConfig::lerpSpeed, elapsedTime);
+
     // 大きさ補正
     gaugeWidth *= CommandConfig::gaugeScaleMax;
 
@@ -1228,12 +1218,12 @@ void UiManager::UiHpControlleGauge(int uiNumber, int uiNumberGage,
         gaugeWidth = CommandConfig::gaugeWidthMin;
 
     // 経過時間
-    if (this->timeDamageValue > CommandConfig::timeMin)
+    if (this->timePlayerDamageValue > CommandConfig::timeMin)
     {
         // uiの周りをダメージように切り替える。
         TexPosUpdate(uiNumber, texDamagePos);
         // ダメージ食らってる時のUI
-        this->timeDamageValue -= CommandConfig::timeValue * elapsedTime;
+        this->timePlayerDamageValue -= CommandConfig::timeValue * elapsedTime;
 
         // 時間内常に揺らしたい
         bool shakeMode = true;
@@ -1247,13 +1237,61 @@ void UiManager::UiHpControlleGauge(int uiNumber, int uiNumberGage,
     {
         // uiの周りをダメージ食らっていない時
         TexPosUpdate(uiNumber, texNoDamagePos);
-        this->timeDamageValue = 0.0f;
+        this->timePlayerDamageValue = CommandConfig::timeMin;
     }
     // ダメージ食らった瞬間
     if (hpId->OnDamaged())
     {
         // ダメージ食らった時間を継続
-        this->timeDamageValue = CommandConfig::timeMax;
+        this->timePlayerDamageValue = CommandConfig::timeMax;
+    }
+
+    // hpゲージUI　変える
+    ScaleUpdateX(uiNumberGage, gaugeWidth);
+}
+
+void UiManager::UiHpControlleEnemyGauge(int uiNumber, int uiNumberGage, DirectX::XMFLOAT2 texNoDamagePos, DirectX::XMFLOAT2 texDamagePos, std::shared_ptr<HP> hpId, float elapsedTime)
+{
+    // hpゲージ操作用
+    float gaugeWidth;
+
+    // ゲージの大きさ
+    gaugeWidth = mathfPintch.LinearInterpolate((float)hpId->GetHealth(), (float)hpId->GetMaxHealth(), CommandConfig::lerpSpeed, elapsedTime);
+
+    // 大きさ補正
+    gaugeWidth *= CommandConfig::gaugeScaleMax;
+
+    // hpバー最低値
+    if (gaugeWidth <= CommandConfig::gaugeWidthMin)
+        gaugeWidth = CommandConfig::gaugeWidthMin;
+
+    // 経過時間
+    if (this->timeEnemyDamageValue > CommandConfig::timeMin)
+    {
+        // uiの周りをダメージように切り替える。
+        TexPosUpdate(uiNumber, texDamagePos);
+        // ダメージ食らってる時のUI
+        this->timeEnemyDamageValue -= CommandConfig::timeValue * elapsedTime;
+
+        // 時間内常に揺らしたい
+        bool shakeMode = true;
+
+        // 揺れ
+        ShakeModeTyme(uiNumber, shakeMode);
+        ShakeModeTyme(uiNumberGage, shakeMode);
+    }
+    // ダメ終了
+    else
+    {
+        // uiの周りをダメージ食らっていない時
+        TexPosUpdate(uiNumber, texNoDamagePos);
+        this->timeEnemyDamageValue = CommandConfig::timeMin;
+    }
+    // ダメージ食らった瞬間
+    if (hpId->OnDamaged())
+    {
+        // ダメージ食らった時間を継続
+        this->timeEnemyDamageValue = CommandConfig::timeMax;
     }
 
     // hpゲージUI　変える

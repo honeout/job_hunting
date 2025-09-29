@@ -82,7 +82,7 @@ void EnemyBoss::OnGUI()
     if (ImGui::Button("isEnemyAwakened"))
     {
         ResetAwakeTime();
-        bool check = isEnemyAwakened ? true : false;
+        bool check = isEnemyAwakened ? EnemyConfig::awakeMode : EnemyConfig::normalMode;
         // 耐久力追加
         hpId->SetIsBonusHpActive(check);
     }
@@ -102,7 +102,7 @@ void EnemyBoss::DrawDebugPrimitive()
 {
     // デバッグ用当たり判定半径
     const float kRadius = EnemyConfig::kBaseBodyRadius;
-    const float kHeight = EnemyConfig::kHeight;
+    const float kHeight = EnemyConfig::kHeight * EnemyConfig::kHeightHerf;
 
 
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
@@ -114,9 +114,9 @@ void EnemyBoss::DrawDebugPrimitive()
     debugRenderer->DrawCylinder(
         {
             position.x,
-            position.y + kHeight / 2,
+            position.y + kHeight,
             position.z,
-        }, kRadius, kHeight / 2, EnemyConfig::kColorRed);
+        }, kRadius, kHeight, EnemyConfig::kColorRed);
 
     // ターゲット位置をデバッグ球描画
     debugRenderer->DrawSphere(targetPosition, kRadius, EnemyConfig::kColorYellow);
@@ -191,35 +191,29 @@ void EnemyBoss::InitStats()
     // アニメーションルール
     updateanim = UpAnim::Normal;
 
-    // 当たり判定無効判定
-    invalidJudgment = true;
-
     // playerカウンター用
     counterJudgment = false;
 
     // 攻撃右足するかどうか
-    attackRightFootRange = 1.5f;
+    attackRightFootRange = EnemyConfig::radiusShortAttack;
 
     // 動作チェック
-    moveCheck = true;
+    moveCheck = EnemyConfig::moveOn;
 
     // 衝撃波起こる範囲外側
-    radiusInpactOutSide = 0.3f;
+    radiusInpactOutSide = EnemyConfig::radiusInpactOutSide;
 
     // 衝撃波起こる範囲内側
-    radiusInpactInSide = 0.3f;
+    radiusInpactInSide = EnemyConfig::radiusInpactInSide;
 
     // 衝撃波高さ
-    radiusInpactHeight = 0.3f;
-
-    // ダメージ食らった時
-    onDamageTime = EnemyConfig::onDamageTimeMin;
+    radiusInpactHeight = EnemyConfig::radiusInpactHeight;
 
     // Tpos対策アニメーション初期化を適当なモーションに
     modelId->GetModel()->UpdateAnimation(0.0f, false);
 
     // 死亡確認
-    isDead = false;
+    isDead = EnemyConfig::deadOff;
 
     // クリアシーンに
     isSceneChange = false;
@@ -271,7 +265,7 @@ void EnemyBoss::UpdateStatus(float elapsedTime)
     if (hpId->DeadStart())
     {
         // 死亡状態
-        isDead = true;
+        isDead = EnemyConfig::deadOn;
         stateMachine->ChangeState(static_cast<int>(State::Death));
     }
 }
@@ -334,28 +328,28 @@ void EnemyBoss::UpdateAnimation(float elapsedTime)
         case UpAnim::Normal:
         {
             // アニメーション再生
-            modelId->GetModel()->UpdateAnimation(elapsedTime, true);
+            modelId->GetModel()->UpdateAnimation(elapsedTime, EnemyConfig::isAnimationBlend);
             break;
         }
         // 部分再生
         case UpAnim::Doble:
         {
             // モデル部分アニメーション更新処理
-            modelId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, EnemyConfig::kBornUpStartPoint, EnemyConfig::kBornUpEndPoint, true);
-            modelId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, EnemyConfig::kBornDownerStartPoint, EnemyConfig::kBornDownerEndPoint, true);
+            modelId->GetModel()->UpdateUpeerBodyAnimation(elapsedTime, EnemyConfig::kBornUpStartPoint, EnemyConfig::kBornUpEndPoint, EnemyConfig::isAnimationBlend);
+            modelId->GetModel()->UpdateLowerBodyAnimation(elapsedTime, EnemyConfig::kBornDownerStartPoint, EnemyConfig::kBornDownerEndPoint, EnemyConfig::isAnimationBlend);
             break;
         }
         // 複数ブレンド再生
         case UpAnim::Blend:
         {
             // モデル複数ブレンドアニメーション更新処理
-            modelId->GetModel()->Update_blend_animations(elapsedTime, true);
+            modelId->GetModel()->Update_blend_animations(elapsedTime, EnemyConfig::isAnimationBlend);
             break;
         }
         // 逆再生
         case UpAnim::Reverseplayback:
         {
-            modelId->GetModel()->ReverseplaybackAnimation(elapsedTime, true);
+            modelId->GetModel()->ReverseplaybackAnimation(elapsedTime, EnemyConfig::isAnimationBlend);
             break;
         }
         }
@@ -452,7 +446,7 @@ void EnemyBoss::CollisionImpactVsPlayer()
                 // 衝動
                 DirectX::XMFLOAT3 impulse;
                 // 衝撃
-                const float power = 10.0f;
+                const float power = EnemyConfig::inpactPower;
 
                 float vx = playerPosition.x - projectilePosition.x;
                 float vz = playerPosition.z - projectilePosition.z;
@@ -461,134 +455,25 @@ void EnemyBoss::CollisionImpactVsPlayer()
                 vz /= lengthXZ;
 
                 impulse.x = vx * power;
-                impulse.y = power * 0.5f;
+                impulse.y = power * EnemyConfig::inpactPowerY;
                 impulse.z = vz * power;
 
                 playerMovement->AddImpulse(impulse);
             }
             // ヒットエフェクト再生
             {
-                playerPosition.y += playerHeight * 0.5f;
+                playerPosition.y += playerHeight * EnemyConfig::inpactPowerY;
 
                 bool loopSe = false;
             }
-            // UI揺れ
-            playerMain->SetShakeMode(true);
+            // UI揺れ常に
+            bool shakeMode = true;
+
+            // UI揺れ常に
+            playerMain->SetShakeMode(postprocessConfig::shakeMode);
 
             // 振動
             StartDamageShake();
-        }
-    }
-}
-
-// 後変更Collision
-// 衝撃波
-void EnemyBoss::CollisionInpact()
-{
-    // Lockとして実体を使う
-    auto collisionId = collision.lock();
-    auto modelId = model.lock();
-
-    // 有効性チェック
-    if (!collisionId || !modelId)
-        return;
-
-    // 衝撃波の有無
-    if (!IsInpact) return;
-
-    ProjectileManager& projectileManager = ProjectileManager::Instance();
-    // 左足のボーン名
-    Model::Node* bossLeftFoot = modelId->GetModel()->FindNode("boss_left_foot1");
-    // ノード位置取得
-    // 左足
-    DirectX::XMFLOAT3 bossLeftFootPosition;
-    bossLeftFootPosition = modelId->GetModel()->ConvertLocalToWorld(bossLeftFoot);
-
-    // 体の一部とplayerの当たり判定
-    DetectHitByBodyPart(bossLeftFootPosition, EnemyConfig::kApplyDamageStamp);
-
-    // 当たり判定増大
-    radiusInpactInSide += 0.3f;
-
-    // 当たり判定増大
-    radiusInpactOutSide += 0.3f;
-
-    // 当たり判定増大高さ
-    radiusInpactHeight += 0.3f;
-
-    PlayerManager& playerManager = PlayerManager::Instance();
-
-    // 全ての敵と総当たりで衝突処理
-    int playerCount = playerManager.GetPlayerCount();
-
-    // player所持無し
-    if (playerCount <= 0) return;
-
-    auto playerId = playerManager.GetPlayer((int)PlayerManager::PlayerType::Main);
-    // 安全☑
-    if (!playerId) return;
-
-    // player関係
-    auto playerMain = playerId->GetComponent<Player>();
-    auto playerTransform = playerId->GetComponent<Transform>();
-    auto playerMovement = playerId->GetComponent<Movement>();
-    auto playerCollision = playerId->GetComponent<Collision>();
-    auto playerHp = playerId->GetComponent<HP>();
-
-    // 安全チェック
-    if (!playerMain || !playerTransform || !playerMovement || !playerCollision || !playerHp)
-        return;
-
-    // 位置、半径、高さ
-    DirectX::XMFLOAT3 playerPosition = playerTransform->GetPosition();
-    float playerRadius = PlayerConfig::radius;
-    float playerHeight = PlayerConfig::height;
-
-    // 衝突処理
-    DirectX::XMFLOAT3 outPositon;
-    // 円柱と円
-    if (collisionId->IntersectSphereVsCylinder(
-        bossLeftFootPosition,
-        radiusInpactOutSide,
-        playerPosition,
-        playerRadius,
-        playerHeight,
-        outPositon) &&
-        !collisionId->IntersectSphereVsCylinder(
-            bossLeftFootPosition,
-            radiusInpactInSide,
-            playerPosition,
-            playerRadius,
-            playerHeight,
-            outPositon))
-
-    {
-        // 高さが一定以下なら通る
-        if (bossLeftFootPosition.y + radiusInpactHeight < playerPosition.y) return;
-        // ダメージを与える。
-        if (!playerHp->ApplyDamage(EnemyConfig::kApplyDamageImpact, EnemyConfig::kImpactInvincibleTime)) return;
-
-        playerMain->changeState(static_cast<int>(Player::State::Damage));
-
-        // 吹き飛ばす
-        {
-            // 衝動
-            DirectX::XMFLOAT3 impulse;
-            // 衝撃
-            const float power = 10.0f;
-            float vx = playerPosition.x - bossLeftFootPosition.x;
-            float vz = playerPosition.z - bossLeftFootPosition.z;
-            float lengthXZ = sqrtf(vx * vx + vz * vz);
-            vx /= lengthXZ;
-            vz /= lengthXZ;
-            impulse.x = vx * power;
-            impulse.y = power * 0.5f;
-            impulse.z = vz * power;
-            playerMovement->AddImpulse(impulse);
-        }
-        // ヒットエフェクト再生
-        {
-            playerPosition.y += playerHeight * 0.5f;
         }
     }
 }
@@ -602,13 +487,13 @@ void EnemyBoss::ManageAwakeTime(float elapsedTime)
     {
         enemyAwakeningDuration -= elapsedTime;
         // 暴走状態
-        isEnemyAwakened = true;
+        isEnemyAwakened = EnemyConfig::awakeMode;
     }
     // 覚醒終了
     else
     {
-        // 暴走状態
-        isEnemyAwakened = false;
+        // 通常状態
+        isEnemyAwakened = EnemyConfig::normalMode;
     }
     // 覚醒エフェクト位置更新
     if (awakeEffect->GetEfeHandle())
@@ -690,14 +575,14 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
             // 衝動
             DirectX::XMFLOAT3 impulse;
             // 衝撃
-            const float power = 10.0f;
+            const float power = EnemyConfig::inpactPower;
             float vx = outPositon.x - playerPosition.x;
             float vz = outPositon.z - playerPosition.z;
             float lengthXZ = sqrtf(vx * vx + vz * vz);
             vx /= lengthXZ;
             vz /= lengthXZ;
             impulse.x = vx * power;
-            impulse.y = power * 0.5f;
+            impulse.y = power * EnemyConfig::inpactPowerY;
             impulse.z = vz * power;
             playerMain->changeState((int)Player::State::Damage);
             playerMovement->AddImpulse(impulse);
@@ -708,8 +593,11 @@ void EnemyBoss::DetectHitByBodyPart(DirectX::XMFLOAT3 partBodyPosition, int appl
             moveAttackEffect->Play(playerPosition);
             //SE
             bool loopSe = false;
-            // UI揺れ
-            playerMain->SetShakeMode(true);
+            // UI揺れ常に
+            bool shakeMode = true;
+
+            // UI揺れ常に
+            playerMain->SetShakeMode(postprocessConfig::shakeMode);
             // 振動
             StartDamageShake();
         }
@@ -791,14 +679,14 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
             // 衝動
             DirectX::XMFLOAT3 impulse;
             // 衝撃
-            const float power = 10.0f;
+            const float power = EnemyConfig::inpactPower;
             float vx = outPositon.x - playerPosition.x;
             float vz = outPositon.z - playerPosition.z;
             float lengthXZ = sqrtf(vx * vx + vz * vz);
             vx /= lengthXZ;
             vz /= lengthXZ;
             impulse.x = vx * power;
-            impulse.y = power * 0.5f;
+            impulse.y = power * EnemyConfig::inpactPowerY;
             impulse.z = vz * power;
             playerMain->changeState((int)Player::State::Damage);
             playerMovement->AddImpulse(impulse);
@@ -809,8 +697,9 @@ void EnemyBoss::DetectHitByBodyAllPart(int applyDamage)
             moveAttackEffect->Play(playerPosition);
             //SE
             bool loopSe = false;
-            // UI揺れ
-            playerMain->SetShakeMode(true);
+
+            // UI揺れ常に
+            playerMain->SetShakeMode(postprocessConfig::shakeMode);
             // 振動
             StartDamageShake();
         }
@@ -830,13 +719,13 @@ void EnemyBoss::InputImpact(DirectX::XMFLOAT3 pos)
     actor.lock()->AddComponent<Transform>();
     actor.lock()->GetComponent<Transform>()->SetPosition(pos);
     actor.lock()->GetComponent<Transform>()->SetAngle(angle);
-    actor.lock()->GetComponent<Transform>()->SetScale(DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f));
+    actor.lock()->GetComponent<Transform>()->SetScale(projectileConfig::scaleImpact);
     actor.lock()->AddComponent<Collision>();
     actor.lock()->AddComponent<ProjectileImpact>();
     const char* effectFilename = "Data/Effect/inpact.efk";
     actor.lock()->GetComponent<ProjectileImpact>()->SetEffectProgress(effectFilename);
     // 生存時間
-    float lifeTimer = 50.0f;
+    float lifeTimer = projectileConfig::lifeTimerEImpact;
     actor.lock()->GetComponent<ProjectileImpact>()->SetLifeTimer(lifeTimer);
     // これが２Dかの確認
     bool check2d = false;
@@ -863,7 +752,7 @@ void EnemyBoss::UiControlle(float elapsedTime)
     if (UiManager::Instance().GetUiesCount() <= uiCountMax)return;
 
     // hpゲージ処理
-    UiManager::Instance().UiHpControlleGauge(
+    UiManager::Instance().UiHpControlleEnemyGauge(
         (int)UiManager::UiCount::EnemyHp,
         (int)UiManager::UiCount::EnemyHPBar,
         CommandConfig::texEnemyNoDamagePos,
@@ -913,16 +802,16 @@ void EnemyBoss::OnHit(float elapsedTime)
         {
             bool onHit = false;
             modelDrawCheck = onHit;
-            colorGB.x += 0.1f;
-            colorGB.y += 0.1f;
+            colorGB.x += EnemyConfig::colorDamageValue;
+            colorGB.y += EnemyConfig::colorDamageValue;
         }
         // 赤
         else
         {
             bool onHit = true;
             modelDrawCheck = onHit;
-            colorGB.x -= 0.1f;
-            colorGB.y -= 0.1f;
+            colorGB.x -= EnemyConfig::colorDamageValue;
+            colorGB.y -= EnemyConfig::colorDamageValue;
         }
     }
     // 点滅しない
@@ -931,7 +820,7 @@ void EnemyBoss::OnHit(float elapsedTime)
         damageStateTime = 0;
         bool onHit = true;
         modelDrawCheck = onHit;
-        colorGB = { 1,1 };
+        colorGB = { EnemyConfig::colorDamageGBMax };
     }
 }
 
@@ -1052,8 +941,8 @@ void EnemyBoss::StartDamageShake()
     p.shakeTimer = shakeTimer;
     Messenger::Instance().SendData(MessageData::CAMERASHAKE, &p);
     PostprocessingRenderer postprocessingRenderer;
-    damageDistortion.radius = 300.0f;
-    damageDistortion.mask_radius = 200.0f;
+    damageDistortion.radius = EnemyConfig::blerRadius;
+    damageDistortion.mask_radius = EnemyConfig::blerMaskRadius;
     postprocessingRenderer.SetRadialBlurMaxData(damageDistortion);
 }
 
@@ -1066,8 +955,8 @@ void EnemyBoss::StartConfusion()
     // 有効性チェック
     if (!modelId)
         return;
-
-    Model::Node* characterBorn = modelId->GetModel()->FindNode("boss_right_hand4");
+    // ボーン頭
+    Model::Node* characterBorn = modelId->GetModel()->FindNode(EnemyConfig::kBornrightHand);
     // エネミー腰位置
     DirectX::XMFLOAT3 enemyHeadPosition;
 

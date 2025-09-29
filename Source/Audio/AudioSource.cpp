@@ -53,6 +53,7 @@ void AudioSource::Play()
 void AudioSource::Stop()
 {
 	sourceVoice->Stop();
+	//Stop();
 }
 
 bool AudioSource::IsAudioActive()

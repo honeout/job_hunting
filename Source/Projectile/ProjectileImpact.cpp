@@ -81,7 +81,7 @@ void ProjectileImpact::Update(float elapsedTime)
     {
         Destoroy();
     }   
-    ImpactUpdate();
+    ImpactUpdate(elapsedTime);
     transformId->UpdateTransformProjectile();
     modelControllId->GetModel()->UpdateTransform(transformId->GetTransform());
     if (effectProgress)
@@ -140,13 +140,14 @@ void ProjectileImpact::Destoroy()
     ProjectileManager::Instance().Remove(GetActor());
 }
 
-void ProjectileImpact::ImpactUpdate()
+// “–‚½‚è”»’èÕŒ‚”g
+void ProjectileImpact::ImpactUpdate(float elapsedTime)
 {
     // “–‚½‚è”»’è‘‘å
-    radiusInSide += 0.13f;
-    
+    radiusInSide += impactValue * elapsedTime;
+
     // “–‚½‚è”»’è‘‘å
-    radiusOutSide += 0.13f;
+    radiusOutSide += impactValue * elapsedTime;
 }
 
 void ProjectileImpact::EffectProgressPlay()

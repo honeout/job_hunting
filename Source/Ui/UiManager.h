@@ -44,6 +44,10 @@ namespace CommandConfig
     constexpr DirectX::XMFLOAT2 hpBarYerowTexPos = { 0,76.5f };
     constexpr DirectX::XMFLOAT2 hpBarRedTexPos = { 0,152 };
 
+    // アルファ
+    constexpr float alphaMax = 1.0f;
+    constexpr float alphaMin = 0.0f;
+
     // -----コマンド変更値-----
     // スケール
     constexpr float gaugeScaleMax = 4.0f;
@@ -63,6 +67,9 @@ namespace CommandConfig
 
     // バー関係の最低値
     constexpr float gaugeWidthMin = 0.0f;
+
+    // -----ゲージ値-----
+    constexpr float gaugeWidthMax = 0.08f;
 
     // -----コマンドアルファ-----
     // 透明度０
@@ -217,7 +224,13 @@ public:
     bool PinchModeCommandGage(int uiNumber, std::shared_ptr<HP> hpid, float elapsedTime);
 
     // UI HPゲージ
-    void UiHpControlleGauge(int uiNumber,int uiNumberGage, 
+    void UiHpControllePlayerGauge(int uiNumber, int uiNumberGage,
+        DirectX::XMFLOAT2 texNoDamagePos,
+        DirectX::XMFLOAT2 texDamagePos,
+        std::shared_ptr<HP> hpId, float elapsedTime);
+
+    // UI HPゲージ
+    void UiHpControlleEnemyGauge(int uiNumber, int uiNumberGage,
         DirectX::XMFLOAT2 texNoDamagePos,
         DirectX::XMFLOAT2 texDamagePos,
         std::shared_ptr<HP> hpId, float elapsedTime);
@@ -330,7 +343,14 @@ private:
     float commandPushUiChargeTime = 0.0f;
 
     // 時間経過ダメージ用
-    float timeDamageValue = 0.0f;
+    float timePlayerDamageValue = 0.0f;
+
+
+    // 時間経過ダメージ用
+    float timeEnemyDamageValue = 0.0f;
+
+    // ダメ判定
+    bool damageOn = false;
 };
 
 

@@ -30,7 +30,7 @@ public:
     void Destoroy();
 
     // “–‚½‚è”»’èÕŒ‚”g
-    void ImpactUpdate();
+    void ImpactUpdate(float elapsedTime);
 
     void SetTarget(DirectX::XMFLOAT3 target) { this->target = target; }
 
@@ -89,6 +89,9 @@ private:
 
     // ÕŒ‚”g‹N‚±‚é”ÍˆÍ“à‘¤
     float radiusInSide = 0.3f;
+
+    // ÕŒ‚”ò‚Î‚µ
+    float impactValue = 13.0f;
 
     float scale = 10.0f;
 

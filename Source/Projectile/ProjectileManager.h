@@ -3,12 +3,27 @@
 #include "Component\Actor.h"
 #include <set>
 
+namespace projectileConfig
+{
+    // ’eŠÛ‘å‚«‚³
+    constexpr DirectX::XMFLOAT3 scale = { 0.01f,0.01f,0.01f };
+    constexpr DirectX::XMFLOAT3 scaleImpact = { 3.0f,3.0f,3.0f };
+
+    // õ–½
+    constexpr float lifeTimerEImpact = 50.0f;
+    // ‰Šõ–½
+    constexpr float lifeTimePFire = 3.0f;
+    // •Xõ–½
+    constexpr float lifeTimePIce = 4.0f;
+    // —‹õ–½
+    constexpr float lifeTimePLightning = 0.5f;
+};
+
 //Projectil‚PŒÂ‚Ì’eŠÛ
 // ’eŠÛƒ}ƒl[ƒWƒƒ[
 class ProjectileManager// •¡”‚Ì’e‚ª‚ñ‹…”
 {
 public:
-
     ProjectileManager() {};
     // ’N‚ª‚Â‚©•ª‚©‚ç‚È‚¢‚©‚ç•¡”‚Ì“z‚ª•ÊX‚É‚Â‚©‚à‚µ‚ê‚È‚¢
     ~ProjectileManager() {};

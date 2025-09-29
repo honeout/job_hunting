@@ -103,18 +103,23 @@ void Audio::PlayFadeOut(AudioParam param)
 	targetVolume = param.volumeMin;
 }
 
+// 再生停止
 void Audio::Stop(AudioParam param)
 {
 	// リソース作成
 	AudioResourceManager& audioResourceManager = AudioResourceManager::Instance();
 	std::shared_ptr<AudioResource> resource = audioResourceManager.LoadAudioResource(param.filename.c_str());
 	
-	// オーディオソース作成
-	AudioSource* audio = this->audio_source_pool.emplace_back(new AudioSource(this->xaudio, resource, param));
+	// 停止
+	Stop(param.filename);
 
-	audio->Stop();
+	//// オーディオソース作成
+	//AudioSource* audio = this->audio_source_pool.emplace_back(new AudioSource(this->xaudio, resource, param));
+
+	//audio->Stop();
 }
 
+// 再生停止
 void Audio::Stop(std::string filename)
 {
 	for (AudioSource* source : this->audio_source_pool)

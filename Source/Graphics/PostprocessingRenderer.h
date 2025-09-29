@@ -10,6 +10,16 @@ struct ShaderResourceViewData
     int width = 0;
     int height = 0;
 };
+// シェーダー共有値
+namespace postprocessConfig
+{
+    // -----シェーダー用------------
+    // -----画面揺れ用------------
+    // 揺れあり
+    constexpr bool shakeMode = true;
+    // 揺れなし
+    constexpr bool normalMode = false;
+};
 
 // ポストプロセス用のレンダラ―
 class PostprocessingRenderer
